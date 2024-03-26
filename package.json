@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "eas-build-post-install": "tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css.native.css"
+    "export": "expo export -p web"
   },
   "jest": {
     "preset": "jest-expo"
@@ -24,6 +24,7 @@
     "@react-navigation/native": "^6.0.2",
     "@reduxjs/toolkit": "^2.2.2",
     "axios": "^1.6.8",
+    "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "~50.0.14",

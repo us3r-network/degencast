@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "us3r-network"
+  },
+  "targets": {
+    "us3r-network": {
+      "hosting": {
+        "degencast": [
+          "us3r-degencast"
+        ],
+        "degencast-dev": [
+          "us3r-degencast-dev"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
