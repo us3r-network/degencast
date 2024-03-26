@@ -1,15 +1,16 @@
-import { ComponentPropsWithRef } from "react";
+import { View } from "react-native";
 import { cn } from "~/lib/utils";
 
 export function PostCardWrapper({
   isDetail,
   className,
   ...props
-}: ComponentPropsWithRef<"div"> & {
+}: {
+  className?: string;
   isDetail?: boolean;
 }) {
   return (
-    <div
+    <View
       className={cn(
         "box-border flex cursor-pointer border-b border-[#39424c] bg-[#20262F] px-[20px] hover:bg-[#000000]",
         "max-sm:px-0",
@@ -23,11 +24,12 @@ export function PostCardWrapper({
 export function PostCardMainWrapper({
   className,
   ...props
-}: ComponentPropsWithRef<"div"> & {
+}: {
+  className?: string;
   isDetail?: boolean;
 }) {
   return (
-    <div
+    <View
       className={cn(
         "box-border flex w-full flex-1 flex-col gap-[10px] p-[10px] ",
         className,
@@ -39,18 +41,20 @@ export function PostCardMainWrapper({
 export function PostCardFooterWrapper({
   className,
   ...props
-}: ComponentPropsWithRef<"div">) {
+}: {
+  className?: string;
+}) {
   return (
-    <div
+    <View
       className={cn("flex items-center justify-between gap-[10px]", className)}
       {...props}
     />
   );
 }
 
-export function PostCardActionsWrapper(props: ComponentPropsWithRef<"div">) {
+export function PostCardActionsWrapper(props: { className?: string }) {
   return (
-    <div
+    <View
       className={cn("flex items-center gap-[15px]", "max-sm:gap-[10px]")}
       {...props}
     />
