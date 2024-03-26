@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {usePrivy} from '@privy-io/react-auth';
+import React, { useEffect } from "react";
+import { usePrivy } from "@privy-io/react-auth";
 
 export default function UserInfo() {
   const {
@@ -34,25 +34,25 @@ export default function UserInfo() {
 
   return (
     <>
-      <main className="flex flex-col min-h-screen px-4 sm:px-20 py-6 sm:py-10 bg-privy-light-blue">
+      <main className="bg-privy-light-blue flex min-h-screen flex-col px-4 py-6 sm:px-20 sm:py-10">
         {ready && authenticated ? (
           <>
             <div className="flex flex-row justify-between">
               <h1 className="text-2xl font-semibold">User Info</h1>
               <button
                 onClick={logout}
-                className="text-sm bg-violet-200 hover:text-violet-900 py-2 px-4 rounded-md text-violet-700"
+                className="rounded-md bg-violet-200 px-4 py-2 text-sm text-violet-700 hover:text-violet-900"
               >
                 Logout
               </button>
             </div>
-            <div className="mt-12 flex gap-4 flex-wrap">
+            <div className="mt-12 flex flex-wrap gap-4">
               {googleSubject ? (
                 <button
                   onClick={() => {
                     unlinkGoogle(googleSubject);
                   }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  className="rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
                   disabled={!canRemoveAccount}
                 >
                   Unlink Google
@@ -62,7 +62,7 @@ export default function UserInfo() {
                   onClick={() => {
                     linkGoogle();
                   }}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                  className="rounded-md bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
                 >
                   Link Google
                 </button>
@@ -73,14 +73,14 @@ export default function UserInfo() {
                   onClick={() => {
                     unlinkTwitter(twitterSubject);
                   }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  className="rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
                   disabled={!canRemoveAccount}
                 >
                   Unlink Twitter
                 </button>
               ) : (
                 <button
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                  className="rounded-md bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
                   onClick={() => {
                     linkTwitter();
                   }}
@@ -94,14 +94,14 @@ export default function UserInfo() {
                   onClick={() => {
                     unlinkDiscord(discordSubject);
                   }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  className="rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
                   disabled={!canRemoveAccount}
                 >
                   Unlink Discord
                 </button>
               ) : (
                 <button
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                  className="rounded-md bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
                   onClick={() => {
                     linkDiscord();
                   }}
@@ -115,7 +115,7 @@ export default function UserInfo() {
                   onClick={() => {
                     unlinkEmail(email.address);
                   }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  className="rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
                   disabled={!canRemoveAccount}
                 >
                   Unlink email
@@ -123,7 +123,7 @@ export default function UserInfo() {
               ) : (
                 <button
                   onClick={linkEmail}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                  className="rounded-md bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
                 >
                   Connect email
                 </button>
@@ -133,7 +133,7 @@ export default function UserInfo() {
                   onClick={() => {
                     unlinkWallet(wallet.address);
                   }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  className="rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
                   disabled={!canRemoveAccount}
                 >
                   Unlink wallet
@@ -141,7 +141,7 @@ export default function UserInfo() {
               ) : (
                 <button
                   onClick={linkWallet}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
+                  className="rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
                 >
                   Connect wallet
                 </button>
@@ -151,7 +151,7 @@ export default function UserInfo() {
                   onClick={() => {
                     unlinkPhone(phone.number);
                   }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                  className="rounded-md border border-violet-600 px-4 py-2 text-sm text-violet-600 hover:border-violet-700 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
                   disabled={!canRemoveAccount}
                 >
                   Unlink phone
@@ -159,17 +159,19 @@ export default function UserInfo() {
               ) : (
                 <button
                   onClick={linkPhone}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
+                  className="rounded-md border-none bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
                 >
                   Connect phone
                 </button>
               )}
             </div>
 
-            <p className="mt-6 font-bold uppercase text-sm text-gray-600">User object</p>
+            <p className="mt-6 text-sm font-bold uppercase text-gray-600">
+              User object
+            </p>
             <textarea
               value={JSON.stringify(user, null, 2)}
-              className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2"
+              className="mt-2 max-w-4xl rounded-md bg-slate-700 p-4 font-mono text-xs text-slate-50 sm:text-sm"
               rows={20}
               disabled
             />
