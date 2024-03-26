@@ -20,42 +20,42 @@ export const joinCommunitySlice = createSlice({
   reducers: {
     setJoinedCommunitiesPending: (
       state: JoinCommunityState,
-      action: PayloadAction<boolean>
+      action: PayloadAction<boolean>,
     ) => {
       state.joinedCommunitiesPending = action.payload;
     },
     setJoinedCommunities: (
       state: JoinCommunityState,
-      action: PayloadAction<JoinedCommunitiesData>
+      action: PayloadAction<JoinedCommunitiesData>,
     ) => {
       state.joinedCommunities = action.payload;
     },
     addOneToJoinedCommunities: (
       state: JoinCommunityState,
-      action: PayloadAction<JoinedCommunitiesData[0]>
+      action: PayloadAction<JoinedCommunitiesData[0]>,
     ) => {
       state.joinedCommunities.unshift(action.payload);
     },
     removeOneFromJoinedCommunities: (
       state: JoinCommunityState,
-      action: PayloadAction<string | number>
+      action: PayloadAction<string | number>,
     ) => {
       state.joinedCommunities = state.joinedCommunities.filter(
-        (item) => item.id !== action.payload
+        (item) => item.id !== action.payload,
       );
     },
     addOneToJoinActionPendingIds: (
       state: JoinCommunityState,
-      action: PayloadAction<string | number>
+      action: PayloadAction<string | number>,
     ) => {
       state.joinActionPendingIds.unshift(action.payload);
     },
     removeOneFromJoinActionPendingIds: (
       state: JoinCommunityState,
-      action: PayloadAction<string | number>
+      action: PayloadAction<string | number>,
     ) => {
       state.joinActionPendingIds = state.joinActionPendingIds.filter(
-        (id) => id !== action.payload
+        (id) => id !== action.payload,
       );
     },
   },

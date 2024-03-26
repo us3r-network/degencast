@@ -27,15 +27,15 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
 
   const joined = useMemo(
     () => joinedCommunities.some((item) => item.id === communityId),
-    [joinedCommunities, communityId]
+    [joinedCommunities, communityId],
   );
   const isPending = useMemo(
     () => joinActionPendingIds.includes(communityId),
-    [joinActionPendingIds, communityId]
+    [joinActionPendingIds, communityId],
   );
   const isDisabled = useMemo(
     () => !communityId || isPending || joinedCommunitiesPending,
-    [communityId, isPending, joinedCommunitiesPending]
+    [communityId, isPending, joinedCommunitiesPending],
   );
 
   const joiningAction = useCallback(async () => {
