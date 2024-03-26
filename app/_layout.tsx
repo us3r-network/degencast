@@ -1,4 +1,5 @@
 
+import {Buffer} from 'buffer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
@@ -8,11 +9,11 @@ import { Provider as ReduxProvider } from "react-redux";
 import { store } from "~/store/store";
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
-
 // Import global CSS file
 import "../global.css";
 import { PrivyProvider } from '@privy-io/react-auth';
 
+global.Buffer = Buffer; //monkey patch for buffer in react-native
 const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || ''
 
 const LIGHT_THEME: Theme = {
@@ -91,7 +92,7 @@ export default function RootLayout() {
         >
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
         </Stack>
         </PrivyProvider>
       </ThemeProvider>
