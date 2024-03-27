@@ -3,7 +3,5 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
-  "cSpell.words": [
-    "degencast"
-  ]
+  "cSpell.words": ["degencast"]
 }

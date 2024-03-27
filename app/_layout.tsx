@@ -1,4 +1,3 @@
-import { Buffer } from "buffer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Theme, ThemeProvider } from "@react-navigation/native";
 import { SplashScreen, Stack } from "expo-router";
@@ -8,6 +7,8 @@ import { Provider as ReduxProvider } from "react-redux";
 import { store } from "~/store/store";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
+import { Buffer } from "buffer";
+
 // Import global CSS file
 import "../global.css";
 import { PrivyProvider } from "@privy-io/react-auth";

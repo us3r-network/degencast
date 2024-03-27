@@ -26,7 +26,7 @@ export type TrendingCommunitiesData = Array<
   CommunityEntity & CommunityStatistics
 >;
 export function fetchTrendingCommunities(
-  params: TrendingCommunitiesParams
+  params: TrendingCommunitiesParams,
 ): RequestPromise<ApiResp<TrendingCommunitiesData>> {
   return request({
     url: `/topics/trending`,
@@ -44,7 +44,7 @@ export type NewestCommunitiesData = Array<
   CommunityEntity & CommunityStatistics
 >;
 export function fetchNewestCommunities(
-  params: NewestCommunitiesParams
+  params: NewestCommunitiesParams,
 ): RequestPromise<ApiResp<NewestCommunitiesData>> {
   return request({
     url: `/topics/newest`,
@@ -62,7 +62,7 @@ export type JoinedCommunitiesData = Array<
   CommunityEntity & CommunityStatistics
 >;
 export function fetchJoinedCommunities(
-  params: JoinedCommunitiesParams
+  params: JoinedCommunitiesParams,
 ): RequestPromise<ApiResp<JoinedCommunitiesData>> {
   return request({
     url: `/topics/joined`,
@@ -83,7 +83,7 @@ export type GrowingCommunitiesData = Array<
   CommunityEntity & CommunityStatistics
 >;
 export function fetchGrowingCommunities(
-  params: GrowingCommunitiesParams
+  params: GrowingCommunitiesParams,
 ): RequestPromise<ApiResp<GrowingCommunitiesData>> {
   return request({
     url: `/topics/trending`,
@@ -94,7 +94,7 @@ export function fetchGrowingCommunities(
 
 export type JoiningCommunityData = null;
 export function fetchJoiningCommunity(
-  topicId: string | number
+  topicId: string | number,
 ): RequestPromise<ApiResp<JoiningCommunityData>> {
   return request({
     url: `/topics/${topicId}/joining`,
@@ -107,7 +107,7 @@ export function fetchJoiningCommunity(
 
 export type UnjoiningCommunityData = null;
 export function fetchUnjoiningCommunity(
-  topicId: string | number
+  topicId: string | number,
 ): RequestPromise<ApiResp<UnjoiningCommunityData>> {
   return request({
     url: `/topics/${topicId}/unjoining`,
@@ -120,7 +120,7 @@ export function fetchUnjoiningCommunity(
 
 export type CommunityData = CommunityEntity & CommunityStatistics;
 export function fetchCommunity(
-  id: string | number
+  id: string | number,
 ): RequestPromise<ApiResp<CommunityData>> {
   return request({
     url: `/topics/channel?id=${id}`,
@@ -142,7 +142,7 @@ export type CommunityMembersData = {
 };
 export function fetchCommunityMembers(
   id: string | number,
-  params: CommunityMembersParams
+  params: CommunityMembersParams,
 ): RequestPromise<ApiResp<CommunityMembersData>> {
   return request({
     url: `/topics/${id}/members`,
