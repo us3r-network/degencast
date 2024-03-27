@@ -13,6 +13,7 @@ import { store } from "~/store/store";
 
 // Import global CSS file
 import "../global.css";
+import { PortalHost } from "~/components/primitives/portal";
 
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
@@ -82,17 +83,20 @@ export default function RootLayout() {
               theme: isDarkColorScheme ? "dark" : "light",
               accentColor: "#676FFF",
               logo: "https://u3.xyz/logo192.png",
+              // walletList: ["detected_wallets" , "metamask" , "coinbase_wallet" , "rainbow" , "phantom" , "wallet_connect"]
             },
             // Create embedded wallets for users who don't have a wallet
             embeddedWallets: {
               createOnLogin: "users-without-wallets",
             },
+            loginMethods: ["farcaster", "twitter", "google"],
           }}
         >
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
           </Stack>
+          <PortalHost />
         </PrivyProvider>
       </ThemeProvider>
     </ReduxProvider>
