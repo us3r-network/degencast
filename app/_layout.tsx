@@ -83,13 +83,21 @@ export default function RootLayout() {
               theme: isDarkColorScheme ? "dark" : "light",
               accentColor: "#676FFF",
               logo: "https://u3.xyz/logo192.png",
-              // walletList: ["detected_wallets" , "metamask" , "coinbase_wallet" , "rainbow" , "phantom" , "wallet_connect"]
             },
             // Create embedded wallets for users who don't have a wallet
             embeddedWallets: {
               createOnLogin: "users-without-wallets",
             },
-            loginMethods: ["farcaster", "twitter", "google"],
+            loginMethodsAndOrder: {
+              primary: [
+                "farcaster",
+                "twitter",
+                "detected_wallets",
+                "metamask",
+                "coinbase_wallet",
+                "rainbow",
+              ],
+            },
           }}
         >
           <Stack>

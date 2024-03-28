@@ -54,6 +54,8 @@ import {
   UserPlus,
   Users,
   X,
+  Atom,
+  Wallet,
 } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 function interopIcon(icon: LucideIcon) {
@@ -122,7 +124,8 @@ interopIcon(Terminal);
 interopIcon(AlertTriangle);
 interopIcon(Code);
 interopIcon(CheckSquare);
-
+interopIcon(Atom);
+interopIcon(Wallet);
 export {
   Activity,
   Airplay,
@@ -178,4 +181,6 @@ export {
   UserPlus,
   Users,
   X,
+  Atom,
+  Wallet,
 };
