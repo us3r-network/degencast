@@ -1,6 +1,7 @@
 import { Text, TextInput, View, ScrollView, Platform } from "react-native";
 import { Stack, useNavigation, Link } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -8,42 +9,45 @@ import { debounce } from "lodash";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { cn } from "~/lib/utils";
 
+import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
+
 type Community = {
   name: string;
-  icon: string;
+  logo: string;
+  channelId: string;
 };
 
 export default function SearchScreen() {
+  // const navigation = useNavigation();
   const [value, onChangeText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState<Community[]>([]);
-  const [joined, setJoined] = useState<Community[]>([]);
 
-  const saveHistory = async ({ name, icon }: Community) => {
-    if (Platform.OS === "web") {
-      try {
-        const data = localStorage.getItem("searchHistory");
-        const history = data ? JSON.parse(data) : [];
-        if (history.includes(name)) {
-          return;
-        }
-        history.push({ name, icon });
-        history.slice(-6);
-        localStorage.setItem("searchHistory", JSON.stringify(history));
-      } catch (error) {
-        console.error(error);
+  const [history, setHistory] = useState<Community[]>([]);
+  const [recommend, setRecommend] = useState<Community[]>([]);
+  const { joinedCommunities, loadAllJoinedCommunities } =
+    useAllJoinedCommunities();
+
+  const saveHistory = async ({ name, logo, channelId }: Community) => {
+    try {
+      const data = await AsyncStorage.getItem("searchHistory");
+      const historyData: Community[] = data ? JSON.parse(data) : [];
+      if (historyData.some((item) => item.channelId === channelId)) {
+        return;
       }
+      historyData.push({ name, logo, channelId });
+      historyData.slice(-3);
+      AsyncStorage.setItem("searchHistory", JSON.stringify(historyData));
+    } catch (error) {
+      console.error(error);
     }
   };
 
   const getHistory = async () => {
-    if (Platform.OS === "web") {
-      try {
-        const data = localStorage.getItem("searchHistory");
-        return data ? JSON.parse(data) : [];
-      } catch (error) {
-        console.error(error);
-      }
+    try {
+      const data = await AsyncStorage.getItem("searchHistory");
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error(error);
     }
     return [];
   };
@@ -56,24 +60,31 @@ export default function SearchScreen() {
     console.log("searching for", searchText);
     try {
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
-      // const data = await searchC(text);
-      // setUsers(data);
-      // saveHistory(text);
+      const data = await new Promise<Community[]>((resolve) =>
+        setTimeout(() => {
+          resolve([
+            { name: "test1", logo: "", channelId: "1" },
+            { name: "test2", logo: "", channelId: "2" },
+            { name: "test3", logo: "", channelId: "3" },
+          ]);
+        }, 2 * 1000),
+      );
+      setRecommend(data);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
-  const debouncedSearch = useCallback(debounce(fetchSearchResult, 1000), []);
+  const debouncedSearch = useCallback(debounce(fetchSearchResult, 500), []);
 
   useEffect(() => {
     debouncedSearch(value);
+    getHistory().then(setHistory);
   }, [value]);
 
   useEffect(() => {
-    getHistory().then(setHistory);
+    loadAllJoinedCommunities();
   }, []);
 
   return (
@@ -83,7 +94,10 @@ export default function SearchScreen() {
           header: () => (
             <SearchHeader
               value={value}
-              setValue={onChangeText}
+              setValue={(data) => {
+                setRecommend([]);
+                onChangeText(data);
+              }}
               searchAction={() => fetchSearchResult(value)}
             />
           ),
@@ -95,14 +109,23 @@ export default function SearchScreen() {
         </View>
       )}
 
-      {(history.length > 0 && (
-        <View className="m-auto mb-3 w-full space-y-2 px-3 md:w-[500px]">
-          <SearchTitle title={"History"} />
-          <View className="flex flex-row flex-wrap gap-2">
-            {history.map((item, i) => {
+      {(value && recommend.length > 0 && (
+        <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
+          <View className="flex flex-wrap gap-2">
+            {recommend.map((item, i) => {
               return (
-                <Link key={i} href={`/communities/${i}`}>
-                  <SearchItem icon={item.icon} name={item.name} />
+                <Link
+                  key={i}
+                  href={`/communities/${item.channelId}`}
+                  onPress={() => {
+                    saveHistory(item);
+                    setRecommend([]);
+                    onChangeText("");
+                    console.log("save history", item);
+                    return true;
+                  }}
+                >
+                  <RecommendItem icon={item.logo} name={item.name} />
                 </Link>
               );
             })}
@@ -111,15 +134,31 @@ export default function SearchScreen() {
       )) ||
         null}
 
-      {(joined.length > 0 && (
+      {(!value && history.length > 0 && (
+        <View className="m-auto mb-3 w-full space-y-2 px-3 md:w-[500px]">
+          <SearchTitle title={"History"} />
+          <View className="flex flex-row flex-wrap gap-2">
+            {history.map((item, i) => {
+              return (
+                <Link key={i} href={`/communities/${item.channelId}`}>
+                  <SearchItem icon={item.logo} name={item.name} />
+                </Link>
+              );
+            })}
+          </View>
+        </View>
+      )) ||
+        null}
+
+      {(!value && joinedCommunities.length > 0 && (
         <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
           <SearchTitle title={"Joined"} />
 
           <View className="flex flex-row flex-wrap gap-2">
-            {joined.map((item, i) => {
+            {joinedCommunities.map((item, i) => {
               return (
-                <Link key={i} href={`/communities/${i}`}>
-                  <SearchItem icon={item.icon} name={item.name} />
+                <Link key={i} href={`/communities/${item.channelId}`}>
+                  <SearchItem icon={item.logo} name={item.name} />
                 </Link>
               );
             })}
@@ -134,6 +173,20 @@ export default function SearchScreen() {
 function SearchItem({ icon, name }: { icon: string; name: String }) {
   return (
     <View className="inline-flex w-fit flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
+      <Avatar alt="" className="h-6 w-6">
+        <AvatarImage
+          source={{ uri: icon || "https://github.com/mrzachnugent.png" }}
+        />
+      </Avatar>
+
+      <Text>{name}</Text>
+    </View>
+  );
+}
+
+function RecommendItem({ icon, name }: { icon: string; name: String }) {
+  return (
+    <View className="flex flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
       <Avatar alt="" className="h-6 w-6">
         <AvatarImage
           source={{ uri: icon || "https://github.com/mrzachnugent.png" }}
