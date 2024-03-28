@@ -78,10 +78,6 @@ export default function SearchScreen() {
     getHistory().then(setHistory);
   }, [value]);
 
-  useEffect(() => {
-    loadAllJoinedCommunities();
-  }, []);
-
   return (
     <ScrollView>
       <Stack.Screen
