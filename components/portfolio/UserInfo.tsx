@@ -3,6 +3,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { View, Text } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getUserAvatar, getUserHandle, getUserName } from "~/utils/privy";
+import { Atom } from "lucide-react-native";
 
 export default function UserInfo() {
   const { ready, authenticated, user, logout } = usePrivy();
@@ -34,7 +35,8 @@ export default function UserInfo() {
           <Text>{'11k'} Followers</Text>
         </View>
         <View className="flex-row w-full gap-2">
-          <Text>{'11k'} Followers</Text>
+          <Atom />
+          <Text>11234</Text>
         </View>
       </View>
     </View>
