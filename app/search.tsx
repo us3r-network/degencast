@@ -8,6 +8,7 @@ import { Input } from "~/components/ui/input";
 import { debounce } from "lodash";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { cn } from "~/lib/utils";
+import { getSearchResult } from "~/services/farcaster/api";
 
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 
@@ -30,12 +31,12 @@ export default function SearchScreen() {
   const saveHistory = async ({ name, logo, channelId }: Community) => {
     try {
       const data = await AsyncStorage.getItem("searchHistory");
-      const historyData: Community[] = data ? JSON.parse(data) : [];
+      let historyData: Community[] = data ? JSON.parse(data) : [];
       if (historyData.some((item) => item.channelId === channelId)) {
         return;
       }
       historyData.push({ name, logo, channelId });
-      historyData.slice(-3);
+      historyData = historyData.slice(-6);
       AsyncStorage.setItem("searchHistory", JSON.stringify(historyData));
     } catch (error) {
       console.error(error);
@@ -57,19 +58,13 @@ export default function SearchScreen() {
     if (!searchText) {
       return;
     }
-    console.log("searching for", searchText);
+    // console.log("searching for", searchText);
     try {
       setLoading(true);
-      const data = await new Promise<Community[]>((resolve) =>
-        setTimeout(() => {
-          resolve([
-            { name: "test1", logo: "", channelId: "1" },
-            { name: "test2", logo: "", channelId: "2" },
-            { name: "test3", logo: "", channelId: "3" },
-          ]);
-        }, 2 * 1000),
-      );
-      setRecommend(data);
+      const resp = await getSearchResult(searchText);
+      const data = resp.data;
+      // console.log("search result", data);
+      if (data.code === 0) setRecommend(data.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -121,7 +116,7 @@ export default function SearchScreen() {
                     saveHistory(item);
                     setRecommend([]);
                     onChangeText("");
-                    console.log("save history", item);
+
                     return true;
                   }}
                 >
@@ -174,9 +169,7 @@ function SearchItem({ icon, name }: { icon: string; name: String }) {
   return (
     <View className="inline-flex w-fit flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
       <Avatar alt="" className="h-6 w-6">
-        <AvatarImage
-          source={{ uri: icon || "https://github.com/mrzachnugent.png" }}
-        />
+        <AvatarImage source={{ uri: icon }} />
       </Avatar>
 
       <Text>{name}</Text>
@@ -188,9 +181,7 @@ function RecommendItem({ icon, name }: { icon: string; name: String }) {
   return (
     <View className="flex flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
       <Avatar alt="" className="h-6 w-6">
-        <AvatarImage
-          source={{ uri: icon || "https://github.com/mrzachnugent.png" }}
-        />
+        <AvatarImage source={{ uri: icon }} />
       </Avatar>
 
       <Text>{name}</Text>

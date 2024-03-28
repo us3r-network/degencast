@@ -55,3 +55,12 @@ export function getFarcasterEmbedCast({
     },
   });
 }
+
+// TODO:
+export function getSearchResult(query: string) {
+  return axios({
+    // url: `${FARCASTER_API_URL}/topics/searching?query=${query}`,
+    url: `https://u3-server-test-3rnbvla4lq-df.a.run.app/topics/searching?query=${query}`,
+    method: "get",
+  });
+}
