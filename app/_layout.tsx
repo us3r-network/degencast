@@ -1,4 +1,3 @@
-import { PrivyProvider } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Theme, ThemeProvider } from "@react-navigation/native";
 import { Buffer } from "buffer";
@@ -13,6 +12,11 @@ import { store } from "~/store/store";
 
 // Import global CSS file
 import "../global.css";
+import { PrivyProvider } from "@privy-io/react-auth";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 import { PortalHost } from "~/components/primitives/portal";
 
 global.Buffer = Buffer; //monkey patch for buffer in react-native
