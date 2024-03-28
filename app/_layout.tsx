@@ -1,20 +1,21 @@
+import { PrivyProvider } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Theme, ThemeProvider } from "@react-navigation/native";
+import { Buffer } from "buffer";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { Provider as ReduxProvider } from "react-redux";
-import { store } from "~/store/store";
+import { PRIVY_APP_ID } from "~/constants";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { Buffer } from "buffer";
+import { store } from "~/store/store";
 
 // Import global CSS file
 import "../global.css";
-import { PrivyProvider } from "@privy-io/react-auth";
+import { PortalHost } from "~/components/primitives/portal";
 
 global.Buffer = Buffer; //monkey patch for buffer in react-native
-const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || "";
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -82,17 +83,20 @@ export default function RootLayout() {
               theme: isDarkColorScheme ? "dark" : "light",
               accentColor: "#676FFF",
               logo: "https://u3.xyz/logo192.png",
+              // walletList: ["detected_wallets" , "metamask" , "coinbase_wallet" , "rainbow" , "phantom" , "wallet_connect"]
             },
             // Create embedded wallets for users who don't have a wallet
             embeddedWallets: {
               createOnLogin: "users-without-wallets",
             },
+            loginMethods: ["farcaster", "twitter", "google"],
           }}
         >
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
           </Stack>
+          <PortalHost />
         </PrivyProvider>
       </ThemeProvider>
     </ReduxProvider>
