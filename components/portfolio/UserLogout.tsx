@@ -11,7 +11,7 @@ export default function UserLogout() {
   // return <FontAwesome.Button name="sign-out" size={25} onPress={logout} />;
   return (
     <Button className="bg-white" onPress={logout}>
-      <LogOut size={25} />
+      <LogOut />
     </Button>
   );
 }
