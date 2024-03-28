@@ -1,7 +1,7 @@
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import { View, Image } from "react-native";
 
-export default function EmbedImg({ imgs }: { imgs: Embeds["imgs"] }) {
+export default function EmbedImgs({ imgs }: { imgs: Embeds["imgs"] }) {
   return (
     <View>
       {imgs.map((img, idx) => (

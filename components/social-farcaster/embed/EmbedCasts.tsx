@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCastsMetadata";
+import { Card } from "~/components/ui/card";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId);
@@ -53,7 +54,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   }, [data.cast]);
 
   return (
-    <View className="flex w-full cursor-pointer flex-row justify-between gap-[10px] rounded-[10px] bg-purple-50 p-[20px]">
+    <Card className="flex w-full cursor-pointer flex-row justify-between gap-[10px] rounded-[10px] border-secondary bg-muted p-[20px]">
       <View className="w-0 flex-1">
         <View className="flex flex-row items-center gap-[10px]">
           <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
@@ -67,8 +68,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
               {userData.username}
             </Text>
             <Text className="line-clamp-1 text-xs font-normal">
-              @{userData.uname}
-              {"  "}·{"  "}
+              <Text className="text-secondary">@{userData.uname}</Text>·
               {dayjs(data.cast.created_at).fromNow()}
             </Text>
           </View>
@@ -83,7 +83,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
           source={{ uri: castImg }}
         />
       )}
-    </View>
+    </Card>
   );
 }
 
