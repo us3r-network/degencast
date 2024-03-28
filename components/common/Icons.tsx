@@ -1,4 +1,4 @@
-import { Info, LucideIcon, MoonStar, Sun } from "lucide-react-native";
+import { Info, LucideIcon, MoonStar, Sun, Atom } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
 function interopIcon(icon: LucideIcon) {
@@ -16,5 +16,6 @@ function interopIcon(icon: LucideIcon) {
 interopIcon(Info);
 interopIcon(MoonStar);
 interopIcon(Sun);
+interopIcon(Atom);
 
-export { Info, MoonStar, Sun };
+export { Info, MoonStar, Sun, Atom };

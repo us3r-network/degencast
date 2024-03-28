@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFarcasterTrending } from "~/services/farcaster/api";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 
-const FIRST_PAGE_SIZE = 20;
+const FIRST_PAGE_SIZE = 100;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
-const SHOW_ITEMS_NUM = 3;
+const SHOW_ITEMS_NUM = 100;
 
 export default function useLoadExploreCasts() {
   const [casts, setCasts] = useState<Array<any>>([]);

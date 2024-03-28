@@ -12,6 +12,10 @@ import { Buffer } from "buffer";
 // Import global CSS file
 import "../global.css";
 import { PrivyProvider } from "@privy-io/react-auth";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || "";
