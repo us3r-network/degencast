@@ -10,6 +10,7 @@ import {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  Atom,
   Baby,
   BadgeAlert,
   Bold,
@@ -54,12 +55,12 @@ import {
   UserPlus,
   Users,
   X,
-} from 'lucide-react-native';
-import { cssInterop } from 'nativewind';
+} from "lucide-react-native";
+import { cssInterop } from "nativewind";
 function interopIcon(icon: LucideIcon) {
   cssInterop(icon, {
     className: {
-      target: 'style',
+      target: "style",
       nativeStyleToProp: {
         color: true,
         opacity: true,
@@ -122,6 +123,7 @@ interopIcon(Terminal);
 interopIcon(AlertTriangle);
 interopIcon(Code);
 interopIcon(CheckSquare);
+interopIcon(Atom);
 
 export {
   Activity,
@@ -135,6 +137,7 @@ export {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  Atom,
   Baby,
   BadgeAlert,
   Bold,
