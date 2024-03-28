@@ -5,7 +5,7 @@ import { Textarea } from "~/components/ui/textarea";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 
 export default function CreateScreen() {
-  const { submitCast } = useFarcasterWrite();
+  const { submitCast, writing } = useFarcasterWrite();
   const [value, setValue] = useState("");
   return (
     <View className="flex w-full gap-2 p-2">
@@ -18,7 +18,7 @@ export default function CreateScreen() {
       />
       <Button
         className="bg-primary text-primary-foreground"
-        disabled={value.length === 0}
+        disabled={value.length === 0 && writing}
         onPress={() =>
           submitCast(value).then(() => {
             console.log("Cast submitted");

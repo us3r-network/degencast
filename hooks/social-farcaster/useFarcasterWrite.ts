@@ -1,4 +1,5 @@
 import { FarcasterWithMetadata, useCreateWallet, useExperimentalFarcasterSigner, useLinkAccount, usePrivy, useWallets } from "@privy-io/react-auth"
+import { useState } from "react";
 
 
 export default function useFarcasterWrite() {
@@ -10,7 +11,7 @@ export default function useFarcasterWrite() {
 
     const linkHanler = {
         onSuccess: (user: unknown) => {
-            console.log('Linked farcaster account',user);
+            console.log('Linked farcaster account', user);
             prepareWrite();
         },
         onError: (error: unknown) => {
@@ -28,29 +29,38 @@ export default function useFarcasterWrite() {
         requestFarcasterSigner } = useExperimentalFarcasterSigner();
     const farcasterAccount = user?.linkedAccounts.find((account) => account.type === 'farcaster') as FarcasterWithMetadata;
 
+    const [prepareing, setPrepareing] = useState(false);
+    const [writing, setWriting] = useState(false);
     const prepareWrite = async () => {
+        setPrepareing(true);
         if (!embededWallet) {
             console.log('Creating embeded wallet');
             await createWallet();
         }
         if (!farcasterAccount) {
             console.log('Linking farcaster');
-            await linkFarcaster();
+            await linkFarcaster(); // this does not mean linking is done, it just starts the process, the user will have to confirm the linking, then the onSuccess callback will be called
             return false;
         } else {
             if (!farcasterAccount?.signerPublicKey) {
                 console.log('Requesting farcaster signer');
-                await requestFarcasterSigner();
+                await requestFarcasterSigner(); // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
                 return false;
             }
         }
+        setPrepareing(false);
         return true;
     }
     return {
+        writing: writing && prepareing,
         // todo: add more post support!
         submitCast: async (text: string) => {
             const canWrite = await prepareWrite();
-            if (canWrite) await submitCast({ text });
+            if (canWrite) {
+                setWriting(true);
+                await submitCast({ text });
+                setWriting(false);
+            }
         },
         removeCast: async (castHash: string) => {
             const canWrite = await prepareWrite();
