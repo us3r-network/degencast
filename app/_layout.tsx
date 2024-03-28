@@ -103,6 +103,9 @@ export default function RootLayout() {
               ],
             },
           }}
+          onSuccess={(user, isNewUser) => {
+            console.log("Logged in!", user, isNewUser);
+          }}
         >
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
