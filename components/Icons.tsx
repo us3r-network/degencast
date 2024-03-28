@@ -182,6 +182,5 @@ export {
   UserPlus,
   Users,
   X,
-  Atom,
   Wallet,
 };
