@@ -21,7 +21,8 @@ export function isVideo(url?: string) {
     url.endsWith(".m3u8")
   );
 }
-export function getEmbeds(cast: FarCast): {
+
+export type Embeds = {
   imgs: {
     url: string;
   }[];
@@ -32,7 +33,8 @@ export function getEmbeds(cast: FarCast): {
   casts: {
     castId: { fid: number; hash: string };
   }[];
-} {
+};
+export function getEmbeds(cast: FarCast): Embeds {
   const imgs = [];
   const videos = [];
   const webpages = [];

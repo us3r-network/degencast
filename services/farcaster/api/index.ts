@@ -38,3 +38,20 @@ export function getFarcasterTrending({
     },
   });
 }
+
+export function getFarcasterEmbedCast({
+  fid,
+  hash,
+}: {
+  fid: number;
+  hash: string;
+}) {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-farcaster/embed-cast`,
+    method: "get",
+    params: {
+      fid,
+      hash,
+    },
+  });
+}

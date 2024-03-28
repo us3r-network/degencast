@@ -3,6 +3,8 @@ import { useTheme } from "@react-navigation/native";
 import { Link, Tabs } from "expo-router";
 import React from "react";
 import { Pressable, View } from "react-native";
+import UserLogout from "~/components/portfolio/UserLogout";
+import UserWallets from "~/components/portfolio/UserWallets";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import { useColorScheme } from "~/lib/useColorScheme";
 
@@ -80,6 +82,12 @@ export default function TabLayout() {
           title: "Portfolio",
           tabBarLabelPosition: "below-icon",
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerRight: () => (
+            <View className="flex-row items-center gap-2">
+              <UserWallets />
+              <UserLogout />
+            </View>
+          ),
         }}
       />
     </Tabs>
