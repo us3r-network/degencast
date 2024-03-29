@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { AxiosPromise } from "axios";
 import { FARCASTER_API_URL } from "~/constants";
 import { RequestPromise } from "~/services/shared/api/request";
-import { ApiResp } from "../types";
+import { ApiResp, FarCastEmbedMetaV2 } from "../types";
 
 export type FarcasterPageInfo = {
   endTimestamp: number;
@@ -52,6 +52,31 @@ export function getFarcasterEmbedCast({
     params: {
       fid,
       hash,
+    },
+  });
+}
+
+// TODO:
+export function getSearchResult(query: string) {
+  return axios({
+    // url: `${FARCASTER_API_URL}/topics/searching?query=${query}`,
+    url: `https://u3-server-test-3rnbvla4lq-df.a.run.app/topics/searching?query=${query}`,
+    method: "get",
+  });
+}
+
+export function getFarcasterEmbedMetadataV2(urls: string[]): AxiosPromise<
+  ApiResp<{
+    metadata: (null | FarCastEmbedMetaV2)[];
+  }>
+> {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-farcaster/embedv2`,
+    method: "get",
+    params: {
+      urls,
+      timeout: 3000,
+      maxRedirects: 2,
     },
   });
 }

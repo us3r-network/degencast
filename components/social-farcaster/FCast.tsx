@@ -9,8 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
 import PointBadge from "../point/PointBadge";
 import FCastText from "./FCastText";
-import EmbedImg from "./embed/EmbedImg";
-import EmbedCast from "./embed/EmbedCast";
+import EmbedImgs from "./embed/EmbedImgs";
+import EmbedCasts from "./embed/EmbedCasts";
+import EmbedWebpages from "./embed/EmbedWebpages";
+import EmbedVideo from "./embed/EmbedVideo";
 
 export default function FCast({
   cast,
@@ -51,8 +53,12 @@ export default function FCast({
       {/* body - text & embed */}
       <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
       <View className="flex flex-col gap-5 overflow-hidden">
-        {embedImgs.length > 0 && <EmbedImg imgs={embedImgs} />}
-        {embedCasts.length > 0 && <EmbedCast casts={embedCasts} />}
+        {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />}
+        {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}
+        {embedWebpages.length > 0 && (
+          <EmbedWebpages webpages={embedWebpages} cast={cast} />
+        )}
+        {embedVideos.length > 0 && <EmbedVideo uri={embedVideos[0]?.url} />}
       </View>
     </View>
   );

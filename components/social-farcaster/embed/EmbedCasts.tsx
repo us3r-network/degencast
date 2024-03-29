@@ -2,11 +2,11 @@ import { useEffect, useMemo } from "react";
 import { UserDataType } from "@farcaster/hub-web";
 import { FarCastEmbedMetaCast } from "~/services/farcaster/types";
 import { View, Image } from "react-native";
-import dayjs from "dayjs";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCastsMetadata";
+import { Card } from "~/components/ui/card";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId);
@@ -53,37 +53,29 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   }, [data.cast]);
 
   return (
-    <View className="flex w-full cursor-pointer flex-row justify-between gap-[10px] rounded-[10px] bg-purple-50 p-[20px]">
-      <View className="w-0 flex-1">
-        <View className="flex flex-row items-center gap-[10px]">
-          <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
-            <AvatarImage source={{ uri: userData.img }} />
-            <AvatarFallback>
-              <Text>Avatar Fallback</Text>
-            </AvatarFallback>
-          </Avatar>
-          <View className="flex flex-1 flex-row items-center gap-1">
-            <Text className="flex-shrink-0 text-xs font-bold">
-              {userData.username}
-            </Text>
-            <Text className="line-clamp-1 text-xs font-normal">
-              @{userData.uname}
-              {"  "}·{"  "}
-              {dayjs(data.cast.created_at).fromNow()}
-            </Text>
-          </View>
-        </View>
-        <Text className="mt-[10px] line-clamp-3 p-0 text-primary">
-          {data.cast.text}
+    <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-3xl border-secondary p-5">
+      <View className="flex flex-row items-center gap-1">
+        <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
+          <AvatarImage source={{ uri: userData.img }} />
+          <AvatarFallback>
+            <Text>{userData.username?.slice(0, 1)}</Text>
+          </AvatarFallback>
+        </Avatar>
+        <Text className="flex-shrink-0 text-sm font-medium">
+          {userData.username}
+        </Text>
+        <Text className="line-clamp-1 text-xs font-normal text-secondary">
+          @{userData.uname}
         </Text>
       </View>
+      <Text className="line-clamp-6 text-base">{data.cast.text}</Text>
       {castImg && (
         <Image
-          className="h-[100px] w-[100px] flex-shrink-0 overflow-hidden rounded-[10px] object-cover"
+          className="w-full rounded-xl object-cover"
           source={{ uri: castImg }}
         />
       )}
-    </View>
+    </Card>
   );
 }
 

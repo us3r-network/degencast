@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { Provider as ReduxProvider } from "react-redux";
+import { RootSiblingParent } from "react-native-root-siblings";
 import { PRIVY_APP_ID } from "~/constants";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
@@ -22,8 +23,8 @@ import { login } from "~/services/user/api";
 import { injectPrivyToken } from "~/utils/privy/injectToken";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import {privyConfig} from '~/config/privyConfig';
-import {wagmiConfig} from '~/config/wagmiConfig';
+import { privyConfig } from "~/config/privyConfig";
+import { wagmiConfig } from "~/config/wagmiConfig";
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 const LIGHT_THEME: Theme = {
@@ -101,10 +102,15 @@ export default function RootLayout() {
         >
           <QueryClientProvider client={queryClient}>
             <WagmiProvider config={wagmiConfig}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              </Stack>
-              <PortalHost />
+              <RootSiblingParent>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                </Stack>
+                <PortalHost />
+              </RootSiblingParent>
             </WagmiProvider>
           </QueryClientProvider>
         </PrivyProvider>
