@@ -1,7 +1,8 @@
-import { Text, TextInput, View, ScrollView, Platform } from "react-native";
+import { Text, TextInput, View, ScrollView } from "react-native";
 import { Stack, useNavigation, Link } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Image } from "expo-image";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -25,8 +26,7 @@ export default function SearchScreen() {
 
   const [history, setHistory] = useState<Community[]>([]);
   const [recommend, setRecommend] = useState<Community[]>([]);
-  const { joinedCommunities, loadAllJoinedCommunities } =
-    useAllJoinedCommunities();
+  const { joinedCommunities } = useAllJoinedCommunities();
 
   const saveHistory = async ({ name, logo, channelId }: Community) => {
     try {
@@ -86,6 +86,8 @@ export default function SearchScreen() {
             <SearchHeader
               value={value}
               setValue={(data) => {
+                if (data) setLoading(true);
+                else setLoading(false);
                 setRecommend([]);
                 onChangeText(data);
               }}
@@ -102,6 +104,7 @@ export default function SearchScreen() {
 
       {(value && recommend.length > 0 && (
         <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
+          <SearchTitle title={"Search result"} />
           <View className="flex flex-wrap gap-2">
             {recommend.map((item, i) => {
               return (
@@ -157,6 +160,9 @@ export default function SearchScreen() {
         </View>
       )) ||
         null}
+      {value && loading === false && recommend.length === 0 && (
+        <DefaultSearchIcon />
+      )}
     </ScrollView>
   );
 }
@@ -175,7 +181,7 @@ function SearchItem({ icon, name }: { icon: string; name: String }) {
 
 function RecommendItem({ icon, name }: { icon: string; name: String }) {
   return (
-    <View className="flex flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
+    <View className="flex flex-row items-center gap-2 rounded-lg p-2 text-sm">
       <Avatar alt="" className="h-6 w-6">
         <AvatarImage source={{ uri: icon }} />
       </Avatar>
@@ -217,18 +223,31 @@ function SearchHeader({
 
       <View className="hidden flex-grow md:block" />
 
-      <Input
-        className={cn(
-          "border-0 bg-[#a36efe1a] text-[12px] text-sm color-[#4c2896] placeholder:color-[#4c2896]",
-          "w-full rounded-full  px-4  outline-none md:w-96",
-          "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
-        )}
-        ref={searchInputRef}
-        placeholder="Search communities"
-        value={value}
-        autoFocus={true}
-        onChangeText={(text) => setValue(text)}
-      />
+      <View className="relative flex-grow md:w-96 md:flex-grow-0">
+        <Input
+          className={cn(
+            "border-0 bg-[#a36efe1a] text-[12px] text-sm color-[#4c2896] placeholder:color-[#4c2896]",
+            "w-full rounded-full  px-4  outline-none md:w-96",
+            "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
+          )}
+          ref={searchInputRef}
+          placeholder="Search communities"
+          value={value}
+          autoFocus={true}
+          onChangeText={(text) => setValue(text)}
+        />
+
+        <Button
+          className="absolute bottom-0 right-1 top-0 flex items-center justify-center"
+          size={"icon"}
+          variant={null}
+          onPress={() => {
+            setValue("");
+          }}
+        >
+          <CrossIcon />
+        </Button>
+      </View>
       <View className="w-fit p-3 ">
         <Button
           className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
@@ -280,5 +299,60 @@ function SearchIcon() {
         fill="white"
       />
     </svg>
+  );
+}
+
+function CrossIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+    >
+      <path
+        d="M15 5L5 15"
+        stroke="#4C2896"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5 5L15 15"
+        stroke="#4C2896"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function DefaultSearchIcon() {
+  return (
+    <View className="flex w-full flex-col items-center justify-center ">
+      <View className="flex w-72 flex-col items-center justify-center gap-8">
+        <Image
+          source={require("../assets/images/default-search.png")}
+          className="h-72 w-72"
+          contentFit="fill"
+          style={{ width: 280, height: 280 }}
+        />
+
+        <Text className="text-lg font-bold color-[#4C2896]">
+          Community Not Found
+        </Text>
+        <Text className="text-center text-base leading-8 color-[#A36EFE]">
+          The community you’re looking for does not seem to exist.
+        </Text>
+
+        <Link href="/(tabs)/trade" asChild>
+          <Button className="w-72 rounded-md color-white web:bg-[#A36EFE] web:hover:bg-[#A36EFE] web:active:bg-[#A36EFE]">
+            Explore more communities
+          </Button>
+        </Link>
+      </View>
+    </View>
   );
 }
