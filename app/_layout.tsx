@@ -21,7 +21,10 @@ dayjs.extend(relativeTime);
 import { PortalHost } from "~/components/primitives/portal";
 import { login } from "~/services/user/api";
 import { injectPrivyToken } from "~/utils/privy/injectToken";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { privyConfig } from "~/config/privyConfig";
+import { wagmiConfig } from "~/config/wagmiConfig";
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 const LIGHT_THEME: Theme = {
@@ -73,38 +76,23 @@ export default function RootLayout() {
     })().finally(() => {
       SplashScreen.hideAsync();
     });
-    
+
     injectPrivyToken();
   }, []);
 
   if (!isColorSchemeLoaded) {
     return null;
   }
+  const queryClient = new QueryClient();
   return (
     <ReduxProvider store={store}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <PrivyProvider
           appId={PRIVY_APP_ID}
           config={{
-            // Customize Privy's appearance in your app
+            ...privyConfig,
             appearance: {
               theme: isDarkColorScheme ? "dark" : "light",
-              accentColor: "#676FFF",
-              logo: "https://u3.xyz/logo192.png",
-            },
-            // Create embedded wallets for users who don't have a wallet
-            embeddedWallets: {
-              createOnLogin: "users-without-wallets",
-            },
-            loginMethodsAndOrder: {
-              primary: [
-                "farcaster",
-                "twitter",
-                "detected_wallets",
-                "metamask",
-                "coinbase_wallet",
-                "rainbow",
-              ],
             },
           }}
           onSuccess={async (user, isNewUser) => {
@@ -112,13 +100,19 @@ export default function RootLayout() {
             login();
           }}
         >
-          <RootSiblingParent>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
-            </Stack>
-            <PortalHost />
-          </RootSiblingParent>
+          <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={wagmiConfig}>
+              <RootSiblingParent>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                </Stack>
+                <PortalHost />
+              </RootSiblingParent>
+            </WagmiProvider>
+          </QueryClientProvider>
         </PrivyProvider>
       </ThemeProvider>
     </ReduxProvider>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
@@ -17,7 +17,6 @@ export default function CreateScreen() {
         aria-labelledby="textareaLabel"
       />
       <Button
-        className="bg-primary text-primary-foreground"
         disabled={value.length === 0 && writing}
         onPress={() =>
           submitCast(value).then(() => {
@@ -26,7 +25,7 @@ export default function CreateScreen() {
           })
         }
       >
-        Submit Cast
+        <Text className="bg-primary text-primary-foreground">Submit Cast</Text>
       </Button>
     </View>
   );
