@@ -160,9 +160,11 @@ export default function SearchScreen() {
         </View>
       )) ||
         null}
-      {value && loading === false && recommend.length === 0 && (
+
+      {(value && loading === false && recommend.length === 0 && (
         <DefaultSearchIcon />
-      )}
+      )) ||
+        null}
     </ScrollView>
   );
 }
@@ -348,8 +350,8 @@ function DefaultSearchIcon() {
         </Text>
 
         <Link href="/(tabs)/trade" asChild>
-          <Button className="w-72 rounded-md color-white web:bg-[#A36EFE] web:hover:bg-[#A36EFE] web:active:bg-[#A36EFE]">
-            Explore more communities
+          <Button className="w-72 rounded-md  web:bg-[#A36EFE] web:hover:bg-[#A36EFE] web:active:bg-[#A36EFE]">
+            <Text className="color-white">Explore more communities</Text>
           </Button>
         </Link>
       </View>
