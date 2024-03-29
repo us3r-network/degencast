@@ -6,3 +6,6 @@ export const injectPrivyToken = async () => {
     console.log("injectPrivyToken", token);
     if (token) injectUserToken("Bearer "+token);
 }
+export const clearPrivyToken = async () => {
+    injectUserToken("");
+}
