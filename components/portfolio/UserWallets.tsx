@@ -119,7 +119,10 @@ export default function wallets() {
         </SelectGroup>
         <View className="flex w-full items-center gap-[10px] p-2">
           {unconnectedWallets.map((wallet) => (
-            <View className="w-full flex-row items-center justify-between">
+            <View
+              className="w-full flex-row items-center justify-between"
+              key={wallet.address}
+            >
               <Pressable
                 className="flex-row items-center gap-2"
                 onPress={async (event) => {

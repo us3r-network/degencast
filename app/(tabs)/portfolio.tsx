@@ -20,8 +20,8 @@ export default function PortfolioScreen() {
     <View className="mt-12 flex h-full items-center justify-center">
       {ready &&
         (!authenticated ? (
-          <Button className="rounded-lg px-6 py-3 text-white" onPress={login}>
-            Log in
+          <Button className="rounded-lg px-6 py-3" onPress={login}>
+            <Text className="text-white">Log in</Text>
           </Button>
         ) : (
           <UserInfo />
