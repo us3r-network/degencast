@@ -12,7 +12,7 @@ export default function UserInfo() {
   const userName = user ? getUserName(user) : "";
   const userHandle = user ? getUserHandle(user) : "";
 
-  console.log("privy user info", user);
+  // console.log("privy user info", user);
 
   if (!ready || !user || !authenticated) {
     return <Text>Loading...</Text>;

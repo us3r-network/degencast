@@ -1,30 +1,29 @@
+import { PrivyProvider } from "@privy-io/react-auth";
+import { WagmiProvider } from "@privy-io/wagmi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Theme, ThemeProvider } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
-import { Provider as ReduxProvider } from "react-redux";
 import { RootSiblingParent } from "react-native-root-siblings";
+import { Provider as ReduxProvider } from "react-redux";
+import { PortalHost } from "~/components/primitives/portal";
+import { privyConfig } from "~/config/privyConfig";
+import { wagmiConfig } from "~/config/wagmiConfig";
 import { PRIVY_APP_ID } from "~/constants";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
+import { login } from "~/services/user/api";
 import { store } from "~/store/store";
+import { injectPrivyToken } from "~/utils/privy/injectToken";
 
 // Import global CSS file
 import "../global.css";
-import { PrivyProvider } from "@privy-io/react-auth";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
 dayjs.extend(relativeTime);
-import { PortalHost } from "~/components/primitives/portal";
-import { login } from "~/services/user/api";
-import { injectPrivyToken } from "~/utils/privy/injectToken";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider } from "wagmi";
-import { privyConfig } from "~/config/privyConfig";
-import { wagmiConfig } from "~/config/wagmiConfig";
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 const LIGHT_THEME: Theme = {
@@ -38,7 +37,7 @@ const DARK_THEME: Theme = {
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+  ErrorBoundary
 } from "expo-router";
 
 export const unstable_settings = {

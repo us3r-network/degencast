@@ -1,8 +1,6 @@
 import {
-  ConnectedWallet,
   FarcasterWithMetadata,
   useConnectWallet,
-  useLinkAccount,
   usePrivy,
   useWallets,
 } from "@privy-io/react-auth";
@@ -16,11 +14,11 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "../ui/select";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { useAccount } from "wagmi";
 import { useSetActiveWallet } from "@privy-io/wagmi";
+import { Image } from "expo-image";
 
 export default function wallets() {
   const {
@@ -46,7 +44,7 @@ export default function wallets() {
 
   const { address: activeWalletAddress } = useAccount();
   const activeWallet = useMemo(() => {
-    console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
     return connectedWallets.find(
       (wallet) => wallet.address === activeWalletAddress,
     );
@@ -70,12 +68,12 @@ export default function wallets() {
         label: activeWallet?.address || "",
       }}
       onValueChange={async (item) => {
-        console.log("selected", item, connectedWallets);
         const newActiveWallet = connectedWallets.find(
           (wallet) => wallet.address === item?.value,
         );
+        // console.log("selected", item, connectedWallets, newActiveWallet);
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
-      }}
+      }} 
     >
       <SelectTrigger className="w-full">
         {/* <SelectValue
@@ -83,7 +81,7 @@ export default function wallets() {
           placeholder="Select a wallet"
         /> */}
         <View className="flex-row items-center gap-2">
-          <Wallet />
+          <Wallet  />
           <Text>{shortPubKey(activeWallet?.address || "")}</Text>
         </View>
       </SelectTrigger>
@@ -98,7 +96,7 @@ export default function wallets() {
             >
               <View className="w-full flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
-                  <Wallet />
+                  <Wallet color={wallet.address === activeWallet?.address?'red':'black'} />
                   <Text>{shortPubKey(wallet.address)}</Text>
                 </View>
                 {!(wallet.connectorType === "embedded") && (
@@ -176,7 +174,10 @@ export default function wallets() {
               onPress={linkFarcaster}
             >
               <View className="flex-row items-center gap-2">
-                <Wallet />
+                <Image
+                  source={require("~/assets/images/farcaster.png")}
+                  style={{ width: 24, height: 24 }}
+                />
                 <Text>Link a Farcaster</Text>
               </View>
               <PlusCircle />
