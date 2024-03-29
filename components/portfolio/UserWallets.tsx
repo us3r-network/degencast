@@ -7,7 +7,7 @@ import {
   useWallets,
 } from "@privy-io/react-auth";
 import React, { useMemo } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, Text } from "react-native";
 import { getUserWallets } from "~/utils/privy";
 import { PlusCircle, MinusCircle, Wallet } from "../Icons";
 import {
@@ -84,7 +84,7 @@ export default function wallets() {
         /> */}
         <View className="flex-row items-center gap-2">
           <Wallet />
-          {shortPubKey(activeWallet?.address || "")}
+          <Text>{shortPubKey(activeWallet?.address || "")}</Text>
         </View>
       </SelectTrigger>
       <SelectContent className="flex w-full">
@@ -99,9 +99,9 @@ export default function wallets() {
               <View className="w-full flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
                   <Wallet />
-                  {shortPubKey(wallet.address)}
+                  <Text>{shortPubKey(wallet.address)}</Text>
                 </View>
-                {!(wallet.connectorType === 'embedded') && (
+                {!(wallet.connectorType === "embedded") && (
                   <Pressable
                     onPress={async (event) => {
                       event.preventDefault();
@@ -126,8 +126,8 @@ export default function wallets() {
                   await connectWallet();
                 }}
               >
-                  <Wallet />
-                  {shortPubKey(wallet.address)}
+                <Wallet />
+                <Text>{shortPubKey(wallet.address)}</Text>
               </Pressable>
               <Pressable
                 onPress={async (event) => {
@@ -145,7 +145,7 @@ export default function wallets() {
           >
             <View className="flex-row items-center gap-2">
               <Wallet />
-              Link a wallet
+              <Text>Link a wallet</Text>
             </View>
             <PlusCircle />
           </Pressable>
@@ -153,7 +153,9 @@ export default function wallets() {
             <View className="w-full flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
                 <Wallet />
-                {farcasterAccount.displayName || farcasterAccount.username}
+                <Text>
+                  {farcasterAccount.displayName || farcasterAccount.username}
+                </Text>
               </View>
               <Pressable
                 onPress={async (event) => {
@@ -167,12 +169,12 @@ export default function wallets() {
             </View>
           ) : (
             <Pressable
-              className="w-full flex-row items-center gap-2"
+              className="w-full flex-row items-center justify-between gap-2"
               onPress={linkFarcaster}
             >
               <View className="flex-row items-center gap-2">
                 <Wallet />
-                Link a Farcaster
+                <Text>Link a Farcaster</Text>
               </View>
               <PlusCircle />
             </Pressable>
