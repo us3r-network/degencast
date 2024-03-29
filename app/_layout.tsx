@@ -19,6 +19,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 import { PortalHost } from "~/components/primitives/portal";
+import { login } from "~/services/user/api";
+import { injectPrivyToken } from "~/utils/privy/injectToken";
 
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
@@ -71,12 +73,13 @@ export default function RootLayout() {
     })().finally(() => {
       SplashScreen.hideAsync();
     });
+    
+    injectPrivyToken();
   }, []);
 
   if (!isColorSchemeLoaded) {
     return null;
   }
-
   return (
     <ReduxProvider store={store}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -104,8 +107,9 @@ export default function RootLayout() {
               ],
             },
           }}
-          onSuccess={(user, isNewUser) => {
-            console.log("Logged in!", user, isNewUser);
+          onSuccess={async (user, isNewUser) => {
+            injectPrivyToken();
+            login();
           }}
         >
           <RootSiblingParent>

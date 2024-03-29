@@ -36,9 +36,9 @@ axiosInstance.interceptors.request.use(
       config.headers = {} as AxiosHeaders;
     }
     if (config.headers?.token) {
-      config.headers["did-session"] = config.headers?.token;
+      config.headers["Authorization"] = config.headers?.token;
     } else if (config.headers?.needToken) {
-      config.headers["did-session"] = userToken;
+      config.headers["Authorization"] = userToken;
       delete config.headers.needToken;
     }
     return config;
