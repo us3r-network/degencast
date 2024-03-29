@@ -5,6 +5,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { Provider as ReduxProvider } from "react-redux";
+import { RootSiblingParent } from "react-native-root-siblings";
 import { PRIVY_APP_ID } from "~/constants";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
@@ -107,11 +108,13 @@ export default function RootLayout() {
             console.log("Logged in!", user, isNewUser);
           }}
         >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
-          </Stack>
-          <PortalHost />
+          <RootSiblingParent>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
+            </Stack>
+            <PortalHost />
+          </RootSiblingParent>
         </PrivyProvider>
       </ThemeProvider>
     </ReduxProvider>
