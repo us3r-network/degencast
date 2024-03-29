@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFarcasterTrending } from "~/services/farcaster/api";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 
-const FIRST_PAGE_SIZE = 100;
+const FIRST_PAGE_SIZE = 20;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
-const SHOW_ITEMS_NUM = 100;
 
 export default function useLoadExploreCasts() {
   const [casts, setCasts] = useState<Array<any>>([]);
+  const [currentCastIndex, setCurrentCastIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const pageInfoRef = useRef({
@@ -46,23 +46,27 @@ export default function useLoadExploreCasts() {
     }
   };
 
-  const removeCast = useCallback((castId: string) => {
-    console.log("removeCast", castId);
-    setCasts((pre) => pre.filter((cast) => cast?.data?.id !== castId));
-  }, []);
+  const removeCast = useCallback(
+    (idx: number) => {
+      const nextIdx = idx + 1;
+      setCurrentCastIndex(nextIdx);
+      const remainingLen = casts.length - nextIdx;
+      if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
+        loadCasts();
+      }
+    },
+    [casts],
+  );
 
   useEffect(() => {
-    if (casts.length <= LOAD_MORE_CRITICAL_NUM) {
-      loadCasts();
-    }
-  }, [casts]);
-
-  const showCasts = useMemo(() => casts.slice(0, SHOW_ITEMS_NUM), [casts]);
+    loadCasts();
+  }, []);
 
   return {
     loading,
-    showCasts,
+    casts,
     farcasterUserDataObj,
     removeCast,
+    currentCastIndex,
   };
 }
