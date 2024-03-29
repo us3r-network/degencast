@@ -12,14 +12,14 @@ import { store } from "~/store/store";
 
 // Import global CSS file
 import "../global.css";
-import { PrivyProvider, getAccessToken } from "@privy-io/react-auth";
+import { PrivyProvider } from "@privy-io/react-auth";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 import { PortalHost } from "~/components/primitives/portal";
-import { injectUserToken } from "~/services/shared/api/request";
 import { login } from "~/services/user/api";
+import { injectPrivyToken } from "~/utils/privy/injectToken";
 
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
@@ -72,12 +72,13 @@ export default function RootLayout() {
     })().finally(() => {
       SplashScreen.hideAsync();
     });
+    
+    injectPrivyToken();
   }, []);
 
   if (!isColorSchemeLoaded) {
     return null;
   }
-
   return (
     <ReduxProvider store={store}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -106,9 +107,7 @@ export default function RootLayout() {
             },
           }}
           onSuccess={async (user, isNewUser) => {
-            const token = await getAccessToken();
-            console.log("Logged in!", user, isNewUser, token);
-            if (token) injectUserToken("Bearer "+token);
+            injectPrivyToken();
             login();
           }}
         >
