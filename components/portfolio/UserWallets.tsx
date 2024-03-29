@@ -45,8 +45,9 @@ export default function wallets() {
   }, [linkedWallets, connectedWallets]);
 
   const { address: activeWalletAddress } = useAccount();
+  console.log("activeWalletAddress", activeWalletAddress)
   const activeWallet = useMemo(() => {
-    console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
     return connectedWallets.find(
       (wallet) => wallet.address === activeWalletAddress,
     );
@@ -70,12 +71,12 @@ export default function wallets() {
         label: activeWallet?.address || "",
       }}
       onValueChange={async (item) => {
-        console.log("selected", item, connectedWallets);
         const newActiveWallet = connectedWallets.find(
           (wallet) => wallet.address === item?.value,
         );
+        console.log("selected", item, connectedWallets, newActiveWallet);
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
-      }}
+      }} 
     >
       <SelectTrigger className="w-full">
         {/* <SelectValue
