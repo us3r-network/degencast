@@ -28,7 +28,8 @@ export default function SearchScreen() {
   const [history, setHistory] = useState<Community[]>([]);
   const [recommend, setRecommend] = useState<Community[]>([]);
   const { joinedCommunities } = useAllJoinedCommunities();
-  const { trendingCommunities } = useLoadTrendingCommunities();
+  const { trendingCommunities, loadTrendingCommunities } =
+    useLoadTrendingCommunities();
 
   const saveHistory = async ({ name, logo, channelId }: Community) => {
     try {
@@ -79,6 +80,10 @@ export default function SearchScreen() {
     debouncedSearch(value);
     getHistory().then(setHistory);
   }, [value]);
+
+  useEffect(() => {
+    loadTrendingCommunities();
+  }, []);
 
   return (
     <ScrollView>
