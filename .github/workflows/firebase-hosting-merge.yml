@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-'on':
+"on":
   push:
     branches:
       - main
@@ -26,10 +26,12 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
           EXPO_PUBLIC_PRIVY_APP_ID: "${{ vars.EXPO_PUBLIC_PRIVY_APP_ID }}"
           EXPO_PUBLIC_API_BASE_URL: "${{ vars.EXPO_PUBLIC_API_BASE_URL }}"
+          EXPO_PUBLIC_FARCASTER_API_URL: "${{ vars.EXPO_PUBLIC_FARCASTER_API_URL }}"
+          EXPO_PUBLIC_FARCASTER_NETWORK: "${{ vars.EXPO_PUBLIC_FARCASTER_NETWORK }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}"
           channelId: live
           projectId: us3r-network
           target: degencast
@@ -51,10 +53,12 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
           EXPO_PUBLIC_PRIVY_APP_ID: "${{ vars.EXPO_PUBLIC_PRIVY_APP_ID }}"
           EXPO_PUBLIC_API_BASE_URL: "${{ vars.EXPO_PUBLIC_API_BASE_URL }}"
+          EXPO_PUBLIC_FARCASTER_API_URL: "${{ vars.EXPO_PUBLIC_FARCASTER_API_URL }}"
+          EXPO_PUBLIC_FARCASTER_NETWORK: "${{ vars.EXPO_PUBLIC_FARCASTER_NETWORK }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}"
           channelId: live
           projectId: us3r-network
           target: degencast-dev
