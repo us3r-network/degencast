@@ -12,6 +12,7 @@ import { cn } from "~/lib/utils";
 import { getSearchResult } from "~/services/farcaster/api";
 
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
+import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
 
 type Community = {
   name: string;
@@ -27,6 +28,7 @@ export default function SearchScreen() {
   const [history, setHistory] = useState<Community[]>([]);
   const [recommend, setRecommend] = useState<Community[]>([]);
   const { joinedCommunities } = useAllJoinedCommunities();
+  const { trendingCommunities } = useLoadTrendingCommunities();
 
   const saveHistory = async ({ name, logo, channelId }: Community) => {
     try {
@@ -145,19 +147,30 @@ export default function SearchScreen() {
         null}
 
       {(!value && joinedCommunities.length > 0 && (
-        <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
-          <SearchTitle title={"Joined"} />
+        <CommunityGroup
+          title="Joined"
+          communities={joinedCommunities
+            .flatMap((item) => (item.channelId ? [item] : []))
+            .map((item) => ({
+              name: item.name,
+              logo: item.logo,
+              channelId: item.channelId!,
+            }))}
+        />
+      )) ||
+        null}
 
-          <View className="flex flex-row flex-wrap gap-2">
-            {joinedCommunities.map((item, i) => {
-              return (
-                <Link key={i} href={`/communities/${item.channelId}`}>
-                  <SearchItem icon={item.logo} name={item.name} />
-                </Link>
-              );
-            })}
-          </View>
-        </View>
+      {(!value && trendingCommunities.length > 0 && (
+        <CommunityGroup
+          title="Trending Communities"
+          communities={trendingCommunities
+            .flatMap((item) => (item.channelId ? [item] : []))
+            .map((item) => ({
+              name: item.name,
+              logo: item.logo,
+              channelId: item.channelId!,
+            }))}
+        />
       )) ||
         null}
 
@@ -166,6 +179,30 @@ export default function SearchScreen() {
       )) ||
         null}
     </ScrollView>
+  );
+}
+
+function CommunityGroup({
+  communities,
+  title,
+}: {
+  communities: Community[];
+  title: string;
+}) {
+  return (
+    <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
+      <SearchTitle title={title} />
+
+      <View className="flex flex-row flex-wrap gap-2">
+        {communities.map((item, i) => {
+          return (
+            <Link key={i} href={`/communities/${item.channelId}`}>
+              <SearchItem icon={item.logo} name={item.name} />
+            </Link>
+          );
+        })}
+      </View>
+    </View>
   );
 }
 
