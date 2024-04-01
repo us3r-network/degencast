@@ -17,14 +17,16 @@ export default function PortfolioScreen() {
   );
 
   return (
-    <View className="m-auto mt-2 space-y-2 p-3 md:w-[500px] flex h-full items-center">
+    <View className="w-full h-full bg-primary">
       {ready &&
         (!authenticated ? (
           <Button className="rounded-lg px-6 py-3" onPress={login}>
             <Text className="text-white">Log in</Text>
           </Button>
         ) : (
-          <UserInfo />
+          <View className="w-screen-sm m-auto mt-2 p-3 space-y-2 flex items-center">
+            <UserInfo />
+          </View>
         ))}
     </View>
   );
