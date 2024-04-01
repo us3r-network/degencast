@@ -1,4 +1,4 @@
-import * as Linking from 'expo-linking';
+import { Linking } from "react-native";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useAccount } from "wagmi";
@@ -6,7 +6,7 @@ import useUserTokens from "~/hooks/user/useUserTokens";
 import { Info } from "../Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { round } from 'lodash';
+import { round } from "lodash";
 
 export default function UserTokens() {
   return (
@@ -52,12 +52,12 @@ function Balance() {
           </View>
           <View className="flex-row items-center gap-2">
             <Text>
-              {round(Number(token.balance),2)} {token.symbol}
+              {round(Number(token.balance), 2)} {token.symbol}
             </Text>
             <Button
               className="bg-secondary font-bold"
               onPress={() => {
-                Linking.openURL('https://buy-sandbox.moonpay.com/');
+                Linking.openURL("https://buy-sandbox.moonpay.com/");
               }}
             >
               <Text className="font-bold text-secondary-foreground">Buy</Text>
