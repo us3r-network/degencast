@@ -28,7 +28,7 @@ export function getFarcasterTrending({
   channelId?: string;
 }): RequestPromise<ApiResp<any>> {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/trending`,
+    url: `${FARCASTER_API_URL}/topics/casts/trending`,
     method: "get",
     params: {
       startIndex: start,
