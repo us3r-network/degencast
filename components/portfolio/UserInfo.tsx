@@ -1,12 +1,16 @@
 import { usePrivy } from "@privy-io/react-auth";
 import React from "react";
 import { Text, View } from "react-native";
+<<<<<<< HEAD
 import {
   getUserAvatar,
   getUserFarcasterAccount,
   getUserHandle,
   getUserName,
 } from "~/utils/privy";
+=======
+import { getUserAvatar, getUserFarcasterAccount, getUserHandle, getUserName } from "~/utils/privy";
+>>>>>>> a9c658a74903acd5bdaae6bd4ed2eb3f00e8d0f3
 import PointBadge from "../point/PointBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import FarcasterStats from "./FarcasterStats";
