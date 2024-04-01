@@ -12,7 +12,7 @@ import {
 } from "@privy-io/react-auth";
 
 import { FarCast } from "~/services/farcaster/types";
-import { View, Text, Image, Platform } from "react-native";
+import { View, Text, Image, Platform, Linking } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
@@ -43,19 +43,11 @@ export default function EmbedFrame({
   const frameBtnAction = useCallback(
     async (index: number, btn: FrameButton) => {
       if (btn.action === "link") {
-        if (Platform.OS === "web") {
-          window.open(btn.target, "_blank");
-        } else {
-          console.log("TODO open link", Platform.OS);
-        }
+        Linking.openURL(btn.target);
         return;
       }
       if (btn.action === "mint") {
-        if (Platform.OS === "web") {
-          window.open(url, "_blank");
-        } else {
-          console.log("TODO open link", Platform.OS);
-        }
+        Linking.openURL(url);
         return;
       }
       if (Platform.OS === "web") {
