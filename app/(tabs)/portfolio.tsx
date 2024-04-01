@@ -24,7 +24,7 @@ export default function PortfolioScreen() {
             <Text className="text-white">Log in</Text>
           </Button>
         ) : (
-          <View className="w-screen-sm m-auto mt-2 p-3 space-y-2 flex items-center">
+          <View className="w-screen-sm m-auto mt-2 p-3 space-y-2 flex items-center gap-2">
             <UserInfo />
           </View>
         ))}
