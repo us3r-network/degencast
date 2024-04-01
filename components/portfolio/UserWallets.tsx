@@ -6,7 +6,7 @@ import {
 } from "@privy-io/react-auth";
 import React, { useMemo } from "react";
 import { Pressable, View, Text } from "react-native";
-import { getUserWallets } from "~/utils/privy";
+import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { PlusCircle, MinusCircle, Wallet } from "../Icons";
 import {
   Select,
@@ -53,9 +53,7 @@ export default function wallets() {
   const { setActiveWallet } = useSetActiveWallet();
   const { connectWallet } = useConnectWallet();
 
-  const farcasterAccount = user?.linkedAccounts.find(
-    (account) => account.type === "farcaster",
-  ) as FarcasterWithMetadata;
+  const farcasterAccount = getUserFarcasterAccount(user);
 
   if (!ready || !authenticated) {
     return null;
