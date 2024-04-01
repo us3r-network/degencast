@@ -18,14 +18,15 @@ export default function useLoadExploreCasts() {
 
   const loadCasts = async () => {
     const { hasNextPage, endIndex } = pageInfoRef.current;
+
     if (hasNextPage === false) {
       return;
     }
     setLoading(true);
     try {
       const resp = await getFarcasterTrending({
-        start: endIndex,
-        end: endIndex === 0 ? FIRST_PAGE_SIZE : endIndex + NEXT_PAGE_SIZE,
+        start: endIndex === 0 ? 0 : endIndex + 1,
+        end: endIndex === 0 ? FIRST_PAGE_SIZE - 1 : endIndex + NEXT_PAGE_SIZE,
       });
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg);
@@ -51,11 +52,11 @@ export default function useLoadExploreCasts() {
       const nextIdx = idx + 1;
       setCurrentCastIndex(nextIdx);
       const remainingLen = casts.length - nextIdx;
-      if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
+      if (!loading && remainingLen <= LOAD_MORE_CRITICAL_NUM) {
         loadCasts();
       }
     },
-    [casts],
+    [casts, loading],
   );
 
   useEffect(() => {
