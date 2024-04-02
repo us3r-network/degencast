@@ -50,7 +50,7 @@ export default function PortfolioScreen() {
                   className="absolute inset-0 top-8"
                 >
                   <Card className="h-full w-full p-2 pt-8">
-                    <CardContent className="native:gap-2 gap-4">
+                    <CardContent className="native:gap-2 gap-4 h-full">
                       {tab.content}
                     </CardContent>
                   </Card>
