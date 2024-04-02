@@ -1,76 +1,101 @@
 import { LiFiWidget, WidgetConfig } from "@lifi/widget";
-import { useMemo, useState } from "react";
-import { cn } from "~/lib/utils";
+import { useState } from "react";
 // import { clientToSigner } from '@/utils/ethers';
+import { Text } from "react-native";
+import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "../ui/dialog";
+import { base } from "viem/chains";
 
-export default function Trade() {
-  const [openModal, setOpenModal] = useState(false);
+export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
+export default function TradeButton({
+  fromChain,
+  fromToken,
+  toChain = base.id,
+  toToken = NATIVE_TOKEN,
+}: {
+  fromChain: number;
+  fromToken: `0x${string}`;
+  toChain: number;
+  toToken: `0x${string}`;
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="flex w-full justify-end">
-      <button
-        type="button"
-        className="cursor-pointer items-center rounded-[999px] bg-[white] px-[12px] py-[8px]"
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpenModal(true);
-        }}
-      >
-        Trade $Degen
-      </button>
-      {openModal && <TradeModal open={openModal} setOpen={setOpenModal} />}
-    </div>
+    <Dialog className="text-white">
+      <DialogTrigger asChild>
+        <Button
+          className="bg-secondary"
+          onPress={(e) => {
+            e.stopPropagation();
+            setOpen(true);
+          }}
+        >
+          <Text className="font-bold text-secondary-foreground">Trade</Text>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <Trade
+          fromChain={fromChain}
+          fromToken={fromToken}
+          toChain={toChain}
+          toToken={toToken}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function TradeModal({
-  open,
-  setOpen,
+function Trade({
+  fromChain,
+  fromToken,
+  toChain = 8453,
+  toToken = "0x0000000000000000000000000000000000000000",
 }: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  fromChain: number;
+  fromToken: `0x${string}`;
+  toChain: number;
+  toToken: `0x${string}`;
 }) {
+  const DEFAULT_WIDGET_CONFIG: WidgetConfig = {
+    integrator: "DegenCast/US3R.NETWORK",
+    fromChain,
+    fromToken,
+    toChain,
+    toToken,
+    theme: {
+      palette: {
+        primary: {
+          main: "#A36EFE",
+        },
+        background: {
+          paper: "#4C2896", // bg color for cards
+          default: "#4C2896",
+        },
+        text: {
+          primary: "#fff",
+          secondary: "#A36EFE",
+        },
+      },
+    },
+  };
+  // TODO: LiFiWidget is NOT support viem until 3.0, try this after 3.0 is released
   // const { connectAsync } = useConnect();
   // const { disconnectAsync } = useDisconnect();
   // const { switchChainAsync } = useSwitchChain();
   // const client = useClient();
   // const account = useAccount();
-
-  const DEFAULT_WIDGET_CONFIG: WidgetConfig = {
-    integrator: "DegenCast/US3R.NETWORK",
-    fromChain: 8453,
-    fromToken: "0x0000000000000000000000000000000000000000",
-    toChain: 8453,
-    toToken: "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
-    containerStyle: {
-      padding: "0",
-    },
-    theme: {
-      palette: {
-        primary: {
-          main: "#F41F4C",
-        },
-        background: {
-          paper: "#1B1E23", // bg color for cards
-          default: "#14171A",
-        },
-        text: {
-          primary: "#fff",
-          secondary: "#718096",
-        },
-      },
-    },
-  };
-  const widgetConfig = DEFAULT_WIDGET_CONFIG;
-  // TODO: LiFiWidget is NOT support viem until 3.0, try this after 3.0 is released
   // const widgetConfig = useMemo((): WidgetConfig => {
   //   console.log('client', client);
   //   if (!client || !account) {
-  //     return defaultWidgetConfig;
+  //     return DEFAULT_WIDGET_CONFIG;
   //   }
   //   const signer = clientToSigner(client, account);
   //   console.log('signer', signer);
   //   return {
-  //     ...defaultWidgetConfig,
+  //     ...DEFAULT_WIDGET_CONFIG,
   //     walletManagement: {
   //       signer,
   //       connect: async () => {
@@ -90,8 +115,7 @@ function TradeModal({
   //     },
   //   };
   // }, [client, account, connectAsync, disconnectAsync, switchChainAsync]);
-
   return (
-    <LiFiWidget integrator="DegenCast/US3R.NETWORK" config={widgetConfig} />
+    <LiFiWidget integrator="DegenCast/US3R.NETWORK" config={DEFAULT_WIDGET_CONFIG} />
   );
 }
