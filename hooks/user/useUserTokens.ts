@@ -19,7 +19,8 @@ export default function useUserTokens(
     contractAddresses,
   };
   const getERC20Tokens = useCallback(async () => {
-    const resp = await alchemy.core.getTokensForOwner(address || "0x", options);
+    if (!address) return;
+    const resp = await alchemy.core.getTokensForOwner(address, options);
     if (resp?.tokens) {
       setTokens(resp.tokens);
     } else {
@@ -28,7 +29,8 @@ export default function useUserTokens(
   }, [address]);
 
   const getBalance = useCallback(async () => {
-    const resp = await alchemy.core.getBalance(address || "0x", "latest");
+    if (!address) return;
+    const resp = await alchemy.core.getBalance(address, "latest");
     if (resp._hex) {
       const nativeToken: OwnedToken = {
         contractAddress: "0x",
