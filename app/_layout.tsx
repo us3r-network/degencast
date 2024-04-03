@@ -23,6 +23,7 @@ import { injectPrivyToken } from "~/utils/privy/injectToken";
 
 // Import global CSS file
 import "../global.css";
+import StateUpdateWrapper from "~/components/StateUpdateWrapper";
 dayjs.extend(relativeTime);
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
@@ -37,7 +38,7 @@ const DARK_THEME: Theme = {
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+  ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
@@ -101,15 +102,17 @@ export default function RootLayout() {
         >
           <QueryClientProvider client={queryClient}>
             <WagmiProvider config={wagmiConfig}>
-              <RootSiblingParent>
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                </Stack>
-                <PortalHost />
-              </RootSiblingParent>
+              <StateUpdateWrapper>
+                <RootSiblingParent>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                  </Stack>
+                  <PortalHost />
+                </RootSiblingParent>
+              </StateUpdateWrapper>
             </WagmiProvider>
           </QueryClientProvider>
         </PrivyProvider>

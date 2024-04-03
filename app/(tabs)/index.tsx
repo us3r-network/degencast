@@ -3,6 +3,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
+import FCastActions from "~/components/social-farcaster/FCastActions";
 import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 
@@ -51,6 +52,10 @@ export default function ExploreScreen() {
                   <FCast
                     cast={data}
                     farcasterUserDataObj={farcasterUserDataObj}
+                  />
+                  <FCastActions
+                    className=" absolute bottom-14 right-3"
+                    cast={data}
                   />
                 </View>
               </CardSwipe>

@@ -1,18 +1,16 @@
-import { CastId } from "@farcaster/hub-web";
 import { View } from "react-native";
 import { FarCast } from "~/services/farcaster/types";
-import getCastId from "~/utils/farcaster/getCastId";
 import { UserData } from "~/utils/farcaster/user-data";
 import { useMemo } from "react";
 import { getEmbeds } from "~/utils/farcaster/getEmbeds";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
-import PointBadge from "../point/PointBadge";
 import FCastText from "./FCastText";
 import EmbedImgs from "./embed/EmbedImgs";
 import EmbedCasts from "./embed/EmbedCasts";
 import EmbedWebpages from "./embed/EmbedWebpages";
 import EmbedVideo from "./embed/EmbedVideo";
+import UserGlobalPoints from "../point/UserGlobalPoints";
 
 export default function FCast({
   cast,
@@ -21,8 +19,6 @@ export default function FCast({
   cast: FarCast;
   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
 }) {
-  const castId: CastId = getCastId({ cast });
-  const castHex = Buffer.from(castId.hash).toString("hex");
   const userData = farcasterUserDataObj?.[cast.fid];
 
   // embed
@@ -48,7 +44,7 @@ export default function FCast({
           </Text>
           <Text className="text-sm text-[#A36EFE]">@{userData?.userName}</Text>
         </View>
-        <PointBadge value={12344} />
+        <UserGlobalPoints />
       </View>
       {/* body - text & embed */}
       <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
