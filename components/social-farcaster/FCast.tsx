@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, ViewProps } from "react-native";
 import { FarCast } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import { useMemo } from "react";
@@ -11,11 +11,14 @@ import EmbedCasts from "./embed/EmbedCasts";
 import EmbedWebpages from "./embed/EmbedWebpages";
 import EmbedVideo from "./embed/EmbedVideo";
 import UserGlobalPoints from "../point/UserGlobalPoints";
+import { cn } from "~/lib/utils";
 
 export default function FCast({
   cast,
   farcasterUserDataObj,
-}: {
+  className,
+  ...props
+}: ViewProps & {
   cast: FarCast;
   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
 }) {
@@ -29,7 +32,11 @@ export default function FCast({
   const embedWebpages = embeds.webpages;
 
   return (
-    <View key={cast.id} className="flex flex-col gap-5">
+    <View
+      key={cast.id}
+      className={cn("flex flex-col gap-5", className)}
+      {...props}
+    >
       {/* header - user info */}
       <View className="flex flex-row items-center justify-between gap-6">
         <View className="flex flex-1 flex-row items-center gap-1">

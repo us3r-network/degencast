@@ -4,6 +4,7 @@ import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
+import FCastCommunity from "~/components/social-farcaster/FCastCommunity";
 import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 
@@ -18,7 +19,7 @@ export default function ExploreScreen() {
         <GestureHandlerRootView
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          {casts.map(({ data, platform }, idx) => {
+          {casts.map(({ data, platform, community }, idx) => {
             if (
               idx > currentCastIndex + MAX_VISIBLE_ITEMS - 1 ||
               idx < currentCastIndex
@@ -46,10 +47,11 @@ export default function ExploreScreen() {
               >
                 <View
                   className={cn(
-                    "h-[calc(100vh-240px)] w-[calc(100vw-40px)] overflow-hidden rounded-2xl border-none p-5 sm:max-h-[690px] sm:w-[390px]",
+                    "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none p-5 sm:max-h-[690px] sm:w-[390px]",
                   )}
                 >
                   <FCast
+                    className="h-full w-full overflow-hidden"
                     cast={data}
                     farcasterUserDataObj={farcasterUserDataObj}
                   />
@@ -57,6 +59,12 @@ export default function ExploreScreen() {
                     className=" absolute bottom-14 right-3"
                     cast={data}
                   />
+                  {community && (
+                    <FCastCommunity
+                      communityInfo={community}
+                      className="absolute -bottom-11 right-1/2 translate-x-1/2"
+                    />
+                  )}
                 </View>
               </CardSwipe>
             );

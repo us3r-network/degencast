@@ -11,9 +11,12 @@ export default function getActionPoint(
   const actionName = actionData.action;
   const config = actionPointConfig[actionName];
   if (
-    [UserActionName.View, UserActionName.Like, UserActionName.Share].includes(
-      actionName,
-    )
+    [
+      UserActionName.View,
+      UserActionName.Like,
+      UserActionName.UnLike,
+      UserActionName.Share,
+    ].includes(actionName)
   ) {
     return config?.unit || 0;
   }

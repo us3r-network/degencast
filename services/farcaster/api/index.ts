@@ -2,7 +2,7 @@ import axios, { AxiosPromise } from "axios";
 import { FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp, FarCastEmbedMetaV2, SocialPlatform } from "../types";
-import { CommunityEntity } from "~/services/community/types/community";
+import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
 
 export type FarcasterPageInfo = {
@@ -18,7 +18,7 @@ export type FarcasterUserData = {
   value: string;
 };
 export type TrendingCastData = {
-  community: CommunityEntity;
+  community: CommunityInfo;
   data: any;
   platform: SocialPlatform;
 };
@@ -40,9 +40,12 @@ export function getFarcasterTrending({
     likeActions: Array<UserActionData>;
   }>
 > {
-  return axios({
+  return request({
     url: `/topics/casts/trending`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params: {
       startIndex: start,
       endIndex: end,
