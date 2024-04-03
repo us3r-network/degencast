@@ -19,17 +19,19 @@ import { shortPubKey } from "~/utils/shortPubKey";
 import { useAccount } from "wagmi";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { Image } from "expo-image";
+import useAuth from "~/hooks/user/useAuth";
 
 export default function wallets() {
   const {
     ready,
-    authenticated,
     user,
     linkWallet,
     unlinkWallet,
     linkFarcaster,
     unlinkFarcaster,
   } = usePrivy();
+
+  const { authenticated } = useAuth();
 
   const linkedWallets = useMemo(
     () => (user ? getUserWallets(user) : []),
