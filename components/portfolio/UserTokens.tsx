@@ -14,11 +14,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
+import TradeButton, { NATIVE_TOKEN } from "./TradeButton";
+import { base } from "viem/chains";
 
 export default function UserTokens() {
   return (
     <ScrollView
-      className="flex w-full h-full gap-6"
+      className="flex h-full w-full gap-6"
       showsVerticalScrollIndicator={false}
     >
       <Balance />
@@ -48,7 +50,6 @@ const tokenAddress: string[] = [
 ];
 
 function Balance() {
-  //Define the owner address or name
   const { address } = useAccount();
   const { nativeTokens, tokens } = useUserTokens(address || "0x", tokenAddress);
   return (
@@ -92,8 +93,6 @@ function MyToken(token: OwnedToken) {
 
 const DEFAULT_ITEMS_NUM = 3;
 function CommunityTokens() {
-  //Define the owner address or name
-  const { address } = useAccount();
   const { tokens } = useUserCommunityTokens();
   const [open, setOpen] = React.useState(false);
   return (
@@ -140,14 +139,12 @@ function CommunityToken(token: OwnedToken) {
       <TokenInfo {...token} />
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(token.balance), 2)}</Text>
-        <Button
-          className="bg-secondary font-bold"
-          onPress={() => {
-            Linking.openURL("https://buy-sandbox.moonpay.com/");
-          }}
-        >
-          <Text className="font-bold text-secondary-foreground">Trade</Text>
-        </Button>
+        <TradeButton
+          fromChain={base.id}
+          fromToken={token.contractAddress as `0x${string}`}
+          toChain={base.id}
+          toToken={NATIVE_TOKEN}
+        />
       </View>
     </View>
   );
