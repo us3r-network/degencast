@@ -7,6 +7,7 @@ import useUserTokens from "~/hooks/user/useUserTokens";
 import { Info } from "../../Icons";
 import { Button } from "../../ui/button";
 import { TokenInfo } from "./TokenInfo";
+import { MoonpayConfig, MoonpayCurrencyCode, useWallets } from "@privy-io/react-auth";
 
 const tokenAddress: string[] = [
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed", // Degen
@@ -34,6 +35,18 @@ export default function Balance() {
 }
 
 function MyToken(token: OwnedToken) {
+  // const { wallets } = useWallets();
+  // const { address } = useAccount();
+  // const wallet = wallets.find((wallet) => wallet.address === address);
+  // const fundWalletConfig = {
+  //   currencyCode: "ETH_ETHEREUM", // Purchase ETH on Ethereum mainnet
+  //   quoteCurrencyAmount: 0.05, // Purchase 0.05 ETH
+  //   paymentMethod: "credit_debit_card", // Purchase with credit or debit card
+  //   uiConfig: {
+  //     accentColor: "#696FFD",
+  //     theme: "light",
+  //   }, // Styling preferences for MoonPay's UIs
+  // };
   return (
     <View className="flex-row items-center justify-between">
       <TokenInfo {...token} />
@@ -41,14 +54,17 @@ function MyToken(token: OwnedToken) {
         <Text>
           {round(Number(token.balance), 2)} {token.symbol}
         </Text>
-        <Button
-          className="bg-secondary font-bold"
-          onPress={() => {
-            Linking.openURL("https://buy-sandbox.moonpay.com/");
-          }}
-        >
-          <Text className="font-bold text-secondary-foreground">Buy</Text>
-        </Button>
+        {/* {wallet && ( */}
+          <Button
+            className="bg-secondary font-bold"
+            onPress={async () => {
+              Linking.openURL("https://buy-sandbox.moonpay.com/");
+              // await wallet.fund({ config: fundWalletConfig as MoonpayConfig });
+            }}
+          >
+            <Text className="font-bold text-secondary-foreground">Buy</Text>
+          </Button>
+        {/* )} */}
       </View>
     </View>
   );
