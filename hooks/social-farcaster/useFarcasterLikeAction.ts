@@ -6,6 +6,7 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import useFarcasterAccount from "./useFarcasterAccount";
 import useUserAction from "../user/useUserAction";
 import { UserActionName } from "~/services/user/types";
+import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
 
 export default function useFarcasterLikeAction({
   cast,
@@ -16,23 +17,35 @@ export default function useFarcasterLikeAction({
   onLikeSuccess?: () => void;
   onRemoveLikeSuccess?: () => void;
 }) {
+  const { user, authenticated } = usePrivy();
   const { signerPublicKey } = useFarcasterAccount();
+
   const { submitUserAction } = useUserAction();
+  const { likeCast: likeCastAction } = useFarcasterWrite();
+
   const castHex = getCastHex(cast);
   const castFid = cast.fid;
-  const { user } = usePrivy();
   const currFid = user?.farcaster?.fid;
+
+  const { validateLiked, validateLikeActionsPending, fetchCastLikeActions } =
+    useUserCastLikeActionsUtil();
+
   const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)));
   const [likeCount, setLikeCount] = useState<number>(
     Number(cast.like_count || cast.likesCount || 0),
   );
+  const [likePending, setLikePending] = useState(false);
+
   useEffect(() => {
     setLikes(Array.from(new Set(cast.likes)));
     setLikeCount(Number(cast.like_count || cast.likesCount || 0));
   }, [cast]);
-  const [likePending, setLikePending] = useState(false);
 
-  const { likeCast: likeCastAction } = useFarcasterWrite();
+  useEffect(() => {
+    if (authenticated && castHex) {
+      fetchCastLikeActions(castHex);
+    }
+  }, [authenticated, castHex, fetchCastLikeActions]);
 
   const likeCast = useCallback(async () => {
     if (likePending) {
@@ -77,7 +90,13 @@ export default function useFarcasterLikeAction({
     }
     try {
       setLikePending(true);
-      // TODO submitUserAction, likeCastAction
+      await submitUserAction({
+        action: UserActionName.UnLike,
+        castHash: castHex,
+      });
+      if (signerPublicKey) {
+        await likeCastAction(castHex, Number(castFid));
+      }
 
       const tmpSet = new Set(likes);
       tmpSet.delete(`${currFid}`);
@@ -89,9 +108,21 @@ export default function useFarcasterLikeAction({
     } finally {
       setLikePending(false);
     }
-  }, [likeCount, likes, currFid, likePending, onRemoveLikeSuccess]);
+  }, [
+    castHex,
+    castFid,
+    likeCount,
+    likes,
+    currFid,
+    likePending,
+    submitUserAction,
+    likeCastAction,
+    onRemoveLikeSuccess,
+  ]);
 
-  const liked = likes.includes(`${currFid}`);
+  // const liked = likes.includes(`${currFid}`);
+  const liked = validateLiked(castHex);
+  const fetchLikeActionsPending = validateLikeActionsPending(castHex);
 
   return {
     likes,
@@ -100,5 +131,6 @@ export default function useFarcasterLikeAction({
     removeLikeCast,
     liked,
     likePending,
+    fetchLikeActionsPending,
   };
 }

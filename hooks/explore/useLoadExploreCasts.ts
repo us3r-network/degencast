@@ -9,12 +9,14 @@ import { FarCast } from "~/services/farcaster/types";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
+import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
 
 const FIRST_PAGE_SIZE = 20;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
 
 export default function useLoadExploreCasts() {
+  const { addManyToLikedActions } = useUserCastLikeActionsUtil();
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
   const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
@@ -42,7 +44,17 @@ export default function useLoadExploreCasts() {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      const { casts, farcasterUserData, pageInfo } = data;
+      const { casts, farcasterUserData, pageInfo, likeActions } = data;
+      const unlikeActions = likeActions.filter(
+        (action) => action.action === UserActionName.UnLike,
+      );
+      const likedActions = likeActions.filter(
+        (action) =>
+          !unlikeActions.find(
+            (unlikeAction) => unlikeAction.castHash === action.castHash,
+          ),
+      );
+      addManyToLikedActions(likedActions);
       setCasts((pre) => [...pre, ...casts]);
       pageInfoRef.current = pageInfo;
 

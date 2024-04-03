@@ -11,6 +11,7 @@ export enum UserActionName {
   Share = "Share",
   View = "View",
   Like = "Like",
+  UnLike = "UnLike",
   Tips = "Tips",
   ConnectFarcaster = "ConnectFarcaster",
   BuyChannelShare = "BuyChannelShare",
