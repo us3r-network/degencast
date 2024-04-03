@@ -1,16 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 import { JoinedCommunitiesData } from "~/services/community/api/community";
+import { AsyncRequestStatus } from "~/services/shared/types";
 
 type JoinCommunityState = {
   joinedCommunities: JoinedCommunitiesData;
   joinedCommunitiesPending: boolean;
+  joinedCommunitiesRequestStatus: AsyncRequestStatus;
   joinActionPendingIds: Array<string | number>;
 };
 
 const joinCommunityState: JoinCommunityState = {
   joinedCommunities: [],
   joinedCommunitiesPending: false,
+  joinedCommunitiesRequestStatus: AsyncRequestStatus.IDLE,
   joinActionPendingIds: [],
 };
 
@@ -58,6 +61,12 @@ export const joinCommunitySlice = createSlice({
         (id) => id !== action.payload,
       );
     },
+    setJoinedCommunitiesRequestStatus: (
+      state: JoinCommunityState,
+      action: PayloadAction<AsyncRequestStatus>,
+    ) => {
+      state.joinedCommunitiesRequestStatus = action.payload;
+    },
   },
 });
 
@@ -69,6 +78,7 @@ export const {
   removeOneFromJoinedCommunities,
   addOneToJoinActionPendingIds,
   removeOneFromJoinActionPendingIds,
+  setJoinedCommunitiesRequestStatus,
 } = actions;
 export const selectJoinCommunity = (state: RootState) => state.joinCommunity;
 export default reducer;

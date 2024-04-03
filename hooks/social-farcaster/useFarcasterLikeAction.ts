@@ -45,7 +45,7 @@ export default function useFarcasterLikeAction({
     if (authenticated && castHex) {
       fetchCastLikeActions(castHex);
     }
-  }, [authenticated, castHex, fetchCastLikeActions]);
+  }, [authenticated, castHex]);
 
   const likeCast = useCallback(async () => {
     if (likePending) {

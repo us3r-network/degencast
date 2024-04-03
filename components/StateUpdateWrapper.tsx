@@ -3,6 +3,7 @@ import useUserAction from "~/hooks/user/useUserAction";
 import useUserTotalPoints from "~/hooks/user/useUserTotalPoints";
 import useSeenCasts from "~/hooks/user/useSeenCasts";
 import useAuth from "~/hooks/user/useAuth";
+import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { authenticated } = useAuth();
@@ -10,8 +11,9 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   // user action
   const { fetchUserActionConfig, submitUnreportedActions } = useUserAction();
   const { fetchTotalPoints } = useUserTotalPoints();
-
   const { submitUnreportedViewCasts } = useSeenCasts();
+  const { loadAllJoinedCommunities, clearJoinedCommunities } =
+    useAllJoinedCommunities();
 
   useEffect(() => {
     fetchUserActionConfig();
@@ -33,6 +35,16 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
       }
     })();
   }, [authenticated, submitUnreportedViewCasts]);
+
+  useEffect(() => {
+    (async () => {
+      if (authenticated) {
+        loadAllJoinedCommunities();
+      } else {
+        clearJoinedCommunities();
+      }
+    })();
+  }, [authenticated, loadAllJoinedCommunities, clearJoinedCommunities]);
 
   return children;
 }

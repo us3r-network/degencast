@@ -65,14 +65,7 @@ export default function useUserCastLikeActionsUtil() {
         dispatch(removeOneFromLikeActionsPendingCastHashes(castHash));
       }
     },
-    [
-      authenticated,
-      actionPointConfig,
-      likeActions,
-      likeActionsPendingCastHashes,
-      validateLiked,
-      validateLikeActionsPending,
-    ],
+    [authenticated, validateLiked, validateLikeActionsPending],
   );
 
   return {

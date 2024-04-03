@@ -14,14 +14,14 @@ import {
 } from "~/features/community/joinCommunitySlice";
 import { ApiRespCode } from "~/services/shared/types";
 import { CommunityInfo } from "~/services/community/types/community";
+import useAuth from "../user/useAuth";
+import { usePrivy } from "@privy-io/react-auth";
 
 export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
   const communityId = communityInfo?.id;
   const dispatch = useAppDispatch();
-  // const { isLogin, login } = useLogin();
-  // TODO validate login
-  const isLogin = false;
-  const login = () => {};
+  const { login } = usePrivy();
+  const { authenticated } = useAuth();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);
 
@@ -39,7 +39,7 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
   );
 
   const joiningAction = useCallback(async () => {
-    if (!isLogin) {
+    if (!authenticated) {
       login();
       return;
     }
@@ -58,10 +58,10 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
     } finally {
       dispatch(removeOneFromJoinActionPendingIds(communityId));
     }
-  }, [dispatch, communityId, communityInfo, isPending, isLogin]);
+  }, [dispatch, communityId, communityInfo, isPending, authenticated, login]);
 
   const unjoiningAction = useCallback(async () => {
-    if (!isLogin) {
+    if (!authenticated) {
       login();
       return;
     }
@@ -80,7 +80,7 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
     } finally {
       dispatch(removeOneFromJoinActionPendingIds(communityId));
     }
-  }, [dispatch, isPending, communityId, isLogin]);
+  }, [dispatch, isPending, communityId, authenticated, login]);
 
   const joinChangeAction = () => {
     if (joined) {
