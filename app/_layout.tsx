@@ -17,9 +17,7 @@ import { wagmiConfig } from "~/config/wagmiConfig";
 import { PRIVY_APP_ID } from "~/constants";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { login } from "~/services/user/api";
 import { store } from "~/store/store";
-import { injectPrivyToken } from "~/utils/privy/injectToken";
 
 // Import global CSS file
 import "../global.css";
@@ -76,8 +74,6 @@ export default function RootLayout() {
     })().finally(() => {
       SplashScreen.hideAsync();
     });
-
-    injectPrivyToken();
   }, []);
 
   if (!isColorSchemeLoaded) {
@@ -94,11 +90,6 @@ export default function RootLayout() {
             appearance: {
               theme: isDarkColorScheme ? "dark" : "light",
             },
-          }}
-          onSuccess={async (user, isNewUser) => {
-            const resp = await login();
-            console.log("login resp", resp);
-            injectPrivyToken();
           }}
         >
           <QueryClientProvider client={queryClient}>

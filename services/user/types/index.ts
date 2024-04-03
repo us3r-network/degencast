@@ -1,6 +1,8 @@
 import { OwnedToken } from "alchemy-sdk";
 
-export type LoginRespEntity = {};
+export type LoginRespEntity = {
+  id: number;
+};
 
 export type MyWalletTokensRespEntity = {
   wallet: string;
@@ -15,6 +17,7 @@ export enum UserActionName {
   ConnectFarcaster = "ConnectFarcaster",
   BuyChannelShare = "BuyChannelShare",
 }
+
 export type UserActionData = {
   action: UserActionName;
   castHash: string;
