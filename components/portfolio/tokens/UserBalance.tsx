@@ -1,13 +1,18 @@
 import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
 import React from "react";
-import { Linking, Pressable, Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 import { useAccount } from "wagmi";
 import useUserTokens from "~/hooks/user/useUserTokens";
 import { Info } from "../../Icons";
 import { Button } from "../../ui/button";
 import { TokenInfo } from "./TokenInfo";
-import { MoonpayConfig, MoonpayCurrencyCode, useWallets } from "@privy-io/react-auth";
+import {
+  MoonpayConfig,
+  MoonpayCurrencyCode,
+  useWallets,
+} from "@privy-io/react-auth";
+import SendButton from "../SendButton";
 
 const tokenAddress: string[] = [
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed", // Degen
@@ -23,9 +28,7 @@ export default function Balance() {
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
         </View>
-        <Pressable>
-          <Text className="font-bold text-secondary">Send</Text>
-        </Pressable>
+        <SendButton defaultAddress={address || "0x"} tokens={[...nativeTokens, ...tokens]}/>
       </View>
       {[...nativeTokens, ...tokens].map((token) => (
         <MyToken key={token.contractAddress} {...token} />
@@ -55,15 +58,15 @@ function MyToken(token: OwnedToken) {
           {round(Number(token.balance), 2)} {token.symbol}
         </Text>
         {/* {wallet && ( */}
-          <Button
-            className="bg-secondary font-bold"
-            onPress={async () => {
-              Linking.openURL("https://buy-sandbox.moonpay.com/");
-              // await wallet.fund({ config: fundWalletConfig as MoonpayConfig });
-            }}
-          >
-            <Text className="font-bold text-secondary-foreground">Buy</Text>
-          </Button>
+        <Button
+          className="bg-secondary font-bold"
+          onPress={async () => {
+            Linking.openURL("https://buy-sandbox.moonpay.com/");
+            // await wallet.fund({ config: fundWalletConfig as MoonpayConfig });
+          }}
+        >
+          <Text className="font-bold text-secondary-foreground">Buy</Text>
+        </Button>
         {/* )} */}
       </View>
     </View>

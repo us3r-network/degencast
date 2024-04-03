@@ -1,13 +1,8 @@
 import { LiFiWidget, WidgetConfig } from "@lifi/widget";
-import { useState } from "react";
 // import { clientToSigner } from '@/utils/ethers';
 import { Text } from "react-native";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { base } from "viem/chains";
 
 export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
@@ -22,21 +17,14 @@ export default function TradeButton({
   toChain: number;
   toToken: `0x${string}`;
 }) {
-  const [open, setOpen] = useState(false);
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
-        <Button
-          className="bg-secondary"
-          onPress={(e) => {
-            e.stopPropagation();
-            setOpen(true);
-          }}
-        >
+        <Button className="bg-secondary">
           <Text className="font-bold text-secondary-foreground">Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <Trade
           fromChain={fromChain}
           fromToken={fromToken}
@@ -116,6 +104,9 @@ function Trade({
   //   };
   // }, [client, account, connectAsync, disconnectAsync, switchChainAsync]);
   return (
-    <LiFiWidget integrator="DegenCast/US3R.NETWORK" config={DEFAULT_WIDGET_CONFIG} />
+    <LiFiWidget
+      integrator="DegenCast/US3R.NETWORK"
+      config={DEFAULT_WIDGET_CONFIG}
+    />
   );
 }
