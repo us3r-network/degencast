@@ -1,11 +1,11 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { PropsWithChildren, useEffect } from "react";
 import useUserAction from "~/hooks/user/useUserAction";
 import useUserTotalPoints from "~/hooks/user/useUserTotalPoints";
 import useSeenCasts from "~/hooks/user/useSeenCasts";
+import useAuth from "~/hooks/user/useAuth";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
-  const { authenticated } = usePrivy();
+  const { authenticated } = useAuth();
 
   // user action
   const { fetchUserActionConfig, submitUnreportedActions } = useUserAction();
