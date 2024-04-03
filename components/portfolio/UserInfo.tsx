@@ -7,7 +7,7 @@ import {
   getUserHandle,
   getUserName,
 } from "~/utils/privy";
-import PointBadge from "../point/PointBadge";
+import UserGlobalPoints from "../point/UserGlobalPoints";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import FarcasterStats from "./FarcasterStats";
 
@@ -45,7 +45,7 @@ export default function UserInfo() {
           )}
         </View>
         {farcasterAccount?.fid && <FarcasterStats fid={farcasterAccount.fid} />}
-        <PointBadge value={11234} />
+        <UserGlobalPoints />
       </View>
     </View>
   );
