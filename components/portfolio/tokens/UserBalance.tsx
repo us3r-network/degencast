@@ -2,7 +2,6 @@ import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
 import React from "react";
 import { Linking, Text, View } from "react-native";
-import { useAccount } from "wagmi";
 import useUserTokens from "~/hooks/user/useUserTokens";
 import { Info } from "../../Icons";
 import { Button } from "../../ui/button";
@@ -18,9 +17,8 @@ const tokenAddress: string[] = [
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed", // Degen
 ];
 
-export default function Balance() {
-  const { address } = useAccount();
-  const { nativeTokens, tokens } = useUserTokens(address || "0x", tokenAddress);
+export default function Balance({ address }: { address: `0x${string}` }) {
+  const { nativeTokens, tokens } = useUserTokens(address, tokenAddress);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
@@ -28,7 +26,10 @@ export default function Balance() {
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
         </View>
-        <SendButton defaultAddress={address || "0x"} tokens={[...nativeTokens, ...tokens]}/>
+        <SendButton
+          defaultAddress={address}
+          tokens={[...nativeTokens, ...tokens]}
+        />
       </View>
       {[...nativeTokens, ...tokens].map((token) => (
         <MyToken key={token.contractAddress} {...token} />

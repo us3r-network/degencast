@@ -11,7 +11,8 @@ import {
   CollapsibleTrigger,
 } from "../../ui/collapsible";
 import { TokenInfo } from "./TokenInfo";
-// import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
+import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
+import { base } from "viem/chains";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -61,21 +62,20 @@ function CommunityToken(token: OwnedToken) {
       <TokenInfo {...token} />
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(token.balance), 2)}</Text>
-        <Button
+        {/* <Button
           className="bg-secondary"
           onPress={() => {
             console.log("Trade button pressed");
-            Linking.openURL("https://buy-sandbox.moonpay.com/");
           }}
         >
           <Text className="font-bold text-secondary-foreground">Trade</Text>
-        </Button>
-        {/* <TradeButton
+        </Button> */}
+        <TradeButton
           fromChain={base.id}
           fromToken={token.contractAddress as `0x${string}`}
           toChain={base.id}
           toToken={NATIVE_TOKEN}
-        /> */}
+        />
       </View>
     </View>
   );
