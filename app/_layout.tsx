@@ -96,8 +96,9 @@ export default function RootLayout() {
             },
           }}
           onSuccess={async (user, isNewUser) => {
+            const resp = await login();
+            console.log("login resp", resp);
             injectPrivyToken();
-            login();
           }}
         >
           <QueryClientProvider client={queryClient}>

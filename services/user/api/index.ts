@@ -1,8 +1,12 @@
 import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
-import { UserActionPointConfig } from "../types";
+import {
+  LoginRespEntity,
+  MyWalletTokensRespEntity,
+  UserActionPointConfig,
+} from "../types";
 
-export function login(): RequestPromise<ApiResp<unknown>> {
+export function login(): RequestPromise<ApiResp<LoginRespEntity>> {
   return request({
     url: `degencast-users/login`,
     method: "post",
@@ -35,6 +39,18 @@ export function getActionPointConfig(): RequestPromise<
 export function getUserPoints(): RequestPromise<ApiResp<{ value: number }>> {
   return request({
     url: `/degencast-users/points`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function myTokens(): RequestPromise<
+  ApiResp<MyWalletTokensRespEntity[]>
+> {
+  return request({
+    url: `topics/my-tokens`,
     method: "get",
     headers: {
       needToken: true,

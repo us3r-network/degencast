@@ -102,3 +102,18 @@ export function postSeenCasts(castHashes: string[]) {
     data: castHashes,
   });
 }
+export function getFarcasterUserStats(fid: string | number): AxiosPromise<
+  ApiResp<{
+    followerCount: number;
+    followingCount: number;
+    postCount: number;
+  }>
+> {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-farcaster/statics`,
+    method: "get",
+    params: {
+      fid,
+    },
+  });
+}
