@@ -40,9 +40,12 @@ export function getFarcasterTrending({
     likeActions: Array<UserActionData>;
   }>
 > {
-  return axios({
+  return request({
     url: `/topics/casts/trending`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params: {
       startIndex: start,
       endIndex: end,
