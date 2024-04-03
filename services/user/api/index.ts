@@ -3,6 +3,7 @@ import { ApiResp } from "~/services/shared/types";
 import {
   LoginRespEntity,
   MyWalletTokensRespEntity,
+  UserActionData,
   UserActionPointConfig,
 } from "../types";
 
@@ -24,6 +25,18 @@ export function postUserActions(actions: any[]) {
       needToken: true,
     },
     data: actions,
+  });
+}
+
+export function getCastUserActions(
+  castHash: string,
+): RequestPromise<ApiResp<Array<UserActionData>>> {
+  return request({
+    url: `/topics/casts/${castHash}/actions`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
   });
 }
 

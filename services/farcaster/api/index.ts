@@ -3,6 +3,7 @@ import { FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp, FarCastEmbedMetaV2, SocialPlatform } from "../types";
 import { CommunityEntity } from "~/services/community/types/community";
+import { UserActionData } from "~/services/user/types";
 
 export type FarcasterPageInfo = {
   startIndex: number;
@@ -36,10 +37,11 @@ export function getFarcasterTrending({
     casts: Array<TrendingCastData>;
     farcasterUserData: Array<FarcasterUserData>;
     pageInfo: FarcasterPageInfo;
+    likeActions: Array<UserActionData>;
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/topics/casts/trending`,
+    url: `/topics/casts/trending`,
     method: "get",
     params: {
       startIndex: start,

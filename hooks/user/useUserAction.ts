@@ -2,7 +2,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useCallback } from "react";
 import {
   addOneToUnreportedActions,
-  plusPoint,
+  plusTotalPoints,
   removeReportedActions,
   selectUserAction,
   setActionPointConfig,
@@ -11,9 +11,10 @@ import {
 } from "~/features/user/userActionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import { getActionPointConfig, postUserActions } from "~/services/user/api";
-import { UserActionData } from "~/services/user/types";
+import { UserActionData, UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import getActionPoint from "~/utils/action/getActionPoint";
+import useUserCastLikeActionsUtil from "./useUserCastLikeActionsUtil";
 
 export default function useUserAction() {
   const dispatch = useAppDispatch();
@@ -25,6 +26,9 @@ export default function useUserAction() {
     unreportedActions,
     unreportedActionsSubmitStatus,
   } = useAppSelector(selectUserAction);
+
+  const { addManyToLikedActions, removeOneLidedActions } =
+    useUserCastLikeActionsUtil();
 
   const fetchUserActionConfig = useCallback(async () => {
     if (actionPointConfigRequestStatus !== AsyncRequestStatus.IDLE) return;
@@ -45,12 +49,23 @@ export default function useUserAction() {
       if (authenticated) {
         await postUserActions([actionData]);
         const point = getActionPoint(actionData, actionPointConfig);
-        dispatch(plusPoint(point));
+        dispatch(plusTotalPoints(point));
       } else {
         dispatch(addOneToUnreportedActions(actionData));
       }
+      if (actionData.action === UserActionName.Like) {
+        addManyToLikedActions([actionData]);
+      }
+      if (actionData.action === UserActionName.UnLike) {
+        removeOneLidedActions(actionData.castHash);
+      }
     },
-    [authenticated, actionPointConfig],
+    [
+      authenticated,
+      actionPointConfig,
+      addManyToLikedActions,
+      removeOneLidedActions,
+    ],
   );
 
   const submitUnreportedActions = useCallback(async () => {

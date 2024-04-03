@@ -45,12 +45,15 @@ type UserActionState = {
   unreportedActionsSubmitStatus: AsyncRequestStatus;
   unreportedViewCasts: Array<string>;
   unreportedViewCastsSubmitStatus: AsyncRequestStatus;
+  likeActions: Array<UserActionData>;
+  likeActionsPendingCastHashes: Array<string>;
 };
 
 const defaultActionPointConfig: UserActionPointConfig = {
   Share: { unit: 500 },
   View: { unit: 1, dailyLimit: 30 },
   Like: { unit: 1, dailyLimit: 30 },
+  UnLike: { unit: -1 },
   Tips: { unit: 1 },
   ConnectFarcaster: { unit: 500 },
   BuyChannelShare: { unit: 500 },
@@ -64,6 +67,8 @@ const userActionState: UserActionState = {
   unreportedActionsSubmitStatus: AsyncRequestStatus.IDLE,
   unreportedViewCasts: getStoredUnreportedViewCasts(),
   unreportedViewCastsSubmitStatus: AsyncRequestStatus.IDLE,
+  likeActions: [],
+  likeActionsPendingCastHashes: [],
 };
 
 export const userActionSlice = createSlice({
@@ -91,7 +96,10 @@ export const userActionSlice = createSlice({
     ) => {
       state.totalPointsRequestStatus = action.payload;
     },
-    plusPoint: (state: UserActionState, action: PayloadAction<number>) => {
+    plusTotalPoints: (
+      state: UserActionState,
+      action: PayloadAction<number>,
+    ) => {
       state.totalPoints += action.payload;
     },
     addOneToUnreportedActions: (
@@ -140,6 +148,35 @@ export const userActionSlice = createSlice({
     ) => {
       state.unreportedViewCastsSubmitStatus = action.payload;
     },
+    addManyToLikeActions: (
+      state: UserActionState,
+      action: PayloadAction<Array<UserActionData>>,
+    ) => {
+      state.likeActions = state.likeActions.concat(action.payload);
+    },
+    removeOneFromLikeActions: (
+      state: UserActionState,
+      action: PayloadAction<string>,
+    ) => {
+      state.likeActions = state.likeActions.filter(
+        (likeAction) => likeAction.castHash !== action.payload,
+      );
+    },
+    addOneToLikeActionsPendingCastHashes: (
+      state: UserActionState,
+      action: PayloadAction<string>,
+    ) => {
+      state.likeActionsPendingCastHashes.push(action.payload);
+    },
+    removeOneFromLikeActionsPendingCastHashes: (
+      state: UserActionState,
+      action: PayloadAction<string>,
+    ) => {
+      state.likeActionsPendingCastHashes =
+        state.likeActionsPendingCastHashes.filter(
+          (castHash) => castHash !== action.payload,
+        );
+    },
   },
 });
 
@@ -149,13 +186,17 @@ export const {
   setActionPointConfigRequestStatus,
   setTotalPoints,
   setTotalPointsRequestStatus,
-  plusPoint,
+  plusTotalPoints,
   addOneToUnreportedActions,
   removeReportedActions,
   setUnreportedActionsSubmitStatus,
   addOneToUnreportedViewCasts,
   removeReportedViewCasts,
   setUnreportedViewCastsSubmitStatus,
+  addManyToLikeActions,
+  removeOneFromLikeActions,
+  addOneToLikeActionsPendingCastHashes,
+  removeOneFromLikeActionsPendingCastHashes,
 } = actions;
 export const selectUserAction = (state: RootState) => state.userAction;
 export default reducer;
