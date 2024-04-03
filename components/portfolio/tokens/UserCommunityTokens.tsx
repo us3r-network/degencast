@@ -2,8 +2,8 @@ import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
 import React from "react";
 import { Text, View } from "react-native";
-import { base } from "viem/chains";
 import { ChevronDown, ChevronUp } from "~/components/Icons";
+import { Button } from "~/components/ui/button";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import {
   Collapsible,
@@ -11,7 +11,7 @@ import {
   CollapsibleTrigger,
 } from "../../ui/collapsible";
 import { TokenInfo } from "./TokenInfo";
-import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
+// import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -61,12 +61,21 @@ function CommunityToken(token: OwnedToken) {
       <TokenInfo {...token} />
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(token.balance), 2)}</Text>
-        <TradeButton
+        <Button
+          className="bg-secondary"
+          onPress={() => {
+            console.log("Trade button pressed");
+            Linking.openURL("https://buy-sandbox.moonpay.com/");
+          }}
+        >
+          <Text className="font-bold text-secondary-foreground">Trade</Text>
+        </Button>
+        {/* <TradeButton
           fromChain={base.id}
           fromToken={token.contractAddress as `0x${string}`}
           toChain={base.id}
           toToken={NATIVE_TOKEN}
-        />
+        /> */}
       </View>
     </View>
   );
