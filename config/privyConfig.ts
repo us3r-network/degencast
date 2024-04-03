@@ -11,6 +11,9 @@ export const privyConfig: PrivyClientConfig = {
     embeddedWallets: {
         createOnLogin: "users-without-wallets",
     },
+    fiatOnRamp:{
+        useSandbox:true
+    },
     loginMethodsAndOrder: {
         primary: [
             "farcaster",
