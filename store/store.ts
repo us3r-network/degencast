@@ -7,10 +7,12 @@
  */
 import { configureStore } from "@reduxjs/toolkit";
 import joinCommunity from "~/features/community/joinCommunitySlice";
+import userAction from "~/features/user/userActionSlice";
 
 export const store = configureStore({
   reducer: {
     joinCommunity,
+    userAction,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

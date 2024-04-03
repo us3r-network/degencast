@@ -1,12 +1,13 @@
 import axios, { AxiosPromise } from "axios";
 import { FARCASTER_API_URL } from "~/constants";
-import { RequestPromise } from "~/services/shared/api/request";
-import { ApiResp, FarCastEmbedMetaV2 } from "../types";
+import request, { RequestPromise } from "~/services/shared/api/request";
+import { ApiResp, FarCastEmbedMetaV2, SocialPlatform } from "../types";
+import { CommunityEntity } from "~/services/community/types/community";
 
 export type FarcasterPageInfo = {
-  endTimestamp: number;
-  endCursor: string;
-  endFarcasterCursor: string;
+  startIndex: number;
+  endIndex: number;
+  endFarcasterCursor: number;
   hasNextPage: boolean;
 };
 
@@ -15,7 +16,11 @@ export type FarcasterUserData = {
   type: number;
   value: string;
 };
-
+export type TrendingCastData = {
+  community: CommunityEntity;
+  data: any;
+  platform: SocialPlatform;
+};
 export function getFarcasterTrending({
   start,
   end,
@@ -26,7 +31,13 @@ export function getFarcasterTrending({
   end: number;
   least?: number;
   channelId?: string;
-}): RequestPromise<ApiResp<any>> {
+}): RequestPromise<
+  ApiResp<{
+    casts: Array<TrendingCastData>;
+    farcasterUserData: Array<FarcasterUserData>;
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
   return axios({
     url: `${FARCASTER_API_URL}/topics/casts/trending`,
     method: "get",
@@ -81,6 +92,16 @@ export function getFarcasterEmbedMetadataV2(urls: string[]): AxiosPromise<
   });
 }
 
+export function postSeenCasts(castHashes: string[]) {
+  return request({
+    url: `/3r-farcaster/casts/seen`,
+    method: "post",
+    headers: {
+      needToken: true,
+    },
+    data: castHashes,
+  });
+}
 export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   ApiResp<{
     followerCount: number;
@@ -90,7 +111,7 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
 > {
   return axios({
     url: `${FARCASTER_API_URL}/3r-farcaster/statics`,
-    method: 'get',
+    method: "get",
     params: {
       fid,
     },

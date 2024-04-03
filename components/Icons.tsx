@@ -57,6 +57,8 @@ import {
   X,
   Wallet,
   MinusCircle,
+  Heart,
+  Share2,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 function interopIcon(icon: LucideIcon) {
@@ -128,6 +130,8 @@ interopIcon(CheckSquare);
 interopIcon(Atom);
 interopIcon(Wallet);
 interopIcon(MinusCircle);
+interopIcon(Heart);
+interopIcon(Share2);
 export {
   Activity,
   Airplay,
@@ -186,4 +190,6 @@ export {
   X,
   Wallet,
   MinusCircle,
+  Heart,
+  Share2,
 };

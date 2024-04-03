@@ -1,13 +1,23 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getFarcasterTrending } from "~/services/farcaster/api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  TrendingCastData,
+  getFarcasterTrending,
+} from "~/services/farcaster/api";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
+import useSeenCasts from "../user/useSeenCasts";
+import { FarCast } from "~/services/farcaster/types";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { UserActionName } from "~/services/user/types";
+import useUserAction from "../user/useUserAction";
 
 const FIRST_PAGE_SIZE = 20;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
 
 export default function useLoadExploreCasts() {
-  const [casts, setCasts] = useState<Array<any>>([]);
+  const { submitSeenCast } = useSeenCasts();
+  const { submitUserAction } = useUserAction();
+  const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
   const [currentCastIndex, setCurrentCastIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
@@ -55,8 +65,16 @@ export default function useLoadExploreCasts() {
       if (!loading && remainingLen <= LOAD_MORE_CRITICAL_NUM) {
         loadCasts();
       }
+      const cast = casts[idx].data as FarCast;
+      // seen casts
+      const castHex = getCastHex(cast);
+      submitSeenCast(castHex);
+      submitUserAction({
+        action: UserActionName.View,
+        castHash: castHex,
+      });
     },
-    [casts, loading],
+    [casts, loading, submitSeenCast, submitUserAction],
   );
 
   useEffect(() => {

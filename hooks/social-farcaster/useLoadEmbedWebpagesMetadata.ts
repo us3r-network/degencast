@@ -18,8 +18,6 @@ export default function useLoadEmbedWebpagesMetadata() {
       if (!respMetadata || !respMetadata[0]) return;
 
       const { ogData, frame: frameData } = respMetadata[0];
-      console.log("frameData", frameData);
-      console.log("ogData", ogData);
 
       if (frameData && frameData.version) {
         setFrame(frameData);
