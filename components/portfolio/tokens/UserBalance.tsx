@@ -16,8 +16,8 @@ const tokenAddress: string[] = [
 ];
 
 export default function Balance({ address }: { address: `0x${string}` }) {
-  const { tokens: erc20Tokens } = useUserERC20Tokens(address, tokenAddress);
   const { tokens: nativeTokens } = useUserBalance(address);
+  // const { tokens: erc20Tokens } = useUserERC20Tokens(address, tokenAddress);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
@@ -33,11 +33,11 @@ export default function Balance({ address }: { address: `0x${string}` }) {
       {nativeTokens && nativeTokens.length > 0 && (
         <MyToken token={nativeTokens[0]} />
       )}
-      {erc20Tokens &&
+      {/* {erc20Tokens &&
         erc20Tokens.length > 0 &&
         erc20Tokens.map((token) => (
           <MyToken key={token.contractAddress} token={token} />
-        ))}
+        ))} */}
     </View>
   );
 }

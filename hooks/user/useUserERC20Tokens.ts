@@ -21,7 +21,7 @@ export default function useUserERC20Tokens(
     };
     const resp = await alchemy.core.getTokensForOwner(address, options);
     if (resp?.tokens) {
-      // setTokens(resp.tokens);
+      setTokens(resp.tokens);
     } else {
       throw new Error("something went wrong!");
     }
@@ -29,7 +29,7 @@ export default function useUserERC20Tokens(
 
   useEffect(() => {
     fetch().catch(console.error);
-  }, []);
+  }, [fetch]);
 
   return {
     tokens

@@ -38,7 +38,7 @@ export default function useUserBalance(
 
   useEffect(() => {
     fetch().catch(console.error);
-  }, []);
+  }, [fetch]);
   
   return {
     tokens
