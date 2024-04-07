@@ -2906,10 +2906,10 @@
   resolved "https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@privy-io/react-auth@^1.59.7":
-  version "1.59.9"
-  resolved "https://registry.npmjs.org/@privy-io/react-auth/-/react-auth-1.59.9.tgz#dcd824c2a252317f1a68c4f40bff303a309d1075"
-  integrity sha512-JxxMSbMbsF7GspWXR0tjXL1BvZzrG0+EMfMOqBQ0+JAPy9XS+Wngu48IV4bYjdR6lxQrWY8kl3cQ8pIiWwZCkA==
+"@privy-io/react-auth@^1.60.1":
+  version "1.60.1"
+  resolved "https://registry.npmjs.org/@privy-io/react-auth/-/react-auth-1.60.1.tgz#bfc68320486920508af4284969469aad3d7be9c3"
+  integrity sha512-OPYL91Oj37wm2yB0oQ3tUDQXyytlDCDirqbIrfNnQEIXgQp91K5uqjxcgktYxf7KfI3kxJswZdPLx0QmINPLHw==
   dependencies:
     "@coinbase/wallet-sdk" "3.9.3"
     "@ethersproject/abstract-signer" "^5.7.0"
@@ -2926,6 +2926,7 @@
     "@heroicons/react" "^2.0.18"
     "@marsidev/react-turnstile" "^0.4.1"
     "@metamask/eth-sig-util" "^6.0.0"
+    "@simplewebauthn/browser" "^9.0.1"
     "@walletconnect/ethereum-provider" "^2.11.1"
     "@walletconnect/modal" "^2.6.2"
     base64-js "^1.5.1"
@@ -3904,6 +3905,18 @@
   version "2.0.0"
   resolved "https://registry.npmjs.org/@sideway/pinpoint/-/pinpoint-2.0.0.tgz#cff8ffadc372ad29fd3f78277aeb29e632cc70df"
   integrity sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==
+
+"@simplewebauthn/browser@^9.0.1":
+  version "9.0.1"
+  resolved "https://registry.npmjs.org/@simplewebauthn/browser/-/browser-9.0.1.tgz#46a12c2bcefcb199f7fcb6a7e883531cd6efde17"
+  integrity sha512-wD2WpbkaEP4170s13/HUxPcAV5y4ZXaKo1TfNklS5zDefPinIgXOpgz1kpEvobAsaLPa2KeH7AKKX/od1mrBJw==
+  dependencies:
+    "@simplewebauthn/types" "^9.0.1"
+
+"@simplewebauthn/types@^9.0.1":
+  version "9.0.1"
+  resolved "https://registry.npmjs.org/@simplewebauthn/types/-/types-9.0.1.tgz#3a68d50e63d8821cf2067de3324c68d5e8120d0c"
+  integrity sha512-tGSRP1QvsAvsJmnOlRQyw/mvK9gnPtjEc5fg2+m8n+QUa+D7rvrKkOYyfpy42GTs90X3RDOnqJgfHt+qO67/+w==
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"

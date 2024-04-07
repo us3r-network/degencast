@@ -23,7 +23,8 @@ export default function Balance({ address }: { address: `0x${string}` }) {
     console.log("Balance useEffects", address, erc20Tokens);
     if (!address) return;
     // fetchNativeTokens(address);
-    fetchERC20Tokens(address, TOKEN_ADDRESS).catch(console.error);
+    // fetchERC20Tokens(address, TOKEN_ADDRESS).catch(console.error);
+
   }, [address]);
   return (
     <View className="flex w-full gap-2">
