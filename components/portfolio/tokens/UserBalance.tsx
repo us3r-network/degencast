@@ -1,7 +1,7 @@
 import { MoonpayConfig, useWallets } from "@privy-io/react-auth";
 import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View } from "react-native";
 import { useAccount } from "wagmi";
 import useUserBalance from "~/hooks/user/useUserBalance";
@@ -11,14 +11,20 @@ import { Button } from "../../ui/button";
 import SendButton from "../SendButton";
 import { TokenInfo } from "./TokenInfo";
 
-const tokenAddress: string[] = [
+const TOKEN_ADDRESS: string[] = [
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed", // Degen
 ];
 
 export default function Balance({ address }: { address: `0x${string}` }) {
-  // const { tokens: nativeTokens } = useUserBalance(address);
-  const { tokens: erc20Tokens, fetch:fetchERC20Tokens } = useUserERC20Tokens();
-  fetchERC20Tokens(address, tokenAddress);
+  // const { tokens: nativeTokens, fetch:fetchNativeTokens } = useUserBalance(address);
+  const { tokens: erc20Tokens, fetch: fetchERC20Tokens } = useUserERC20Tokens();
+  console.log("erc20Tokens", address, erc20Tokens);
+  useEffect(() => {
+    console.log("Balance useEffects", address, erc20Tokens);
+    if (!address) return;
+    // fetchNativeTokens(address);
+    fetchERC20Tokens(address, TOKEN_ADDRESS).catch(console.error);
+  }, [address]);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
