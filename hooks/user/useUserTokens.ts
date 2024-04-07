@@ -15,18 +15,19 @@ export default function useUserTokens(
 ) {
   const [tokens, setTokens] = useState<OwnedToken[]>([]);
   const [nativeTokens, setNativeTokens] = useState<OwnedToken[]>([]);
-  const options = {
-    contractAddresses,
-  };
+
   const getERC20Tokens = useCallback(async () => {
-    if (!address) return;
+    if (!address || !contractAddresses) return;
+    const options = {
+      contractAddresses,
+    };
     const resp = await alchemy.core.getTokensForOwner(address, options);
     if (resp?.tokens) {
       setTokens(resp.tokens);
     } else {
       throw new Error("something went wrong!");
     }
-  }, [address]);
+  }, [address, contractAddresses]);
 
   const getBalance = useCallback(async () => {
     if (!address) return;
@@ -53,7 +54,7 @@ export default function useUserTokens(
   useEffect(() => {
     getERC20Tokens().catch(console.error);
     getBalance().catch(console.error);
-  }, [getERC20Tokens]);
+  }, [getERC20Tokens, getBalance]);
 
   return {
     nativeTokens,

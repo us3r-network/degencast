@@ -18,6 +18,7 @@ const tokenAddress: string[] = [
 ];
 
 export default function Balance({ address }: { address: `0x${string}` }) {
+  console.log("address", address, tokenAddress)
   const { nativeTokens, tokens } = useUserTokens(address, tokenAddress);
   return (
     <View className="flex w-full gap-2">
