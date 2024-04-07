@@ -25,10 +25,10 @@ export default function Balance({ address }: { address: `0x${string}` }) {
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
         </View>
-        <SendButton
+        {/* <SendButton
           defaultAddress={address}
           tokens={[...nativeTokens, ...erc20Tokens]}
-        />
+        /> */}
       </View>
       {nativeTokens && nativeTokens.length > 0 && (
         <MyToken token={nativeTokens[0]} />
