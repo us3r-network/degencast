@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.24.1",
     "@expo/vector-icons": "^14.0.0",
     "@farcaster/hub-web": "^0.8.5",
+    "@lifi/widget": "^3.0.0-alpha.35",
     "@privy-io/react-auth": "^1.59.7",
     "@privy-io/wagmi": "^0.2.2",
     "@radix-ui/react-collapsible": "^1.0.3",
