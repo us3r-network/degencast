@@ -46,7 +46,7 @@ export default function wallets() {
 
   const { address: activeWalletAddress } = useAccount();
   const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
     return connectedWallets.find(
       (wallet) => wallet.address === activeWalletAddress,
     );
@@ -71,7 +71,7 @@ export default function wallets() {
         const newActiveWallet = connectedWallets.find(
           (wallet) => wallet.address === item?.value,
         );
-        // console.log("selected", item, connectedWallets, newActiveWallet);
+        console.log("selected", item, connectedWallets, newActiveWallet);
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
       }} 
     >
@@ -82,7 +82,7 @@ export default function wallets() {
         /> */}
         <View className="flex-row items-center gap-2">
           <Wallet  />
-          <Text>{shortPubKey(activeWallet?.address || "")}</Text>
+          <Text className="text-white">{shortPubKey(activeWallet?.address || "")}</Text>
         </View>
       </SelectTrigger>
       <SelectContent className="flex w-full">
