@@ -18,7 +18,7 @@ const TOKEN_ADDRESS: string[] = [
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   // const { tokens: nativeTokens, fetch:fetchNativeTokens } = useUserBalance(address);
-  const { tokens: erc20Tokens, fetch: fetchERC20Tokens } = useUserERC20Tokens();
+  // const { tokens: erc20Tokens, fetch: fetchERC20Tokens } = useUserERC20Tokens();
   // useEffect(() => {
   //   console.log("Balance useEffects", address, erc20Tokens);
   //   if (!address) return;
