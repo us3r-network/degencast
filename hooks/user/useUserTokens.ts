@@ -23,7 +23,7 @@ export default function useUserTokens(
     };
     const resp = await alchemy.core.getTokensForOwner(address, options);
     if (resp?.tokens) {
-      setTokens(resp.tokens);
+      // setTokens(resp.tokens);
     } else {
       throw new Error("something went wrong!");
     }
@@ -45,7 +45,7 @@ export default function useUserTokens(
         name: "Ethereum",
         logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       };
-      setNativeTokens([nativeToken]);
+      // setNativeTokens([nativeToken]);
     } else {
       throw new Error("something went wrong!");
     }
