@@ -3,13 +3,14 @@ import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
 import React, { useEffect } from "react";
 import { Text, View } from "react-native";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import useUserBalance from "~/hooks/user/useUserBalance";
 import useUserERC20Tokens from "~/hooks/user/useUserERC20Tokens";
 import { Info } from "../../Icons";
 import { Button } from "../../ui/button";
 import SendButton from "../SendButton";
 import { TokenInfo } from "./TokenInfo";
+import { base } from "viem/chains";
 
 const TOKEN_ADDRESS: string[] = [
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed", // Degen
@@ -18,14 +19,22 @@ const TOKEN_ADDRESS: string[] = [
 export default function Balance({ address }: { address: `0x${string}` }) {
   // const { tokens: nativeTokens, fetch:fetchNativeTokens } = useUserBalance(address);
   const { tokens: erc20Tokens, fetch: fetchERC20Tokens } = useUserERC20Tokens();
-  console.log("erc20Tokens", address, erc20Tokens);
-  useEffect(() => {
-    console.log("Balance useEffects", address, erc20Tokens);
-    if (!address) return;
-    // fetchNativeTokens(address);
-    // fetchERC20Tokens(address, TOKEN_ADDRESS).catch(console.error);
-
-  }, [address]);
+  // useEffect(() => {
+  //   console.log("Balance useEffects", address, erc20Tokens);
+  //   if (!address) return;
+  //   // fetchNativeTokens(address);
+  //   // fetchERC20Tokens(address, TOKEN_ADDRESS).catch(console.error);
+  // }, [address]);
+  const {data:nativeToken} = useBalance({
+    address,
+    chainId: base.id
+  })
+  const {data:degenToken} = useBalance({
+    address,
+    token: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed',
+    chainId: base.id
+  })
+  console.log("degenBalance", address, nativeToken, degenToken);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
@@ -38,14 +47,22 @@ export default function Balance({ address }: { address: `0x${string}` }) {
           tokens={[...nativeTokens, ...erc20Tokens]}
         /> */}
       </View>
-      {/* {nativeTokens && nativeTokens.length > 0 && (
-        <MyToken token={nativeTokens[0]} />
-      )} */}
-      {erc20Tokens &&
+      {nativeToken && (
+        <MyToken token={{
+          contractAddress: "0x",
+          decimals: nativeToken.decimals,
+          rawBalance: nativeToken.value,
+          balance: nativeToken.formatted,
+          symbol: nativeToken.symbol,
+          name: "Ethereum",
+          logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+        } as unknown as OwnedToken} />
+      )}
+      {/* {erc20Tokens &&
         erc20Tokens.length > 0 &&
         erc20Tokens.map((token) => (
           <MyToken key={token.contractAddress} token={token} />
-        ))}
+        ))} */}
     </View>
   );
 }

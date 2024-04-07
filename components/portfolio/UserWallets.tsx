@@ -21,7 +21,7 @@ import { useSetActiveWallet } from "@privy-io/wagmi";
 import { Image } from "expo-image";
 import useAuth from "~/hooks/user/useAuth";
 
-export default function wallets() {
+export default function Wallets() {
   const {
     ready,
     user,
