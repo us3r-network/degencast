@@ -12,7 +12,7 @@
           "us3r-degencast-dev"
         ],
         "degencast-test": [
-          "us3r-degencast-dev"
+          "us3r-degencast-test"
         ]
       }
     }
