@@ -1,4 +1,4 @@
-// import { LiFiWidget, WidgetConfig } from "@lifi/widget";
+import { LiFiWidget, WidgetConfig } from "@lifi/widget";
 // import { clientToSigner } from '@/utils/ethers';
 import { Text } from "react-native";
 import { Button } from "../ui/button";
@@ -25,17 +25,17 @@ export default function TradeButton({
         </Button>
       </DialogTrigger>
       <DialogContent>
-        {/* <Trade
+        <Trade
           fromChain={fromChain}
           fromToken={fromToken}
           toChain={toChain}
           toToken={toToken}
-        /> */}
+        />
       </DialogContent>
     </Dialog>
   );
 }
-/*
+
 function Trade({
   fromChain,
   fromToken,
@@ -110,4 +110,3 @@ function Trade({
     />
   );
 }
-*/
