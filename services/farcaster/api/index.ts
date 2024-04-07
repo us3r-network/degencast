@@ -122,3 +122,24 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
     },
   });
 }
+
+export function getUserDegenTipAllowance(addr: string) {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-farcaster/degen-tip/allowance?address=${addr}`,
+    method: "get",
+  });
+}
+
+export function notifyTipApi(data: {
+  txHash: string;
+  amount: number;
+  fromFid: number;
+  type: string;
+  castHash: string;
+}) {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-bot/tip/notify`,
+    method: "post",
+    data,
+  });
+}
