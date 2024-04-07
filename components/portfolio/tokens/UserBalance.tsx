@@ -20,13 +20,13 @@ const tokenAddress: string[] = [
 export default function Balance({ address }: { address: `0x${string}` }) {
   console.log("address", address, tokenAddress)
   const { nativeTokens, tokens, getERC20Tokens, getBalance } = useUserTokens(address, tokenAddress);
-  useEffect(() => {
-    getERC20Tokens().catch(console.error);
-    getBalance().catch(console.error);
-  }, [address, tokenAddress]);
+  // useEffect(() => {
+  //   getERC20Tokens().catch(console.error);
+  //   getBalance().catch(console.error);
+  // }, [address, tokenAddress]);
   return (
     <View className="flex w-full gap-2">
-      {/* <View className="flex-row items-center justify-between">
+      <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
@@ -35,7 +35,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
           defaultAddress={address}
           tokens={[...nativeTokens, ...tokens]}
         />
-      </View> */}
+      </View>
       {[...nativeTokens, ...tokens].map((token) => (
         // <Text key={token.contractAddress} >{token.name}</Text>
         <MyToken key={token.contractAddress} {...token} />
