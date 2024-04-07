@@ -33,7 +33,8 @@ export default function Balance({ address }: { address: `0x${string}` }) {
         />
       </View>
       {[...nativeTokens, ...tokens].map((token) => (
-        <MyToken key={token.contractAddress} {...token} />
+        <Text key={token.contractAddress} >{token.name}</Text>
+        // <MyToken key={token.contractAddress} {...token} />
       ))}
     </View>
   );
