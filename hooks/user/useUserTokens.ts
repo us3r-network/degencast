@@ -51,10 +51,10 @@ export default function useUserTokens(
     }
   }, [address]);
 
-  // useEffect(() => {
-  //   getERC20Tokens().catch(console.error);
-  //   getBalance().catch(console.error);
-  // }, [getERC20Tokens, getBalance]);
+  useEffect(() => {
+    getERC20Tokens().catch(console.error);
+    // getBalance().catch(console.error);
+  }, [getERC20Tokens]);
 
   return {
     nativeTokens,
