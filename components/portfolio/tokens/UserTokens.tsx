@@ -6,7 +6,6 @@ import { useAccount } from "wagmi";
 
 export default function UserTokens() {
   const { address } = useAccount();
-  console.log("address from UserTokens", address);
   return (
     <ScrollView className="h-full w-full" showsVerticalScrollIndicator={false}>
       <View className="flex w-full gap-6">
