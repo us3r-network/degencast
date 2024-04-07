@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alchemy, Network, OwnedToken } from "alchemy-sdk";
 import { EXPO_PUBLIC_ALCHEMY_API_KEY } from "~/constants";
+import { myTokens } from "~/services/user/api";
+import { ApiRespCode } from "~/services/shared/types";
 
 const config = {
   apiKey: EXPO_PUBLIC_ALCHEMY_API_KEY, // Replace with your API key
@@ -8,13 +10,10 @@ const config = {
 };
 const alchemy = new Alchemy(config);
 
-export default function useUserERC20Tokens(
-  address: string,
-  contractAddresses: string[],
-) {
+export default function useUserERC20Tokens() {
   const [tokens, setTokens] = useState<OwnedToken[]>([]);
 
-  const fetch = useCallback(async () => {
+  const fetch = async (address: string, contractAddresses: string[]) => {
     if (!address || !contractAddresses) return;
     const options = {
       contractAddresses,
@@ -25,13 +24,14 @@ export default function useUserERC20Tokens(
     } else {
       throw new Error("something went wrong!");
     }
-  }, [address, contractAddresses]);
+  };
 
-  useEffect(() => {
-    fetch().catch(console.error);
-  }, [fetch]);
+  // useEffect(() => {
+  //   fetch().catch(console.error);
+  // }, [fetch]);
 
   return {
-    tokens
+    tokens,
+    fetch,
   };
 }
