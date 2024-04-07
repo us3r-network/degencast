@@ -6,5 +6,8 @@ export default function useFarcasterAccount() {
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
   const signerPublicKey = farcasterAccount?.signerPublicKey || "";
-  return { farcasterAccount, signerPublicKey };
+
+  const currFid = user?.farcaster?.fid;
+
+  return { farcasterAccount, signerPublicKey, currFid };
 }
