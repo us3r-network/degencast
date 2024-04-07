@@ -1,6 +1,6 @@
 import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
-import React from "react";
+import React, { useEffect } from "react";
 import { Linking, Text, View } from "react-native";
 import useUserTokens from "~/hooks/user/useUserTokens";
 import { Info } from "../../Icons";
@@ -19,7 +19,11 @@ const tokenAddress: string[] = [
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   console.log("address", address, tokenAddress)
-  const { nativeTokens, tokens } = useUserTokens(address, tokenAddress);
+  const { nativeTokens, tokens, getERC20Tokens, getBalance } = useUserTokens(address, tokenAddress);
+  useEffect(() => {
+    getERC20Tokens().catch(console.error);
+    getBalance().catch(console.error);
+  }, [address, tokenAddress]);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
@@ -33,8 +37,8 @@ export default function Balance({ address }: { address: `0x${string}` }) {
         />
       </View>
       {[...nativeTokens, ...tokens].map((token) => (
-        <Text key={token.contractAddress} >{token.name}</Text>
-        // <MyToken key={token.contractAddress} {...token} />
+        // <Text key={token.contractAddress} >{token.name}</Text>
+        <MyToken key={token.contractAddress} {...token} />
       ))}
     </View>
   );
