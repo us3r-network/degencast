@@ -10,7 +10,7 @@ export default function UserTokens() {
   return (
     <ScrollView className="h-full w-full" showsVerticalScrollIndicator={false}>
       <View className="flex w-full gap-6">
-        {address && <Balance address={address as `0x${string}`} />}
+        <Balance address={address as `0x${string}`} />
         <CommunityTokens />
       </View>
     </ScrollView>

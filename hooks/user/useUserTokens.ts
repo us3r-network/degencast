@@ -53,9 +53,11 @@ export default function useUserTokens(
 
   useEffect(() => {
     getERC20Tokens().catch(console.error);
-    // getBalance().catch(console.error);
   }, [getERC20Tokens]);
-
+  useEffect(() => {
+    getBalance().catch(console.error);
+  }, [getBalance]);
+  
   return {
     nativeTokens,
     tokens,
