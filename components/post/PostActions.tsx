@@ -37,17 +37,14 @@ export const LikeButton = ({
   );
 };
 
-export const GiftButton = ({
-  giftCount,
-  ...props
-}: ButtonProps & { giftCount: number }) => {
+export const GiftButton = ({ ...props }: ButtonProps) => {
   return (
     <ActionButton {...props}>
       <Image
         source={require("~/assets/images/degen-icon.png")}
         style={{ width: 24, height: 20 }}
       />
-      <ActionText>{giftCount || 0}</ActionText>
+      {/* <ActionText>{giftCount || 0}</ActionText> */}
     </ActionButton>
   );
 };
@@ -63,7 +60,6 @@ export const ShareButton = ({ ...props }: ButtonProps) => {
 export const ExplorePostActions = ({
   liked,
   likeCount,
-  giftCount,
   onLike,
   onGift,
   onShare,
@@ -72,7 +68,6 @@ export const ExplorePostActions = ({
 }: ViewProps & {
   liked: boolean;
   likeCount: number;
-  giftCount: number;
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
@@ -80,7 +75,7 @@ export const ExplorePostActions = ({
   return (
     <View className={cn(" flex w-fit flex-col gap-3", className)} {...props}>
       <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
-      <GiftButton giftCount={giftCount} onPress={onGift} />
+      <GiftButton onPress={onGift} />
       <ShareButton onPress={onShare} />
     </View>
   );

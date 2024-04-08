@@ -8,7 +8,7 @@ import {
   selectUserAction,
 } from "~/features/user/userActionSlice";
 import { getCastUserActions } from "~/services/user/api";
-import { UserActionData } from "~/services/user/types";
+import { UserActionData, UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 
 export default function useUserCastLikeActionsUtil() {
@@ -56,9 +56,10 @@ export default function useUserCastLikeActionsUtil() {
         dispatch(addOneToLikeActionsPendingCastHashes(castHash));
         const res = await getCastUserActions(castHash);
         const { data } = res.data;
-        console.log(`fetchCastLikeActions data:`, data);
-
-        // dispatch(addManyToLikeActions(data));
+        const likeActions = data.filter(
+          (action) => action.action === UserActionName.Like,
+        ) as UserActionData[];
+        dispatch(addManyToLikeActions(likeActions));
       } catch (error) {
         console.error(`fetchCastLikeActions error:`, error);
       } finally {

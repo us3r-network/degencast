@@ -56,7 +56,7 @@ export default function FCastCommunity({
       </Text>
       <Button className="bg-secondary font-bold" onPress={() => {}}>
         <Text className="font-bold text-secondary-foreground">
-          Buy with 4,232 DEGEN
+          Buy with 9999 DEGEN
         </Text>
       </Button>
     </View>
