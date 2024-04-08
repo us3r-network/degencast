@@ -1,7 +1,7 @@
 import { round } from "lodash";
 import React from "react";
 import { Text, View } from "react-native";
-import { ChevronDown, ChevronUp } from "~/components/Icons";
+import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import useUserTips from "~/hooks/user/useUserTips";
 import { TipsInfo } from "~/services/user/types";
 import {
@@ -9,7 +9,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../ui/collapsible";
-import { CommunityInfo } from "./CommunityInfo";
+import { CommunityInfo } from "../../common/CommunityInfo";
 import { Button } from "~/components/ui/button";
 
 const DEFAULT_ITEMS_NUM = 1;

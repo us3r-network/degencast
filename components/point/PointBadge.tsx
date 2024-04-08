@@ -1,4 +1,4 @@
-import { Atom } from "../Icons";
+import { Atom } from "../common/Icons";
 import { Badge } from "../ui/badge";
 import { Text } from "../ui/text";
 

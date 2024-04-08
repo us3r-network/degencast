@@ -1,4 +1,4 @@
-import { X } from '~/components/Icons';
+import { X } from '~/components/common/Icons';
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';

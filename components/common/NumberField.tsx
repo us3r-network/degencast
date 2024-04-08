@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TextInput, View } from "react-native";
 import { Button } from "../ui/button";
-import { Minus, Plus } from "../Icons";
+import { Minus, Plus } from "./Icons";
 
 type NumberFieldProps = React.ComponentPropsWithoutRef<typeof View> & {
   defaultValue?: number;

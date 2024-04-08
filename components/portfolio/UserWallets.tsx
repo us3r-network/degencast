@@ -7,7 +7,7 @@ import {
 import React, { useMemo } from "react";
 import { Pressable, View, Text } from "react-native";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import { PlusCircle, MinusCircle, Wallet } from "../Icons";
+import { PlusCircle, MinusCircle, Wallet } from "../common/Icons";
 import {
   Select,
   SelectContent,
@@ -62,7 +62,7 @@ export default function Wallets() {
   }
   return (
     <Select
-      className="w-[200px]"
+      className="w-40"
       defaultValue={{
         value: activeWallet?.address || "",
         label: activeWallet?.address || "",
@@ -81,7 +81,7 @@ export default function Wallets() {
           placeholder="Select a wallet"
         /> */}
         <View className="flex-row items-center gap-2">
-          <Wallet  />
+          <Wallet className="size-6"  />
           <Text className="text-white">{shortPubKey(activeWallet?.address || "")}</Text>
         </View>
       </SelectTrigger>
