@@ -1,25 +1,32 @@
 import { round } from "lodash";
 import React from "react";
-import { Linking, Text, View } from "react-native";
+import { Linking, ScrollView, Text, View } from "react-native";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Button } from "~/components/ui/button";
-import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import { TokenInfoWithStats } from "~/services/trade/types";
 
 export default function CommunityTokens() {
-  const { items } = useUserCommunityTokens();
+  const { items } = useCommunityTokens();
   return (
-    <View className="flex w-full gap-2">
-      {items?.length > 0 &&
-        items.map((item) => <Item key={item.contractAddress} {...item} />)}
-    </View>
+    <ScrollView showsVerticalScrollIndicator={false} className="w-full">
+      <View className="flex w-full gap-4">
+        {items?.length > 0 &&
+          items.map((item, index) => (
+            <Item key={item.contractAddress} item={item} index={index + 1} />
+          ))}
+      </View>
+    </ScrollView>
   );
 }
 
-function Item(item: TokenInfoWithMetadata) {
+function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo {...item} />
+      <View className="flex-row items-center gap-4">
+        <Text className="w-4 text-right text-md font-bold">{index}</Text>
+        <TokenInfo {...item} />
+      </View>
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.balance), 2)}</Text>
         <Button
