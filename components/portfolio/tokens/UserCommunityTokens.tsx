@@ -1,18 +1,16 @@
-import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
 import React from "react";
-import { Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/Icons";
 import { Button } from "~/components/ui/button";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
+import { TokenInfoWithMetadata } from "~/services/user/types";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../ui/collapsible";
 import { TokenInfo } from "./TokenInfo";
-import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
-import { base } from "viem/chains";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -56,26 +54,27 @@ export default function CommunityTokens() {
   );
 }
 
-function CommunityToken(token: OwnedToken) {
+function CommunityToken(token: TokenInfoWithMetadata) {
   return (
     <View className="flex-row items-center justify-between">
       <TokenInfo {...token} />
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(token.balance), 2)}</Text>
-        {/* <Button
+        <Button
           className="bg-secondary"
           onPress={() => {
             console.log("Trade button pressed");
+            Linking.openURL("https://app.uniswap.org/");
           }}
         >
           <Text className="font-bold text-secondary-foreground">Trade</Text>
-        </Button> */}
-        <TradeButton
+        </Button>
+        {/* <TradeButton
           fromChain={base.id}
           fromToken={token.contractAddress as `0x${string}`}
           toChain={base.id}
           toToken={NATIVE_TOKEN}
-        />
+        /> */}
       </View>
     </View>
   );

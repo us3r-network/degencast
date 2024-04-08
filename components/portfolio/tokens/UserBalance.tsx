@@ -1,17 +1,17 @@
 import { MoonpayConfig, useWallets } from "@privy-io/react-auth";
-import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
-import { Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 import { useAccount, useBalance, useReadContracts } from "wagmi";
 import { Info } from "../../Icons";
 import { Button } from "../../ui/button";
-import SendButton from "../SendButton";
+import WithdrawButton from "../WithdrawButton";
 import { TokenInfo } from "./TokenInfo";
 import { base } from "viem/chains";
 import { erc20Abi, formatUnits } from "viem";
+import { TokenInfoWithMetadata } from "~/services/user/types";
 
+export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
 const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
-
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { data: nativeToken } = useBalance({
     address,
@@ -29,7 +29,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
         address: DEGEN_ADDRESS,
         abi: erc20Abi,
         functionName: "balanceOf",
-        args: [address], 
+        args: [address],
       },
       {
         address: DEGEN_ADDRESS,
@@ -44,6 +44,32 @@ export default function Balance({ address }: { address: `0x${string}` }) {
     ],
   });
   // console.log("balance: ", nativeToken, degenToken);
+  enum TOKENS {
+    NATIVE = "native",
+    DEGEN = "degen",
+  }
+  const tokens = new Map<TOKENS, TokenInfoWithMetadata>();
+  if (nativeToken)
+    tokens.set(TOKENS.NATIVE, {
+      contractAddress: NATIVE_TOKEN,
+      name: "Ethereum",
+      rawBalance: nativeToken.value,
+      decimals: nativeToken.decimals,
+      balance: formatUnits(nativeToken.value, nativeToken.decimals),
+      symbol: nativeToken.symbol,
+      logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    });
+  if (degenToken)
+    tokens.set(TOKENS.DEGEN, {
+      contractAddress: DEGEN_ADDRESS,
+      name: degenToken[0],
+      rawBalance: degenToken[1],
+      decimals: degenToken[2],
+      balance: formatUnits(degenToken[1], degenToken[2]),
+      symbol: degenToken[3],
+      logo: "/assets/images/degen-icon.png",
+    });
+
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
@@ -51,44 +77,39 @@ export default function Balance({ address }: { address: `0x${string}` }) {
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
         </View>
-        {/* <SendButton
+        <WithdrawButton
           defaultAddress={address}
-          tokens={[...nativeTokens, ...erc20Tokens]}
-        /> */}
+          availableTokens={Array.from(tokens, ([name, value]) => value)}
+        />
       </View>
-      {nativeToken && (
+      {tokens.has(TOKENS.NATIVE) && (
         <MyToken
-          token={
-            {
-              name: "Ethereum",
-              rawBalance: nativeToken.value,
-              decimals: nativeToken.decimals,
-              balance: formatUnits(nativeToken.value, nativeToken.decimals),
-              symbol: nativeToken.symbol,
-              logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-            } as unknown as OwnedToken
-          }
+          token={tokens.get(TOKENS.NATIVE) as TokenInfoWithMetadata}
+          action={ACTION_TYPES.BUY}
         />
       )}
-      {degenToken && (
+      {tokens.has(TOKENS.DEGEN) && (
         <MyToken
-          token={
-            {
-              name: degenToken[0],
-              rawBalance: degenToken[1],
-              decimals: degenToken[2],
-              balance: formatUnits(degenToken[1], degenToken[2]),
-              symbol: degenToken[3],
-              logo: "/assets/images/degen-icon.png",
-            } as unknown as OwnedToken
-          }
+          token={tokens.get(TOKENS.DEGEN) as TokenInfoWithMetadata}
+          action={ACTION_TYPES.SWAP}
         />
       )}
     </View>
   );
 }
 
-function MyToken({ token }: { token: OwnedToken }) {
+enum ACTION_TYPES {
+  BUY = "Buy",
+  SELL = "Sell",
+  SWAP = "Swap",
+}
+function MyToken({
+  token,
+  action,
+}: {
+  token: TokenInfoWithMetadata;
+  action: ACTION_TYPES;
+}) {
   const { wallets } = useWallets();
   const { address } = useAccount();
   const wallet = wallets.find((wallet) => wallet.address === address);
@@ -108,17 +129,34 @@ function MyToken({ token }: { token: OwnedToken }) {
         <Text>
           {round(Number(token.balance), 2)} {token.symbol}
         </Text>
-        {wallet && (
-          <Button
-            className="bg-secondary font-bold"
-            onPress={async () => {
-              // Linking.openURL("https://buy-sandbox.moonpay.com/");
-              await wallet.fund({ config: fundWalletConfig as MoonpayConfig });
-            }}
-          >
-            <Text className="font-bold text-secondary-foreground">Buy</Text>
-          </Button>
-        )}
+        {wallet &&
+          (action === ACTION_TYPES.BUY ? (
+            <Button
+              className="w-[70px] bg-secondary font-bold"
+              onPress={async () => {
+                // Linking.openURL("https://buy-sandbox.moonpay.com/");
+                await wallet.fund({
+                  config: fundWalletConfig as MoonpayConfig,
+                });
+              }}
+            >
+              <Text className="font-bold text-secondary-foreground">Buy</Text>
+            </Button>
+          ) : (
+            action === ACTION_TYPES.SWAP && (
+              <Button
+                className="bg-secondary"
+                onPress={() => {
+                  console.log("Trade button pressed");
+                  Linking.openURL("https://app.uniswap.org/");
+                }}
+              >
+                <Text className="font-bold text-secondary-foreground">
+                  Swap
+                </Text>
+              </Button>
+            )
+          ))}
       </View>
     </View>
   );
