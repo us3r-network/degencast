@@ -1,20 +1,20 @@
 import { round } from "lodash";
 import React from "react";
-import { Linking, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/Icons";
-import { Button } from "~/components/ui/button";
-import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import useUserTips from "~/hooks/user/useUserTips";
+import { TipsInfo } from "~/services/user/types";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../ui/collapsible";
-import { TokenInfo } from "./TokenInfo";
+import { CommunityInfo } from "./CommunityInfo";
+import { Button } from "~/components/ui/button";
 
-const DEFAULT_ITEMS_NUM = 3;
-export default function CommunityTokens() {
-  const { items } = useUserCommunityTokens();
+const DEFAULT_ITEMS_NUM = 1;
+export default function Tips() {
+  const { items } = useUserTips();
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -25,7 +25,7 @@ export default function CommunityTokens() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold text-primary">
-            Community Token ({items.length})
+            Tips ({items.length})
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
@@ -35,41 +35,35 @@ export default function CommunityTokens() {
         {items?.length > 0 &&
           items
             .slice(0, DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.contractAddress} {...item} />)}
+            .map((item) => <Item key={item.name} {...item} />)}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
         {items?.length > DEFAULT_ITEMS_NUM &&
           items
             .slice(DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.contractAddress} {...item} />)}
+            .map((item) => <Item key={item.name} {...item} />)}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-function Item(item: TokenInfoWithMetadata) {
+function Item(item: TipsInfo) {
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo {...item} />
+      <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.balance), 2)}</Text>
+        <Text>{round(Number(item.amount), 2)}</Text>
         <Button
+          disabled
           className="w-14 bg-secondary"
           onPress={() => {
-            console.log("Trade button pressed");
-            Linking.openURL("https://app.uniswap.org/");
+            console.log("Claim button pressed");
           }}
         >
           <Text className="text-xs font-bold text-secondary-foreground">
-            Trade
+            Claim
           </Text>
         </Button>
-        {/* <TradeButton
-          fromChain={base.id}
-          fromToken={token.contractAddress as `0x${string}`}
-          toChain={base.id}
-          toToken={NATIVE_TOKEN}
-        /> */}
       </View>
     </View>
   );

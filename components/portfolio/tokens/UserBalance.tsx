@@ -52,7 +52,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
   if (nativeToken)
     tokens.set(TOKENS.NATIVE, {
       contractAddress: NATIVE_TOKEN,
-      name: "Ethereum",
+      name: "ETH",
       rawBalance: nativeToken.value,
       decimals: nativeToken.decimals,
       balance: formatUnits(nativeToken.value, nativeToken.decimals),
@@ -132,7 +132,7 @@ function MyToken({
         {wallet &&
           (action === ACTION_TYPES.BUY ? (
             <Button
-              className="w-[70px] bg-secondary font-bold"
+              className="w-14 bg-secondary"
               onPress={async () => {
                 // Linking.openURL("https://buy-sandbox.moonpay.com/");
                 await wallet.fund({
@@ -140,18 +140,20 @@ function MyToken({
                 });
               }}
             >
-              <Text className="font-bold text-secondary-foreground">Buy</Text>
+              <Text className="text-xs font-bold text-secondary-foreground">
+                Buy
+              </Text>
             </Button>
           ) : (
             action === ACTION_TYPES.SWAP && (
               <Button
-                className="bg-secondary"
+                className="w-14 bg-secondary"
                 onPress={() => {
                   console.log("Trade button pressed");
                   Linking.openURL("https://app.uniswap.org/");
                 }}
               >
-                <Text className="font-bold text-secondary-foreground">
+                <Text className="text-xs font-bold text-secondary-foreground">
                   Swap
                 </Text>
               </Button>

@@ -1,20 +1,20 @@
 import { round } from "lodash";
 import React from "react";
-import { Linking, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/Icons";
-import { Button } from "~/components/ui/button";
-import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import useUserShares from "~/hooks/user/useUserShares";
+import { ShareInfo } from "~/services/user/types";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../ui/collapsible";
-import { TokenInfo } from "./TokenInfo";
+import { SellButton } from "../ShareButton";
+import { CommunityInfo } from "./CommunityInfo";
 
 const DEFAULT_ITEMS_NUM = 3;
-export default function CommunityTokens() {
-  const { items } = useUserCommunityTokens();
+export default function Share() {
+  const { items } = useUserShares();
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -25,7 +25,7 @@ export default function CommunityTokens() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold text-primary">
-            Community Token ({items.length})
+            Share ({items.length})
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
@@ -35,41 +35,29 @@ export default function CommunityTokens() {
         {items?.length > 0 &&
           items
             .slice(0, DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.contractAddress} {...item} />)}
+            .map((item) => (
+              <ShareItem key={item.name} {...item} />
+            ))}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
         {items?.length > DEFAULT_ITEMS_NUM &&
           items
             .slice(DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.contractAddress} {...item} />)}
+            .map((item) => (
+              <ShareItem key={item.name} {...item} />
+            ))}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-function Item(item: TokenInfoWithMetadata) {
+function ShareItem(item: ShareInfo) {
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo {...item} />
+      <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.balance), 2)}</Text>
-        <Button
-          className="w-14 bg-secondary"
-          onPress={() => {
-            console.log("Trade button pressed");
-            Linking.openURL("https://app.uniswap.org/");
-          }}
-        >
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Trade
-          </Text>
-        </Button>
-        {/* <TradeButton
-          fromChain={base.id}
-          fromToken={token.contractAddress as `0x${string}`}
-          toChain={base.id}
-          toToken={NATIVE_TOKEN}
-        /> */}
+        <Text>{round(Number(item.amount), 2)}</Text>
+        <SellButton logo={""} name={""} assetId={item.assetId}  />
       </View>
     </View>
   );

@@ -2,11 +2,6 @@ export type LoginRespEntity = {
   id: number;
 };
 
-export type MyWalletTokensRespEntity = {
-  wallet: string;
-  tokens: TokenInfoWithMetadata[];
-};
-
 export enum UserActionName {
   Share = "Share",
   View = "View",
@@ -33,6 +28,10 @@ export type UserActionPointConfig = {
   };
 };
 
+export type MyWalletTokensRespEntity = {
+  wallet: string;
+  tokens: TokenInfoWithMetadata[];
+};
 export type TokenInfoWithMetadata = {
   contractAddress: string;
   name?: string | undefined;
@@ -41,4 +40,17 @@ export type TokenInfoWithMetadata = {
   balance?: number | string | undefined;
   symbol?: string | undefined;
   logo?: string;
+};
+
+export type ShareInfo = {
+  name?: string | undefined;
+  logo?: string;
+  amount:number;
+  assetId:number;
+};
+
+export type TipsInfo = {
+  name?: string | undefined;
+  logo?: string;
+  amount:number;
 };
