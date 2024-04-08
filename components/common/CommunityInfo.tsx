@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type CommunityInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   name?: string;

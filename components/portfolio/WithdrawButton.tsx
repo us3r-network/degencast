@@ -18,7 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "../ui/select";
-import { TokenInfo } from "./tokens/TokenInfo";
+import { TokenInfo } from "../common/TokenInfo";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import { round } from "lodash";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";

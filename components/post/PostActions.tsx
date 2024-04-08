@@ -1,6 +1,6 @@
 import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
-import { Heart, Share2 } from "../Icons";
+import { Heart, Share2 } from "../common/Icons";
 import { Text } from "../ui/text";
 import { TextProps, View, ViewProps } from "react-native";
 import { Image } from "expo-image";

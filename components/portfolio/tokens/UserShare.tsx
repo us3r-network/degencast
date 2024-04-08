@@ -1,7 +1,7 @@
 import { round } from "lodash";
 import React from "react";
 import { Text, View } from "react-native";
-import { ChevronDown, ChevronUp } from "~/components/Icons";
+import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import useUserShares from "~/hooks/user/useUserShares";
 import { ShareInfo } from "~/services/user/types";
 import {
@@ -10,7 +10,7 @@ import {
   CollapsibleTrigger,
 } from "../../ui/collapsible";
 import { SellButton } from "../ShareButton";
-import { CommunityInfo } from "./CommunityInfo";
+import { CommunityInfo } from "../../common/CommunityInfo";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share() {

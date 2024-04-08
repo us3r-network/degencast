@@ -18,12 +18,12 @@ import {
   SelectItem,
   SelectTrigger,
 } from "../ui/select";
-import { TokenInfo } from "./tokens/TokenInfo";
+import { TokenInfo } from "../common/TokenInfo";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import { round } from "lodash";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { cn } from "~/lib/utils";
-import { CommunityInfo } from "./tokens/CommunityInfo";
+import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 
 export function SellButton({
