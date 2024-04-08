@@ -21,7 +21,7 @@ import { useSetActiveWallet } from "@privy-io/wagmi";
 import { Image } from "expo-image";
 import useAuth from "~/hooks/user/useAuth";
 
-export default function wallets() {
+export default function Wallets() {
   const {
     ready,
     user,
@@ -82,7 +82,7 @@ export default function wallets() {
         /> */}
         <View className="flex-row items-center gap-2">
           <Wallet  />
-          <Text>{shortPubKey(activeWallet?.address || "")}</Text>
+          <Text className="text-white">{shortPubKey(activeWallet?.address || "")}</Text>
         </View>
       </SelectTrigger>
       <SelectContent className="flex w-full">

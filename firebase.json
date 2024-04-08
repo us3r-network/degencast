@@ -27,6 +27,20 @@
           "destination": "/index.html"
         }
       ]
+    },
+    {
+      "target": "degencast-test",
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     }
   ]
 }

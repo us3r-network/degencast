@@ -7,6 +7,7 @@ name: Deploy to Firebase Hosting on merge
     branches:
       - main
       - release
+      - test
 jobs:
   prod_build_and_deploy:
     if: github.ref == 'refs/heads/release'
@@ -64,3 +65,31 @@ jobs:
           channelId: live
           projectId: us3r-network
           target: degencast-dev
+  test_build_and_deploy:
+    if: github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://test.degencast.xyz
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm i && npm run export
+        env:
+          CI: true
+          REACT_APP_NAME: "DEGENCAST"
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          EXPO_PUBLIC_PRIVY_APP_ID: "${{ vars.EXPO_PUBLIC_PRIVY_APP_ID }}"
+          EXPO_PUBLIC_ALCHEMY_API_KEY: "${{ vars.EXPO_PUBLIC_ALCHEMY_API_KEY }}"
+          EXPO_PUBLIC_API_BASE_URL: "${{ vars.EXPO_PUBLIC_API_BASE_URL }}"
+          EXPO_PUBLIC_FARCASTER_API_URL: "${{ vars.EXPO_PUBLIC_FARCASTER_API_URL }}"
+          EXPO_PUBLIC_FARCASTER_NETWORK: "${{ vars.EXPO_PUBLIC_FARCASTER_NETWORK }}"
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}"
+          channelId: live
+          projectId: us3r-network
+          target: degencast-test

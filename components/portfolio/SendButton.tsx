@@ -1,25 +1,22 @@
-import { LiFiWidget, WidgetConfig } from "@lifi/widget";
 import { useState } from "react";
 // import { clientToSigner } from '@/utils/ethers';
 import { Pressable, Text, TextInput, View } from "react-native";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
-import { base } from "viem/chains";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { OwnedToken } from "alchemy-sdk";
+import { parseEther } from "viem";
+import { base } from "viem/chains";
+import { useSendTransaction } from "wagmi";
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectTrigger,
 } from "../ui/select";
-import { OwnedToken, Wallet } from "alchemy-sdk";
-import { MinusCircle } from "lucide-react-native";
-import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenInfo } from "./tokens/TokenInfo";
-import { useSendTransaction } from "wagmi";
-import { parseEther } from "viem";
 
 export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
 export default function SendButton({
