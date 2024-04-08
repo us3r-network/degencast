@@ -104,6 +104,7 @@ export default function EmbedFrame({
             if (!button.label) return null;
             return (
               <Button
+                key={idx}
                 variant={"outline"}
                 onPress={async (e) => {
                   e.stopPropagation();

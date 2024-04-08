@@ -25,6 +25,9 @@ export default function FCastGiftModal({
   const [allowanceValue, setAllowanceValue] = useState("");
   const { loading, degenAllowanceAction } = useUserDegenAllowanceAction({
     cast,
+    onSuccess: () => {
+      onOpenChange(false);
+    },
   });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,7 +87,7 @@ export default function FCastGiftModal({
               className="rounded-full bg-[#F41F4C] font-bold text-white hover:cursor-pointer"
               disabled={loading}
               onPress={() => {
-                console.log(allowanceValue);
+                // TODO toast
                 if (!Number(allowanceValue)) {
                   console.error("no allowance value");
                   return;
