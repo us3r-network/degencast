@@ -1,9 +1,8 @@
-import { OwnedToken } from "alchemy-sdk";
-import React from "react";
 import { Text, View } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { TokenInfoWithMetadata } from "~/services/user/types";
 
-export function TokenInfo(token: OwnedToken) {
+export function TokenInfo(token: TokenInfoWithMetadata) {
     return (
       <View className="flex-row items-center gap-2">
         <Avatar alt={token.name || token.symbol || ""} className="size-8">
