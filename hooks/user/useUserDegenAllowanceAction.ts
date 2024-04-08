@@ -3,6 +3,7 @@ import { notifyTipApi } from "~/services/farcaster/api";
 import useFarcasterWrite from "../social-farcaster/useFarcasterWrite";
 import { FarCast } from "~/services/farcaster/types";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
+import getCastHex from "~/utils/farcaster/getCastHex";
 
 export default function useUserDegenAllowanceAction({
   cast,
@@ -14,19 +15,17 @@ export default function useUserDegenAllowanceAction({
   const { currFid } = useFarcasterAccount();
   const { submitCastWithOpts } = useFarcasterWrite();
   const [loading, setLoading] = useState<boolean>(false);
+
   const degenAllowanceAction = useCallback(
     async (allowanceValue: number) => {
       if (loading) return;
       try {
         setLoading(true);
+        const castHex = getCastHex(cast);
         await submitCastWithOpts({
           text: `${allowanceValue} $DEGEN`,
-          embeds: [],
-          embedsDeprecated: [],
-          mentions: [],
-          mentionsPositions: [],
           parentCastId: {
-            hash: Buffer.from(cast.hash.data),
+            hash: castHex,
             fid: Number(cast.fid),
           },
         });
@@ -35,7 +34,7 @@ export default function useUserDegenAllowanceAction({
           amount: Number(allowanceValue),
           txHash: "",
           type: "Allowance",
-          castHash: Buffer.from(cast.hash.data).toString("hex"),
+          castHash: castHex,
         });
         onSuccess?.();
       } catch (error) {
@@ -44,7 +43,7 @@ export default function useUserDegenAllowanceAction({
         setLoading(false);
       }
     },
-    [cast, currFid, loading, onSuccess],
+    [cast, currFid, loading, onSuccess, submitCastWithOpts],
   );
 
   return { loading, degenAllowanceAction };
