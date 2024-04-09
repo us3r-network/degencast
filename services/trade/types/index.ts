@@ -1,11 +1,24 @@
+
+export type VolumeStats = {
+  volume_usd: string;
+  date: number;
+  _id: string;
+};
 export type TokenInfoWithStats = {
-  contractAddress: string;
+  id:string;
+  tokenAddress: string;
   name?: string | undefined;
-  rawBalance?: BigInt | string;
-  decimals?: number | undefined;
-  balance?: number | string | undefined;
-  symbol?: string | undefined;
-  logo?: string;
+  imageURL?: string;
+  volumeStats: VolumeStats[];
+  stats: {
+    market_cap_usd:string;
+    price_change_percentage:{
+      h1:string;
+      h6:string;
+      h24:string;
+      m5:string;
+    }
+  };
 };
 
 export type ShareInfo = {

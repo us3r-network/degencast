@@ -124,7 +124,7 @@ function MyToken({
   };
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo {...token} />
+      <TokenInfo name={token.name} logo={token.logo}/>
       <View className="flex-row items-center gap-2">
         <Text>
           {round(Number(token.balance), 2)} {token.symbol}

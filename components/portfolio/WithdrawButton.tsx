@@ -143,7 +143,7 @@ function ToeknSelect({
             key={token.contractAddress}
             value={token.contractAddress}
           />
-          <Text className="text-lg font-bold text-white">{token.name}</Text>
+          <TokenInfo name={token.name} logo={token.logo}/>
           <Text className="text-secondary">
             {round(Number(token.balance), 4)} available
           </Text>
