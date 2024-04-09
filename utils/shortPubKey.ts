@@ -9,7 +9,7 @@ export function shortPubKey(
   if (split) {
     return key.slice(0, len) + split + key.slice(-len);
   }
-  return key.slice(0, len + 2) + '..'.repeat(len / 4) + key.slice(-len);
+  return key.slice(0, len + 2) + '...'.repeat(len / 4) + key.slice(-len);
 }
 
 export function shortPubKeyHash(hashKey: string) {
