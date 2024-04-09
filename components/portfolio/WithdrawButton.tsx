@@ -42,7 +42,7 @@ export default function WithdrawButton({
           <Text className="font-bold text-secondary">Withdraw</Text>
         </Pressable>
       </DialogTrigger>
-      <DialogContent className="w-[400px] text-primary-foreground">
+      <DialogContent  className="box-border max-sm:w-screen text-primary-foreground">
         <DialogTitle className="text-md font-bold">Withdraw</DialogTitle>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">

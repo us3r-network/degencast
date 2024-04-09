@@ -39,7 +39,7 @@ export function SellButton({
           </Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[400px] text-primary-foreground">
+      <DialogContent className="box-border max-sm:w-screen text-primary-foreground">
         <DialogTitle className="text-md font-bold">Sell</DialogTitle>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
@@ -103,7 +103,7 @@ export function BuyButton({
           </Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[400px] text-primary-foreground">
+      <DialogContent className="box-border max-sm:w-screen text-primary-foreground">
         <DialogTitle className="text-md font-bold">Buy Shares & get allowance</DialogTitle>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
