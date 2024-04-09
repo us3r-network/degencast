@@ -4,10 +4,12 @@ import { Card, CardContent } from "~/components/ui/card";
 import { useState } from "react";
 import { cn } from "~/lib/utils";
 import CommunityTokens from "~/components/trade/CommunityTokens";
+import CommunityShares from "~/components/trade/CommunityShares";
+import CommunityRank from "~/components/trade/CommunityRank";
 const TABS = [
   { label: "Tokens", value: "tokens", content: <CommunityTokens /> },
-  { label: "Shares", value: "shares", content: <CommunityTokens /> },
-  { label: "Rank", value: "rank", content: <CommunityTokens /> },
+  { label: "Shares", value: "shares", content: <CommunityShares /> },
+  { label: "Rank", value: "rank", content: <CommunityRank /> },
 ];
 export default function TradeScreen() {
   const [value, setValue] = useState("tokens");
@@ -16,7 +18,7 @@ export default function TradeScreen() {
       <Tabs
         value={value}
         onValueChange={setValue}
-        className="relative box-border w-full max-w-screen-sm mx-auto flex-1"
+        className="relative mx-auto box-border w-full max-w-screen-sm flex-1"
       >
         {TABS.map((tab) => (
           <TabsContent
