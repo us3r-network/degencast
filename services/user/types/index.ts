@@ -1,12 +1,5 @@
-import { OwnedToken } from "alchemy-sdk";
-
 export type LoginRespEntity = {
   id: number;
-};
-
-export type MyWalletTokensRespEntity = {
-  wallet: string;
-  tokens: OwnedToken[];
 };
 
 export enum UserActionName {
@@ -33,4 +26,31 @@ export type UserActionPointConfig = {
     unit: number;
     dailyLimit?: number;
   };
+};
+
+export type MyWalletTokensRespEntity = {
+  wallet: string;
+  tokens: TokenInfoWithMetadata[];
+};
+export type TokenInfoWithMetadata = {
+  contractAddress: string;
+  name?: string | undefined;
+  rawBalance?: BigInt | string;
+  decimals?: number | undefined;
+  balance?: number | string | undefined;
+  symbol?: string | undefined;
+  logo?: string;
+};
+
+export type ShareInfo = {
+  name?: string | undefined;
+  logo?: string;
+  amount:number;
+  assetId:number;
+};
+
+export type TipsInfo = {
+  name?: string | undefined;
+  logo?: string;
+  amount:number;
 };

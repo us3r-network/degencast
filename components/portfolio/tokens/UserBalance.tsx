@@ -1,49 +1,16 @@
 import { MoonpayConfig, useWallets } from "@privy-io/react-auth";
-import { OwnedToken } from "alchemy-sdk";
 import { round } from "lodash";
-import { Text, View } from "react-native";
-import { useAccount, useBalance, useReadContracts } from "wagmi";
-import { Info } from "../../Icons";
+import { Linking, Text, View } from "react-native";
+import { useAccount } from "wagmi";
+import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
+import { TokenInfoWithMetadata } from "~/services/user/types";
+import { Info } from "../../common/Icons";
+import { TokenInfo } from "../../common/TokenInfo";
 import { Button } from "../../ui/button";
-import SendButton from "../SendButton";
-import { TokenInfo } from "./TokenInfo";
-import { base } from "viem/chains";
-import { erc20Abi, formatUnits } from "viem";
-
-const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
+import WithdrawButton from "../WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
-  const { data: nativeToken } = useBalance({
-    address,
-    chainId: base.id,
-  });
-  const { data: degenToken } = useReadContracts({
-    allowFailure: false,
-    contracts: [
-      {
-        address: DEGEN_ADDRESS,
-        abi: erc20Abi,
-        functionName: "name",
-      },
-      {
-        address: DEGEN_ADDRESS,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [address], 
-      },
-      {
-        address: DEGEN_ADDRESS,
-        abi: erc20Abi,
-        functionName: "decimals",
-      },
-      {
-        address: DEGEN_ADDRESS,
-        abi: erc20Abi,
-        functionName: "symbol",
-      },
-    ],
-  });
-  // console.log("balance: ", nativeToken, degenToken);
+  const { userTokens } = useUserTokens();
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
@@ -51,44 +18,38 @@ export default function Balance({ address }: { address: `0x${string}` }) {
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
         </View>
-        {/* <SendButton
+        <WithdrawButton
           defaultAddress={address}
-          tokens={[...nativeTokens, ...erc20Tokens]}
-        /> */}
+        />
       </View>
-      {nativeToken && (
+      {userTokens.has(TOKENS.NATIVE) && (
         <MyToken
-          token={
-            {
-              name: "Ethereum",
-              rawBalance: nativeToken.value,
-              decimals: nativeToken.decimals,
-              balance: formatUnits(nativeToken.value, nativeToken.decimals),
-              symbol: nativeToken.symbol,
-              logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-            } as unknown as OwnedToken
-          }
+          token={userTokens.get(TOKENS.NATIVE) as TokenInfoWithMetadata}
+          action={ACTION_TYPES.BUY}
         />
       )}
-      {degenToken && (
+      {userTokens.has(TOKENS.DEGEN) && (
         <MyToken
-          token={
-            {
-              name: degenToken[0],
-              rawBalance: degenToken[1],
-              decimals: degenToken[2],
-              balance: formatUnits(degenToken[1], degenToken[2]),
-              symbol: degenToken[3],
-              logo: "/assets/images/degen-icon.png",
-            } as unknown as OwnedToken
-          }
+          token={userTokens.get(TOKENS.DEGEN) as TokenInfoWithMetadata}
+          action={ACTION_TYPES.SWAP}
         />
       )}
     </View>
   );
 }
 
-function MyToken({ token }: { token: OwnedToken }) {
+enum ACTION_TYPES {
+  BUY = "Buy",
+  SELL = "Sell",
+  SWAP = "Swap",
+}
+function MyToken({
+  token,
+  action,
+}: {
+  token: TokenInfoWithMetadata;
+  action: ACTION_TYPES;
+}) {
   const { wallets } = useWallets();
   const { address } = useAccount();
   const wallet = wallets.find((wallet) => wallet.address === address);
@@ -103,22 +64,41 @@ function MyToken({ token }: { token: OwnedToken }) {
   };
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo {...token} />
+      <TokenInfo name={token.name} logo={token.logo} />
       <View className="flex-row items-center gap-2">
         <Text>
           {round(Number(token.balance), 2)} {token.symbol}
         </Text>
-        {wallet && (
-          <Button
-            className="bg-secondary font-bold"
-            onPress={async () => {
-              // Linking.openURL("https://buy-sandbox.moonpay.com/");
-              await wallet.fund({ config: fundWalletConfig as MoonpayConfig });
-            }}
-          >
-            <Text className="font-bold text-secondary-foreground">Buy</Text>
-          </Button>
-        )}
+        {wallet &&
+          (action === ACTION_TYPES.BUY ? (
+            <Button
+              className="w-14 bg-secondary"
+              onPress={async () => {
+                // Linking.openURL("https://buy-sandbox.moonpay.com/");
+                await wallet.fund({
+                  config: fundWalletConfig as MoonpayConfig,
+                });
+              }}
+            >
+              <Text className="text-xs font-bold text-secondary-foreground">
+                Buy
+              </Text>
+            </Button>
+          ) : (
+            action === ACTION_TYPES.SWAP && (
+              <Button
+                className="w-14 bg-secondary"
+                onPress={() => {
+                  console.log("Trade button pressed");
+                  Linking.openURL("https://app.uniswap.org/");
+                }}
+              >
+                <Text className="text-xs font-bold text-secondary-foreground">
+                  Swap
+                </Text>
+              </Button>
+            )
+          ))}
       </View>
     </View>
   );

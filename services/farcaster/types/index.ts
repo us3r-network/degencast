@@ -196,3 +196,26 @@ export type PoapData = {
   chain: string;
   created: string;
 };
+
+export type FeedsDataItem =
+  | { data: FarCast; platform: SocialPlatform.Farcaster }
+  // | { data: LensPost; platform: SocialPlatform.Lens; version?: string };
+
+export type ProfileFeedsDataItem =
+  | { data: FarCast; platform: SocialPlatform.Farcaster }
+  // | { data: LensPost; platform: SocialPlatform.Lens; version?: string }
+  // | { data: LensMirror; platform: SocialPlatform.Lens; version?: string }
+  // | { data: LensComment; platform: SocialPlatform.Lens; version?: string };
+
+export type FeedsPageInfo = {
+  // endLensCursor: string;
+  endFarcasterCursor: string;
+  hasNextPage: boolean;
+};
+
+export enum ProfileFeedsGroups {
+  POSTS = 'posts',
+  LIKES = 'likes',
+  REPOSTS = 'reposts',
+  REPLIES = 'replies',
+}

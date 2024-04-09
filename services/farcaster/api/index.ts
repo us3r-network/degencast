@@ -1,7 +1,7 @@
 import axios, { AxiosPromise } from "axios";
 import { FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
-import { ApiResp, FarCastEmbedMetaV2, SocialPlatform } from "../types";
+import { ApiResp, FarCastEmbedMetaV2, FeedsPageInfo, ProfileFeedsDataItem, ProfileFeedsGroups, SocialPlatform } from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
 
@@ -141,5 +141,52 @@ export function notifyTipApi(data: {
     url: `${FARCASTER_API_URL}/3r-bot/tip/notify`,
     method: "post",
     data,
+  });
+}
+
+const FEEDS_PAGE_SIZE = 25;
+export function getProfileFeeds({
+  pageSize,
+  keyword,
+  group,
+  endFarcasterCursor,
+  // endLensCursor,
+  // lensProfileId,
+  fid,
+  platforms,
+  // lensAccessToken,
+}: {
+  pageSize?: number;
+  keyword?: string;
+  group?: ProfileFeedsGroups;
+  endFarcasterCursor?: string;
+  // endLensCursor?: string;
+  // lensProfileId?: string;
+  fid?: string;
+  platforms?: SocialPlatform[];
+  // lensAccessToken?: string;
+}): AxiosPromise<
+  ApiResp<{
+    data: ProfileFeedsDataItem[];
+    farcasterUserData: { fid: string; type: number; value: string }[];
+    pageInfo: FeedsPageInfo;
+  }>
+> {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-all/profileFeeds`,
+    method: 'get',
+    params: {
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
+      keyword,
+      group,
+      endFarcasterCursor,
+      // endLensCursor,
+      // lensProfileId,
+      fid,
+      platforms,
+    },
+    // headers: {
+    //   'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
+    // },
   });
 }

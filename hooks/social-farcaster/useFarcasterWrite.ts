@@ -9,6 +9,29 @@ import {
 } from "@privy-io/react-auth";
 import { useState } from "react";
 
+export type SubmitCastBody = {
+  mentions?: number[] | undefined;
+  parentCastId?:
+    | {
+        fid: number;
+        hash: string;
+      }
+    | undefined;
+  parentUrl?: string | undefined;
+  text: string;
+  mentionsPositions?: number[] | undefined;
+  embeds?:
+    | {
+        url?: string | undefined;
+        castId?:
+          | {
+              fid: number;
+              hash: string;
+            }
+          | undefined;
+      }[]
+    | undefined;
+};
 export default function useFarcasterWrite() {
   const { user } = usePrivy();
 
@@ -75,11 +98,11 @@ export default function useFarcasterWrite() {
         setWriting(false);
       }
     },
-    submitCastWithOpts: async (opts: CastAddBody) => {
+    submitCastWithOpts: async (opts: SubmitCastBody) => {
       const canWrite = await prepareWrite();
       if (canWrite) {
         setWriting(true);
-        await submitCast(opts as any);
+        await submitCast(opts);
         setWriting(false);
       }
     },

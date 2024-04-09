@@ -3,8 +3,8 @@ import { useTheme } from "@react-navigation/native";
 import { Link, Tabs } from "expo-router";
 import React from "react";
 import { Pressable, View } from "react-native";
-import UserLogout from "~/components/portfolio/UserLogout";
-import UserWallets from "~/components/portfolio/UserWallets";
+import UserLogout from "~/components/portfolio/user/UserLogout";
+import UserWallets from "~/components/portfolio/user/UserWallets";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import { useColorScheme } from "~/lib/useColorScheme";
 
@@ -19,6 +19,7 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
+  console.log("colorScheme", theme);
   return (
     <Tabs
       screenOptions={{
@@ -36,6 +37,10 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="compass" color={color} />
           ),
+          headerTransparent: true,
+          headerTitleStyle: {
+            color: "white",
+          },
           headerRight: () => (
             <View className="flex-row items-center gap-2">
               <Link href="/search" asChild>
@@ -44,7 +49,7 @@ export default function TabLayout() {
                     <FontAwesome
                       name="search"
                       size={25}
-                      color={theme.colors.text}
+                      color="white"
                       style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                     />
                   )}
@@ -56,7 +61,7 @@ export default function TabLayout() {
                     <FontAwesome
                       name="edit"
                       size={25}
-                      color={theme.colors.text}
+                      color="white"
                       style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                     />
                   )}
@@ -74,6 +79,10 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="bar-chart" color={color} />
           ),
+          headerTransparent: true,
+          headerTitleStyle: {
+            color: "white",
+          },
         }}
       />
       <Tabs.Screen
@@ -82,8 +91,12 @@ export default function TabLayout() {
           title: "Portfolio",
           tabBarLabelPosition: "below-icon",
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerTransparent: true,
+          headerTitleStyle: {
+            color: "white",
+          },
           headerRight: () => (
-            <View className="flex-row items-center gap-2">
+            <View className="flex-row items-center gap-4 p-4">
               <UserWallets />
               <UserLogout />
             </View>

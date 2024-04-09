@@ -2,8 +2,8 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
-import UserInfo from "~/components/portfolio/UserInfo";
-import UserPosts from "~/components/portfolio/posts/UserPosts";
+import UserInfo from "~/components/portfolio/user/UserInfo";
+import UserPosts from "~/components/portfolio/posts/UserCasts";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
@@ -13,7 +13,7 @@ import { cn } from "~/lib/utils";
 
 const TABS = [
   { label: "Tokens", value: "tokens", content: <UserTokens /> },
-  { label: "Posts", value: "posts", content: <UserPosts /> },
+  { label: "Casts", value: "casts", content: <UserPosts /> },
 ];
 export default function PortfolioScreen() {
   const { login, ready, authenticated: privyAuthenticated } = usePrivy();
@@ -29,7 +29,7 @@ export default function PortfolioScreen() {
 
   const [value, setValue] = useState("tokens");
   return (
-    <View className="box-border w-full flex-1 bg-primary p-4">
+    <View className="box-border w-full flex-1 bg-primary p-4 pt-16">
       {ready &&
         (!privyAuthenticated ? (
           <Card className="mx-auto flex h-full w-full max-w-screen-sm items-center justify-center">
