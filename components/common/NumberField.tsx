@@ -2,36 +2,50 @@ import { useState } from "react";
 import { TextInput, View } from "react-native";
 import { Button } from "../ui/button";
 import { Minus, Plus } from "./Icons";
+import { fontScaleSelect } from "nativewind/dist/theme";
 
 type NumberFieldProps = React.ComponentPropsWithoutRef<typeof View> & {
   defaultValue?: number;
   minValue?: number;
   maxValue?: number;
+  onChange?: (value: number) => void;
 };
 
 export default function NumberField({
   defaultValue,
   minValue,
   maxValue,
+  onChange,
 }: NumberFieldProps) {
   const [value, setValue] = useState(defaultValue || 0);
+  // onChange && defaultValue && onChange(defaultValue);
   return (
     <View className="flex-row gap-2">
       <Button
-        className="h-8 w-8 bg-secondary rounded-full"
+        className="h-8 w-8 rounded-full bg-secondary"
         disabled={Boolean(minValue && value <= minValue)}
         onPress={() => {
-          if (!minValue || value > minValue) setValue(value - 1);
+          const newValue = value - 1;
+          if (!minValue || value > minValue) setValue(newValue);
+          onChange && onChange(newValue);
         }}
       >
         <Minus />
       </Button>
-      <TextInput className="w-6 text-center" value={String(value)} onChange={(v) => setValue(Number(v))} />
+      <TextInput
+        inputMode="numeric"
+        editable={fontScaleSelect}
+        focusable={false}
+        className="w-6 text-center"
+        value={String(value)}
+      />
       <Button
-        className="h-8 w-8 bg-secondary rounded-full"
+        className="h-8 w-8 rounded-full bg-secondary"
         disabled={Boolean(maxValue && value >= maxValue)}
         onPress={() => {
-          if (!maxValue || value < maxValue) setValue(value + 1);
+          const newValue = value + 1;
+          if (!maxValue || value < maxValue) setValue(newValue);
+          onChange && onChange(newValue);
         }}
       >
         <Plus />
