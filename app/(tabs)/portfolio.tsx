@@ -2,7 +2,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
-import UserInfo from "~/components/portfolio/UserInfo";
+import UserInfo from "~/components/portfolio/user/UserInfo";
 import UserPosts from "~/components/portfolio/posts/UserCasts";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import { Button } from "~/components/ui/button";

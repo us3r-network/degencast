@@ -7,14 +7,14 @@ import {
 import React, { useMemo } from "react";
 import { Pressable, View, Text } from "react-native";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import { PlusCircle, MinusCircle, Wallet } from "../common/Icons";
+import { PlusCircle, MinusCircle, Wallet } from "../../common/Icons";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-} from "../ui/select";
+} from "../../ui/select";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { useAccount } from "wagmi";
 import { useSetActiveWallet } from "@privy-io/wagmi";

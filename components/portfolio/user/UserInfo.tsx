@@ -7,8 +7,8 @@ import {
   getUserHandle,
   getUserName,
 } from "~/utils/privy";
-import UserGlobalPoints from "../point/UserGlobalPoints";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import UserGlobalPoints from "../../point/UserGlobalPoints";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import FarcasterStats from "./FarcasterStats";
 
 export default function UserInfo() {
