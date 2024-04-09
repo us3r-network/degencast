@@ -36,7 +36,7 @@ function Item({ item, index }: { item: ShareInfo; index: number }) {
             currency: "USD",
           }).format(item.priceUsd)}
         </Text>
-        <BuyButton logo={""} name={""} assetId={item.assetId} />
+        <BuyButton logo={item.logo} name={item.name} assetId={item.assetId} />
       </View>
     </View>
   );

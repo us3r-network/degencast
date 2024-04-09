@@ -36,7 +36,7 @@ export default function Share() {
           items
             .slice(0, DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <ShareItem key={item.name} {...item} />
+              <Item key={item.name} {...item} />
             ))}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
@@ -44,14 +44,14 @@ export default function Share() {
           items
             .slice(DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <ShareItem key={item.name} {...item} />
+              <Item key={item.name} {...item} />
             ))}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-function ShareItem(item: ShareInfo) {
+function Item(item: ShareInfo) {
   return (
     <View className="flex-row items-center justify-between">
       <CommunityInfo {...item} />
