@@ -24,7 +24,7 @@ export default function TradeButton({
           <Text className="font-bold text-secondary-foreground">Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="box-border max-sm:w-screen text-primary-foreground">
         {/* <Trade
           fromChain={fromChain}
           fromToken={fromToken}
