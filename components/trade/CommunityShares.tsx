@@ -23,10 +23,10 @@ export default function CommunityShares() {
 function Item({ item, index }: { item: ShareInfo; index: number }) {
   return (
     <View className="flex-row items-center justify-between">
-      <View className="flex-row items-center gap-4">
+      <View className="flex-1 flex-row items-center gap-4">
         <Text className="text-md w-4 text-right font-bold">{index}</Text>
-        {item.trend === 1 && <ArrowUp className="text-[green] size-4" />}
-        {item.trend === -1 && <ArrowDown className="text-[red] size-4" />}
+        {item.trend === 1 && <ArrowUp className="size-4 text-[green]" />}
+        {item.trend === -1 && <ArrowDown className="size-4 text-[red]" />}
         <CommunityInfo {...item} />
       </View>
       <View className="flex-row items-center gap-2">

@@ -26,7 +26,7 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
   const change = Number(item.stats.price_change_percentage.h24);
   return (
     <View className="flex-row items-center justify-between">
-      <View className="flex-row items-center gap-4">
+      <View className="flex-1 flex-row items-center gap-4">
         <Text className="text-md w-4 text-right font-bold">{index}</Text>
         <TokenInfo
           name={item.name}

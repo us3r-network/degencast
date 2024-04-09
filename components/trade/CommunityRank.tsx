@@ -26,7 +26,7 @@ export default function CommunityRank() {
 function Item({ item, index }: { item: CommunityInfoType; index: number }) {
   return (
     <View className="flex-row items-center justify-between">
-      <View className="flex-row items-center gap-4">
+      <View className="flex-1 flex-row items-center gap-4">
         <Text className="text-md w-4 text-right font-bold">{index}</Text>
         <CommunityInfo name={item.name} logo={item.logo} />
       </View>

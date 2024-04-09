@@ -10,7 +10,7 @@ type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 
 export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
   return (
-    <View className="flex-row items-center gap-2">
+    <View className="flex-1 flex-row items-center gap-2">
       <Avatar alt={name || ""} className="size-8">
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="border-primary bg-secondary">
