@@ -1,6 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { LogOut } from "../common/Icons";
-import { Button } from "../ui/button";
+import { LogOut } from "../../common/Icons";
+import { Button } from "../../ui/button";
 import useAuth from "~/hooks/user/useAuth";
 
 export default function UserLogout() {

@@ -2,7 +2,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
-import UserInfo from "~/components/portfolio/UserInfo";
+import UserInfo from "~/components/portfolio/user/UserInfo";
 import UserPosts from "~/components/portfolio/posts/UserCasts";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import { Button } from "~/components/ui/button";
@@ -53,7 +53,7 @@ export default function PortfolioScreen() {
                     className="absolute inset-0 top-8"
                   >
                     <Card className="h-full w-full p-2 pt-8">
-                      <CardContent className="native:gap-2 h-full gap-4">
+                      <CardContent className="native:gap-2 h-full gap-4 p-0 sm:p-4">
                         {tab.content}
                       </CardContent>
                     </Card>

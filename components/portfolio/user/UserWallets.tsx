@@ -7,19 +7,20 @@ import {
 import React, { useMemo } from "react";
 import { Pressable, View, Text } from "react-native";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import { PlusCircle, MinusCircle, Wallet } from "../common/Icons";
+import { PlusCircle, MinusCircle, Wallet } from "../../common/Icons";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-} from "../ui/select";
+} from "../../ui/select";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { useAccount } from "wagmi";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { Image } from "expo-image";
 import useAuth from "~/hooks/user/useAuth";
+import { cn } from "~/lib/utils";
 
 export default function Wallets() {
   const {
@@ -73,19 +74,21 @@ export default function Wallets() {
         );
         // console.log("selected", item, connectedWallets, newActiveWallet);
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
-      }} 
+      }}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full bg-white bg-opacity-50 rounded-full">
         {/* <SelectValue
           className="native:text-lg text-sm text-foreground"
           placeholder="Select a wallet"
         /> */}
         <View className="flex-row items-center gap-2">
-          <Wallet className="size-6"  />
-          <Text className="text-white">{shortPubKey(activeWallet?.address || "")}</Text>
+          <Wallet className="size-4 text-primary" />
+          <Text className="text-primary font-bold">
+            {shortPubKey(activeWallet?.address || "")}
+          </Text>
         </View>
       </SelectTrigger>
-      <SelectContent className="flex w-full">
+      <SelectContent className="flex w-full p-0">
         <SelectGroup>
           {connectedWallets.map((wallet) => (
             <SelectItem
@@ -96,8 +99,21 @@ export default function Wallets() {
             >
               <View className="w-full flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
-                  <Wallet color={wallet.address === activeWallet?.address?'red':'black'} />
-                  <Text>{shortPubKey(wallet.address)}</Text>
+                  <Wallet
+                    className={cn(
+                      "size-4",
+                      wallet.address === activeWallet?.address &&
+                        "fill-secondary",
+                    )}
+                  />
+                  <Text
+                    className={cn(
+                      wallet.address === activeWallet?.address &&
+                        "font-bold text-primary",
+                    )}
+                  >
+                    {shortPubKey(wallet.address)}
+                  </Text>
                 </View>
                 {!(wallet.connectorType === "embedded") && (
                   <Pressable
@@ -108,7 +124,7 @@ export default function Wallets() {
                       await unlinkWallet(wallet.address);
                     }}
                   >
-                    <MinusCircle />
+                    <MinusCircle className="size-4" />
                   </Pressable>
                 )}
               </View>
@@ -127,7 +143,7 @@ export default function Wallets() {
                   await connectWallet();
                 }}
               >
-                <Wallet />
+                <Wallet className="size-4" />
                 <Text>{shortPubKey(wallet.address)}</Text>
               </Pressable>
               <Pressable
@@ -136,7 +152,7 @@ export default function Wallets() {
                   await unlinkWallet(wallet.address);
                 }}
               >
-                <MinusCircle />
+                <MinusCircle className="size-4" />
               </Pressable>
             </View>
           ))}
@@ -145,15 +161,18 @@ export default function Wallets() {
             onPress={linkWallet}
           >
             <View className="flex-row items-center gap-2">
-              <Wallet />
+              <Wallet className="size-4" />
               <Text>Link a wallet</Text>
             </View>
-            <PlusCircle />
+            <PlusCircle className="size-4" />
           </Pressable>
           {farcasterAccount?.fid ? (
             <View className="w-full flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
-                <Wallet />
+                <Image
+                  source={require("~/assets/images/farcaster.png")}
+                  style={{ width: 16, height: 16 }}
+                />
                 <Text>
                   {farcasterAccount.displayName || farcasterAccount.username}
                 </Text>
@@ -165,7 +184,7 @@ export default function Wallets() {
                     await unlinkFarcaster(farcasterAccount.fid);
                 }}
               >
-                <MinusCircle />
+                <MinusCircle className="size-4" />
               </Pressable>
             </View>
           ) : (
@@ -176,11 +195,11 @@ export default function Wallets() {
               <View className="flex-row items-center gap-2">
                 <Image
                   source={require("~/assets/images/farcaster.png")}
-                  style={{ width: 24, height: 24 }}
+                  style={{ width: 16, height: 16 }}
                 />
                 <Text>Link a Farcaster</Text>
               </View>
-              <PlusCircle />
+              <PlusCircle className="size-4" />
             </Pressable>
           )}
         </View>

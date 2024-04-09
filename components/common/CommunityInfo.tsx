@@ -8,14 +8,14 @@ type CommunityInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 
 export function CommunityInfo({ name, logo }: CommunityInfoProps) {
   return (
-    <View className="flex-row items-center gap-2">
+    <View className="flex-1 flex-row items-center gap-2">
       <Avatar alt={name || ""} className="size-8">
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="border-primary bg-secondary">
-          <Text className="text-sm font-bold">{name}</Text>
+          <Text className="text-sm font-bold line-clamp-1">{name}</Text>
         </AvatarFallback>
       </Avatar>
-      <Text className="text-lg font-bold text-primary">{name}</Text>
+      <Text className="flex-1 text-md font-bold text-primary">{name}</Text>
     </View>
   );
 }

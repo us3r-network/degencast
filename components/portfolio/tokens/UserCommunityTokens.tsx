@@ -50,7 +50,7 @@ export default function CommunityTokens() {
 function Item(item: TokenInfoWithMetadata) {
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo {...item} />
+      <TokenInfo name={item.name} logo={item.logo}/>
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.balance), 2)}</Text>
         <Button
