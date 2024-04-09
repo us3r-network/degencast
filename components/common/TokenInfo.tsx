@@ -20,7 +20,7 @@ export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className="text-lg font-bold text-primary">{name}</Text>
+        <Text className="text-md font-bold text-primary">{name}</Text>
         {mc && mc > 0 && (
           <Text className="text-xs text-secondary">
             {new Intl.NumberFormat("en-US", {

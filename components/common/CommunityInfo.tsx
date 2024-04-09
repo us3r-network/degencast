@@ -15,7 +15,7 @@ export function CommunityInfo({ name, logo }: CommunityInfoProps) {
           <Text className="text-sm font-bold">{name}</Text>
         </AvatarFallback>
       </Avatar>
-      <Text className="text-lg font-bold text-primary">{name}</Text>
+      <Text className="text-md font-bold text-primary">{name}</Text>
     </View>
   );
 }

@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { myShares } from "~/services/user/api";
-import { ApiRespCode } from "~/services/shared/types";
-import { ShareInfo, TokenInfoWithMetadata } from "~/services/user/types";
+import { useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import { base } from "viem/chains";
 import { useAccount, useBalance, useReadContracts } from "wagmi";
+import { TokenInfoWithMetadata } from "~/services/user/types";
 
 export enum TOKENS {
   NATIVE = "native",
