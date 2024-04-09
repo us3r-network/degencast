@@ -82,13 +82,13 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
     }
   }, [dispatch, isPending, communityId, authenticated, login]);
 
-  const joinChangeAction = () => {
+  const joinChangeAction = useCallback(() => {
     if (joined) {
       unjoiningAction();
     } else {
       joiningAction();
     }
-  };
+  }, [joined, unjoiningAction, joiningAction]);
 
   return {
     joined,

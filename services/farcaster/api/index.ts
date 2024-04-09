@@ -1,7 +1,14 @@
 import axios, { AxiosPromise } from "axios";
 import { FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
-import { ApiResp, FarCastEmbedMetaV2, FeedsPageInfo, ProfileFeedsDataItem, ProfileFeedsGroups, SocialPlatform } from "../types";
+import {
+  ApiResp,
+  FarCastEmbedMetaV2,
+  FeedsPageInfo,
+  ProfileFeedsDataItem,
+  ProfileFeedsGroups,
+  SocialPlatform,
+} from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
 
@@ -46,6 +53,35 @@ export function getFarcasterTrending({
     headers: {
       needToken: true,
     },
+    params: {
+      startIndex: start,
+      endIndex: end,
+      ...(least ? { least } : {}),
+      channelId: channelId ?? "",
+    },
+  });
+}
+
+export function getFarcasterTrendingWithChannelId({
+  start,
+  end,
+  least,
+  channelId,
+}: {
+  start: number;
+  end: number;
+  least?: number;
+  channelId: string;
+}): RequestPromise<
+  ApiResp<{
+    casts: Array<TrendingCastData>;
+    farcasterUserData: Array<FarcasterUserData>;
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
+  return axios({
+    url: `${FARCASTER_API_URL}/3r-farcaster/trending`,
+    method: "get",
     params: {
       startIndex: start,
       endIndex: end,
@@ -174,7 +210,7 @@ export function getProfileFeeds({
 > {
   return axios({
     url: `${FARCASTER_API_URL}/3r-all/profileFeeds`,
-    method: 'get',
+    method: "get",
     params: {
       pageSize: pageSize || FEEDS_PAGE_SIZE,
       keyword,
