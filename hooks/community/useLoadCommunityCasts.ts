@@ -11,15 +11,15 @@ export default function useLoadCommunityCasts() {
   const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
-  const shannelIdRef = useRef("");
+  const channelIdRef = useRef("");
   const pageInfoRef = useRef({
     hasNextPage: true,
     endIndex: 0,
   });
 
   const loadCasts = async (channelId: string) => {
-    if (channelId !== shannelIdRef.current) {
-      shannelIdRef.current = channelId;
+    if (channelId !== channelIdRef.current) {
+      channelIdRef.current = channelId;
       setCasts([]);
       setFarcasterUserDataObj({});
       pageInfoRef.current = {
