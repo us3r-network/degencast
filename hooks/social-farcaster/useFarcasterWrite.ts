@@ -90,11 +90,31 @@ export default function useFarcasterWrite() {
   return {
     writing: writing && prepareing,
     // todo: add more post support!
-    submitCast: async (text: string) => {
+    submitCast: async ({
+      text,
+      embeds,
+    }: {
+      text: string;
+      embeds: {
+        url?: string | undefined;
+        castId?:
+          | {
+              fid: number;
+              hash: string;
+            }
+          | undefined;
+      }[];
+    }) => {
       const canWrite = await prepareWrite();
       if (canWrite) {
         setWriting(true);
-        await submitCast({ text });
+        const data = {
+          text,
+          embeds: embeds.map((embed) => ({
+            url: embed.url,
+          })),
+        };
+        await submitCast(data);
         setWriting(false);
       }
     },
