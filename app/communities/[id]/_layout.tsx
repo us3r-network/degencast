@@ -108,7 +108,7 @@ export default function CommunityDetail() {
                     >
                       <Text
                         className={cn(
-                          "text-primary",
+                          "whitespace-nowrap text-primary",
                           activeScreen === tab.value &&
                             "text-primary-foreground",
                         )}
