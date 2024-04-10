@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { FlatList, View } from "react-native";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
+import { Text } from "~/components/ui/text";
 
 export default function CastsScreen() {
   const params = useLocalSearchParams();
@@ -40,7 +41,7 @@ export default function CastsScreen() {
           ListFooterComponent={() => {
             return loading ? (
               <View className="flex items-center justify-center p-5">
-                Loading ...
+                <Text>Loading ...</Text>
               </View>
             ) : null;
           }}
