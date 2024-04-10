@@ -17,9 +17,9 @@ export const privyConfig: PrivyClientConfig = {
     loginMethodsAndOrder: {
         primary: [
             "farcaster",
-            "twitter",
-            "detected_wallets",
+            // "twitter",
             "metamask",
+            "detected_wallets",
             "coinbase_wallet",
             "rainbow",
         ],
