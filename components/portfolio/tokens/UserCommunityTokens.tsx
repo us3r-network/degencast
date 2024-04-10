@@ -1,9 +1,9 @@
 import { round } from "lodash";
 import React from "react";
-import { Linking, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { base } from "viem/chains";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { TokenInfo } from "~/components/common/TokenInfo";
-import { Button } from "~/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -11,6 +11,7 @@ import {
 } from "~/components/ui/collapsible";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
+import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -53,23 +54,12 @@ function Item(item: TokenInfoWithMetadata) {
       <TokenInfo name={item.name} logo={item.logo}/>
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.balance), 2)}</Text>
-        <Button
-          className="w-14 bg-secondary"
-          onPress={() => {
-            console.log("Trade button pressed");
-            Linking.openURL("https://app.uniswap.org/");
-          }}
-        >
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Trade
-          </Text>
-        </Button>
-        {/* <TradeButton
+        <TradeButton
           fromChain={base.id}
-          fromToken={token.contractAddress as `0x${string}`}
+          fromToken={item.contractAddress as `0x${string}`}
           toChain={base.id}
           toToken={NATIVE_TOKEN}
-        /> */}
+        />
       </View>
     </View>
   );

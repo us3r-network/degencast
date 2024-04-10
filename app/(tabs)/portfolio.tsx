@@ -3,7 +3,7 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
 import UserInfo from "~/components/portfolio/user/UserInfo";
-import UserPosts from "~/components/portfolio/posts/UserCasts";
+import UserCasts from "~/components/portfolio/posts/UserCasts";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
@@ -13,7 +13,7 @@ import { cn } from "~/lib/utils";
 
 const TABS = [
   { label: "Tokens", value: "tokens", content: <UserTokens /> },
-  { label: "Casts", value: "casts", content: <UserPosts /> },
+  { label: "Casts", value: "casts", content: <UserCasts /> },
 ];
 export default function PortfolioScreen() {
   const { login, ready, authenticated: privyAuthenticated } = usePrivy();

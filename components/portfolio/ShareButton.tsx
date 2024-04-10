@@ -5,11 +5,7 @@ import { TokenInfoWithMetadata } from "~/services/user/types";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import ToeknSelect from "./UserTokenSelect";
 
 export function SellButton({
@@ -24,7 +20,7 @@ export function SellButton({
   console.log("SellButton assetId", assetId);
   const balance = 2;
   const price = 4723;
-  const [amount, setAmount] = useState("0");
+  const [amount, setAmount] = useState(0);
   const isPending = false;
   const hash = "";
   const sell = async () => {
@@ -39,7 +35,7 @@ export function SellButton({
           </Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[400px] text-primary-foreground">
+      <DialogContent className="box-border w-screen text-primary-foreground">
         <DialogTitle className="text-md font-bold">Sell</DialogTitle>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
@@ -48,15 +44,24 @@ export function SellButton({
           </View>
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-lg font-bold text-primary-foreground">Quantity</Text>
+              <Text className="text-lg font-bold text-primary-foreground">
+                Quantity
+              </Text>
               <Text className="text-sm text-secondary">
                 {price} DEGEN per share
               </Text>
             </View>
-            <NumberField defaultValue={1} minValue={1} maxValue={balance} />
+            <NumberField
+              defaultValue={1}
+              minValue={1}
+              maxValue={balance}
+              onChange={setAmount}
+            />
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-primary-foreground">Receive:</Text>
+            <Text className="text-lg font-bold text-primary-foreground">
+              Receive:
+            </Text>
             <Text className="text-md text-primary-foreground">
               {Number(amount) * price} DEGEN
             </Text>
@@ -85,9 +90,9 @@ export function BuyButton({
   assetId: number;
 }) {
   console.log("SellButton assetId", assetId);
-  const balance = 2;
+  const available = 10;
   const price = 4723;
-  const [amount, setAmount] = useState("0");
+  const [amount, setAmount] = useState(0);
   const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
   const isPending = false;
   const hash = "";
@@ -103,8 +108,10 @@ export function BuyButton({
           </Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[400px] text-primary-foreground">
-        <DialogTitle className="text-md font-bold">Buy Shares & get allowance</DialogTitle>
+      <DialogContent className="box-border w-screen text-primary-foreground">
+        <DialogTitle className="text-md font-bold">
+          Buy Shares & get allowance
+        </DialogTitle>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
             <CommunityInfo name={name} logo={logo} />
@@ -113,17 +120,26 @@ export function BuyButton({
           <ToeknSelect selectToken={setToken} />
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-lg font-bold text-primary-foreground">Quantity</Text>
+              <Text className="text-lg font-bold text-primary-foreground">
+                Quantity
+              </Text>
               <Text className="text-xs text-secondary">
                 {price} DEGEN per share
               </Text>
             </View>
-            <NumberField defaultValue={1} minValue={1} maxValue={balance} />
+            <NumberField
+              defaultValue={1}
+              minValue={1}
+              maxValue={available}
+              onChange={setAmount}
+            />
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-primary-foreground">Total Cost</Text>
+            <Text className="text-lg font-bold text-primary-foreground">
+              Total Cost
+            </Text>
             <Text className="text-md text-primary-foreground">
-              {Number(amount) * price} DEGEN
+              {amount * price} DEGEN
             </Text>
           </View>
           <Button
