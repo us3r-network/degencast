@@ -1,6 +1,6 @@
 // import { LiFiWidget, WidgetConfig } from "@lifi/widget";
 // import { clientToSigner } from '@/utils/ethers';
-import { Text } from "react-native";
+import { Linking, Text } from "react-native";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { base } from "viem/chains";
@@ -18,22 +18,33 @@ export default function TradeButton({
   toToken: `0x${string}`;
 }) {
   return (
-    <Dialog className="text-white">
-      <DialogTrigger asChild>
-        <Button className="bg-secondary">
-          <Text className="font-bold text-secondary-foreground">Trade</Text>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="box-border w-screen text-primary-foreground">
-        {/* <Trade
-          fromChain={fromChain}
-          fromToken={fromToken}
-          toChain={toChain}
-          toToken={toToken}
-        /> */}
-      </DialogContent>
-    </Dialog>
+    <Button
+      className="w-14 bg-secondary"
+      onPress={() => {
+        console.log("Trade button pressed");
+        Linking.openURL("https://app.uniswap.org/");
+      }}
+    >
+      <Text className="text-xs font-bold text-secondary-foreground">Trade</Text>
+    </Button>
   );
+  // return (
+  //   <Dialog className="text-white">
+  //     <DialogTrigger asChild>
+  //       <Button className="bg-secondary">
+  //         <Text className="font-bold text-secondary-foreground">Trade</Text>
+  //       </Button>
+  //     </DialogTrigger>
+  //     <DialogContent className="box-border w-screen text-primary-foreground">
+  //       {/* <Trade
+  //         fromChain={fromChain}
+  //         fromToken={fromToken}
+  //         toChain={toChain}
+  //         toToken={toToken}
+  //       /> */}
+  //     </DialogContent>
+  //   </Dialog>
+  // );
 }
 /*
 function Trade({

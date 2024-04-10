@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { Button } from "~/components/ui/button";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
-import { CommunityInfo } from "../common/CommunityInfo";
 import { CommunityInfo as CommunityInfoType } from "~/services/community/types/community";
+import { CommunityInfo } from "../common/CommunityInfo";
+import CommunityJoinButton from "../community/CommunityJoinButton";
 
 export default function CommunityRank() {
   const { trendingCommunities: items, loadTrendingCommunities } =
@@ -32,23 +32,7 @@ function Item({ item, index }: { item: CommunityInfoType; index: number }) {
       </View>
       <View className="flex-row items-center gap-2">
         <Text>{item.memberInfo.newPostNumber}</Text>
-        <Button
-          disabled
-          className="w-14 bg-secondary"
-          onPress={() => {
-            console.log("join button pressed");
-          }}
-        >
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Join
-          </Text>
-        </Button>
-        {/* <TradeButton
-          fromChain={base.id}
-          fromToken={token.contractAddress as `0x${string}`}
-          toChain={base.id}
-          toToken={NATIVE_TOKEN}
-        /> */}
+        <CommunityJoinButton communityInfo={item} />
       </View>
     </View>
   );

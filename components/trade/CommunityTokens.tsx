@@ -1,12 +1,11 @@
-import { round } from "lodash";
-import { Info } from "lucide-react-native";
 import React from "react";
-import { Linking, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { base } from "viem/chains";
 import { TokenInfo } from "~/components/common/TokenInfo";
-import { Button } from "~/components/ui/button";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithStats } from "~/services/trade/types";
+import TradeButton, { NATIVE_TOKEN } from "../portfolio/TradeButton";
 
 export default function CommunityTokens() {
   const { items } = useCommunityTokens();
@@ -38,23 +37,12 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
         <Text className={cn(change > 0 ? "text-[red]" : "text-[green]")}>
           {change}%
         </Text>
-        <Button
-          className="w-14 bg-secondary"
-          onPress={() => {
-            console.log("Trade button pressed");
-            Linking.openURL("https://app.uniswap.org/");
-          }}
-        >
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Trade
-          </Text>
-        </Button>
-        {/* <TradeButton
+        <TradeButton
           fromChain={base.id}
-          fromToken={token.contractAddress as `0x${string}`}
+          fromToken={item.tokenAddress as `0x${string}`}
           toChain={base.id}
           toToken={NATIVE_TOKEN}
-        /> */}
+        />
       </View>
     </View>
   );
