@@ -31,7 +31,7 @@ function Item({ item, index }: { item: CommunityInfoType; index: number }) {
         <CommunityInfo name={item.name} logo={item.logo} />
       </View>
       <View className="flex-row items-center gap-2">
-        <Text>{item.memberInfo.totalNumber}</Text>
+        <Text>{item.memberInfo.newPostNumber}</Text>
         <Button
           disabled
           className="w-14 bg-secondary"
