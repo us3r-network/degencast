@@ -48,9 +48,15 @@ export default function CreateScreen() {
                   size={"icon"}
                   variant={"ghost"}
                   onPress={() => {
-                    submitCast({ text: value, embeds: [] }).then(() => {
+                    submitCast({
+                      text: value,
+                      embeds: images.map((item) => {
+                        return { url: item };
+                      }),
+                    }).then(() => {
                       console.log("Cast submitted");
                       setValue("");
+                      setImages([]);
                     });
                   }}
                 >
