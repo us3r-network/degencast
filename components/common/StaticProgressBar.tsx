@@ -22,7 +22,7 @@ export default function StaticProgressBar({
         className,
       )}
     >
-      <View className="flex-row items-start justify-start gap-px bg-gradient-to-r from-violet-900 to-pink-100">
+      <View className="w-full flex-row items-start justify-start gap-px bg-gradient-to-r from-violet-900 to-pink-100">
         {Array.from({ length: progressGridsNumber }, (_, i) => {
           const isLast = i === progressGridsNumber - 1;
           return (
