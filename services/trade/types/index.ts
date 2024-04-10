@@ -24,7 +24,7 @@ export type ShareInfo = {
   name?: string | undefined;
   logo?: string;
   priceUsd: number;
-  assetId: number;
+  sharesSubject: `0x${string}`;
   trend: number;
 };
 

@@ -7,25 +7,34 @@ import NumberField from "../common/NumberField";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import ToeknSelect from "./UserTokenSelect";
+import {
+  SHARE_ACTION,
+  useShareContractBuy,
+  useShareContractInfo,
+  useShareContractSell,
+} from "~/hooks/trade/useShareContract";
+import { useAccount } from "wagmi";
 
 export function SellButton({
   logo,
   name,
-  assetId,
+  sharesSubject,
 }: {
   logo: string;
   name: string;
-  assetId: number;
+  sharesSubject: `0x${string}`;
 }) {
-  console.log("SellButton assetId", assetId);
-  const balance = 2;
-  const price = 4723;
+  console.log("SellButton", sharesSubject);
+  const account = useAccount();
+  const { getPrice, getBalance } = useShareContractInfo(sharesSubject);
+  const { data: balance } = getBalance(account?.address);
   const [amount, setAmount] = useState(0);
-  const isPending = false;
-  const hash = "";
-  const sell = async () => {
-    console.log("sell", amount);
-  };
+  const { data: price } = getPrice(SHARE_ACTION.SELL, amount, false);
+  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const { sell, data, status, writeError, transationError, waiting, writing } =
+    useShareContractSell(sharesSubject);
+  console.log("SellButton", price, balance);
+
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
@@ -40,7 +49,9 @@ export function SellButton({
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
             <CommunityInfo name={name} logo={logo} />
-            <Text className="text-sm text-secondary">{balance} shares</Text>
+            <Text className="text-sm text-secondary">
+              {Number(balance)} shares
+            </Text>
           </View>
           <View className="flex-row items-center justify-between">
             <View>
@@ -48,13 +59,13 @@ export function SellButton({
                 Quantity
               </Text>
               <Text className="text-sm text-secondary">
-                {price} DEGEN per share
+                {Number(price)} DEGEN per share
               </Text>
             </View>
             <NumberField
               defaultValue={1}
               minValue={1}
-              maxValue={balance}
+              maxValue={Number(balance)}
               onChange={setAmount}
             />
           </View>
@@ -63,17 +74,17 @@ export function SellButton({
               Receive:
             </Text>
             <Text className="text-md text-primary-foreground">
-              {Number(amount) * price} DEGEN
+              {Number(amount) * Number(price)} DEGEN
             </Text>
           </View>
           <Button
             className="w-full rounded-md bg-secondary p-2 text-secondary-foreground"
-            disabled={isPending}
-            onPress={sell}
+            disabled={waiting || writing}
+            onPress={() => sell(amount)}
           >
-            {isPending ? "Confirming..." : "Sell"}
+            {waiting || writing ? "Confirming..." : "Sell"}
           </Button>
-          {hash && <Text>Transaction Hash: {hash}</Text>}
+          {data?.transactionHash && <Text>Transaction Hash: {data?.transactionHash}</Text>}
         </View>
       </DialogContent>
     </Dialog>
@@ -83,22 +94,21 @@ export function SellButton({
 export function BuyButton({
   logo,
   name,
-  assetId,
+  sharesSubject,
 }: {
   logo?: string;
   name?: string;
-  assetId: number;
+  sharesSubject: `0x${string}`;
 }) {
-  console.log("SellButton assetId", assetId);
-  const available = 10;
-  const price = 4723;
+  console.log("BuyButton", sharesSubject);
+  const { getPrice, getSupply } = useShareContractInfo(sharesSubject);
+  const { data: supply } = getSupply();
   const [amount, setAmount] = useState(0);
+  const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
   const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
-  const isPending = false;
-  const hash = "";
-  const buy = async () => {
-    console.log("buy", token, amount);
-  };
+  const { buy, data, status, writeError, transationError, waiting, writing } =
+    useShareContractBuy(sharesSubject);
+  console.log("BuyButton", price, supply);
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
@@ -124,13 +134,13 @@ export function BuyButton({
                 Quantity
               </Text>
               <Text className="text-xs text-secondary">
-                {price} DEGEN per share
+                {price as number} DEGEN per share
               </Text>
             </View>
             <NumberField
               defaultValue={1}
               minValue={1}
-              maxValue={available}
+              maxValue={supply as number}
               onChange={setAmount}
             />
           </View>
@@ -139,17 +149,17 @@ export function BuyButton({
               Total Cost
             </Text>
             <Text className="text-md text-primary-foreground">
-              {amount * price} DEGEN
+              {amount * Number(price)} DEGEN
             </Text>
           </View>
           <Button
             className="w-full rounded-md bg-secondary p-2 text-secondary-foreground"
-            disabled={isPending}
-            onPress={buy}
+            disabled={waiting || writing}
+            onPress={() => buy(amount)}
           >
-            {isPending ? "Confirming..." : "Buy"}
+            {waiting || writing ? "Confirming..." : "Buy"}
           </Button>
-          {hash && <Text>Transaction Hash: {hash}</Text>}
+          {data?.transactionHash && <Text>Transaction Hash: {data?.transactionHash}</Text>}
         </View>
       </DialogContent>
     </Dialog>

@@ -13,7 +13,7 @@ export default function CommunityShares() {
       <View className="flex w-full gap-4">
         {items?.length > 0 &&
           items.map((item, index) => (
-            <Item key={item.assetId} item={item} index={index + 1} />
+            <Item key={item.sharesSubject} item={item} index={index + 1} />
           ))}
       </View>
     </ScrollView>
@@ -36,7 +36,7 @@ function Item({ item, index }: { item: ShareInfo; index: number }) {
             currency: "USD",
           }).format(item.priceUsd)}
         </Text>
-        <BuyButton logo={item.logo} name={item.name} assetId={item.assetId} />
+        <BuyButton logo={item.logo} name={item.name} sharesSubject={item.sharesSubject} />
       </View>
     </View>
   );

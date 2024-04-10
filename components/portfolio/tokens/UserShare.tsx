@@ -57,7 +57,7 @@ function Item(item: ShareInfo) {
       <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.amount), 2)}</Text>
-        <SellButton logo={""} name={""} assetId={item.assetId}  />
+        <SellButton logo={""} name={""} sharesSubject={item.sharesSubject}  />
       </View>
     </View>
   );
