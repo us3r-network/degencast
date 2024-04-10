@@ -4,9 +4,9 @@ import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
   FarCastEmbedMetaV2,
-  FeedsPageInfo,
   ProfileFeedsDataItem,
   ProfileFeedsGroups,
+  ProfileFeedsPageInfo,
   SocialPlatform,
 } from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
@@ -180,7 +180,7 @@ export function notifyTipApi(data: {
   });
 }
 
-const FEEDS_PAGE_SIZE = 25;
+const DEFAULT_PAGE_SIZE = 25;
 export function getProfileFeeds({
   pageSize,
   keyword,
@@ -205,14 +205,14 @@ export function getProfileFeeds({
   ApiResp<{
     data: ProfileFeedsDataItem[];
     farcasterUserData: { fid: string; type: number; value: string }[];
-    pageInfo: FeedsPageInfo;
+    pageInfo: ProfileFeedsPageInfo;
   }>
 > {
   return axios({
     url: `${FARCASTER_API_URL}/3r-all/profileFeeds`,
     method: "get",
     params: {
-      pageSize: pageSize || FEEDS_PAGE_SIZE,
+      pageSize: pageSize || DEFAULT_PAGE_SIZE,
       keyword,
       group,
       endFarcasterCursor,
