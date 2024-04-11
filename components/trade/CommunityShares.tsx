@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from "react-native";
 import useCommunityShares from "~/hooks/trade/useCommunityShares";
 import { ShareInfo } from "~/services/trade/types";
 import { CommunityInfo } from "../common/CommunityInfo";
-import { BuyButton, SellButton } from "../portfolio/ShareButton";
+import { BuyButton } from "../portfolio/ShareButton";
 import { ArrowDown, ArrowUp } from "~/components/common/Icons";
 
 export default function CommunityShares() {

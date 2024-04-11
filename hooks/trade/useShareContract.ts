@@ -1,25 +1,25 @@
 import { baseSepolia } from "viem/chains";
 import {
-  useWriteContract,
-  useWaitForTransactionReceipt,
   useReadContract,
-  useAccount,
   useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
-
 import SHARE_CONTRACT_ABI_JSON from "~/services/trade/abi/DegencastSharesV1.json";
+import { TOKENS } from "../user/useUserTokens";
 
 const SHARE_CONTRACT_ADDRESS = "0xd29648c63fe433ac9306d6473f0f13d4340e1440";
 const address = SHARE_CONTRACT_ADDRESS;
 const abi = SHARE_CONTRACT_ABI_JSON.abi;
-const chainId = baseSepolia.id;
-
+export const SHARE_CONTRACT_CHAIN = baseSepolia;
+export const SHARE_SUPPORT_TOKENS = [TOKENS.NATIVE];
 export enum SHARE_ACTION {
   BUY,
   SELL,
 }
 
 export function useShareContractInfo(sharesSubject: `0x${string}`) {
+  const chainId = SHARE_CONTRACT_CHAIN.id;
   const getPrice = (
     action: SHARE_ACTION,
     amount: number = 1,
@@ -75,38 +75,51 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
 }
 
 export function useShareContractBuy(sharesSubject: `0x${string}`) {
+  const chainId = SHARE_CONTRACT_CHAIN.id;
+  const { switchChain } = useSwitchChain();
+
   const {
     writeContract,
     data: hash,
     isPending: writing,
-    isError: writeError,
+    error: writeError,
   } = useWriteContract();
-  const { switchChain } = useSwitchChain();
-
-  const buy = async(amount: number = 1) => {
-    console.log("buy", amount,chainId,sharesSubject);
-    await switchChain({ chainId });
-    writeContract({
-      address,
-      abi,
-      chainId,
-      functionName: "buyShares",
-      args: [sharesSubject, BigInt(amount)],
-    });
-  };
   const {
     data,
-    isError: transationError,
+    error: transationError,
     isLoading: waiting,
     isSuccess,
     status,
   } = useWaitForTransactionReceipt({
     hash,
   });
-  return { buy, data, status, writeError, transationError, waiting, writing };
+  const buy = async (amount: number, value: bigint) => {
+    await switchChain({ chainId });
+    console.log("buy", amount, chainId, sharesSubject);
+    writeContract({
+      address,
+      abi,
+      chainId,
+      functionName: "buyShares",
+      args: [sharesSubject, BigInt(amount)],
+      value,
+    });
+  };
+
+  return {
+    buy,
+    data,
+    status,
+    writeError,
+    transationError,
+    waiting,
+    writing,
+    isSuccess,
+  };
 }
 
 export function useShareContractSell(sharesSubject: `0x${string}`) {
+  const chainId = SHARE_CONTRACT_CHAIN.id;
   const {
     writeContract,
     data: hash,
@@ -115,7 +128,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   } = useWriteContract();
   const { switchChain } = useSwitchChain();
 
-  const sell = async(amount: number) =>{
+  const sell = async (amount: number) => {
     await switchChain({ chainId });
     writeContract({
       address,
@@ -124,7 +137,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
       functionName: "sellShares",
       args: [sharesSubject, BigInt(amount)],
     });
-  }
+  };
 
   const {
     data,
@@ -135,5 +148,14 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   } = useWaitForTransactionReceipt({
     hash,
   });
-  return { sell, data, status, writeError, transationError, waiting, writing };
+  return {
+    sell,
+    data,
+    status,
+    writeError,
+    transationError,
+    waiting,
+    writing,
+    isSuccess,
+  };
 }
