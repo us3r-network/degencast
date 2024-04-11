@@ -30,7 +30,7 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
         <TokenInfo
           name={item.name}
           logo={item.imageURL}
-          mc={Number(item.stats.market_cap_usd)}
+          mc={Number(item.stats.fdv_usd)}
         />
       </View>
       <View className="flex-row items-center gap-2">
