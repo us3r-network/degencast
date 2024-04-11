@@ -93,6 +93,7 @@ export default function useFarcasterWrite() {
     submitCast: async ({
       text,
       embeds,
+      channel,
     }: {
       text: string;
       embeds: {
@@ -104,6 +105,7 @@ export default function useFarcasterWrite() {
             }
           | undefined;
       }[];
+      channel: string;
     }) => {
       const canWrite = await prepareWrite();
       if (canWrite) {
@@ -113,6 +115,7 @@ export default function useFarcasterWrite() {
           embeds: embeds.map((embed) => ({
             url: embed.url,
           })),
+          parentUrl: channel,
         };
         await submitCast(data);
         setWriting(false);

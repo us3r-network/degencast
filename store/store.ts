@@ -7,12 +7,14 @@
  */
 import { configureStore } from "@reduxjs/toolkit";
 import joinCommunity from "~/features/community/joinCommunitySlice";
+import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import userAction from "~/features/user/userActionSlice";
 
 export const store = configureStore({
   reducer: {
     joinCommunity,
     userAction,
+    warpcastChannels,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
