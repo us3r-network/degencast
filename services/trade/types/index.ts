@@ -11,6 +11,7 @@ export type TokenInfoWithStats = {
   volumeStats: VolumeStats[];
   stats: {
     market_cap_usd: string;
+    fdv_usd: string;
     price_change_percentage: {
       h1: string;
       h6: string;
