@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { FlatList, View } from "react-native";
 import CommunityShareActivityItem from "~/components/community/CommunityShareActivityItem";
 import CommunityTokenLaunchProgress from "~/components/community/CommunityTokenLaunchProgress";
+import CommunityTokenInfo from "~/components/community/CommunityTokenInfo";
 import { Text } from "~/components/ui/text";
 import useLoadCommunityTokenInfo from "~/hooks/community/useLoadCommunityTokenInfo";
 
@@ -17,7 +18,11 @@ export default function TokensScreen() {
 
   return (
     <View className="flex-1">
-      <FlatList
+      <CommunityTokenInfo
+        chain={"base"}
+        poolAddress="0xc9034c3e7f58003e6ae0c8438e7c8f4598d5acaa"
+      />
+      {/* <FlatList
         ListHeaderComponent={() => {
           return (
             <View>
@@ -51,7 +56,7 @@ export default function TokensScreen() {
             </View>
           ) : null;
         }}
-      />
+      /> */}
     </View>
   );
 }
