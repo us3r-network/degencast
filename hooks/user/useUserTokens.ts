@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import { base } from "viem/chains";
 import { useAccount, useBalance, useReadContracts } from "wagmi";
+import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 
 export enum TOKENS {
@@ -9,7 +10,6 @@ export enum TOKENS {
   DEGEN = "degen",
 }
 
-export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000"; //ETH
 const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
 
 export default function useUserTokens(chainId: number = base.id) {
@@ -50,6 +50,7 @@ export default function useUserTokens(chainId: number = base.id) {
     const tokens = new Map<TOKENS, TokenInfoWithMetadata>();
     if (nativeToken)
       tokens.set(TOKENS.NATIVE, {
+        chainId: DEFAULT_CHAIN.id,
         contractAddress: NATIVE_TOKEN,
         name: "ETH",
         rawBalance: nativeToken.value,
@@ -60,6 +61,7 @@ export default function useUserTokens(chainId: number = base.id) {
       });
     if (degenToken)
       tokens.set(TOKENS.DEGEN, {
+        chainId: DEFAULT_CHAIN.id,
         contractAddress: DEGEN_ADDRESS,
         name: degenToken[0],
         rawBalance: degenToken[1],

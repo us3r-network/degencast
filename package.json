@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.24.1",
     "@expo/vector-icons": "^14.0.0",
     "@farcaster/hub-web": "^0.8.5",
+    "@lifi/widget": "^3.0.0-alpha.37",
     "@privy-io/react-auth": "^1.60.1",
     "@privy-io/wagmi": "^0.2.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -72,7 +73,8 @@
     "validator": "^13.11.0",
     "viem": "^2.9.5",
     "wagmi": "^2.5.13",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
