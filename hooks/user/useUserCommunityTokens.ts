@@ -5,7 +5,9 @@ import { TokenInfoWithMetadata } from "~/services/user/types";
 
 export default function useUserCommunityTokens() {
   const [items, setItems] = useState<TokenInfoWithMetadata[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const fetch = useCallback(async () => {
+    setLoading(true);
     const response = await myTokens();
     const { code, msg, data } = response.data;
     if (code === ApiRespCode.SUCCESS) {
@@ -17,6 +19,7 @@ export default function useUserCommunityTokens() {
     } else {
       throw new Error(msg);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {

@@ -5,14 +5,17 @@ import { TokenInfoWithStats } from "~/services/trade/types";
 
 export default function useCommunityTokens() {
   const [items, setItems] = useState<TokenInfoWithStats[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const fetch = useCallback(async () => {
+    setLoading(true);
     const response = await communityTokens();
     const { code, msg, data } = response.data;
     if (code === ApiRespCode.SUCCESS) {
-        setItems(data);
+      setItems(data);
     } else {
       throw new Error(msg);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -21,5 +24,6 @@ export default function useCommunityTokens() {
 
   return {
     items,
+    loading,
   };
 }

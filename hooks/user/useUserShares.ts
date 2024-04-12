@@ -5,7 +5,9 @@ import { ShareInfo } from "~/services/user/types";
 
 export default function useUserShares() {
   const [items, setItems] = useState<ShareInfo[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const fetch = useCallback(async () => {
+    setLoading(true);
     const response = await myShares();
     const { code, msg, data } = response.data;
     if (code === ApiRespCode.SUCCESS) {
@@ -13,6 +15,7 @@ export default function useUserShares() {
     } else {
       throw new Error(msg);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
