@@ -1,4 +1,3 @@
-import { CastAddBody } from "@farcaster/hub-web";
 import {
   FarcasterWithMetadata,
   useCreateWallet,
