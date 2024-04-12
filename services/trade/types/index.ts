@@ -25,7 +25,7 @@ export type TokenInfoWithStats = {
 export type ShareInfo = {
   name?: string | undefined;
   logo?: string;
-  priceUsd: number;
+  priceETH: string;
   sharesSubject: `0x${string}`;
   trend: number;
 };

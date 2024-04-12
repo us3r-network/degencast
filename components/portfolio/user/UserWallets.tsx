@@ -76,7 +76,7 @@ export default function Wallets() {
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
       }}
     >
-      <SelectTrigger className="w-full bg-white bg-opacity-50 rounded-full">
+      <SelectTrigger className="w-full bg-white/50 rounded-full">
         {/* <SelectValue
           className="native:text-lg text-sm text-foreground"
           placeholder="Select a wallet"
