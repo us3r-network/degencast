@@ -1,11 +1,7 @@
-import {
-  useConnectWallet,
-  usePrivy,
-  useWallets
-} from "@privy-io/react-auth";
+import { useConnectWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { Image } from "expo-image";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useAccount } from "wagmi";
 import useAuth from "~/hooks/user/useAuth";
@@ -20,6 +16,15 @@ import {
   SelectItem,
   SelectTrigger,
 } from "../../ui/select";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 
 export default function Wallets() {
   const {
@@ -75,10 +80,10 @@ export default function Wallets() {
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
       }}
     >
-      <SelectTrigger className="w-full bg-white/50 rounded-full">
+      <SelectTrigger className="w-full rounded-full bg-white/50">
         <View className="flex-row items-center gap-2">
           <Wallet className="size-4 text-primary" />
-          <Text className="text-primary font-bold">
+          <Text className="font-bold text-primary">
             {shortPubKey(activeWallet?.address || "")}
           </Text>
         </View>
@@ -112,16 +117,12 @@ export default function Wallets() {
                   </Text>
                 </View>
                 {!(wallet.connectorType === "embedded") && (
-                  <Pressable
-                    onPress={async (event) => {
+                  <UnlinkButton
+                    action={() => {
                       console.log("unlinking wallet", wallet.address);
-                      event.preventDefault();
-                      event.stopPropagation();
-                      await unlinkWallet(wallet.address);
+                      unlinkWallet(wallet.address);
                     }}
-                  >
-                    <MinusCircle className="size-4" />
-                  </Pressable>
+                  />
                 )}
               </View>
             </SelectItem>
@@ -173,15 +174,13 @@ export default function Wallets() {
                   {farcasterAccount.displayName || farcasterAccount.username}
                 </Text>
               </View>
-              <Pressable
-                onPress={async (event) => {
+              <UnlinkButton
+                action={() => {
                   console.log("unlinking farcaster", farcasterAccount.fid);
                   if (farcasterAccount?.fid)
-                    await unlinkFarcaster(farcasterAccount.fid);
+                    unlinkFarcaster(farcasterAccount.fid);
                 }}
-              >
-                <MinusCircle className="size-4" />
-              </Pressable>
+              />
             </View>
           ) : (
             <Pressable
@@ -201,5 +200,37 @@ export default function Wallets() {
         </View>
       </SelectContent>
     </Select>
+  );
+}
+
+function UnlinkButton({ action }: { action: () => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <AlertDialog open={open}>
+      <AlertDialogTrigger>
+        <Pressable onPress={() => setOpen(true)}>
+          <MinusCircle className="size-4" />
+        </Pressable>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="w-screen bg-primary">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex flex-row gap-2 text-primary-foreground">
+            Notice
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription id="alert-dialog-desc text-primary-foreground">
+          Are you sure you want to disconnect the wallet? You may miss the
+          airdrop claim prompt.
+        </AlertDialogDescription>
+        <View className="w-full flex-row items-center justify-stretch gap-2">
+          <Button className="flex-1 bg-white" onPress={() => setOpen(false)}>
+            <Text>No</Text>
+          </Button>
+          <Button className="flex-1 bg-secondary" onPress={action}>
+            <Text className="text-secondary-foreground">Yes</Text>
+          </Button>
+        </View>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

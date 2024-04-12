@@ -1,8 +1,7 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
-import { parseEther } from "viem";
-import { base } from "viem/chains";
+import { Chain, parseEther } from "viem";
 import { useSendTransaction } from "wagmi";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import { Button } from "../ui/button";
@@ -12,13 +11,14 @@ import {
   DialogTrigger
 } from "../ui/dialog";
 import ToeknSelect from "./UserTokenSelect";
+import { DEFAULT_CHAIN } from "~/constants";
 
 export default function WithdrawButton({
   defaultAddress,
-  defaultChain = base.id,
+  defaultChain = DEFAULT_CHAIN,
 }: {
   defaultAddress: `0x${string}`;
-  defaultChain?: number;
+  defaultChain?: Chain;
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [address, setAddress] = useState(defaultAddress);
@@ -60,7 +60,7 @@ export default function WithdrawButton({
           <View className="flex-row items-center justify-between">
             <Text className="text-md text-primary-foreground">Token</Text>
           </View>
-          <ToeknSelect selectToken={setToken} />
+          <ToeknSelect selectToken={setToken} chain={defaultChain} />
           <View className="flex-row items-center justify-between">
             <Text className="text-md text-primary-foreground">Amount</Text>
           </View>
