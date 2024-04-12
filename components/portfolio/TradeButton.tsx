@@ -56,7 +56,7 @@ function Trade({
   toChain: number;
   toToken: `0x${string}`;
 }) {
-  console.log("Trade", fromChain, fromToken, toChain, toToken)
+  // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const DEFAULT_WIDGET_CONFIG: WidgetConfig = {
     integrator: "DegenCast/US3R.NETWORK",
     fromChain,

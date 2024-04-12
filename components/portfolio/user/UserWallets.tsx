@@ -1,13 +1,18 @@
 import {
-  FarcasterWithMetadata,
   useConnectWallet,
   usePrivy,
-  useWallets,
+  useWallets
 } from "@privy-io/react-auth";
+import { useSetActiveWallet } from "@privy-io/wagmi";
+import { Image } from "expo-image";
 import React, { useMemo } from "react";
-import { Pressable, View, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { useAccount } from "wagmi";
+import useAuth from "~/hooks/user/useAuth";
+import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import { PlusCircle, MinusCircle, Wallet } from "../../common/Icons";
+import { shortPubKey } from "~/utils/shortPubKey";
+import { MinusCircle, PlusCircle, Wallet } from "../../common/Icons";
 import {
   Select,
   SelectContent,
@@ -15,12 +20,6 @@ import {
   SelectItem,
   SelectTrigger,
 } from "../../ui/select";
-import { shortPubKey } from "~/utils/shortPubKey";
-import { useAccount } from "wagmi";
-import { useSetActiveWallet } from "@privy-io/wagmi";
-import { Image } from "expo-image";
-import useAuth from "~/hooks/user/useAuth";
-import { cn } from "~/lib/utils";
 
 export default function Wallets() {
   const {
@@ -77,10 +76,6 @@ export default function Wallets() {
       }}
     >
       <SelectTrigger className="w-full bg-white/50 rounded-full">
-        {/* <SelectValue
-          className="native:text-lg text-sm text-foreground"
-          placeholder="Select a wallet"
-        /> */}
         <View className="flex-row items-center gap-2">
           <Wallet className="size-4 text-primary" />
           <Text className="text-primary font-bold">
@@ -92,12 +87,13 @@ export default function Wallets() {
         <SelectGroup>
           {connectedWallets.map((wallet) => (
             <SelectItem
+              asChild
               className="pl-2"
               key={wallet.address}
               label={shortPubKey(wallet.address)}
               value={wallet.address}
             >
-              <View className="w-full flex-row items-center justify-between">
+              <View className="w-full flex-row items-center justify-between gap-2">
                 <View className="flex-row items-center gap-2">
                   <Wallet
                     className={cn(
@@ -118,9 +114,9 @@ export default function Wallets() {
                 {!(wallet.connectorType === "embedded") && (
                   <Pressable
                     onPress={async (event) => {
+                      console.log("unlinking wallet", wallet.address);
                       event.preventDefault();
                       event.stopPropagation();
-                      console.log("unlinking wallet", wallet.address);
                       await unlinkWallet(wallet.address);
                     }}
                   >

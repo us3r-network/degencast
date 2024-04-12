@@ -8,6 +8,7 @@ import { Info } from "../../common/Icons";
 import { TokenInfo } from "../../common/TokenInfo";
 import { Button } from "../../ui/button";
 import WithdrawButton from "../WithdrawButton";
+import TradeButton from "../TradeButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { userTokens } = useUserTokens();
@@ -18,9 +19,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
           <Text className="text-lg font-bold text-primary">Balance</Text>
           <Info size={16} />
         </View>
-        <WithdrawButton
-          defaultAddress={address}
-        />
+        <WithdrawButton defaultAddress={address} />
       </View>
       {userTokens.has(TOKENS.NATIVE) && (
         <MyToken
@@ -86,17 +85,10 @@ function MyToken({
             </Button>
           ) : (
             action === ACTION_TYPES.SWAP && (
-              <Button
-                className="w-14 bg-secondary"
-                onPress={() => {
-                  console.log("Trade button pressed");
-                  Linking.openURL("https://app.uniswap.org/");
-                }}
-              >
-                <Text className="text-xs font-bold text-secondary-foreground">
-                  Swap
-                </Text>
-              </Button>
+              <TradeButton
+                fromChain={token.chainId}
+                fromToken={token.contractAddress as `0x${string}`}
+              />
             )
           ))}
       </View>

@@ -28,8 +28,6 @@ export function SellButton({
   name?: string;
   sharesSubject: `0x${string}`;
 }) {
-  console.log("SellButton", sharesSubject);
-
   const account = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -57,8 +55,6 @@ export function SellButton({
     const { data } = getPrice(SHARE_ACTION.SELL, amount, true);
     return data as bigint;
   }, [amount, getPrice, isSuccess]);
-
-  console.log("SellButton", price, balance);
 
   return (
     <Dialog className="text-white">
@@ -185,18 +181,6 @@ export function BuyButton({
     return data as bigint;
   }, [amount, getPrice, isSuccess]);
 
-  console.log(
-    "BuyButton: buy shares",
-    price,
-    supply,
-    amount,
-    data,
-    status,
-    writeError,
-    transationError,
-    waiting,
-    writing,
-  );
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
