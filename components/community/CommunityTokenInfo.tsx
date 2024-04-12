@@ -1,66 +1,30 @@
-import { useEffect, useRef, useState } from "react";
-import { Platform, View } from "react-native";
-import WebView, { WebViewProps } from "react-native-webview";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
 import TradingViewChart from "./TradingViewChart";
 import axios from "axios";
 import { Text } from "../ui/text";
+import TradingViewNotice from "./TradingViewNotice";
+import { TradeInfo } from "~/services/community/types/trade";
 
-type GeckoterminalTokenPoolInfo = {
-  name: string;
-  address: string;
-  base_token_price_usd: string;
-  quote_token_price_usd: string;
-  base_token_price_native_currency: string;
-  quote_token_price_native_currency: string;
-  base_token_price_quote_token: string;
-  quote_token_price_base_token: string;
-  pool_created_at: string;
-  reserve_in_usd: string;
-  fdv_usd: string;
-  market_cap_usd: string;
-  price_change_percentage: {
-    h1: string;
-    h6: string;
-    h24: string;
-    m5: string;
-  };
-  transactions: any;
-  volume_usd: {
-    h1: string;
-    h6: string;
-    h24: string;
-    m5: string;
-  };
-};
 export default function CommunityTokenInfo({
-  chain,
-  poolAddress,
+  tokenInfo,
+  tradeInfo,
 }: {
-  chain: string;
-  poolAddress: string;
+  tokenInfo: {
+    standard: string;
+    contract: string;
+    chain: string;
+  };
+  tradeInfo: TradeInfo;
 }) {
-  const [poolInfo, setPoolInfo] = useState<GeckoterminalTokenPoolInfo | null>(
-    null,
-  );
   const [prices, setPrices] = useState([]);
-  const apiBaseUrl = `https://api.geckoterminal.com/api/v2/networks/${chain}/pools/${poolAddress}`;
+  const { chain, poolAddress } = tradeInfo;
+  const ohlcvApiBaseUrl = `https://api.geckoterminal.com/api/v2/networks/${chain}/pools/${poolAddress}`;
 
   useEffect(() => {
-    setPoolInfo(null);
     setPrices([]);
     axios
-      .get(`${apiBaseUrl}`)
-      .then((res) => {
-        const { data } = res.data;
-        const info = data?.attributes;
-
-        setPoolInfo(info);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-    axios
-      .get(`${apiBaseUrl}/ohlcv/day?aggregate=1&limit=7`)
+      .get(`${ohlcvApiBaseUrl}/ohlcv/day?aggregate=1&limit=7`)
       .then((res) => {
         const { data, meta } = res.data;
         const ohlcvList = data?.attributes?.ohlcv_list || [];
@@ -69,76 +33,71 @@ export default function CommunityTokenInfo({
             time: ohlcv[0],
             value: ohlcv[4],
           }))
-
           .reverse();
         setPrices(closePrices);
       })
       .catch((err) => {
         console.log("err", err);
       });
-  }, [apiBaseUrl]);
+  }, [ohlcvApiBaseUrl]);
   return (
     <View className="w-full">
-      <TradingViewChart prices={prices} price={9999} priceChange={9999} />
-      <TokenInfo poolInfo={poolInfo} />
+      <TradingViewChart
+        name={tradeInfo.name}
+        img={tradeInfo.imageURL}
+        prices={prices}
+        price={Number(tradeInfo?.stats.token_price_usd)}
+        priceChange={Number(tradeInfo.stats.price_change_percentage.h24)}
+      />
+      <TokenInfo tokenInfo={tokenInfo} tradeInfo={tradeInfo} />
+      <TradingViewNotice />
     </View>
   );
 }
 
 function TokenInfo({
-  poolInfo,
+  tokenInfo,
+  tradeInfo,
 }: {
-  poolInfo: GeckoterminalTokenPoolInfo | null;
+  tokenInfo: {
+    standard: string;
+    contract: string;
+    chain: string;
+  };
+  tradeInfo: TradeInfo;
 }) {
-  const {
-    name,
-    address,
-    base_token_price_usd,
-    quote_token_price_usd,
-    base_token_price_native_currency,
-    quote_token_price_native_currency,
-    base_token_price_quote_token,
-    quote_token_price_base_token,
-    pool_created_at,
-    reserve_in_usd,
-    fdv_usd,
-    market_cap_usd,
-    price_change_percentage,
-    transactions,
-    volume_usd,
-  } = poolInfo || {};
   const data = [
     {
       label: "Market Cap",
-      value: `$${market_cap_usd || 0}`,
+      value: `$${tradeInfo.stats.market_cap_usd || 0}`,
     },
     {
       label: "Volume (24H)",
-      value: `$${volume_usd?.h24 || 0}`,
+      value: `$${tradeInfo.stats.volume_usd.h24 || 0}`,
     },
     {
-      label: "All Time High",
-      value: `$9999`,
+      label: "Buys (24H)",
+      value: `$${tradeInfo.stats.transactions.h24.buys || 0}`,
     },
     {
-      label: "All Time Low",
-      value: `$9999`,
+      label: "Sells (24H)",
+      value: `$${tradeInfo.stats.transactions.h24.sells || 0}`,
     },
     {
-      label: "Total Supply",
-      value: `9999999`,
+      label: "Holders",
+      value: `${tradeInfo.holdersStats[0]?.count || 0}`,
     },
     {
       label: "Token Standard",
-      value: `36,965,935,954`,
+      value: tokenInfo.standard,
     },
     {
       label: "Token Contract",
-      value: "0x4ed4...efed",
+      value: tokenInfo.contract,
     },
     {
       label: "Chain",
-      value: "Base",
+      value: tokenInfo.chain,
     },
   ];
   return (
