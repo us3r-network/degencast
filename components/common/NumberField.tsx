@@ -13,8 +13,8 @@ type NumberFieldProps = React.ComponentPropsWithoutRef<typeof View> & {
 
 export default function NumberField({
   defaultValue,
-  minValue,
-  maxValue,
+  minValue = 0,
+  maxValue = 0,
   onChange,
 }: NumberFieldProps) {
   const [value, setValue] = useState(defaultValue || 0);
@@ -23,7 +23,7 @@ export default function NumberField({
     <View className="flex-row gap-2">
       <Button
         className="h-8 w-8 rounded-full bg-secondary"
-        disabled={Boolean(minValue && value <= minValue)}
+        disabled={Boolean(value <= minValue)}
         onPress={() => {
           const newValue = value - 1;
           if (!minValue || value > minValue) setValue(newValue);
@@ -41,7 +41,7 @@ export default function NumberField({
       />
       <Button
         className="h-8 w-8 rounded-full bg-secondary"
-        disabled={Boolean(maxValue && value >= maxValue)}
+        disabled={Boolean(value >= maxValue)}
         onPress={() => {
           const newValue = value + 1;
           if (!maxValue || value < maxValue) setValue(newValue);

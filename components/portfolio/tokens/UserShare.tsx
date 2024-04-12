@@ -35,17 +35,13 @@ export default function Share() {
         {items?.length > 0 &&
           items
             .slice(0, DEFAULT_ITEMS_NUM)
-            .map((item) => (
-              <Item key={item.name} {...item} />
-            ))}
+            .map((item) => <Item key={item.name} {...item} />)}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
         {items?.length > DEFAULT_ITEMS_NUM &&
           items
             .slice(DEFAULT_ITEMS_NUM)
-            .map((item) => (
-              <Item key={item.name} {...item} />
-            ))}
+            .map((item) => <Item key={item.name} {...item} />)}
       </CollapsibleContent>
     </Collapsible>
   );
@@ -57,7 +53,11 @@ function Item(item: ShareInfo) {
       <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.amount), 2)}</Text>
-        <SellButton logo={""} name={""} assetId={item.assetId}  />
+        <SellButton
+          logo={item.logo}
+          name={item.name}
+          sharesSubject={item.sharesSubject}
+        />
       </View>
     </View>
   );

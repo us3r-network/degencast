@@ -1,14 +1,16 @@
 import { Text, View } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { round, upperFirst } from "lodash";
+import { cn } from "~/lib/utils";
 
 type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   name?: string;
   logo?: string;
   mc?: number;
+  textClassName?: string;
 };
 
-export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
+export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
       <Avatar alt={name || ""} className="size-8">
@@ -20,7 +22,9 @@ export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className="text-md font-bold text-primary">{name}</Text>
+        <Text className={cn("text-md font-bold text-primary", textClassName)}>
+          {name}
+        </Text>
         {mc && mc > 0 && (
           <Text className="text-xs text-secondary">
             {new Intl.NumberFormat("en-US", {

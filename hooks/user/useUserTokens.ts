@@ -12,11 +12,11 @@ export enum TOKENS {
 export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000"; //ETH
 const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
 
-export default function useUserTokens() {
+export default function useUserTokens(chainId: number = base.id) {
   const { address } = useAccount();
   const { data: nativeToken } = useBalance({
     address,
-    chainId: base.id,
+    chainId,
   });
   const { data: degenToken } = useReadContracts({
     allowFailure: false,

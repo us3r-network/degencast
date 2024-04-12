@@ -45,12 +45,12 @@ export type TokenInfoWithMetadata = {
 export type ShareInfo = {
   name?: string | undefined;
   logo?: string;
-  amount:number;
-  assetId:number;
+  amount: number;
+  sharesSubject: `0x${string}`;
 };
 
 export type TipsInfo = {
   name?: string | undefined;
   logo?: string;
-  amount:number;
+  amount: number;
 };
