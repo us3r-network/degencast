@@ -150,3 +150,19 @@ export function fetchCommunityMembers(
     params,
   });
 }
+
+export type WarpcastChannel = {
+  id: string;
+  url: string;
+  name: string;
+  imageUrl: string;
+  createdAt: number;
+};
+export function fetchWarpcastChannels(): RequestPromise<
+  ApiResp<WarpcastChannel[]>
+> {
+  return request({
+    url: `/topics/warpcast-channels`,
+    method: "get",
+  });
+}
