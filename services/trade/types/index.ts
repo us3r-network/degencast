@@ -5,6 +5,7 @@ export type VolumeStats = {
 };
 export type TokenInfoWithStats = {
   id: string;
+  chain_id: number;
   tokenAddress: string;
   name?: string | undefined;
   imageURL?: string;

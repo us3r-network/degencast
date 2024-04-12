@@ -5,7 +5,7 @@ import { TokenInfo } from "~/components/common/TokenInfo";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithStats } from "~/services/trade/types";
-import TradeButton, { NATIVE_TOKEN } from "../portfolio/TradeButton";
+import TradeButton from "../portfolio/TradeButton";
 
 export default function CommunityTokens() {
   const { items } = useCommunityTokens();
@@ -38,10 +38,8 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
           {change}%
         </Text>
         <TradeButton
-          fromChain={base.id}
+          fromChain={item.chain_id}
           fromToken={item.tokenAddress as `0x${string}`}
-          toChain={base.id}
-          toToken={NATIVE_TOKEN}
         />
       </View>
     </View>

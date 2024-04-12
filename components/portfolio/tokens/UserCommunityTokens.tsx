@@ -11,7 +11,8 @@ import {
 } from "~/components/ui/collapsible";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import TradeButton, { NATIVE_TOKEN } from "../TradeButton";
+import TradeButton from "../TradeButton";
+import { DEFAULT_CHAIN } from "~/constants";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -55,10 +56,8 @@ function Item(item: TokenInfoWithMetadata) {
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.balance), 2)}</Text>
         <TradeButton
-          fromChain={base.id}
+          fromChain={item.chainId || DEFAULT_CHAIN.id}
           fromToken={item.contractAddress as `0x${string}`}
-          toChain={base.id}
-          toToken={NATIVE_TOKEN}
         />
       </View>
     </View>
