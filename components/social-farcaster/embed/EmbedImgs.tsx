@@ -1,15 +1,21 @@
 import { Embeds } from "~/utils/farcaster/getEmbeds";
-import { View, Image } from "react-native";
+import { View } from "react-native";
+import { Image } from "expo-image";
 
 export default function EmbedImgs({ imgs }: { imgs: Embeds["imgs"] }) {
   return (
-    <View>
+    <View className="h-fit w-full">
       {imgs.map((img, idx) => (
-        <Image
-          className="max-w-full object-cover"
-          key={img.url}
-          source={{ uri: img.url }}
-        />
+        <View className="h-[300px]" key={img.url}>
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              resizeMode: "cover",
+            }}
+            source={img.url}
+          />
+        </View>
       ))}
     </View>
   );
