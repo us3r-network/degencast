@@ -44,12 +44,12 @@ export default function CardSwipe({
     })
     .onEnd((e) => {
       if (currentIndex === index) {
-        // If the swipe distance is greater than 150 or the swipe velocity is greater than 1000
+        // If the swipe distance is greater than 100 or the swipe velocity is greater than 1000
         // go to the next card
         if (
-          Math.abs(e.translationX) > 150 ||
+          Math.abs(e.translationX) > 100 ||
           Math.abs(e.velocityX) > 1000 ||
-          Math.abs(e.translationY) > 150 ||
+          Math.abs(e.translationY) > 100 ||
           Math.abs(e.velocityY) > 1000
         ) {
           x.value = withTiming(width * xDirection.value, {}, (bool) => {
@@ -57,7 +57,7 @@ export default function CardSwipe({
           });
           animatedValue.value = withTiming(currentIndex + 1);
         } else {
-          // If the swipe distance is less than 150 or the swipe velocity is less than 1000
+          // If the swipe distance is less than 100 or the swipe velocity is less than 1000
           // go back to the original position
           x.value = withTiming(0, { duration: 500 });
           y.value = withTiming(0, { duration: 500 });
