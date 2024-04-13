@@ -27,9 +27,9 @@ export default function ExploreScreen() {
               return null;
             }
             let backgroundColor = "#FFFFFF";
-            if (currentCastIndex + 1 === idx) {
-              backgroundColor = "rgba(255, 255, 255, 0.80)";
-            }
+            // if (currentCastIndex + 1 === idx) {
+            //   backgroundColor = "rgba(255, 255, 255, 0.80)";
+            // }
             if (currentCastIndex + 2 === idx) {
               backgroundColor = "rgba(255, 255, 255, 0.60)";
             }
