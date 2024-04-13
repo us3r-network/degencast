@@ -1,4 +1,4 @@
-import { UserDataType } from "@farcaster/hub-web";
+import { UserDataType } from "@external-types/farcaster";
 
 export type UserData = {
   fid: string;

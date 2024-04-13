@@ -1,4 +1,4 @@
-import { CastId } from "@farcaster/hub-web";
+import { CastId } from "@external-types/farcaster";
 import { FarCast } from "~/services/farcaster/types";
 
 export default function getCastId({ cast }: { cast: FarCast }): CastId {
