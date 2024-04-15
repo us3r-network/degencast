@@ -14,7 +14,7 @@ type NumberFieldProps = React.ComponentPropsWithoutRef<typeof View> & {
 export default function NumberField({
   defaultValue,
   minValue = 0,
-  maxValue = 0,
+  maxValue = 999,
   onChange,
 }: NumberFieldProps) {
   const [value, setValue] = useState(defaultValue || 0);
