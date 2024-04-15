@@ -6,7 +6,7 @@ import {
   useSegments,
   useNavigation,
 } from "expo-router";
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import { Share2 } from "~/components/common/Icons";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
@@ -16,6 +16,7 @@ import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import { cn } from "~/lib/utils";
+import { CommunityData } from "~/services/community/api/community";
 
 const initialRouteName = "tokens";
 
@@ -25,6 +26,22 @@ const TABS = [
   { label: "Tips Rank", value: "tips-rank" },
   { label: "Casts", value: "casts" },
 ];
+
+const CommunityContext = createContext<{
+  community: CommunityData | null;
+  loading: boolean;
+}>({
+  community: null,
+  loading: false,
+});
+
+export function useCommunityCtx() {
+  const context = useContext(CommunityContext);
+  if (!context) {
+    throw new Error("useCommunityCtx must be used within CommunityContext");
+  }
+  return context;
+}
 
 export default function CommunityDetail() {
   const headerHeight = useHeaderHeight();
@@ -120,12 +137,14 @@ export default function CommunityDetail() {
                 </TabsList>
               </Tabs>
               <Card className="box-border h-full w-full p-5">
-                <Stack
-                  initialRouteName={initialRouteName}
-                  screenOptions={{
-                    header: () => null,
-                  }}
-                />
+                <CommunityContext.Provider value={{ community, loading }}>
+                  <Stack
+                    initialRouteName={initialRouteName}
+                    screenOptions={{
+                      header: () => null,
+                    }}
+                  />
+                </CommunityContext.Provider>
               </Card>
             </View>
           </>

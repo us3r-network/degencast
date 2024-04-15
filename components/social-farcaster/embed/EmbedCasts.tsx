@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import { UserDataType } from "@farcaster/hub-web";
 import { FarCastEmbedMetaCast } from "~/services/farcaster/types";
 import { View, Image } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -7,6 +6,7 @@ import { Text } from "~/components/ui/text";
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCastsMetadata";
 import { Card } from "~/components/ui/card";
+import { UserDataType } from "@external-types/farcaster";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId);

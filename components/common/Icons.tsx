@@ -60,6 +60,8 @@ import {
   Heart,
   Share2,
   Minus,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 function interopIcon(icon: LucideIcon) {
@@ -134,6 +136,8 @@ interopIcon(MinusCircle);
 interopIcon(Heart);
 interopIcon(Share2);
 interopIcon(Minus);
+interopIcon(TrendingUp);
+interopIcon(TrendingDown);
 export {
   Activity,
   Airplay,
@@ -195,4 +199,6 @@ export {
   Heart,
   Share2,
   Minus,
+  TrendingUp,
+  TrendingDown,
 };
