@@ -33,6 +33,7 @@ export type MyWalletTokensRespEntity = {
   tokens: TokenInfoWithMetadata[];
 };
 export type TokenInfoWithMetadata = {
+  chainId: number;
   contractAddress: string;
   name?: string | undefined;
   rawBalance?: BigInt | string;

@@ -7,3 +7,4 @@ export const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || "";
 export const EXPO_PUBLIC_ALCHEMY_API_KEY = process.env.EXPO_PUBLIC_ALCHEMY_API_KEY || "demo"
 
 export const DEFAULT_CHAIN = base
+export const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000"; //ETH

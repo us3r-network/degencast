@@ -8,6 +8,7 @@ import { ProfileFeedsGroups } from "~/services/farcaster/types";
 import { getUserFarcasterAccount } from "~/utils/privy";
 import { Image } from "expo-image";
 import { Button } from "~/components/ui/button";
+import { Loading } from "~/components/common/Loading";
 
 export default function CastsScreen() {
   const params = useLocalSearchParams();
@@ -20,37 +21,42 @@ export default function CastsScreen() {
   }, [fid]);
   if (fid) {
     return (
-      <View className="flex-1">
-        {casts.length > 0 && (
-          <FlatList
-            data={casts}
-            numColumns={2}
-            columnWrapperStyle={{ gap: 5 }}
-            ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-            renderItem={({ item }) => {
-              const { data, platform } = item;
-              return (
-                <FcastMiniCard
-                  className="flex-1"
-                  cast={data}
-                  farcasterUserDataObj={farcasterUserDataObj}
-                />
-              );
-            }}
-            keyExtractor={({ data, platform }) => data.id}
-            onEndReached={() => {
-              if (loading) return;
-              loadCasts({ fid: String(fid), group: ProfileFeedsGroups.POSTS });
-            }}
-            onEndReachedThreshold={1}
-            ListFooterComponent={() => {
-              return loading ? (
-                <View className="flex items-center justify-center p-5">
-                  Loading ...
-                </View>
-              ) : null;
-            }}
-          />
+      <View className="container h-full">
+        {loading && casts.length === 0 ? (
+          <Loading />
+        ) : (
+          <View className="flex-1">
+            {casts.length > 0 && (
+              <FlatList
+                data={casts}
+                numColumns={2}
+                columnWrapperStyle={{ gap: 5 }}
+                ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
+                renderItem={({ item }) => {
+                  const { data, platform } = item;
+                  return (
+                    <FcastMiniCard
+                      className="flex-1"
+                      cast={data}
+                      farcasterUserDataObj={farcasterUserDataObj}
+                    />
+                  );
+                }}
+                keyExtractor={({ data, platform }) => data.id}
+                onEndReached={() => {
+                  if (loading) return;
+                  loadCasts({
+                    fid: String(fid),
+                    group: ProfileFeedsGroups.POSTS,
+                  });
+                }}
+                onEndReachedThreshold={1}
+                ListFooterComponent={() => {
+                  return loading ? <Loading /> : null;
+                }}
+              />
+            )}
+          </View>
         )}
       </View>
     );

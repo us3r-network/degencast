@@ -5,11 +5,15 @@ import { TokenInfo } from "~/components/common/TokenInfo";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithStats } from "~/services/trade/types";
-import TradeButton, { NATIVE_TOKEN } from "../portfolio/TradeButton";
+import TradeButton from "../portfolio/TradeButton";
+import { Loading } from "../common/Loading";
 
 export default function CommunityTokens() {
-  const { items } = useCommunityTokens();
-  return (
+  const { loading, items } = useCommunityTokens();
+  return (    <View className="container h-full">
+  {loading ? (
+    <Loading />
+  ) : (
     <ScrollView showsVerticalScrollIndicator={false} className="w-full">
       <View className="flex w-full gap-4">
         {items?.length > 0 &&
@@ -18,6 +22,8 @@ export default function CommunityTokens() {
           ))}
       </View>
     </ScrollView>
+      )}
+    </View>
   );
 }
 
@@ -38,10 +44,8 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
           {change}%
         </Text>
         <TradeButton
-          fromChain={base.id}
+          fromChain={item.chain_id}
           fromToken={item.tokenAddress as `0x${string}`}
-          toChain={base.id}
-          toToken={NATIVE_TOKEN}
         />
       </View>
     </View>

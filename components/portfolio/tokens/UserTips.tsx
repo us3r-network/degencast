@@ -57,7 +57,7 @@ function Item(item: TipsInfo) {
           disabled
           className="w-14 bg-secondary"
           onPress={() => {
-            console.log("Claim button pressed");
+            // console.log("Claim button pressed");
           }}
         >
           <Text className="text-xs font-bold text-secondary-foreground">

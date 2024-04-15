@@ -15,7 +15,7 @@ export default function ToeknSelect({
   supportTokenKeys,
   selectToken,
 }: {
-  chain: Chain;
+  chain?: Chain;
   defaultTokenKey?: TOKENS;
   supportTokenKeys?: TOKENS[];
   selectToken?: (token: TokenInfoWithMetadata) => void;

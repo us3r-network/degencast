@@ -5,7 +5,9 @@ import { TipsInfo } from "~/services/user/types";
 
 export default function useUserTips() {
   const [items, setItems] = useState<TipsInfo[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const fetch = useCallback(async () => {
+    setLoading(true);
     const response = await myTips();
     const { code, msg, data } = response.data;
     if (code === ApiRespCode.SUCCESS) {
@@ -13,6 +15,7 @@ export default function useUserTips() {
     } else {
       throw new Error(msg);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
