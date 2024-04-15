@@ -10,6 +10,7 @@ import {
 import UserGlobalPoints from "../../point/UserGlobalPoints";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import FarcasterStats from "./FarcasterStats";
+import { User } from "~/components/common/Icons";
 
 export default function UserInfo() {
   const { ready, authenticated, user, logout } = usePrivy();
@@ -27,8 +28,8 @@ export default function UserInfo() {
     <View className="mx-8 w-full flex-row items-center gap-4">
       <Avatar alt={userHandle} className="size-20">
         <AvatarImage source={{ uri: userAvatar }} />
-        <AvatarFallback>
-          <Text>{userName}</Text>
+        <AvatarFallback className="bg-white">
+          <User className="size-12 fill-primary/80 font-bold text-primary"/>
         </AvatarFallback>
       </Avatar>
       <View className="flex w-full gap-2">

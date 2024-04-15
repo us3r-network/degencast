@@ -1,4 +1,5 @@
 import { FarcasterWithMetadata, GoogleOAuthWithMetadata, TwitterOAuthWithMetadata, User, WalletWithMetadata } from "@privy-io/react-auth";
+import { shortAddress } from "../shortAddress";
 
 export const getUserAvatar = (user: User | null) => {
     const farcaster = user?.linkedAccounts?.find((account) => account.type === 'farcaster');
@@ -10,7 +11,9 @@ export const getUserName = (user: User | null) => {
     const farcaster = user?.linkedAccounts?.find((account) => account.type === 'farcaster');
     const twitter = user?.linkedAccounts?.find((account) => account.type === 'twitter_oauth');
     const google = user?.linkedAccounts?.find((account) => account.type === 'google_oauth');
-    return (farcaster as FarcasterWithMetadata)?.displayName || (twitter as TwitterOAuthWithMetadata)?.name || (google as GoogleOAuthWithMetadata)?.name || '';
+    const wallets = user?.linkedAccounts?.filter((account) => account.type === 'wallet');
+    const defaultWalletAddress = (wallets![0] as unknown as WalletWithMetadata).address;
+    return (farcaster as FarcasterWithMetadata)?.displayName || (twitter as TwitterOAuthWithMetadata)?.name || (google as GoogleOAuthWithMetadata)?.name || shortAddress(defaultWalletAddress);
 }
 
 export const getUserHandle = (user: User | null) => {

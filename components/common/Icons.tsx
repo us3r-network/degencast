@@ -54,6 +54,7 @@ import {
   Underline,
   UserPlus,
   Users,
+  User,
   X,
   Wallet,
   MinusCircle,
@@ -125,6 +126,7 @@ interopIcon(Plus);
 interopIcon(PlusCircle);
 interopIcon(UserPlus);
 interopIcon(Users);
+interopIcon(User);
 interopIcon(AlignCenter);
 interopIcon(Terminal);
 interopIcon(AlertTriangle);
@@ -193,6 +195,7 @@ export {
   Underline,
   UserPlus,
   Users,
+  User,
   X,
   Wallet,
   MinusCircle,
