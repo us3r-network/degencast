@@ -104,7 +104,7 @@ export default function CommunityDetail() {
           ),
         }}
       />
-      <View className=" m-auto  flex-1 flex-col gap-7 p-5 sm:w-full sm:max-w-screen-sm">
+      <View className=" m-auto  w-full flex-1 flex-col gap-7 p-5 sm:w-full sm:max-w-screen-sm">
         {community && (
           <>
             <CommunityDetailMetaInfo communityInfo={community} />
