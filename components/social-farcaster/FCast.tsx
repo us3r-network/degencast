@@ -55,7 +55,7 @@ export default function FCast({
       </View>
       {/* body - text & embed */}
       <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
-      <View className="flex flex-col gap-5 overflow-hidden">
+      <View className="flex flex-col gap-5">
         {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />}
         {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}
         {embedWebpages.length > 0 && (
