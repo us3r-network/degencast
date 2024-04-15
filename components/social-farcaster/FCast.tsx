@@ -34,7 +34,7 @@ export default function FCast({
   return (
     <View
       key={cast.id}
-      className={cn("flex flex-col gap-5", className)}
+      className={cn("flex w-full flex-col gap-5", className)}
       {...props}
     >
       {/* header - user info */}

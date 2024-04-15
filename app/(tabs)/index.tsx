@@ -1,4 +1,5 @@
-import { View } from "react-native";
+import { useRouter } from "expo-router";
+import { TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
@@ -7,12 +8,14 @@ import FCastActions from "~/components/social-farcaster/FCastActions";
 import FCastCommunity from "~/components/social-farcaster/FCastCommunity";
 import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
+import getCastHex from "~/utils/farcaster/getCastHex";
 
 const MAX_VISIBLE_ITEMS = 3;
 export default function ExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
     useLoadExploreCasts();
   const animatedValue = useSharedValue(0);
+  const router = useRouter();
   return (
     <View className={cn("flex-1 bg-primary")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
@@ -47,14 +50,21 @@ export default function ExploreScreen() {
               >
                 <View
                   className={cn(
-                    "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none p-5 sm:max-h-[690px] sm:w-[390px]",
+                    "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none sm:max-h-[690px] sm:w-[390px]",
                   )}
                 >
-                  <FCast
-                    className="h-full w-full overflow-hidden"
-                    cast={data}
-                    farcasterUserDataObj={farcasterUserDataObj}
-                  />
+                  <TouchableOpacity
+                    className={cn("h-full w-full overflow-hidden p-5")}
+                    onPress={() => {
+                      const castHex = getCastHex(data);
+                      router.push(`/casts/${castHex}`);
+                    }}
+                  >
+                    <FCast
+                      cast={data}
+                      farcasterUserDataObj={farcasterUserDataObj}
+                    />
+                  </TouchableOpacity>
                   <FCastActions
                     className=" absolute bottom-14 right-3"
                     cast={data}
