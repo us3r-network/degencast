@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm ci && npm run export
+      - run: npm i && npm run export
         env:
           CI: true
           REACT_APP_NAME: "DEGENCAST"
