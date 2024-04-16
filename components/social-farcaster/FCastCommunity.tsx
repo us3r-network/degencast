@@ -63,6 +63,32 @@ export default function FCastCommunity({
   );
 }
 
+export function FCastCommunityDefault({ className, ...props }: ViewProps) {
+  return (
+    <View
+      className={cn(
+        "box-border flex h-[90px] w-[calc(100%-10px)] flex-row items-center gap-2 rounded-[30px] bg-[#5E3EA0] p-[20px]",
+        className,
+      )}
+      {...props}
+    >
+      <Avatar
+        alt={"logo"}
+        className="flex h-12 w-12 items-center  justify-center rounded-full bg-white object-cover"
+      >
+        <AvatarImage
+          style={{ width: 20, height: 20 }}
+          source={require("~/assets/images/channel-home-icon.png")}
+        />
+        <AvatarFallback>
+          <Text>Home</Text>
+        </AvatarFallback>
+      </Avatar>
+      <Text className="line-clamp-2 flex-1 text-base text-white">Home</Text>
+    </View>
+  );
+}
+
 function JoinIcon() {
   return (
     <svg

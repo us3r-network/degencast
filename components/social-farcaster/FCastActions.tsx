@@ -1,6 +1,6 @@
 import { ViewProps } from "react-native";
 import { FarCast } from "~/services/farcaster/types";
-import { ExplorePostActions } from "../post/PostActions";
+import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import FCastGiftModal from "./FCastGiftModal";
@@ -9,9 +9,11 @@ import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
 
 export default function FCastActions({
   cast,
+  isDetail,
   ...props
 }: ViewProps & {
   cast: FarCast;
+  isDetail?: boolean;
 }) {
   const { authenticated, login } = usePrivy();
   const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
@@ -20,34 +22,49 @@ export default function FCastActions({
   const [openGiftModal, setOpenGiftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
+  const onLike = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+
+    if (liked) {
+      removeLikeCast();
+    } else {
+      likeCast();
+    }
+  };
+  const onGift = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
+  };
+  const onShare = () => {};
   return (
     <>
-      <ExplorePostActions
-        liked={liked}
-        likeCount={likeCount}
-        onLike={() => {
-          if (!authenticated) {
-            login();
-            return;
-          }
+      {isDetail ? (
+        <PostDetailActions
+          liked={liked}
+          likeCount={likeCount}
+          onLike={onLike}
+          onGift={onGift}
+          onShare={onShare}
+          {...props}
+        />
+      ) : (
+        <ExplorePostActions
+          liked={liked}
+          likeCount={likeCount}
+          onLike={onLike}
+          onGift={onGift}
+          onShare={onShare}
+          {...props}
+        />
+      )}
 
-          if (liked) {
-            removeLikeCast();
-          } else {
-            likeCast();
-          }
-        }}
-        onGift={() => {
-          if (!authenticated) {
-            login();
-            return;
-          }
-          loadDegenAllowance();
-          setOpenGiftModal(true);
-        }}
-        onShare={function (): void {}}
-        {...props}
-      />
       <FCastGiftModal
         totalAllowance={totalDegenAllowance}
         remainingAllowance={remainingDegenAllowance}

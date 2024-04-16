@@ -3,6 +3,7 @@ import { FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
+  FarCast,
   FarCastEmbedMetaV2,
   ProfileFeedsDataItem,
   ProfileFeedsGroups,
@@ -104,6 +105,33 @@ export function getFarcasterEmbedCast({
     params: {
       fid,
       hash,
+    },
+  });
+}
+
+export function getFarcasterCastInfo(
+  hash: string,
+  {
+    endFarcasterCursor,
+    pageSize,
+  }: {
+    endFarcasterCursor?: string;
+    pageSize?: number;
+  },
+): AxiosPromise<
+  ApiResp<{
+    cast: FarCast;
+    comments: { data: FarCast; platform: "farcaster" }[];
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
+  return request({
+    url: `${FARCASTER_API_URL}/3r-farcaster/cast/${hash}`,
+    method: "get",
+    params: {
+      endFarcasterCursor,
+      pageSize,
     },
   });
 }
