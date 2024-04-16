@@ -7,6 +7,7 @@ import CommunityTokenInfo from "~/components/community/CommunityTokenInfo";
 import { Text } from "~/components/ui/text";
 import useLoadCommunityTokenInfo from "~/hooks/community/useLoadCommunityTokenInfo";
 import { useCommunityCtx } from "./_layout";
+import { Image } from "react-native";
 
 export default function TokensScreen() {
   const params = useLocalSearchParams();
@@ -28,7 +29,18 @@ export default function TokensScreen() {
           />
         </ScrollView>
       ) : (
-        <ShareActivities id={id as string} />
+        <View className=" mx-auto max-w-72 flex-col items-center gap-8">
+          <Image
+            className="mt-20"
+            source={require("~/assets/images/no-token.png")}
+            style={{ width: 280, height: 280 }}
+          />
+          <Text className=" text-xl font-bold text-primary">Coming Soon</Text>
+          <Text className="text-center text-base leading-8 text-secondary">
+            The channel token launch progress hasn’t started yet.
+          </Text>
+        </View>
+        // <ShareActivities id={id as string} />
       )}
     </View>
   );
