@@ -1,20 +1,20 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTheme } from "@react-navigation/native";
 import { Link, Tabs } from "expo-router";
+import { Edit } from "lucide-react-native";
 import React from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
+import { Search } from "~/components/common/Icons";
+import {
+  ExploreIcon,
+  PortfolioIcon,
+  TradeIcon,
+} from "~/components/common/SvgIcons";
+import TabBar from "~/components/layout/tabBar/TabBar";
 import UserLogout from "~/components/portfolio/user/UserLogout";
 import UserWallets from "~/components/portfolio/user/UserWallets";
+import { Button } from "~/components/ui/button";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import { useColorScheme } from "~/lib/useColorScheme";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -28,44 +28,35 @@ export default function TabLayout() {
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}
+      tabBar={(props) => {
+        return <TabBar {...props} />;
+      }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Explore",
           tabBarLabelPosition: "below-icon",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="compass" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
           headerTransparent: true,
           headerTitleStyle: {
             color: "white",
           },
           headerRight: () => (
-            <View className="flex-row items-center gap-2">
+            <View className="mr-4 flex-row items-center gap-4">
               <Link href="/search" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <FontAwesome
-                      name="search"
-                      size={25}
-                      color="white"
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
+                <Button
+                  className="size-10 rounded-full bg-white"
+                >
+                  <Search />
+                </Button>
               </Link>
               <Link href="/create" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <FontAwesome
-                      name="edit"
-                      size={25}
-                      color="white"
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
+                <Button
+                  className="size-10 rounded-full bg-white"
+                >
+                  <Edit />
+                </Button>
               </Link>
             </View>
           ),
@@ -76,9 +67,7 @@ export default function TabLayout() {
         options={{
           title: "Trade",
           tabBarLabelPosition: "below-icon",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="bar-chart" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
           headerTransparent: true,
           headerTitleStyle: {
             color: "white",
@@ -90,7 +79,7 @@ export default function TabLayout() {
         options={{
           title: "Portfolio",
           tabBarLabelPosition: "below-icon",
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
           headerTransparent: true,
           headerTitleStyle: {
             color: "white",

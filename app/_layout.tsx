@@ -7,7 +7,7 @@ import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Stack } from "expo-router";
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { RootSiblingParent } from "react-native-root-siblings";
@@ -58,6 +58,7 @@ export default function RootLayout() {
       if (Platform.OS === "web") {
         // Adds the background color to the html element to prevent white background on overscroll.
         document.documentElement.classList.add("bg-background");
+        console.log("document", document);
       }
       if (!theme) {
         AsyncStorage.setItem("theme", colorScheme);
