@@ -8,8 +8,6 @@ export default function useLoadCastDetail() {
   const [loading, setLoading] = useState(false);
   const [cast, setCast] = useState<FarCast | null>(null);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
-  const [comments, setComments] =
-    useState<{ data: FarCast; platform: "farcaster" }[]>();
   const loadCastDetail = useCallback(async (id: string | number) => {
     if (!id) {
       setCast(null);
@@ -21,16 +19,11 @@ export default function useLoadCastDetail() {
       const res = await getFarcasterCastInfo(id as string, {});
       const { code, data, msg } = res.data;
       if (code === ApiRespCode.SUCCESS) {
-        const {
-          farcasterUserData: farcasterUserDataTmp,
-          cast: castTmp,
-          comments: commentsTmp,
-        } = data;
+        const { farcasterUserData: farcasterUserDataTmp, cast: castTmp } = data;
 
         const userDataObj = userDataObjFromArr(farcasterUserDataTmp);
         setCast(castTmp);
         setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
-        setComments(commentsTmp);
       } else {
         throw new Error(msg);
       }
@@ -43,7 +36,6 @@ export default function useLoadCastDetail() {
   return {
     loading,
     cast,
-    comments,
     farcasterUserDataObj,
     loadCastDetail,
   };

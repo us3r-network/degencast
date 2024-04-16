@@ -5,7 +5,9 @@ import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
-import FCastCommunity from "~/components/social-farcaster/FCastCommunity";
+import FCastCommunity, {
+  FCastCommunityDefault,
+} from "~/components/social-farcaster/FCastCommunity";
 import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 import getCastHex from "~/utils/farcaster/getCastHex";
@@ -69,11 +71,13 @@ export default function ExploreScreen() {
                     className=" absolute bottom-14 right-3"
                     cast={data}
                   />
-                  {community && (
+                  {community ? (
                     <FCastCommunity
                       communityInfo={community}
                       className="absolute -bottom-11 right-1/2 translate-x-1/2"
                     />
+                  ) : (
+                    <FCastCommunityDefault className="absolute -bottom-11 right-1/2 translate-x-1/2" />
                   )}
                 </View>
               </CardSwipe>

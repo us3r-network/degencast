@@ -9,7 +9,7 @@ export function ActionButton({ className, ...props }: ButtonProps) {
   return (
     <Button
       className={cn(
-        " h-[60px] w-[60px] flex-col rounded-full bg-white p-0 shadow-md",
+        " h-[60px] w-[60px] flex-col rounded-full bg-white p-0",
         className,
       )}
       {...props}
@@ -24,35 +24,59 @@ export function ActionText({ className, ...props }: TextProps) {
 export const LikeButton = ({
   liked,
   likeCount,
+  className,
+  iconSize = 24,
   ...props
 }: ButtonProps & {
   liked: boolean;
   likeCount: number;
+  iconSize?: number;
 }) => {
   return (
-    <ActionButton {...props}>
-      <Heart className={cn(" stroke-primary", liked && "fill-primary")} />
-      <ActionText>{likeCount || 0}</ActionText>
+    <ActionButton
+      className={cn("", liked && " bg-[#F41F4C]", className)}
+      {...props}
+    >
+      <Heart
+        size={iconSize}
+        className={cn(
+          " fill-primary stroke-primary",
+          liked && " fill-primary-foreground stroke-primary-foreground",
+        )}
+      />
+      <ActionText className={cn("", liked && " text-primary-foreground")}>
+        {likeCount || 0}
+      </ActionText>
     </ActionButton>
   );
 };
 
-export const GiftButton = ({ ...props }: ButtonProps) => {
+export const GiftButton = ({
+  iconSize = 24,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
   return (
     <ActionButton {...props}>
       <Image
         source={require("~/assets/images/degen-icon.png")}
-        style={{ width: 24, height: 20 }}
+        style={{ width: iconSize, height: iconSize }}
       />
       {/* <ActionText>{giftCount || 0}</ActionText> */}
     </ActionButton>
   );
 };
 
-export const ShareButton = ({ ...props }: ButtonProps) => {
+export const ShareButton = ({
+  iconSize,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
   return (
     <ActionButton {...props}>
-      <Share2 className={cn(" fill-primary stroke-primary")} />
+      <Share2 size={iconSize} className={cn(" fill-primary stroke-primary")} />
     </ActionButton>
   );
 };
@@ -74,9 +98,55 @@ export const ExplorePostActions = ({
 }) => {
   return (
     <View className={cn(" flex w-fit flex-col gap-3", className)} {...props}>
-      <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
-      <GiftButton onPress={onGift} />
-      <ShareButton onPress={onShare} />
+      <LikeButton
+        className=" shadow-md"
+        liked={liked}
+        likeCount={likeCount}
+        onPress={onLike}
+      />
+      <GiftButton className=" shadow-md" onPress={onGift} />
+      <ShareButton className=" shadow-md" onPress={onShare} />
+    </View>
+  );
+};
+
+export const PostDetailActions = ({
+  liked,
+  likeCount,
+  onLike,
+  onGift,
+  onShare,
+  className,
+  ...props
+}: ViewProps & {
+  liked: boolean;
+  likeCount: number;
+  onLike: () => void;
+  onGift: () => void;
+  onShare: () => void;
+}) => {
+  return (
+    <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
+      <LikeButton
+        className={cn(" h-10 w-10", liked && " border-none")}
+        variant={"outline"}
+        iconSize={15}
+        liked={liked}
+        likeCount={likeCount}
+        onPress={onLike}
+      />
+      <GiftButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        onPress={onGift}
+      />
+      <ShareButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        onPress={onShare}
+      />
     </View>
   );
 };
