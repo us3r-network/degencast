@@ -53,7 +53,7 @@ export default function CastDetail() {
                   Cast
                 </Text>
               </View>
-              <View className="mr-5 flex flex-row items-center gap-3">
+              <View className="flex flex-row items-center gap-3">
                 {cast && <FCastActions cast={cast!} isDetail={true} />}
               </View>
             </View>
