@@ -1,14 +1,15 @@
 import { MoonpayConfig, useWallets } from "@privy-io/react-auth";
 import { round } from "lodash";
-import { Linking, Text, View } from "react-native";
+import { View } from "react-native";
 import { useAccount } from "wagmi";
+import { Info } from "~/components/common/Icons";
+import { TokenInfo } from "~/components/common/TokenInfo";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import { Info } from "../../common/Icons";
-import { TokenInfo } from "../../common/TokenInfo";
-import { Button } from "../../ui/button";
-import WithdrawButton from "../WithdrawButton";
 import TradeButton from "../TradeButton";
+import WithdrawButton from "../WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { userTokens } = useUserTokens();
@@ -16,7 +17,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">Balance</Text>
+          <Text className="text-lg font-bold">Balance</Text>
           <Info size={16} />
         </View>
         <WithdrawButton defaultAddress={address} />
@@ -71,7 +72,7 @@ function MyToken({
         {wallet &&
           (action === ACTION_TYPES.BUY ? (
             <Button
-              className="w-14 bg-secondary"
+              variant={"secondary"}
               onPress={async () => {
                 // Linking.openURL("https://buy-sandbox.moonpay.com/");
                 await wallet.fund({
@@ -79,9 +80,7 @@ function MyToken({
                 });
               }}
             >
-              <Text className="text-xs font-bold text-secondary-foreground">
-                Buy
-              </Text>
+              <Text>Buy</Text>
             </Button>
           ) : (
             action === ACTION_TYPES.SWAP && (

@@ -45,16 +45,12 @@ export default function TabLayout() {
           headerRight: () => (
             <View className="mr-4 flex-row items-center gap-4">
               <Link href="/search" asChild>
-                <Button
-                  className="size-10 rounded-full bg-white"
-                >
+                <Button size={"icon"} className="rounded-full bg-white">
                   <Search />
                 </Button>
               </Link>
               <Link href="/create" asChild>
-                <Button
-                  className="size-10 rounded-full bg-white"
-                >
+                <Button size={"icon"} className="rounded-full bg-white">
                   <Edit />
                 </Button>
               </Link>

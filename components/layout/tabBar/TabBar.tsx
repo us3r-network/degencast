@@ -1,13 +1,12 @@
-import { BottomTabBar, BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useTheme } from "@react-navigation/native";
 import {
   Platform,
-  StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Card } from "~/components/ui/card";
+import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 
 function MobileTabBar(props: BottomTabBarProps) {

@@ -1,12 +1,12 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Link } from "expo-router";
 import { useMemo, useState } from "react";
-import { Text, View } from "react-native";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import { CommunityInfo } from "../common/CommunityInfo";
-import NumberField from "../common/NumberField";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import ToeknSelect from "./UserTokenSelect";
+import { View } from "react-native";
+import { formatUnits } from "viem";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Text } from "~/components/ui/text";
 import {
   SHARE_ACTION,
   SHARE_CONTRACT_CHAIN,
@@ -15,9 +15,10 @@ import {
   useShareContractInfo,
   useShareContractSell,
 } from "~/hooks/trade/useShareContract";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
-import { formatUnits } from "viem";
-import { Link } from "expo-router";
+import { TokenInfoWithMetadata } from "~/services/user/types";
+import { CommunityInfo } from "../common/CommunityInfo";
+import NumberField from "../common/NumberField";
+import ToeknSelect from "./UserTokenSelect";
 
 export function SellButton({
   logo,
@@ -59,10 +60,8 @@ export function SellButton({
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
-        <Button className="w-14 bg-secondary">
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Sell
-          </Text>
+        <Button variant={"secondary"}>
+          <Text>Sell</Text>
         </Button>
       </DialogTrigger>
       <DialogContent className="box-border w-screen text-primary-foreground">
@@ -119,11 +118,12 @@ export function SellButton({
             )}
           </View>
           <Button
-            className="w-full rounded-md bg-secondary p-2 text-secondary-foreground"
+            variant={"secondary"}
+            className="w-full"
             disabled={waiting || writing || balance <= 0}
             onPress={() => sell(amount)}
           >
-            {waiting || writing ? "Confirming..." : "Sell"}
+            <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
           </Button>
           {data?.transactionHash && (
             <View>
@@ -184,10 +184,8 @@ export function BuyButton({
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
-        <Button className="w-14 bg-secondary">
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Buy
-          </Text>
+        <Button variant={"secondary"}>
+          <Text>Buy</Text>
         </Button>
       </DialogTrigger>
       <DialogContent className="box-border w-screen text-primary-foreground">
@@ -243,13 +241,14 @@ export function BuyButton({
             )}
           </View>
           <Button
-            className="w-full rounded-md bg-secondary p-2 text-secondary-foreground"
+            variant={"secondary"}
+            className="w-full"
             disabled={
               waiting || writing || Number(token?.rawBalance) < Number(price)
             }
             onPress={() => buy(amount, price)}
           >
-            {waiting || writing ? "Confirming..." : "Buy"}
+            <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
           </Button>
           {data?.transactionHash && (
             <View>

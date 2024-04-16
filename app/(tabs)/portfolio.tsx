@@ -1,11 +1,12 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import UserInfo from "~/components/portfolio/user/UserInfo";
 import UserCasts from "~/components/portfolio/posts/UserCasts";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
 import { Card, CardContent } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import useAuth from "~/hooks/user/useAuth";
@@ -33,8 +34,8 @@ export default function PortfolioScreen() {
       {ready &&
         (!privyAuthenticated ? (
           <Card className="mx-auto flex h-full w-full max-w-screen-sm items-center justify-center">
-            <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
-              <Text className="text-primary-foreground">Log in</Text>
+            <Button onPress={login}>
+              <Text>Log in</Text>
             </Button>
           </Card>
         ) : (

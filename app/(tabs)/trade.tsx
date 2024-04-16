@@ -1,16 +1,19 @@
-import { Text, View } from "react-native";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Card, CardContent } from "~/components/ui/card";
 import { useState } from "react";
-import { cn } from "~/lib/utils";
-import CommunityTokens from "~/components/trade/CommunityTokens";
-import CommunityShares from "~/components/trade/CommunityShares";
+import { View } from "react-native";
 import CommunityRank from "~/components/trade/CommunityRank";
+import CommunityShares from "~/components/trade/CommunityShares";
+import CommunityTokens from "~/components/trade/CommunityTokens";
+import { Card, CardContent } from "~/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Text } from "~/components/ui/text";
+import { cn } from "~/lib/utils";
+
 const TABS = [
   { label: "Tokens", value: "tokens", content: <CommunityTokens /> },
   { label: "Shares", value: "shares", content: <CommunityShares /> },
   { label: "Rank", value: "rank", content: <CommunityRank /> },
 ];
+
 export default function TradeScreen() {
   const [value, setValue] = useState("tokens");
   return (

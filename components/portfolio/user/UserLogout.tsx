@@ -1,6 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { LogOut } from "../../common/Icons";
-import { Button } from "../../ui/button";
+import { LogOut } from "~/components/common/Icons";
+import { Button } from "~/components/ui/button";
 import useAuth from "~/hooks/user/useAuth";
 
 export default function UserLogout() {
@@ -10,7 +10,7 @@ export default function UserLogout() {
     return null;
   }
   return (
-    <Button className="size-10 bg-white rounded-full" onPress={async() => {
+    <Button size={"icon"} className="bg-white rounded-full" onPress={async() => {
         await logout();
       }}>
       <LogOut />
