@@ -33,6 +33,7 @@ export type CommunityEntity = {
     parent_url: string;
   }>;
   channelId?: string;
+  shares?: Array<{ subjectAddress: `0x${string}` }>;
 };
 
 export type CommunityStatistics = {

@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { Button } from "../ui/button";
 import { useRouter } from "expo-router";
+import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
 
 export default function FCastCommunity({
   communityInfo,
@@ -27,7 +28,7 @@ export default function FCastCommunity({
       <TouchableOpacity
         className=" h-12 w-12 rounded-full bg-white"
         onPress={() => {
-          router.push(`/communities/${communityInfo.channelId}`);
+          router.push(`/communities/${communityInfo.channelId}` as any);
         }}
       >
         <Avatar
@@ -54,11 +55,10 @@ export default function FCastCommunity({
       <Text className="line-clamp-2 flex-1 text-base text-white">
         {communityInfo.name}
       </Text>
-      <Button className="bg-secondary font-bold" onPress={() => {}}>
-        <Text className="font-bold text-secondary-foreground">
-          Buy with 9999 DEGEN
-        </Text>
-      </Button>
+      <CommunityBuyShareButton
+        className="bg-secondary font-bold"
+        communityInfo={communityInfo}
+      />
     </View>
   );
 }
