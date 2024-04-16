@@ -2,7 +2,6 @@ import { useState } from "react";
 import { TextInput, View } from "react-native";
 import { Button } from "../ui/button";
 import { Minus, Plus } from "./Icons";
-import { fontScaleSelect } from "nativewind/dist/theme";
 
 type NumberFieldProps = React.ComponentPropsWithoutRef<typeof View> & {
   defaultValue?: number;
@@ -22,7 +21,8 @@ export default function NumberField({
   return (
     <View className="flex-row gap-2">
       <Button
-        className="h-8 w-8 rounded-full bg-secondary"
+        className="size-8 rounded-full"
+        variant={"secondary"}
         disabled={Boolean(value <= minValue)}
         onPress={() => {
           const newValue = value - 1;
@@ -34,13 +34,13 @@ export default function NumberField({
       </Button>
       <TextInput
         inputMode="numeric"
-        editable={fontScaleSelect}
         focusable={false}
-        className="w-6 text-center"
+        className="w-6 text-center font-bold"
         value={String(value)}
       />
       <Button
-        className="h-8 w-8 rounded-full bg-secondary"
+        className="size-8 rounded-full"
+        variant={"secondary"}
         disabled={Boolean(value >= maxValue)}
         onPress={() => {
           const newValue = value + 1;

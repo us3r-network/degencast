@@ -1,7 +1,8 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { round, upperFirst } from "lodash";
+import { upperFirst } from "lodash";
 import { cn } from "~/lib/utils";
+import { Text } from "~/components/ui/text";
 
 type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   name?: string;
@@ -15,14 +16,14 @@ export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
     <View className="flex-1 flex-row items-center gap-2">
       <Avatar alt={name || ""} className="size-8">
         <AvatarImage source={{ uri: logo || "" }} />
-        <AvatarFallback className="border-primary bg-secondary">
+        <AvatarFallback className="bg-secondary">
           <Text className="text-sm font-bold">
             {upperFirst(name?.slice(0, 2))}
           </Text>
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("text-md font-bold text-primary", textClassName)}>
+        <Text className={cn("font-bold", textClassName)}>
           {name}
         </Text>
         {mc && mc > 0 && (

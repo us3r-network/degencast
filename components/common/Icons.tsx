@@ -65,6 +65,7 @@ import {
   TrendingDown,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
+
 function interopIcon(icon: LucideIcon) {
   cssInterop(icon, {
     className: {

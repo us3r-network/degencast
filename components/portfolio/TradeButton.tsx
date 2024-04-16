@@ -1,7 +1,7 @@
 import { LiFiWidget, WidgetConfig } from "@lifi/widget";
-import { Text } from "react-native";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
 
 export default function TradeButton({
@@ -17,7 +17,7 @@ export default function TradeButton({
 }) {
   // return (
   //   <Button
-  //     className="w-14 bg-secondary"
+  //     variant={"secondary"}
   //     onPress={() => {
   //       console.log("Trade button pressed");
   //       Linking.openURL("https://app.uniswap.org/");
@@ -29,11 +29,11 @@ export default function TradeButton({
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
-        <Button className="bg-secondary">
-          <Text className="font-bold text-secondary-foreground">Trade</Text>
+        <Button variant={"secondary"}>
+          <Text>Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="box-border max-w-screen text-primary-foreground">
+      <DialogContent className="max-w-screen box-border text-primary-foreground">
         <Trade
           fromChain={fromChain}
           fromToken={fromToken}

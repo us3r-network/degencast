@@ -1,16 +1,17 @@
 import { round } from "lodash";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
-import useUserShares from "~/hooks/user/useUserShares";
-import { ShareInfo } from "~/services/user/types";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../ui/collapsible";
+} from "~/components/ui/collapsible";
+import { Text } from "~/components/ui/text";
+import useUserShares from "~/hooks/user/useUserShares";
+import { ShareInfo } from "~/services/user/types";
 import { SellButton } from "../ShareButton";
-import { CommunityInfo } from "../../common/CommunityInfo";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share() {
@@ -24,7 +25,7 @@ export default function Share() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">
+          <Text className="text-lg font-bold">
             Share ({items.length})
           </Text>
         </View>

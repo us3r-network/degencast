@@ -1,14 +1,15 @@
 import { usePrivy } from "@privy-io/react-auth";
+import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, View, Text } from "react-native";
+import { FlatList, View } from "react-native";
+import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { ProfileFeedsGroups } from "~/services/farcaster/types";
 import { getUserFarcasterAccount } from "~/utils/privy";
-import { Image } from "expo-image";
-import { Button } from "~/components/ui/button";
-import { Loading } from "~/components/common/Loading";
 
 export default function CastsScreen() {
   const params = useLocalSearchParams();
@@ -77,14 +78,14 @@ export default function CastsScreen() {
             Please connect Farcaster to display & create your casts
           </Text>
           <Button
-            className="flex-row items-center justify-between gap-2 rounded-lg bg-primary px-6 py-3"
+            className="flex-row items-center justify-between gap-2"
             onPress={linkFarcaster}
           >
             <Image
               source={require("~/assets/images/farcaster.png")}
               style={{ width: 16, height: 16 }}
             />
-            <Text className="text-primary-foreground">Link Farcaster</Text>
+            <Text>Link Farcaster</Text>
           </Button>
         </View>
       );
