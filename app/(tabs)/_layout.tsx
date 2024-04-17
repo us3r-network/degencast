@@ -1,4 +1,3 @@
-import { useTheme } from "@react-navigation/native";
 import { Link, Tabs } from "expo-router";
 import { Edit } from "lucide-react-native";
 import React from "react";
@@ -14,16 +13,11 @@ import UserLogout from "~/components/portfolio/user/UserLogout";
 import UserWallets from "~/components/portfolio/user/UserWallets";
 import { Button } from "~/components/ui/button";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
-import { useColorScheme } from "~/lib/useColorScheme";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const theme = useTheme();
-  // console.log("colorScheme", theme);
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.colors.primary,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),

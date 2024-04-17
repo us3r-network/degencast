@@ -1,5 +1,4 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useTheme } from "@react-navigation/native";
 import {
   Platform,
   TouchableOpacity,
@@ -11,7 +10,6 @@ import { cn } from "~/lib/utils";
 
 function MobileTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
-  const { colors } = useTheme();
 
   return (
     <View className="flex items-center justify-evenly bg-background p-4">
@@ -59,7 +57,7 @@ function MobileTabBar(props: BottomTabBarProps) {
               {options.tabBarIcon &&
                 options.tabBarIcon({
                   focused: isFocused,
-                  color: isFocused ? "#A36EFE" : colors.primary, //todo: use theme NOT colors
+                  color: isFocused ? "#A36EFE" : "#4C2896",
                   size: 0,
                 })}
               <Text
