@@ -1,13 +1,13 @@
-import { round } from "lodash";
 import { useEffect, useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Chain } from "viem";
+import { TokenInfo } from "~/components/common/TokenInfo";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Text } from "~/components/ui/text";
+import { DEFAULT_CHAIN } from "~/constants";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import { TokenInfo } from "../common/TokenInfo";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Chain } from "viem";
-import { DEFAULT_CHAIN } from "~/constants";
 
 export default function ToeknSelect({
   chain = DEFAULT_CHAIN,

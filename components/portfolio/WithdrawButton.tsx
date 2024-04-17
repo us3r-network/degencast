@@ -1,17 +1,14 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { Chain, parseEther } from "viem";
 import { useSendTransaction } from "wagmi";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger
-} from "../ui/dialog";
-import ToeknSelect from "./UserTokenSelect";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
+import { TokenInfoWithMetadata } from "~/services/user/types";
+import ToeknSelect from "./UserTokenSelect";
 
 export default function WithdrawButton({
   defaultAddress,
@@ -38,11 +35,11 @@ export default function WithdrawButton({
   return (
     <Dialog className="text-white">
       <DialogTrigger asChild>
-        <Pressable>
-          <Text className="font-bold text-secondary">Withdraw</Text>
-        </Pressable>
+        <Button variant={"ghost"}>
+          <Text>Withdraw</Text>
+        </Button>
       </DialogTrigger>
-      <DialogContent  className="box-border w-screen text-primary-foreground">
+      <DialogContent className="box-border w-screen text-primary-foreground">
         <DialogTitle className="text-md font-bold">Withdraw</DialogTitle>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
@@ -71,11 +68,12 @@ export default function WithdrawButton({
             onChangeText={(newText) => setAmount(newText)}
           />
           <Button
+            variant={"secondary"}
             disabled={isPending}
-            className="w-full rounded-md bg-secondary p-2 text-secondary-foreground"
+            className="w-full"
             onPress={send}
           >
-            {isPending ? "Confirming..." : "Withdraw"}
+            <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
           </Button>
           {hash && <Text>Transaction Hash: {hash}</Text>}
         </View>

@@ -1,7 +1,6 @@
 import { round } from "lodash";
 import React from "react";
-import { Text, View } from "react-native";
-import { base } from "viem/chains";
+import { View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import {
@@ -9,10 +8,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import { Text } from "~/components/ui/text";
+import { DEFAULT_CHAIN } from "~/constants";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import TradeButton from "../TradeButton";
-import { DEFAULT_CHAIN } from "~/constants";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -26,7 +26,7 @@ export default function CommunityTokens() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">
+          <Text className="text-lg font-bold">
             Community Token ({items.length})
           </Text>
         </View>

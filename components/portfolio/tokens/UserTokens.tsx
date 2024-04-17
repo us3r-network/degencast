@@ -1,8 +1,7 @@
-import React from "react";
 import { ScrollView, View } from "react-native";
+import { useAccount } from "wagmi";
 import Balance from "./UserBalance";
 import CommunityTokens from "./UserCommunityTokens";
-import { useAccount } from "wagmi";
 import Share from "./UserShare";
 import Tips from "./UserTips";
 

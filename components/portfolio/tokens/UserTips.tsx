@@ -1,16 +1,17 @@
 import { round } from "lodash";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
-import useUserTips from "~/hooks/user/useUserTips";
-import { TipsInfo } from "~/services/user/types";
+import { Button } from "~/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../ui/collapsible";
-import { CommunityInfo } from "../../common/CommunityInfo";
-import { Button } from "~/components/ui/button";
+} from "~/components/ui/collapsible";
+import { Text } from "~/components/ui/text";
+import useUserTips from "~/hooks/user/useUserTips";
+import { TipsInfo } from "~/services/user/types";
 
 const DEFAULT_ITEMS_NUM = 1;
 export default function Tips() {
@@ -24,7 +25,7 @@ export default function Tips() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">
+          <Text className="text-lg font-bold">
             Tips ({items.length})
           </Text>
         </View>
@@ -55,14 +56,12 @@ function Item(item: TipsInfo) {
         <Text>{round(Number(item.amount), 2)}</Text>
         <Button
           disabled
-          className="w-14 bg-secondary"
+          variant={"secondary"}
           onPress={() => {
             // console.log("Claim button pressed");
           }}
         >
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Claim
-          </Text>
+          <Text>Claim</Text>
         </Button>
       </View>
     </View>

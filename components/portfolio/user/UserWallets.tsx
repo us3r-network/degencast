@@ -2,20 +2,14 @@ import { useConnectWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { Image } from "expo-image";
 import React, { useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useAccount } from "wagmi";
-import useAuth from "~/hooks/user/useAuth";
-import { cn } from "~/lib/utils";
-import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import { shortPubKey } from "~/utils/shortPubKey";
-import { MinusCircle, PlusCircle, Wallet } from "../../common/Icons";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-} from "../../ui/select";
+  LogOut,
+  MinusCircle,
+  PlusCircle,
+  Wallet,
+} from "~/components/common/Icons";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -25,11 +19,24 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+} from "~/components/ui/select";
+import { Text } from "~/components/ui/text";
+import useAuth from "~/hooks/user/useAuth";
+import { cn } from "~/lib/utils";
+import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
+import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function Wallets() {
   const {
     ready,
     user,
+    logout,
     linkWallet,
     unlinkWallet,
     linkFarcaster,
@@ -197,6 +204,7 @@ export default function Wallets() {
               <PlusCircle className="size-4" />
             </Pressable>
           )}
+          <LogoutButton action={logout} />
         </View>
       </SelectContent>
     </Select>
@@ -223,11 +231,54 @@ function UnlinkButton({ action }: { action: () => void }) {
           airdrop claim prompt.
         </AlertDialogDescription>
         <View className="w-full flex-row items-center justify-stretch gap-2">
-          <Button className="flex-1 bg-white" onPress={() => setOpen(false)}>
+          <Button
+            variant={"secondary"}
+            className="flex-1"
+            onPress={() => setOpen(false)}
+          >
             <Text>No</Text>
           </Button>
-          <Button className="flex-1 bg-secondary" onPress={action}>
-            <Text className="text-secondary-foreground">Yes</Text>
+          <Button variant={"secondary"} className="flex-1" onPress={action}>
+            <Text>Yes</Text>
+          </Button>
+        </View>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function LogoutButton({ action }: { action: () => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <AlertDialog open={open}>
+      <AlertDialogTrigger>
+        <Pressable
+          className="w-full flex-row items-center gap-2"
+          onPress={() => setOpen(true)}
+        >
+          <LogOut className="size-4" />
+          <Text>Logout</Text>
+        </Pressable>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="w-screen bg-primary">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex flex-row gap-2 text-primary-foreground">
+            Notice
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription id="alert-dialog-desc text-primary-foreground">
+          Are you sure you want to log out?
+        </AlertDialogDescription>
+        <View className="w-full flex-row items-center justify-stretch gap-2">
+          <Button
+            variant={"secondary"}
+            className="flex-1"
+            onPress={() => setOpen(false)}
+          >
+            <Text>No</Text>
+          </Button>
+          <Button variant={"secondary"} className="flex-1" onPress={action}>
+            <Text>Yes</Text>
           </Button>
         </View>
       </AlertDialogContent>
