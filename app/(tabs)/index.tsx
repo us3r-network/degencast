@@ -8,11 +8,12 @@ import FCastActions from "~/components/social-farcaster/FCastActions";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
-import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
+import useLoadExploreCasts, {
+  MAX_VISIBLE_ITEMS,
+} from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 import getCastHex from "~/utils/farcaster/getCastHex";
 
-const MAX_VISIBLE_ITEMS = 3;
 export default function ExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
     useLoadExploreCasts();
