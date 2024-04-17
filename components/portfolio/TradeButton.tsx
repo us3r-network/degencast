@@ -27,13 +27,13 @@ export default function TradeButton({
   //   </Button>
   // );
   return (
-    <Dialog className="text-white">
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant={"secondary"}>
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-screen box-border text-primary-foreground">
+      <DialogContent className="max-w-screen border-none p-2">
         <Trade
           fromChain={fromChain}
           fromToken={fromToken}

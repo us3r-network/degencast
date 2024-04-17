@@ -10,6 +10,7 @@ export default function useUserShares() {
     setLoading(true);
     const response = await myShares();
     const { code, msg, data } = response.data;
+    console.log('my share: ',data)
     if (code === ApiRespCode.SUCCESS) {
         setItems(data);
     } else {

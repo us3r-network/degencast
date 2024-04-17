@@ -5,6 +5,8 @@ import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
+
+import { Card, CardContent } from "~/components/ui/card";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
@@ -51,9 +53,10 @@ export default function ExploreScreen() {
                   removeCast(idx);
                 }}
               >
-                <View
+                <Card
                   className={cn(
                     "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none sm:max-h-[690px] sm:w-[390px]",
+                    "bg-transparent",
                   )}
                 >
                   <TouchableOpacity
@@ -63,10 +66,12 @@ export default function ExploreScreen() {
                       router.push(`/casts/${castHex}`);
                     }}
                   >
-                    <FCast
-                      cast={data}
-                      farcasterUserDataObj={farcasterUserDataObj}
-                    />
+                    <CardContent className="h-full w-full p-0">
+                      <FCast
+                        cast={data}
+                        farcasterUserDataObj={farcasterUserDataObj}
+                      />
+                    </CardContent>
                   </TouchableOpacity>
                   <FCastActions
                     className=" absolute bottom-14 right-3"
@@ -80,7 +85,7 @@ export default function ExploreScreen() {
                   ) : (
                     <FCastCommunityDefault className="absolute -bottom-11 right-1/2 translate-x-1/2" />
                   )}
-                </View>
+                </Card>
               </CardSwipe>
             );
           })}

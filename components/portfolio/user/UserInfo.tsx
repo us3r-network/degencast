@@ -36,10 +36,10 @@ export default function UserInfo() {
       <View className="flex w-full gap-2">
         <View className="inline-block w-full space-x-2">
           {userName && (
-            <Text className="text-lg font-bold text-white">{userName}</Text>
+            <Text className="text-lg font-bold">{userName}</Text>
           )}
           {userHandle && (
-            <Text className="text-sm text-white">@{userHandle}</Text>
+            <Text className="text-sm">@{userHandle}</Text>
           )}
         </View>
         {farcasterAccount?.fid && <FarcasterStats fid={farcasterAccount.fid} />}

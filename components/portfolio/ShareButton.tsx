@@ -1,11 +1,16 @@
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import {
   SHARE_ACTION,
@@ -58,22 +63,20 @@ export function SellButton({
   }, [amount, getPrice, isSuccess]);
 
   return (
-    <Dialog className="text-white">
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant={"secondary"}>
           <Text>Sell</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="box-border w-screen text-primary-foreground">
-        <DialogTitle className="text-md font-bold">Sell</DialogTitle>
+      <DialogContent className="w-screen border-none">
+        <DialogHeader>
+          <DialogTitle>Sell</DialogTitle>
+        </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
-            <CommunityInfo
-              name={name}
-              logo={logo}
-              textClassName="text-primary-foreground"
-            />
-            <Text className="text-sm text-secondary">{balance} shares</Text>
+            <CommunityInfo name={name} logo={logo} />
+            <Text className="text-sm">{balance} shares</Text>
           </View>
           <ToeknSelect
             chain={SHARE_CONTRACT_CHAIN}
@@ -82,18 +85,14 @@ export function SellButton({
           />
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-lg font-bold text-primary-foreground">
-                Quantity
-              </Text>
+              <Text className="text-lg font-bold">Quantity</Text>
               {price && amount && token && token.decimals ? (
-                <Text className="text-xs text-secondary">
+                <Text className="text-xs">
                   {formatUnits(price / BigInt(amount), token.decimals)}
                   {token?.symbol} per share
                 </Text>
               ) : (
-                <Text className="text-xs text-secondary">
-                  calculating price...
-                </Text>
+                <Text className="text-xs">calculating price...</Text>
               )}
             </View>
             <NumberField
@@ -104,17 +103,13 @@ export function SellButton({
             />
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-primary-foreground">
-              Receive:
-            </Text>
+            <Text className="text-lg font-bold">Receive:</Text>
             {price && amount && token && token.decimals ? (
-              <Text className="text-md text-primary-foreground">
+              <Text className="text-md">
                 {formatUnits(price, token.decimals)} {token.symbol}
               </Text>
             ) : (
-              <Text className="text-md text-primary-foreground">
-                fetching price...
-              </Text>
+              <Text className="text-md">fetching price...</Text>
             )}
           </View>
           <Button
@@ -126,18 +121,16 @@ export function SellButton({
             <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
           </Button>
           {data?.transactionHash && (
-            <View>
-              <Text className="font-bold text-white">
-                Transaction Hash:
-                <Link
-                  className="text-white"
-                  href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
-                  target="_blank"
-                >
-                  {data?.transactionHash}
-                </Link>
-              </Text>
-            </View>
+            <View className="flex gap-2">
+            <Text className="font-bold">Transaction Hash:</Text>
+            <Link
+              className="text-foreground/80"
+              href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
+              target="_blank"
+            >
+              {data?.transactionHash}
+            </Link>
+          </View>
           )}
         </View>
       </DialogContent>
@@ -182,26 +175,20 @@ export function BuyButton({
   }, [amount, getPrice, isSuccess]);
 
   return (
-    <Dialog className="text-white">
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant={"secondary"}>
           <Text>Buy</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="box-border w-screen text-primary-foreground">
-        <DialogTitle className="text-md font-bold">
-          Buy Shares & get allowance
-        </DialogTitle>
+      <DialogContent className="w-screen border-none">
+        <DialogHeader>
+          <DialogTitle>Buy Shares & get allowance</DialogTitle>
+        </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
-            <CommunityInfo
-              name={name}
-              logo={logo}
-              textClassName="text-primary-foreground"
-            />
-            <Text className="text-sm text-secondary">
-              Capital Pool: {supply}
-            </Text>
+            <CommunityInfo name={name} logo={logo} />
+            <Text>Capital Pool: {supply}</Text>
           </View>
           <ToeknSelect
             chain={SHARE_CONTRACT_CHAIN}
@@ -210,11 +197,9 @@ export function BuyButton({
           />
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-lg font-bold text-primary-foreground">
-                Quantity
-              </Text>
+              <Text className="text-lg font-bold">Quantity</Text>
               {price && amount && token && token.decimals ? (
-                <Text className="text-xs text-secondary">
+                <Text className="text-xs">
                   {formatUnits(price / BigInt(amount), token.decimals)}
                   {token?.symbol} per share
                 </Text>
@@ -227,17 +212,13 @@ export function BuyButton({
             <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-primary-foreground">
-              Total Cost
-            </Text>
+            <Text className="text-lg font-bold">Total Cost</Text>
             {price && amount && token && token.decimals ? (
-              <Text className="text-md text-primary-foreground">
+              <Text>
                 {formatUnits(price, token.decimals)} {token.symbol}
               </Text>
             ) : (
-              <Text className="text-md text-primary-foreground">
-                fetching price...
-              </Text>
+              <Text>fetching price...</Text>
             )}
           </View>
           <Button
@@ -251,17 +232,15 @@ export function BuyButton({
             <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
           </Button>
           {data?.transactionHash && (
-            <View>
-              <Text className="font-bold text-white">
-                Transaction Hash:
-                <Link
-                  className="text-white"
-                  href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
-                  target="_blank"
-                >
-                  {data?.transactionHash}
-                </Link>
-              </Text>
+            <View className="flex gap-2">
+              <Text className="font-bold">Transaction Hash:</Text>
+              <Link
+                className="text-foreground/80"
+                href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
+                target="_blank"
+              >
+                {data?.transactionHash}
+              </Link>
             </View>
           )}
         </View>

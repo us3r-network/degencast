@@ -4,6 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import * as DialogPrimitive from '~/components/primitives/dialog';
 import { cn } from '~/lib/utils';
+import { TextClassContext } from './text';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -67,6 +68,11 @@ const DialogContent = React.forwardRef<
   return (
     <DialogPortal>
       <DialogOverlay>
+      <TextClassContext.Provider
+        value={cn(
+          'test-foreground',
+        )}
+      >
         <DialogPrimitive.Content
           ref={ref}
           className={cn(
@@ -90,6 +96,7 @@ const DialogContent = React.forwardRef<
             />
           </DialogPrimitive.Close>
         </DialogPrimitive.Content>
+        </TextClassContext.Provider>
       </DialogOverlay>
     </DialogPortal>
   );
