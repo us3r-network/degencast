@@ -5,6 +5,7 @@ import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
 import FCastCommunity from "~/components/social-farcaster/FCastCommunity";
+import { Card, CardContent } from "~/components/ui/card";
 import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 
@@ -45,16 +46,19 @@ export default function ExploreScreen() {
                   removeCast(idx);
                 }}
               >
-                <View
+                <Card
                   className={cn(
                     "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none p-5 sm:max-h-[690px] sm:w-[390px]",
+                    "bg-transparent"
                   )}
                 >
-                  <FCast
-                    className="h-full w-full overflow-hidden"
-                    cast={data}
-                    farcasterUserDataObj={farcasterUserDataObj}
-                  />
+                  <CardContent className="w-full h-full p-0">
+                    <FCast
+                      className="h-full w-full overflow-hidden"
+                      cast={data}
+                      farcasterUserDataObj={farcasterUserDataObj}
+                    />
+                  </CardContent>
                   <FCastActions
                     className=" absolute bottom-14 right-3"
                     cast={data}
@@ -65,7 +69,7 @@ export default function ExploreScreen() {
                       className="absolute -bottom-11 right-1/2 translate-x-1/2"
                     />
                   )}
-                </View>
+                </Card>
               </CardSwipe>
             );
           })}
