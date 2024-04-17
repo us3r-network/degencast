@@ -1,6 +1,6 @@
 import { round } from "lodash";
 import React from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import {
@@ -12,11 +12,12 @@ import { Text } from "~/components/ui/text";
 import useUserShares from "~/hooks/user/useUserShares";
 import { ShareInfo } from "~/services/user/types";
 import { SellButton } from "../ShareButton";
+import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share() {
   const { items } = useUserShares();
-  console.log(items)
+  console.log(items);
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -26,9 +27,7 @@ export default function Share() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">
-            Share ({items.length})
-          </Text>
+          <Text className="text-lg font-bold">Share ({items.length})</Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
@@ -52,7 +51,11 @@ export default function Share() {
 function Item(item: ShareInfo) {
   return (
     <View className="flex-row items-center justify-between">
-      <CommunityInfo {...item} />
+      <Link href={`/communities/${item.channelId}/shares`} asChild>
+        <Pressable>
+          <CommunityInfo {...item} />
+        </Pressable>
+      </Link>
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.amount), 2)}</Text>
         <SellButton

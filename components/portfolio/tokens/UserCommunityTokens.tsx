@@ -1,6 +1,6 @@
 import { round } from "lodash";
 import React from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import {
@@ -13,6 +13,7 @@ import { DEFAULT_CHAIN } from "~/constants";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import TradeButton from "../TradeButton";
+import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens() {
@@ -49,10 +50,15 @@ export default function CommunityTokens() {
   );
 }
 
+//todo: `/communities/${item.name}/shares`
 function Item(item: TokenInfoWithMetadata) {
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo name={item.name} logo={item.logo}/>
+      <Link href={`/communities/${item.channelId}/tokens`} asChild>
+        <Pressable>
+          <TokenInfo name={item.name} logo={item.logo} />{" "}
+        </Pressable>
+      </Link>
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.balance), 2)}</Text>
         <TradeButton

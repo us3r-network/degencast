@@ -1,12 +1,13 @@
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
-import { base } from "viem/chains";
+import { ScrollView, View, Pressable } from "react-native";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithStats } from "~/services/trade/types";
 import TradeButton from "../portfolio/TradeButton";
 import { Loading } from "../common/Loading";
+import { Text } from "~/components/ui/text";
+import { Link } from "expo-router";
 
 export default function CommunityTokens() {
   const { loading, items } = useCommunityTokens();
@@ -34,11 +35,15 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
     <View className="flex-row items-center justify-between">
       <View className="flex-1 flex-row items-center gap-4">
         <Text className="text-md w-4 text-right font-bold">{index}</Text>
-        <TokenInfo
-          name={item.name}
-          logo={item.imageURL}
-          mc={Number(item.stats.fdv_usd)}
-        />
+        <Link href={`/communities/${item.channel}/tokens`} asChild>
+          <Pressable>
+            <TokenInfo
+              name={item.name}
+              logo={item.imageURL}
+              mc={Number(item.stats.fdv_usd)}
+            />
+          </Pressable>
+        </Link>
       </View>
       <View className="flex-row items-center gap-2">
         <Text className={cn(change < 0 ? "text-[red]" : "text-[green]")}>

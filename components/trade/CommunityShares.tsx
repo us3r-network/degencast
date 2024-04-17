@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import useCommunityShares from "~/hooks/trade/useCommunityShares";
 import { ShareInfo } from "~/services/trade/types";
 import { CommunityInfo } from "../common/CommunityInfo";
@@ -8,6 +8,8 @@ import { ArrowDown, ArrowUp } from "~/components/common/Icons";
 import { formatUnits } from "viem";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
 import { Loading } from "../common/Loading";
+import { Text } from "~/components/ui/text";
+import { Link } from "expo-router";
 
 export default function CommunityShares() {
   const { loading, items } = useCommunityShares();
@@ -28,7 +30,7 @@ export default function CommunityShares() {
     </View>
   );
 }
-
+//todo: `/communities/${item.name}/shares`
 function Item({ item, index }: { item: ShareInfo; index: number }) {
   return (
     <View className="flex-row items-center justify-between">
@@ -39,7 +41,11 @@ function Item({ item, index }: { item: ShareInfo; index: number }) {
           <Text className="w-4 text-center font-bold">-</Text>
         )}
         {item.trend === -1 && <ArrowDown className="size-4 text-[red]" />}
-        <CommunityInfo {...item} />
+        <Link href={`/communities/${item.channelId}/shares`} asChild>
+          <Pressable>
+            <CommunityInfo {...item} />
+          </Pressable>
+        </Link>
       </View>
       <View className="flex-row items-center gap-2">
         <Text>

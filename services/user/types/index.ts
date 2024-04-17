@@ -36,6 +36,7 @@ export type TokenInfoWithMetadata = {
   chainId: number;
   contractAddress: string;
   name?: string | undefined;
+  channelId?: string;
   rawBalance?: BigInt | string;
   decimals?: number | undefined;
   balance?: number | string | undefined;
@@ -45,6 +46,7 @@ export type TokenInfoWithMetadata = {
 
 export type ShareInfo = {
   name?: string | undefined;
+  channelId: string;
   logo?: string;
   amount: number;
   sharesSubject: `0x${string}`;
