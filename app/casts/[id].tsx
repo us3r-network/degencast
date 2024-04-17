@@ -5,14 +5,17 @@ import {
   useNavigation,
 } from "expo-router";
 import { useEffect } from "react";
-import { View, Text, SafeAreaView, ScrollView } from "react-native";
+import { View, Text, SafeAreaView, ScrollView, FlatList } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
+import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
 import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
+import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
 
 export default function CastDetail() {
@@ -22,9 +25,16 @@ export default function CastDetail() {
   const router = useRouter();
   const { cast, farcasterUserDataObj, loading, loadCastDetail } =
     useLoadCastDetail();
+  const {
+    comments,
+    farcasterUserDataObj: commentsFarcasterUserDataObj,
+    loading: commentsLoading,
+    loadCastComments,
+  } = useLoadCastComments();
 
   useEffect(() => {
     loadCastDetail(id as string);
+    loadCastComments(id as string);
   }, [id]);
 
   // TODO - community info
@@ -61,21 +71,62 @@ export default function CastDetail() {
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <ScrollView className="w-full flex-1 flex-col gap-7 p-5 ">
-          {loading ? (
-            <View className="flex h-full w-full items-center justify-center">
-              <Loading />
-            </View>
-          ) : (
-            cast && (
-              <FCast
-                cast={cast}
-                farcasterUserDataObj={farcasterUserDataObj}
-                hidePoints
-              />
-            )
-          )}
-        </ScrollView>
+        <View className="w-full flex-1 flex-col gap-7 px-5">
+          <FlatList
+            ListHeaderComponent={() => {
+              if (loading) {
+                return (
+                  <View className="flex h-full w-full items-center justify-center">
+                    <Loading />
+                  </View>
+                );
+              }
+              if (!cast) {
+                return null;
+              }
+              return (
+                <View className="mt-5">
+                  <FCast
+                    cast={cast}
+                    farcasterUserDataObj={farcasterUserDataObj}
+                    hidePoints
+                  />
+                  <Separator className=" my-5" />
+                  <View className="mb-5 w-full">
+                    <Text className=" text-base font-medium">
+                      Comments (
+                      {Number(cast?.comment_count || cast?.repliesCount || 0)})
+                    </Text>
+                  </View>
+                </View>
+              );
+            }}
+            data={comments}
+            ItemSeparatorComponent={() => <Separator className=" my-3" />}
+            renderItem={({ item }) => {
+              return (
+                <FCastComment
+                  className="flex-1"
+                  cast={item.data}
+                  farcasterUserDataObj={commentsFarcasterUserDataObj}
+                />
+              );
+            }}
+            keyExtractor={({ data }) => data.id}
+            onEndReached={() => {
+              if (!cast || comments?.length === 0 || loading) return;
+              loadCastComments(id as string);
+            }}
+            onEndReachedThreshold={1}
+            ListFooterComponent={() => {
+              return cast && loading ? (
+                <View className="flex items-center justify-center p-5">
+                  <Text>Loading ...</Text>
+                </View>
+              ) : null;
+            }}
+          />
+        </View>
 
         {communityInfo ? (
           <FCastCommunity communityInfo={communityInfo} />

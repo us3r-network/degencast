@@ -2,16 +2,21 @@ import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
 import { Heart, Share2 } from "../common/Icons";
 import { Text } from "../ui/text";
-import { TextProps, View, ViewProps } from "react-native";
+import {
+  TextProps,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+  ViewProps,
+} from "react-native";
 import { Image } from "expo-image";
 
-export function ActionButton({ className, ...props }: ButtonProps) {
+export type ActionButtonProps = TouchableOpacityProps;
+
+export function ActionButton({ className, ...props }: ActionButtonProps) {
   return (
-    <Button
-      className={cn(
-        " h-fit w-fit flex-row items-center gap-1 rounded-none bg-none p-0",
-        className,
-      )}
+    <TouchableOpacity
+      className={cn(" h-fit w-fit flex-row items-center gap-1 ", className)}
       {...props}
     />
   );
@@ -29,7 +34,7 @@ export const LikeButton = ({
   className,
   iconSize = 24,
   ...props
-}: ButtonProps & {
+}: ActionButtonProps & {
   liked: boolean;
   likeCount: number;
   iconSize?: number;
@@ -39,21 +44,21 @@ export const LikeButton = ({
       <Heart
         size={iconSize}
         className={cn(
-          " fill-primary stroke-primary",
-          liked && " fill-primary-foreground stroke-primary-foreground",
+          " stroke-secondary",
+          liked && " fill-[#F41F4C] stroke-[#F41F4C] ",
         )}
       />
-      <ActionText className={cn("", liked && " text-secondary-foreground")}>
+      <ActionText className={cn(" text-secondary", liked && " text-[#F41F4C]")}>
         {likeCount || 0}
       </ActionText>
     </ActionButton>
   );
 };
 
-export const GiftButton = ({
+export const CommentButton = ({
   iconSize = 24,
   ...props
-}: ButtonProps & {
+}: ActionButtonProps & {
   iconSize?: number;
 }) => {
   return (
@@ -70,7 +75,7 @@ export const GiftButton = ({
 export const ShareButton = ({
   iconSize,
   ...props
-}: ButtonProps & {
+}: ActionButtonProps & {
   iconSize?: number;
 }) => {
   return (
@@ -84,7 +89,7 @@ export const PostCommentActions = ({
   liked,
   likeCount,
   onLike,
-  onGift,
+  onComment,
   onShare,
   className,
   ...props
@@ -92,14 +97,14 @@ export const PostCommentActions = ({
   liked: boolean;
   likeCount: number;
   onLike: () => void;
-  onGift: () => void;
+  onComment: () => void;
   onShare: () => void;
 }) => {
   return (
     <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
-      <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
-      <GiftButton onPress={onGift} />
+      <CommentButton onPress={onComment} />
       <ShareButton onPress={onShare} />
+      <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
     </View>
   );
 };

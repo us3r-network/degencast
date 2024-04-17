@@ -32,13 +32,12 @@ export default function FCastCommentActions({
       likeCast();
     }
   };
-  const onGift = () => {
+  const onComment = () => {
     if (!authenticated) {
       login();
       return;
     }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
+    alert("TODO");
   };
   const onShare = () => {};
   return (
@@ -47,7 +46,7 @@ export default function FCastCommentActions({
         liked={liked}
         likeCount={likeCount}
         onLike={onLike}
-        onGift={onGift}
+        onComment={onComment}
         onShare={onShare}
         {...props}
       />
