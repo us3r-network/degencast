@@ -23,22 +23,26 @@ export default function useUserTokens(chainId: number = base.id) {
     contracts: [
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "name",
       },
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "balanceOf",
         args: [address!],
       },
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "decimals",
       },
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "symbol",
       },
