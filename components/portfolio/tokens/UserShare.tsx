@@ -16,6 +16,7 @@ import { SellButton } from "../ShareButton";
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share() {
   const { items } = useUserShares();
+  console.log(items)
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible

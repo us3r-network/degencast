@@ -1,14 +1,22 @@
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import { Chain, parseEther } from "viem";
 import { useSendTransaction } from "wagmi";
 import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Text } from "~/components/ui/text";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Text, TextClassContext } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import ToeknSelect from "./UserTokenSelect";
+import { Input } from "../ui/input";
+import { Link } from "expo-router";
+import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
 
 export default function WithdrawButton({
   defaultAddress,
@@ -33,36 +41,36 @@ export default function WithdrawButton({
     }
   }, [token]);
   return (
-    <Dialog className="text-white">
+    <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"ghost"}>
+        <Button variant={"link"}>
           <Text>Withdraw</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="box-border w-screen text-primary-foreground">
-        <DialogTitle className="text-md font-bold">Withdraw</DialogTitle>
+      <DialogContent className="w-screen border-none">
+        <DialogHeader>
+          <DialogTitle>Withdraw</DialogTitle>
+        </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-md text-primary-foreground">
-              Wallet address
-            </Text>
-            <Text className="text-sm text-secondary">Only sending on Base</Text>
+            <Text>Wallet address</Text>
+            <Text className="text-sm">Only sending on Base</Text>
           </View>
-          <TextInput
-            className="w-full rounded-md border border-secondary p-2"
+          <Input
+            className="border-secondary text-secondary"
             placeholder="Enter wallet address"
             value={address}
             onChangeText={(newText) => setAddress(newText as `0x${string}`)}
           />
           <View className="flex-row items-center justify-between">
-            <Text className="text-md text-primary-foreground">Token</Text>
+            <Text>Token</Text>
           </View>
           <ToeknSelect selectToken={setToken} chain={defaultChain} />
           <View className="flex-row items-center justify-between">
-            <Text className="text-md text-primary-foreground">Amount</Text>
+            <Text>Amount</Text>
           </View>
-          <TextInput
-            className="w-full rounded-md border border-secondary p-2"
+          <Input
+            className="border-secondary text-secondary"
             placeholder="Enter amount"
             value={String(amount)}
             onChangeText={(newText) => setAmount(newText)}
@@ -75,7 +83,18 @@ export default function WithdrawButton({
           >
             <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
           </Button>
-          {hash && <Text>Transaction Hash: {hash}</Text>}
+          {hash && (
+            <View className="flex gap-2">
+              <Text className="font-bold">Transaction Hash:</Text>
+              <Link
+                className="text-foreground/80"
+                href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
+                target="_blank"
+              >
+                {hash}
+              </Link>
+            </View>
+          )}
         </View>
       </DialogContent>
     </Dialog>
