@@ -10,18 +10,19 @@ import { Loading } from "../common/Loading";
 
 export default function CommunityTokens() {
   const { loading, items } = useCommunityTokens();
-  return (    <View className="container h-full">
-  {loading ? (
-    <Loading />
-  ) : (
-    <ScrollView showsVerticalScrollIndicator={false} className="w-full">
-      <View className="flex w-full gap-4">
-        {items?.length > 0 &&
-          items.map((item, index) => (
-            <Item key={item.tokenAddress} item={item} index={index + 1} />
-          ))}
-      </View>
-    </ScrollView>
+  return (
+    <View className="container h-full">
+      {loading ? (
+        <Loading />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false} className="w-full">
+          <View className="flex w-full gap-4">
+            {items?.length > 0 &&
+              items.map((item, index) => (
+                <Item key={item.tokenAddress} item={item} index={index + 1} />
+              ))}
+          </View>
+        </ScrollView>
       )}
     </View>
   );
@@ -40,7 +41,8 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
         />
       </View>
       <View className="flex-row items-center gap-2">
-        <Text className={cn(change > 0 ? "text-[red]" : "text-[green]")}>
+        <Text className={cn(change < 0 ? "text-[red]" : "text-[green]")}>
+          {change > 0 ? "+" : ""}
           {change}%
         </Text>
         <TradeButton
