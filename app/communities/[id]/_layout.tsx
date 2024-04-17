@@ -59,7 +59,7 @@ export default function CommunityDetail() {
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}
-      className="bg-primary"
+      className="bg-background"
     >
       <Stack.Screen
         options={{

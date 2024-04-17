@@ -5,7 +5,7 @@ import {
   useNavigation,
 } from "expo-router";
 import { useEffect } from "react";
-import { View, Text, SafeAreaView, ScrollView, FlatList } from "react-native";
+import { View, SafeAreaView, ScrollView, FlatList } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
@@ -17,6 +17,7 @@ import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
+import { Text } from "~/components/ui/text";
 
 export default function CastDetail() {
   const navigation = useNavigation();

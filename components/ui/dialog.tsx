@@ -70,7 +70,7 @@ const DialogContent = React.forwardRef<
       <DialogOverlay>
       <TextClassContext.Provider
         value={cn(
-          'test-foreground',
+          'text-white',
         )}
       >
         <DialogPrimitive.Content
@@ -123,7 +123,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      'text-lg native:text-xl text-foreground font-semibold leading-none tracking-tight',
+      'text-lg native:text-xl text-white font-semibold leading-none tracking-tight',
       className
     )}
     {...props}
