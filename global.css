@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* Colors will be defined in the HLS color channels. This allows us to use the opacity modifiers such as bg-background/80 */
 @layer base {
   :root {
     --background: 260 58% 37%;
@@ -20,7 +20,7 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
+    --border: 240 5.9% 90%; /* color for borders */
     --input: 240 5.9% 90%;
     --ring: 262 99% 71%;
   }
