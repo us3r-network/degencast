@@ -220,7 +220,7 @@ function UnlinkButton({ action }: { action: () => void }) {
           <MinusCircle className="size-4" />
         </Pressable>
       </AlertDialogTrigger>
-      <AlertDialogContent className="w-screen bg-primary">
+      <AlertDialogContent className="w-screen">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex flex-row gap-2 text-primary-foreground">
             Notice

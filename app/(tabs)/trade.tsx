@@ -17,7 +17,7 @@ const TABS = [
 export default function TradeScreen() {
   const [value, setValue] = useState("tokens");
   return (
-    <View className="box-border w-full flex-1 bg-primary p-4 pt-14 ">
+    <View className="box-border w-full flex-1 bg-background p-4 pt-14 ">
       <Tabs
         value={value}
         onValueChange={setValue}
