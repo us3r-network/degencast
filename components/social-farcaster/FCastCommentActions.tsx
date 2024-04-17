@@ -2,9 +2,6 @@ import { ViewProps } from "react-native";
 import { FarCast } from "~/services/farcaster/types";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
-import FCastGiftModal from "./FCastGiftModal";
-import { useState } from "react";
-import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
 import { PostCommentActions } from "../post/PostCommentActions";
 
 export default function FCastCommentActions({
@@ -17,9 +14,6 @@ export default function FCastCommentActions({
   const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
     { cast },
   );
-  const [openGiftModal, setOpenGiftModal] = useState(false);
-  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
-    useUserDegenAllowance();
   const onLike = () => {
     if (!authenticated) {
       login();
@@ -39,24 +33,24 @@ export default function FCastCommentActions({
     }
     alert("TODO");
   };
-  const onShare = () => {};
+  const onRepost = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    alert("TODO");
+  };
   return (
     <>
       <PostCommentActions
         liked={liked}
         likeCount={likeCount}
+        commentCount={Number(cast?.comment_count || cast?.repliesCount || 0)}
+        repostCount={Number(cast.recast_count || cast.recastsCount || 0)}
         onLike={onLike}
         onComment={onComment}
-        onShare={onShare}
+        onRepost={onRepost}
         {...props}
-      />
-
-      <FCastGiftModal
-        totalAllowance={totalDegenAllowance}
-        remainingAllowance={remainingDegenAllowance}
-        cast={cast}
-        open={openGiftModal}
-        onOpenChange={setOpenGiftModal}
       />
     </>
   );

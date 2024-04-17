@@ -29,6 +29,7 @@ export default function CastDetail() {
     comments,
     farcasterUserDataObj: commentsFarcasterUserDataObj,
     loading: commentsLoading,
+    firstLoaded: commentsFirstLoaded,
     loadCastComments,
   } = useLoadCastComments();
 
@@ -114,16 +115,22 @@ export default function CastDetail() {
             }}
             keyExtractor={({ data }) => data.id}
             onEndReached={() => {
-              if (!cast || comments?.length === 0 || loading) return;
+              if (
+                !cast ||
+                commentsLoading ||
+                (commentsFirstLoaded && comments?.length === 0)
+              )
+                return;
               loadCastComments(id as string);
             }}
             onEndReachedThreshold={1}
             ListFooterComponent={() => {
-              return cast && loading ? (
-                <View className="flex items-center justify-center p-5">
-                  <Text>Loading ...</Text>
-                </View>
-              ) : null;
+              return <View className="mb-10" />;
+              // return !!cast && commentsLoading ? (
+              //   <View className="flex items-center justify-center p-5">
+              //     <Text>Loading ...</Text>
+              //   </View>
+              // ) : null;
             }}
           />
         </View>

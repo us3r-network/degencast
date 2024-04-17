@@ -1,6 +1,5 @@
 import { cn } from "~/lib/utils";
-import { Button, ButtonProps } from "../ui/button";
-import { Heart, Share2 } from "../common/Icons";
+import { Heart, Repeat } from "../common/Icons";
 import { Text } from "../ui/text";
 import {
   TextProps,
@@ -9,7 +8,7 @@ import {
   View,
   ViewProps,
 } from "react-native";
-import { Image } from "expo-image";
+import { CommentIcon } from "../common/SvgIcons";
 
 export type ActionButtonProps = TouchableOpacityProps;
 
@@ -32,7 +31,7 @@ export const LikeButton = ({
   liked,
   likeCount,
   className,
-  iconSize = 24,
+  iconSize = 16,
   ...props
 }: ActionButtonProps & {
   liked: boolean;
@@ -56,31 +55,41 @@ export const LikeButton = ({
 };
 
 export const CommentButton = ({
-  iconSize = 24,
+  iconSize = 16,
+  commentCount = 0,
   ...props
 }: ActionButtonProps & {
   iconSize?: number;
+  commentCount: number;
 }) => {
   return (
     <ActionButton {...props}>
-      <Image
-        source={require("~/assets/images/degen-icon.png")}
-        style={{ width: iconSize, height: iconSize }}
+      <CommentIcon
+        width={iconSize}
+        height={iconSize}
+        className={cn(" stroke-secondary")}
       />
-      {/* <ActionText>{giftCount || 0}</ActionText> */}
+      <ActionText className={cn(" text-secondary")}>
+        {commentCount || 0}
+      </ActionText>
     </ActionButton>
   );
 };
 
-export const ShareButton = ({
-  iconSize,
+export const RepostButton = ({
+  iconSize = 16,
+  repostCount = 0,
   ...props
 }: ActionButtonProps & {
   iconSize?: number;
+  repostCount: number;
 }) => {
   return (
     <ActionButton {...props}>
-      <Share2 size={iconSize} className={cn(" fill-primary stroke-primary")} />
+      <Repeat size={iconSize} className={cn(" stroke-secondary")} />
+      <ActionText className={cn(" text-secondary")}>
+        {repostCount || 0}
+      </ActionText>
     </ActionButton>
   );
 };
@@ -88,22 +97,29 @@ export const ShareButton = ({
 export const PostCommentActions = ({
   liked,
   likeCount,
+  commentCount,
+  repostCount,
   onLike,
   onComment,
-  onShare,
+  onRepost,
   className,
   ...props
 }: ViewProps & {
   liked: boolean;
   likeCount: number;
+  commentCount: number;
+  repostCount: number;
   onLike: () => void;
   onComment: () => void;
-  onShare: () => void;
+  onRepost: () => void;
 }) => {
   return (
-    <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
-      <CommentButton onPress={onComment} />
-      <ShareButton onPress={onShare} />
+    <View
+      className={cn(" flex w-fit flex-row items-center gap-3", className)}
+      {...props}
+    >
+      <CommentButton onPress={onComment} commentCount={commentCount} />
+      <RepostButton onPress={onRepost} repostCount={repostCount} />
       <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
     </View>
   );
