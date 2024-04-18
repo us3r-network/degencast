@@ -12,7 +12,7 @@ import TradeButton from "../TradeButton";
 import WithdrawButton from "../WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
-  const { userTokens } = useUserTokens();
+  const { userTokens } = useUserTokens(address);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">

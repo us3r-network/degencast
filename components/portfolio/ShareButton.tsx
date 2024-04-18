@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTrigger,
   DialogTitle,
+  DialogFooter,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import {
@@ -24,6 +25,13 @@ import { TokenInfoWithMetadata } from "~/services/user/types";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import { Item } from "@radix-ui/react-radio-group";
+import { ChevronUp, ChevronDown } from "lucide-react-native";
 
 export function SellButton({
   logo,
@@ -122,15 +130,15 @@ export function SellButton({
           </Button>
           {data?.transactionHash && (
             <View className="flex gap-2">
-            <Text className="font-bold">Transaction Hash:</Text>
-            <Link
-              className="text-foreground/80"
-              href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
-              target="_blank"
-            >
-              {data?.transactionHash}
-            </Link>
-          </View>
+              <Text className="font-bold">Transaction Hash:</Text>
+              <Link
+                className="text-foreground/80"
+                href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
+                target="_blank"
+              >
+                {data?.transactionHash}
+              </Link>
+            </View>
           )}
         </View>
       </DialogContent>
@@ -244,7 +252,47 @@ export function BuyButton({
             </View>
           )}
         </View>
+        <DialogFooter className="w-full">
+          <AboutShare />
+        </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AboutShare() {
+  const [open, setOpen] = useState(false);
+  return (
+    <Collapsible
+      className="flex w-full gap-4"
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <CollapsibleTrigger className="w-full">
+        <View className="w-full flex-row items-center justify-between">
+          <Text className="font-bold">About channel share</Text>
+          {open ? (
+            <ChevronUp color={"white"} />
+          ) : (
+            <ChevronDown color={"white"} />
+          )}{" "}
+        </View>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent className="flex w-full gap-2">
+        <Text>
+          <li>Share holders could claim airdrops after channel token launch</li>
+        </Text>
+        <Text>
+          Share holders could receive channel allowance (same as your Degen
+          allowance)
+        </Text>
+        <Text>The price of channel shares will increase after each buy</Text>
+        <Text>
+          5% of each trade goes into capital pool to support token launch, and
+          Degencast takes a 1% commission
+        </Text>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

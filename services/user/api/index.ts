@@ -2,9 +2,9 @@ import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 import {
   LoginRespEntity,
-  MyWalletTokensRespEntity,
   ShareInfo,
   TipsInfo,
+  TokenInfoWithMetadata,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
@@ -61,31 +61,35 @@ export function getUserPoints(): RequestPromise<ApiResp<{ value: number }>> {
   });
 }
 
-export function myTokens(): RequestPromise<
-  ApiResp<MyWalletTokensRespEntity[]>
-> {
+export function myTokens(
+  pubkey: `0x${string}`,
+): RequestPromise<ApiResp<TokenInfoWithMetadata[]>> {
   return request({
     url: `topics/my-tokens`,
     method: "get",
+    params: {
+      pubkey,
+    },
     headers: {
       needToken: true,
     },
   });
 }
-export function myShares(): RequestPromise<
-  ApiResp<ShareInfo[]>
-> {
+export function myShares(
+  pubkey: `0x${string}`,
+): RequestPromise<ApiResp<ShareInfo[]>> {
   return request({
     url: `topics/my-shares`,
     method: "get",
+    params: {
+      pubkey,
+    },
     headers: {
       needToken: true,
     },
   });
 }
-export function myTips(): RequestPromise<
-  ApiResp<TipsInfo[]>
-> {
+export function myTips(): RequestPromise<ApiResp<TipsInfo[]>> {
   return request({
     url: `topics/my-tips`,
     method: "get",

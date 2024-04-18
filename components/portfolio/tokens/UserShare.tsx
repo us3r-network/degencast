@@ -15,9 +15,8 @@ import { SellButton } from "../ShareButton";
 import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
-export default function Share() {
-  const { items } = useUserShares();
-  console.log(items);
+export default function Share({ address }: { address: `0x${string}` }) {
+  const { loading, items } = useUserShares(address);
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -27,7 +26,7 @@ export default function Share() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">Share ({items.length})</Text>
+          <Text className="text-lg font-bold">Share ({loading?'loading...':items.length})</Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}

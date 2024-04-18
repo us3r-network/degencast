@@ -7,6 +7,7 @@ export default function useCommunityShares() {
   const [items, setItems] = useState<ShareInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const fetch = useCallback(async () => {
+    setItems([]);
     setLoading(true);
     const response = await communityShares();
     const { code, msg, data } = response.data;

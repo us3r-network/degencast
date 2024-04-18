@@ -16,9 +16,14 @@ import TradeButton from "../TradeButton";
 import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
-export default function CommunityTokens() {
-  const { items } = useUserCommunityTokens();
+export default function CommunityTokens({
+  address,
+}: {
+  address: `0x${string}`;
+}) {
+  const { loading, items } = useUserCommunityTokens(address);
   const [open, setOpen] = React.useState(false);
+  console.log("my-tokens: ", address, items);
   return (
     <Collapsible
       className="flex w-full gap-2"
@@ -28,7 +33,7 @@ export default function CommunityTokens() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Community Token ({items.length})
+            Community Token ({loading?'loading...':items.length})
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
@@ -54,9 +59,13 @@ export default function CommunityTokens() {
 function Item(item: TokenInfoWithMetadata) {
   return (
     <View className="flex-row items-center justify-between">
-      <Link href={`/communities/${item.channelId}/tokens`} asChild>
+      <Link href={`/communities/${item.tradeInfo?.channel}/tokens`} asChild>
         <Pressable>
-          <TokenInfo name={item.name} logo={item.logo} />{" "}
+          <TokenInfo
+            name={item.tradeInfo?.name}
+            logo={item.tradeInfo?.imageURL}
+            mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+          />{" "}
         </Pressable>
       </Link>
       <View className="flex-row items-center gap-2">

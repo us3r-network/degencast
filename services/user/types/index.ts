@@ -1,3 +1,5 @@
+import { TokenInfoWithStats } from "~/services/trade/types";
+
 export type LoginRespEntity = {
   id: number;
 };
@@ -28,10 +30,6 @@ export type UserActionPointConfig = {
   };
 };
 
-export type MyWalletTokensRespEntity = {
-  wallet: string;
-  tokens: TokenInfoWithMetadata[];
-};
 export type TokenInfoWithMetadata = {
   chainId: number;
   contractAddress: string;
@@ -42,6 +40,7 @@ export type TokenInfoWithMetadata = {
   balance?: number | string | undefined;
   symbol?: string | undefined;
   logo?: string;
+  tradeInfo?: TokenInfoWithStats;
 };
 
 export type ShareInfo = {
@@ -54,6 +53,7 @@ export type ShareInfo = {
 
 export type TipsInfo = {
   name?: string | undefined;
+  channelId: string;
   logo?: string;
   amount: number;
 };
