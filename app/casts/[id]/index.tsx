@@ -34,7 +34,7 @@ export default function CastDetail() {
     () => getCastDetailData(id as string),
     [id, getCastDetailData],
   );
-  const { cast } = data;
+  const { cast } = data || {};
   if (cast) {
     return <CachedCastDetail />;
   }

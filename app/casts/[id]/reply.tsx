@@ -110,7 +110,7 @@ function CastReplyWithData({
     <SafeAreaView id="ss" className="h-full">
       <Stack.Screen
         options={{
-          title: "Reply",
+          title: "Cast",
           headerShadowVisible: false,
           headerLeft: () => {
             return (
