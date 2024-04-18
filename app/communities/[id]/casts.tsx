@@ -7,6 +7,7 @@ import { Text } from "~/components/ui/text";
 import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import getCastHex from "~/utils/farcaster/getCastHex";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 
 export default function CastsScreen() {
   const navigation = useNavigation();
@@ -35,6 +36,7 @@ export default function CastsScreen() {
                 onPress={() => {
                   const castHex = getCastHex(data);
                   navigateToCastDetail(castHex, {
+                    origin: CastDetailDataOrigin.Community,
                     cast: data,
                     farcasterUserDataObj: farcasterUserDataObj,
                     community,
