@@ -4,8 +4,8 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from "expo-router";
-import { useEffect } from "react";
-import { View, Text, SafeAreaView, ScrollView, FlatList } from "react-native";
+import { useEffect, useMemo } from "react";
+import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
@@ -15,16 +15,87 @@ import FCastCommunity, {
 } from "~/components/social-farcaster/FCastCommunity";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import useCastPageRoute from "~/hooks/social-farcaster/useCastDetailNavigation";
 import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
+import { CommunityInfo } from "~/services/community/types/community";
+import { FarCast } from "~/services/farcaster/types";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { UserData } from "~/utils/farcaster/user-data";
 
 export default function CastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params;
+  const { getCastDetailData } = useCastPageRoute();
+  const data = useMemo(
+    () => getCastDetailData(id as string),
+    [id, getCastDetailData],
+  );
+  const { cast } = data;
+  if (cast) {
+    return <CachedCastDetail />;
+  }
+  return <FetchedCastDetail />;
+}
+
+function CachedCastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params;
+  const { getCastDetailData } = useCastPageRoute();
+  const data = useMemo(
+    () => getCastDetailData(id as string),
+    [id, getCastDetailData],
+  );
+  const { cast, farcasterUserDataObj, community } = data;
+  return (
+    <CastDetailWithData
+      castLoading={false}
+      cast={cast!}
+      farcasterUserDataObj={farcasterUserDataObj}
+      community={community!}
+    />
+  );
+}
+
+function FetchedCastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params;
+  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
+    useLoadCastDetail();
+  useEffect(() => {
+    loadCastDetail(id as string);
+  }, [id]);
+  // TODO - community info
+  const community = null;
+
+  return (
+    <CastDetailWithData
+      castLoading={loading}
+      cast={cast!}
+      farcasterUserDataObj={farcasterUserDataObj}
+      community={community!}
+    />
+  );
+}
+
+function CastDetailWithData({
+  castLoading,
+  cast,
+  farcasterUserDataObj,
+  community,
+}: {
+  castLoading: boolean;
+  cast: FarCast;
+  farcasterUserDataObj: {
+    [key: string]: UserData;
+  };
+  community: CommunityInfo;
+}) {
+  const { navigateToCastDetail } = useCastPageRoute();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { id } = params;
-  const router = useRouter();
-  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
-    useLoadCastDetail();
+
   const {
     comments,
     farcasterUserDataObj: commentsFarcasterUserDataObj,
@@ -34,12 +105,8 @@ export default function CastDetail() {
   } = useLoadCastComments();
 
   useEffect(() => {
-    loadCastDetail(id as string);
     loadCastComments(id as string);
   }, [id]);
-
-  // TODO - community info
-  const communityInfo = null;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -75,7 +142,7 @@ export default function CastDetail() {
         <View className="w-full flex-1 flex-col gap-7 px-5">
           <FlatList
             ListHeaderComponent={() => {
-              if (loading) {
+              if (castLoading) {
                 return (
                   <View className="flex h-full w-full items-center justify-center">
                     <Loading />
@@ -106,11 +173,23 @@ export default function CastDetail() {
             ItemSeparatorComponent={() => <Separator className=" my-3" />}
             renderItem={({ item }) => {
               return (
-                <FCastComment
-                  className="flex-1"
-                  cast={item.data}
-                  farcasterUserDataObj={commentsFarcasterUserDataObj}
-                />
+                <Pressable
+                  onPress={() => {
+                    const castHex = getCastHex(cast);
+                    navigateToCastDetail(castHex, {
+                      cast: item.data,
+                      farcasterUserDataObj: commentsFarcasterUserDataObj,
+                      community: community,
+                    });
+                    // router.push(`/casts/${castHex}`);
+                  }}
+                >
+                  <FCastComment
+                    className="flex-1"
+                    cast={item.data}
+                    farcasterUserDataObj={commentsFarcasterUserDataObj}
+                  />
+                </Pressable>
               );
             }}
             keyExtractor={({ data }) => data.id}
@@ -135,8 +214,8 @@ export default function CastDetail() {
           />
         </View>
 
-        {communityInfo ? (
-          <FCastCommunity communityInfo={communityInfo} />
+        {community ? (
+          <FCastCommunity communityInfo={community} />
         ) : (
           <FCastCommunityDefault className="w-full rounded-b-none" />
         )}

@@ -15,12 +15,16 @@ import useLoadExploreCasts, {
 } from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 import getCastHex from "~/utils/farcaster/getCastHex";
+import { useNavigation } from "expo-router";
+import useCastPageRoute from "~/hooks/social-farcaster/useCastDetailNavigation";
 
 export default function ExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
     useLoadExploreCasts();
   const animatedValue = useSharedValue(0);
   const router = useRouter();
+  // const navigation = useNavigation();
+  const { navigateToCastDetail } = useCastPageRoute();
   return (
     <View className={cn("flex-1 bg-primary")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
@@ -63,7 +67,22 @@ export default function ExploreScreen() {
                     className={cn("h-full w-full overflow-hidden p-5")}
                     onPress={() => {
                       const castHex = getCastHex(data);
-                      router.push(`/casts/${castHex}`);
+                      // router.push(`/casts/${castHex}`);
+                      // navigation.navigate(
+                      //   ...([
+                      //     "casts/detail",
+                      //     {
+                      //       cast: data,
+                      //       farcasterUserDataObj: farcasterUserDataObj,
+                      //       community,
+                      //     },
+                      //   ] as never),
+                      // );
+                      navigateToCastDetail(castHex, {
+                        cast: data,
+                        farcasterUserDataObj: farcasterUserDataObj,
+                        community,
+                      });
                     }}
                   >
                     <CardContent className="h-full w-full p-0">
