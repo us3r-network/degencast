@@ -30,7 +30,7 @@ export default function PortfolioScreen() {
 
   const [value, setValue] = useState("tokens");
   return (
-    <View className="box-border w-full flex-1 bg-primary p-4 pt-16">
+    <View className="box-border w-full flex-1 bg-background p-4 pt-16">
       {ready &&
         (!privyAuthenticated ? (
           <Card className="mx-auto flex h-full w-full max-w-screen-sm items-center justify-center">

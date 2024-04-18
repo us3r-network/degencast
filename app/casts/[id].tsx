@@ -8,7 +8,9 @@ import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions from "~/components/social-farcaster/FCastActions";
+import FCastActions, {
+  CreatedFCastActions,
+} from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
@@ -75,6 +77,85 @@ function FetchedCastDetail() {
       farcasterUserDataObj={farcasterUserDataObj}
       community={community!}
     />
+  );
+}
+
+function CastDetailWithCreated({
+  castLoading,
+  cast,
+  farcasterUserDataObj,
+  community,
+}: {
+  castLoading: boolean;
+  cast: FarCast;
+  farcasterUserDataObj: {
+    [key: string]: UserData;
+  };
+  community: CommunityInfo;
+}) {
+  const { navigateToCastDetail } = useCastPageRoute();
+  const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const { id } = params;
+
+  const {
+    comments,
+    farcasterUserDataObj: commentsFarcasterUserDataObj,
+    loading: commentsLoading,
+    firstLoaded: commentsFirstLoaded,
+    loadCastComments,
+  } = useLoadCastComments();
+
+  useEffect(() => {
+    loadCastComments(id as string);
+  }, [id]);
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          header: () => (
+            <View className="flex flex-row items-center justify-between">
+              <View className="flex flex-row items-center">
+                <View className="w-fit p-3 ">
+                  <Button
+                    className="rounded-full bg-[#a36efe1a]"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onPress={() => {
+                      navigation.goBack();
+                    }}
+                  >
+                    <BackArrowIcon />
+                  </Button>
+                </View>
+                <Text className=" ml-2 text-xl font-bold  leading-none ">
+                  Cast
+                </Text>
+              </View>
+              <View className="flex flex-row items-center gap-3">
+                {cast && <CreatedFCastActions cast={cast!} />}
+              </View>
+            </View>
+          ),
+        }}
+      />
+      <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
+        <View className="w-full flex-1 flex-col gap-7 px-5">
+          <FCast
+            cast={cast}
+            farcasterUserDataObj={farcasterUserDataObj}
+            hidePoints
+          />
+        </View>
+
+        {community ? (
+          <FCastCommunity communityInfo={community} />
+        ) : (
+          <FCastCommunityDefault className="w-full rounded-b-none" />
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -194,22 +275,18 @@ function CastDetailWithData({
             }}
             keyExtractor={({ data }) => data.id}
             onEndReached={() => {
-              if (
-                !cast ||
-                commentsLoading ||
-                (commentsFirstLoaded && comments?.length === 0)
-              )
-                return;
-              loadCastComments(id as string);
+              // TODO 没有分页，暂时不用加载更多
+              // if (
+              //   !cast ||
+              //   commentsLoading ||
+              //   (commentsFirstLoaded && comments?.length === 0)
+              // )
+              //   return;
+              // loadCastComments(id as string);
             }}
             onEndReachedThreshold={1}
             ListFooterComponent={() => {
               return <View className="mb-10" />;
-              // return !!cast && commentsLoading ? (
-              //   <View className="flex items-center justify-center p-5">
-              //     <Text>Loading ...</Text>
-              //   </View>
-              // ) : null;
             }}
           />
         </View>

@@ -6,7 +6,7 @@ import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
 
-import { Card, CardContent } from "~/components/ui/card";
+import { Card } from "~/components/ui/card";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
@@ -26,7 +26,7 @@ export default function ExploreScreen() {
   // const navigation = useNavigation();
   const { navigateToCastDetail } = useCastPageRoute();
   return (
-    <View className={cn("flex-1 bg-primary")}>
+    <View className={cn("flex-1 bg-background")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
         <GestureHandlerRootView
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -85,12 +85,10 @@ export default function ExploreScreen() {
                       });
                     }}
                   >
-                    <CardContent className="h-full w-full p-0">
-                      <FCast
-                        cast={data}
-                        farcasterUserDataObj={farcasterUserDataObj}
-                      />
-                    </CardContent>
+                    <FCast
+                      cast={data}
+                      farcasterUserDataObj={farcasterUserDataObj}
+                    />
                   </TouchableOpacity>
                   <FCastActions
                     className=" absolute bottom-14 right-3"
