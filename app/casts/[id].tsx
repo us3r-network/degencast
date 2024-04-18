@@ -17,7 +17,8 @@ import FCastCommunity, {
 } from "~/components/social-farcaster/FCastCommunity";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import useCastPageRoute from "~/hooks/social-farcaster/useCastDetailNavigation";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
 import { CommunityInfo } from "~/services/community/types/community";
@@ -28,7 +29,7 @@ import { UserData } from "~/utils/farcaster/user-data";
 export default function CastDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { getCastDetailData } = useCastPageRoute();
+  const { getCastDetailData } = useCastPage();
   const data = useMemo(
     () => getCastDetailData(id as string),
     [id, getCastDetailData],
@@ -43,12 +44,21 @@ export default function CastDetail() {
 function CachedCastDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { getCastDetailData } = useCastPageRoute();
+  const { getCastDetailData } = useCastPage();
   const data = useMemo(
     () => getCastDetailData(id as string),
     [id, getCastDetailData],
   );
-  const { cast, farcasterUserDataObj, community } = data;
+  const { origin, cast, farcasterUserDataObj, community } = data;
+  if (origin === CastDetailDataOrigin.Created) {
+    return (
+      <CastDetailWithCreatedData
+        cast={cast!}
+        farcasterUserDataObj={farcasterUserDataObj}
+        community={community!}
+      />
+    );
+  }
   return (
     <CastDetailWithData
       castLoading={false}
@@ -80,35 +90,18 @@ function FetchedCastDetail() {
   );
 }
 
-function CastDetailWithCreated({
-  castLoading,
+function CastDetailWithCreatedData({
   cast,
   farcasterUserDataObj,
   community,
 }: {
-  castLoading: boolean;
   cast: FarCast;
   farcasterUserDataObj: {
     [key: string]: UserData;
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail } = useCastPageRoute();
-  const navigation = useNavigation();
-  const params = useLocalSearchParams();
-  const { id } = params;
-
-  const {
-    comments,
-    farcasterUserDataObj: commentsFarcasterUserDataObj,
-    loading: commentsLoading,
-    firstLoaded: commentsFirstLoaded,
-    loadCastComments,
-  } = useLoadCastComments();
-
-  useEffect(() => {
-    loadCastComments(id as string);
-  }, [id]);
+  const router = useRouter();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -123,7 +116,7 @@ function CastDetailWithCreated({
                     size={"icon"}
                     variant={"ghost"}
                     onPress={() => {
-                      navigation.goBack();
+                      router.push("/");
                     }}
                   >
                     <BackArrowIcon />
@@ -150,7 +143,10 @@ function CastDetailWithCreated({
         </View>
 
         {community ? (
-          <FCastCommunity communityInfo={community} />
+          <FCastCommunity
+            className="w-full rounded-b-none"
+            communityInfo={community}
+          />
         ) : (
           <FCastCommunityDefault className="w-full rounded-b-none" />
         )}
@@ -172,7 +168,7 @@ function CastDetailWithData({
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail } = useCastPageRoute();
+  const { navigateToCastDetail } = useCastPage();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { id } = params;
@@ -258,6 +254,7 @@ function CastDetailWithData({
                   onPress={() => {
                     const castHex = getCastHex(cast);
                     navigateToCastDetail(castHex, {
+                      origin: CastDetailDataOrigin.Comments,
                       cast: item.data,
                       farcasterUserDataObj: commentsFarcasterUserDataObj,
                       community: community,
@@ -292,7 +289,10 @@ function CastDetailWithData({
         </View>
 
         {community ? (
-          <FCastCommunity communityInfo={community} />
+          <FCastCommunity
+            className="w-full rounded-b-none"
+            communityInfo={community}
+          />
         ) : (
           <FCastCommunityDefault className="w-full rounded-b-none" />
         )}

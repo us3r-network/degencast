@@ -111,42 +111,56 @@ export const ExplorePostActions = ({
 };
 
 export const PostDetailActions = ({
-  liked,
-  likeCount,
+  liked = false,
+  likeCount = 0,
   onLike,
   onGift,
   onShare,
+  hideLike,
+  hideGift,
+  hideShare,
   className,
   ...props
 }: ViewProps & {
-  liked: boolean;
-  likeCount: number;
-  onLike: () => void;
-  onGift: () => void;
-  onShare: () => void;
+  liked?: boolean;
+  likeCount?: number;
+  onLike?: () => void;
+  onGift?: () => void;
+  onShare?: () => void;
+  hideLike?: boolean;
+  hideGift?: boolean;
+  hideShare?: boolean;
 }) => {
   return (
     <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
-      <LikeButton
-        className={cn(" h-10 w-10", liked && " border-none")}
-        variant={"outline"}
-        iconSize={15}
-        liked={liked}
-        likeCount={likeCount}
-        onPress={onLike}
-      />
-      <GiftButton
-        variant={"outline"}
-        iconSize={15}
-        className=" h-10 w-10"
-        onPress={onGift}
-      />
-      <ShareButton
-        variant={"outline"}
-        iconSize={15}
-        className=" h-10 w-10"
-        onPress={onShare}
-      />
+      {!hideLike && (
+        <LikeButton
+          className={cn(" h-10 w-10", liked && " border-none")}
+          variant={"outline"}
+          iconSize={15}
+          liked={liked}
+          likeCount={likeCount}
+          onPress={onLike}
+        />
+      )}
+
+      {!hideGift && (
+        <GiftButton
+          variant={"outline"}
+          iconSize={15}
+          className=" h-10 w-10"
+          onPress={onGift}
+        />
+      )}
+
+      {!hideShare && (
+        <ShareButton
+          variant={"outline"}
+          iconSize={15}
+          className=" h-10 w-10"
+          onPress={onShare}
+        />
+      )}
     </View>
   );
 };

@@ -75,3 +75,14 @@ export default function FCastActions({
     </>
   );
 }
+
+export function CreatedFCastActions({
+  cast,
+  ...props
+}: ViewProps & {
+  cast: FarCast;
+}) {
+  const { authenticated, login } = usePrivy();
+  const onShare = () => {};
+  return <PostDetailActions onShare={onShare} hideGift hideLike {...props} />;
+}

@@ -5,13 +5,13 @@ import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import { Text } from "~/components/ui/text";
 import { useNavigation } from "expo-router";
-import useCastPageRoute from "~/hooks/social-farcaster/useCastDetailNavigation";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import getCastHex from "~/utils/farcaster/getCastHex";
 
 export default function CastsScreen() {
   const navigation = useNavigation();
 
-  const { navigateToCastDetail } = useCastPageRoute();
+  const { navigateToCastDetail } = useCastPage();
   const params = useLocalSearchParams();
   const { id } = params;
   const { casts, farcasterUserDataObj, loading, loadCasts } =

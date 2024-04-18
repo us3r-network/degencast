@@ -4,7 +4,16 @@ import { FarCast } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
 
+export enum CastDetailDataOrigin {
+  Explore,
+  Comments,
+  Community,
+  Protfolio,
+  Created,
+}
+
 export type CastDetailData = {
+  origin: CastDetailDataOrigin;
   cast: FarCast;
   farcasterUserDataObj: {
     [key: string]: UserData;

@@ -16,7 +16,8 @@ import useLoadExploreCasts, {
 import { cn } from "~/lib/utils";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { useNavigation } from "expo-router";
-import useCastPageRoute from "~/hooks/social-farcaster/useCastDetailNavigation";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 
 export default function ExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
@@ -24,7 +25,7 @@ export default function ExploreScreen() {
   const animatedValue = useSharedValue(0);
   const router = useRouter();
   // const navigation = useNavigation();
-  const { navigateToCastDetail } = useCastPageRoute();
+  const { navigateToCastDetail } = useCastPage();
   return (
     <View className={cn("flex-1 bg-background")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
@@ -79,6 +80,7 @@ export default function ExploreScreen() {
                       //   ] as never),
                       // );
                       navigateToCastDetail(castHex, {
+                        origin: CastDetailDataOrigin.Explore,
                         cast: data,
                         farcasterUserDataObj: farcasterUserDataObj,
                         community,

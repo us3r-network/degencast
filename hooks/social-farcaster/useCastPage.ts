@@ -5,10 +5,9 @@ import {
   selectCastPage,
   upsertToCastDetailData,
 } from "~/features/cast/castPageSlice";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
-export default function useCastPageRoute() {
-  // const navigation = useNavigation();
+export default function useCastPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { castDetailData } = useAppSelector(selectCastPage);
@@ -17,9 +16,6 @@ export default function useCastPageRoute() {
     (id: string, params: CastDetailData) => {
       dispatch(upsertToCastDetailData({ id, params }));
       router.push(`casts/${id}` as any);
-      // navigation.navigate(
-      //   ...(["casts", { screen: "[id]", params: { id } }] as never),
-      // );
     },
     [router],
   );
