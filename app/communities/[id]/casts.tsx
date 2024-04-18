@@ -1,11 +1,18 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import { Text } from "~/components/ui/text";
+import { useNavigation } from "expo-router";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 
 export default function CastsScreen() {
+  const navigation = useNavigation();
+
+  const { navigateToCastDetail } = useCastPage();
   const params = useLocalSearchParams();
   const { id } = params;
   const { casts, farcasterUserDataObj, loading, loadCasts } =
@@ -25,11 +32,23 @@ export default function CastsScreen() {
           renderItem={({ item }) => {
             const { data, platform, community } = item;
             return (
-              <FcastMiniCard
-                className="flex-1"
-                cast={data}
-                farcasterUserDataObj={farcasterUserDataObj}
-              />
+              <Pressable
+                onPress={() => {
+                  const castHex = getCastHex(data);
+                  navigateToCastDetail(castHex, {
+                    origin: CastDetailDataOrigin.Community,
+                    cast: data,
+                    farcasterUserDataObj: farcasterUserDataObj,
+                    community,
+                  });
+                }}
+              >
+                <FcastMiniCard
+                  className="flex-1"
+                  cast={data}
+                  farcasterUserDataObj={farcasterUserDataObj}
+                />
+              </Pressable>
             );
           }}
           keyExtractor={({ data, platform, community }) => data.id}

@@ -15,12 +15,17 @@ import useLoadExploreCasts, {
 } from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 import getCastHex from "~/utils/farcaster/getCastHex";
+import { useNavigation } from "expo-router";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 
 export default function ExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
     useLoadExploreCasts();
   const animatedValue = useSharedValue(0);
   const router = useRouter();
+  // const navigation = useNavigation();
+  const { navigateToCastDetail } = useCastPage();
   return (
     <View className={cn("flex-1 bg-background")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
@@ -63,7 +68,13 @@ export default function ExploreScreen() {
                     className={cn("h-full w-full overflow-hidden p-5")}
                     onPress={() => {
                       const castHex = getCastHex(data);
-                      router.push(`/casts/${castHex}`);
+                      // router.push(`/casts/${castHex}`);
+                      navigateToCastDetail(castHex, {
+                        origin: CastDetailDataOrigin.Explore,
+                        cast: data,
+                        farcasterUserDataObj: farcasterUserDataObj,
+                        community,
+                      });
                     }}
                   >
                     <FCast

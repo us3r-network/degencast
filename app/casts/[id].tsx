@@ -4,28 +4,175 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from "expo-router";
-import { useEffect } from "react";
-import { View, SafeAreaView, ScrollView, FlatList } from "react-native";
+import { useEffect, useMemo } from "react";
+import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions from "~/components/social-farcaster/FCastActions";
+import FCastActions, {
+  CreatedFCastActions,
+} from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
-import { Text } from "~/components/ui/text";
+import { CommunityInfo } from "~/services/community/types/community";
+import { FarCast } from "~/services/farcaster/types";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { UserData } from "~/utils/farcaster/user-data";
 
 export default function CastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params;
+  const { getCastDetailData } = useCastPage();
+  const data = useMemo(
+    () => getCastDetailData(id as string),
+    [id, getCastDetailData],
+  );
+  const { cast } = data;
+  if (cast) {
+    return <CachedCastDetail />;
+  }
+  return <FetchedCastDetail />;
+}
+
+function CachedCastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params;
+  const { getCastDetailData } = useCastPage();
+  const data = useMemo(
+    () => getCastDetailData(id as string),
+    [id, getCastDetailData],
+  );
+  const { origin, cast, farcasterUserDataObj, community } = data;
+  if (origin === CastDetailDataOrigin.Created) {
+    return (
+      <CastDetailWithCreatedData
+        cast={cast!}
+        farcasterUserDataObj={farcasterUserDataObj}
+        community={community!}
+      />
+    );
+  }
+  return (
+    <CastDetailWithData
+      castLoading={false}
+      cast={cast!}
+      farcasterUserDataObj={farcasterUserDataObj}
+      community={community!}
+    />
+  );
+}
+
+function FetchedCastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params;
+  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
+    useLoadCastDetail();
+  useEffect(() => {
+    loadCastDetail(id as string);
+  }, [id]);
+  // TODO - community info
+  const community = null;
+
+  return (
+    <CastDetailWithData
+      castLoading={loading}
+      cast={cast!}
+      farcasterUserDataObj={farcasterUserDataObj}
+      community={community!}
+    />
+  );
+}
+
+function CastDetailWithCreatedData({
+  cast,
+  farcasterUserDataObj,
+  community,
+}: {
+  cast: FarCast;
+  farcasterUserDataObj: {
+    [key: string]: UserData;
+  };
+  community: CommunityInfo;
+}) {
+  const router = useRouter();
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          header: () => (
+            <View className="flex flex-row items-center justify-between">
+              <View className="flex flex-row items-center">
+                <View className="w-fit p-3 ">
+                  <Button
+                    className="rounded-full bg-[#a36efe1a]"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onPress={() => {
+                      router.push("/");
+                    }}
+                  >
+                    <BackArrowIcon />
+                  </Button>
+                </View>
+                <Text className=" ml-2 text-xl font-bold  leading-none ">
+                  Cast
+                </Text>
+              </View>
+              <View className="flex flex-row items-center gap-3">
+                {cast && <CreatedFCastActions cast={cast!} />}
+              </View>
+            </View>
+          ),
+        }}
+      />
+      <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
+        <View className="w-full flex-1 flex-col gap-7 px-5">
+          <FCast
+            cast={cast}
+            farcasterUserDataObj={farcasterUserDataObj}
+            hidePoints
+          />
+        </View>
+
+        {community ? (
+          <FCastCommunity
+            className="w-full rounded-b-none"
+            communityInfo={community}
+          />
+        ) : (
+          <FCastCommunityDefault className="w-full rounded-b-none" />
+        )}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function CastDetailWithData({
+  castLoading,
+  cast,
+  farcasterUserDataObj,
+  community,
+}: {
+  castLoading: boolean;
+  cast: FarCast;
+  farcasterUserDataObj: {
+    [key: string]: UserData;
+  };
+  community: CommunityInfo;
+}) {
+  const { navigateToCastDetail } = useCastPage();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { id } = params;
-  const router = useRouter();
-  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
-    useLoadCastDetail();
+
   const {
     comments,
     farcasterUserDataObj: commentsFarcasterUserDataObj,
@@ -35,12 +182,8 @@ export default function CastDetail() {
   } = useLoadCastComments();
 
   useEffect(() => {
-    loadCastDetail(id as string);
     loadCastComments(id as string);
   }, [id]);
-
-  // TODO - community info
-  const communityInfo = null;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -76,7 +219,7 @@ export default function CastDetail() {
         <View className="w-full flex-1 flex-col gap-7 px-5">
           <FlatList
             ListHeaderComponent={() => {
-              if (loading) {
+              if (castLoading) {
                 return (
                   <View className="flex h-full w-full items-center justify-center">
                     <Loading />
@@ -107,37 +250,49 @@ export default function CastDetail() {
             ItemSeparatorComponent={() => <Separator className=" my-3" />}
             renderItem={({ item }) => {
               return (
-                <FCastComment
-                  className="flex-1"
-                  cast={item.data}
-                  farcasterUserDataObj={commentsFarcasterUserDataObj}
-                />
+                <Pressable
+                  onPress={() => {
+                    const castHex = getCastHex(cast);
+                    navigateToCastDetail(castHex, {
+                      origin: CastDetailDataOrigin.Comments,
+                      cast: item.data,
+                      farcasterUserDataObj: commentsFarcasterUserDataObj,
+                      community: community,
+                    });
+                    // router.push(`/casts/${castHex}`);
+                  }}
+                >
+                  <FCastComment
+                    className="flex-1"
+                    cast={item.data}
+                    farcasterUserDataObj={commentsFarcasterUserDataObj}
+                  />
+                </Pressable>
               );
             }}
             keyExtractor={({ data }) => data.id}
             onEndReached={() => {
-              if (
-                !cast ||
-                commentsLoading ||
-                (commentsFirstLoaded && comments?.length === 0)
-              )
-                return;
-              loadCastComments(id as string);
+              // TODO 没有分页，暂时不用加载更多
+              // if (
+              //   !cast ||
+              //   commentsLoading ||
+              //   (commentsFirstLoaded && comments?.length === 0)
+              // )
+              //   return;
+              // loadCastComments(id as string);
             }}
             onEndReachedThreshold={1}
             ListFooterComponent={() => {
               return <View className="mb-10" />;
-              // return !!cast && commentsLoading ? (
-              //   <View className="flex items-center justify-center p-5">
-              //     <Text>Loading ...</Text>
-              //   </View>
-              // ) : null;
             }}
           />
         </View>
 
-        {communityInfo ? (
-          <FCastCommunity communityInfo={communityInfo} />
+        {community ? (
+          <FCastCommunity
+            className="w-full rounded-b-none"
+            communityInfo={community}
+          />
         ) : (
           <FCastCommunityDefault className="w-full rounded-b-none" />
         )}
