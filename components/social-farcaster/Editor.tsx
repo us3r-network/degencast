@@ -11,6 +11,9 @@ import { cn } from "~/lib/utils";
 import { uploadImage } from "~/services/upload";
 import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
+import { FarCast } from "~/services/farcaster/types";
+import { Card, CardContent } from "../ui/card";
+import FCast from "./FCast";
 
 const HomeChanel = {
   id: "",
@@ -26,6 +29,7 @@ export default function Editor({
   setImages,
   channel,
   setChannel,
+  previewComponent,
 }: {
   text: string;
   setText: (text: string) => void;
@@ -33,6 +37,7 @@ export default function Editor({
   setImages: (images: string[]) => void;
   channel: WarpcastChannel;
   setChannel: (channel: WarpcastChannel) => void;
+  previewComponent?: React.ReactNode;
 }) {
   return (
     <View className="flex flex-grow border-secondary">
@@ -66,6 +71,8 @@ export default function Editor({
           );
         })}
       </View>
+
+      {previewComponent && <View className=" px-4">{previewComponent}</View>}
 
       <View className="flex flex-row p-4">
         <WarpcastChannelPicker channel={channel} setChannel={setChannel} />

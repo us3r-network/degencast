@@ -120,6 +120,42 @@ export default function useFarcasterWrite() {
         setWriting(false);
       }
     },
+    replayCast: async ({
+      text,
+      embeds,
+      parentCastId,
+    }: {
+      text: string;
+      embeds: {
+        url?: string | undefined;
+        castId?:
+          | {
+              fid: number;
+              hash: string;
+            }
+          | undefined;
+      }[];
+      parentCastId?:
+        | {
+            fid: number;
+            hash: string;
+          }
+        | undefined;
+    }) => {
+      const canWrite = await prepareWrite();
+      if (canWrite) {
+        setWriting(true);
+        const data = {
+          text,
+          embeds: embeds.map((embed) => ({
+            url: embed.url,
+          })),
+          parentCastId,
+        };
+        await submitCast(data);
+        setWriting(false);
+      }
+    },
     submitCastWithOpts: async (opts: SubmitCastBody) => {
       const canWrite = await prepareWrite();
       if (canWrite) {

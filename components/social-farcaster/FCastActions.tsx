@@ -6,15 +6,26 @@ import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAct
 import FCastGiftModal from "./FCastGiftModal";
 import { useState } from "react";
 import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
+import { useNavigation } from "expo-router";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import { CommunityInfo } from "~/services/community/types/community";
+import { UserData } from "~/utils/farcaster/user-data";
+import getCastHex from "~/utils/farcaster/getCastHex";
 
 export default function FCastActions({
   cast,
+  farcasterUserDataObj,
+  communityInfo,
   isDetail,
   ...props
 }: ViewProps & {
   cast: FarCast;
+  farcasterUserDataObj: { [key: string]: UserData };
+  communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
+  const navigation = useNavigation();
+  const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
     { cast },
@@ -42,6 +53,14 @@ export default function FCastActions({
     loadDegenAllowance();
     setOpenGiftModal(true);
   };
+  const onComment = () => {
+    const castHex = getCastHex(cast);
+    navigateToCastReply(castHex, {
+      cast,
+      farcasterUserDataObj,
+      community: communityInfo,
+    });
+  };
   const onShare = () => {};
   return (
     <>
@@ -52,6 +71,7 @@ export default function FCastActions({
           onLike={onLike}
           onGift={onGift}
           onShare={onShare}
+          onComment={onComment}
           {...props}
         />
       ) : (
@@ -61,6 +81,7 @@ export default function FCastActions({
           onLike={onLike}
           onGift={onGift}
           onShare={onShare}
+          onComment={onComment}
           {...props}
         />
       )}

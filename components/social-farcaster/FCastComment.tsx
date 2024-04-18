@@ -7,15 +7,18 @@ import FCastUserInfo from "./FCastUserInfo";
 import FCastEmbeds from "./FCastEmbeds";
 import FCastCommentActions from "./FCastCommentActions";
 import { useRouter } from "expo-router";
+import { CommunityInfo } from "~/services/community/types/community";
 
 export default function FCastComment({
   cast,
   farcasterUserDataObj,
+  communityInfo,
   className,
   ...props
 }: ViewProps & {
   cast: FarCast;
-  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
+  farcasterUserDataObj: { [key: string]: UserData } | undefined;
+  communityInfo: CommunityInfo;
 }) {
   // const router = useRouter();
   const userData = farcasterUserDataObj?.[cast.fid];
@@ -28,7 +31,12 @@ export default function FCastComment({
       {/* body - text & embed */}
       <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
       <FCastEmbeds cast={cast} />
-      <FCastCommentActions className=" ml-auto" cast={cast} />
+      <FCastCommentActions
+        className=" ml-auto"
+        cast={cast}
+        farcasterUserDataObj={farcasterUserDataObj!}
+        communityInfo={communityInfo}
+      />
     </View>
   );
 }

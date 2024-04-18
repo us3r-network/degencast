@@ -209,7 +209,14 @@ function CastDetailWithData({
                 </Text>
               </View>
               <View className="flex flex-row items-center gap-3">
-                {cast && <FCastActions cast={cast!} isDetail={true} />}
+                {cast && (
+                  <FCastActions
+                    cast={cast!}
+                    isDetail={true}
+                    farcasterUserDataObj={farcasterUserDataObj}
+                    communityInfo={community}
+                  />
+                )}
               </View>
             </View>
           ),
@@ -266,12 +273,14 @@ function CastDetailWithData({
                     className="flex-1"
                     cast={item.data}
                     farcasterUserDataObj={commentsFarcasterUserDataObj}
+                    communityInfo={community}
                   />
                 </Pressable>
               );
             }}
             keyExtractor={({ data }) => data.id}
             onEndReached={() => {
+              return;
               // TODO 没有分页，暂时不用加载更多
               // if (
               //   !cast ||

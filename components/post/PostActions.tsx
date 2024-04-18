@@ -4,6 +4,7 @@ import { Heart, Share2 } from "../common/Icons";
 import { Text } from "../ui/text";
 import { TextProps, View, ViewProps } from "react-native";
 import { Image } from "expo-image";
+import { CommentIcon2 } from "../common/SvgIcons";
 
 export function ActionButton({ className, ...props }: ButtonProps) {
   return (
@@ -68,6 +69,23 @@ export const GiftButton = ({
   );
 };
 
+export const CommentButton = ({
+  iconSize = 24,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionButton {...props}>
+      <CommentIcon2
+        width={iconSize}
+        height={iconSize}
+        className={cn(" flex fill-primary stroke-primary")}
+      />
+    </ActionButton>
+  );
+};
+
 export const ShareButton = ({
   iconSize,
   ...props
@@ -87,6 +105,7 @@ export const ExplorePostActions = ({
   onLike,
   onGift,
   onShare,
+  onComment,
   className,
   ...props
 }: ViewProps & {
@@ -95,6 +114,7 @@ export const ExplorePostActions = ({
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
+  onComment?: () => void;
 }) => {
   return (
     <View className={cn(" flex w-fit flex-col gap-3", className)} {...props}>
@@ -105,6 +125,7 @@ export const ExplorePostActions = ({
         onPress={onLike}
       />
       <GiftButton className=" shadow-md" onPress={onGift} />
+      <CommentButton className=" shadow-md" onPress={onComment} />
       <ShareButton className=" shadow-md" onPress={onShare} />
     </View>
   );
@@ -116,9 +137,11 @@ export const PostDetailActions = ({
   onLike,
   onGift,
   onShare,
+  onComment,
   hideLike,
   hideGift,
   hideShare,
+  hideComment,
   className,
   ...props
 }: ViewProps & {
@@ -127,9 +150,11 @@ export const PostDetailActions = ({
   onLike?: () => void;
   onGift?: () => void;
   onShare?: () => void;
+  onComment?: () => void;
   hideLike?: boolean;
   hideGift?: boolean;
   hideShare?: boolean;
+  hideComment?: boolean;
 }) => {
   return (
     <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
@@ -150,6 +175,15 @@ export const PostDetailActions = ({
           iconSize={15}
           className=" h-10 w-10"
           onPress={onGift}
+        />
+      )}
+
+      {!hideComment && (
+        <CommentButton
+          variant={"outline"}
+          iconSize={15}
+          className=" h-10 w-10"
+          onPress={onComment}
         />
       )}
 

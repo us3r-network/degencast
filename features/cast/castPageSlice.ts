@@ -20,14 +20,25 @@ export type CastDetailData = {
   };
   community: CommunityInfo;
 };
+
+export type CastReplayData = {
+  cast: FarCast;
+  farcasterUserDataObj: {
+    [key: string]: UserData;
+  };
+  community: CommunityInfo;
+};
+
 type castPageState = {
   castDetailData: {
     [key: string]: CastDetailData;
   };
+  castReplyData: CastReplayData | null;
 };
 
 const castPageState: castPageState = {
   castDetailData: {},
+  castReplyData: null,
 };
 
 export const castPageSlice = createSlice({
@@ -43,10 +54,16 @@ export const castPageSlice = createSlice({
     ) => {
       state.castDetailData[action.payload.id] = action.payload.params;
     },
+    setCastReplyData: (
+      state: castPageState,
+      action: PayloadAction<CastReplayData | null>,
+    ) => {
+      state.castReplyData = action.payload;
+    },
   },
 });
 
 const { actions, reducer } = castPageSlice;
-export const { upsertToCastDetailData } = actions;
+export const { upsertToCastDetailData, setCastReplyData } = actions;
 export const selectCastPage = (state: RootState) => state.castPage;
 export default reducer;
