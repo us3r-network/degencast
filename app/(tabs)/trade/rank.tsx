@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
 import { CommunityInfo as CommunityInfoType } from "~/services/community/types/community";
-import { CommunityInfo } from "../common/CommunityInfo";
-import CommunityJoinButton from "../community/CommunityJoinButton";
-import { Loading } from "../common/Loading";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
+import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import { Loading } from "~/components/common/Loading";
 import { Text } from "~/components/ui/text";
 import { Link } from "expo-router";
 

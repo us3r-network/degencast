@@ -1,6 +1,6 @@
-import { useControllableState, useRelativePosition, type LayoutPosition } from '@rnr/hooks';
-import { Portal as RNPPortal } from '@rnr/portal';
-import * as Slot from '@rnr/slot';
+import { useControllableState, useRelativePosition, type LayoutPosition } from '~/components/primitives/hooks';
+import { Portal as RNPPortal } from '~/components/primitives/portal';
+import * as Slot from '~/components/primitives/slot';
 import type {
   ForceMountable,
   PositionedContentProps,
@@ -10,7 +10,7 @@ import type {
   SlottableViewProps,
   TextRef,
   ViewRef,
-} from '@rnr/types';
+} from '~/components/primitives/types';
 import * as React from 'react';
 import {
   BackHandler,
@@ -447,6 +447,8 @@ export {
   useItemContext,
   useRootContext,
 };
+
+export type { Option } from './types';
 
 function onStartShouldSetResponder() {
   return true;

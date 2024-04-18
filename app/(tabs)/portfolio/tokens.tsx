@@ -1,9 +1,9 @@
 import { ScrollView, View } from "react-native";
 import { useAccount } from "wagmi";
-import Balance from "./UserBalance";
-import CommunityTokens from "./UserCommunityTokens";
-import Share from "./UserShare";
-import Tips from "./UserTips";
+import Balance from "~/components/portfolio/tokens/UserBalance";
+import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
+import Share from "~/components/portfolio/tokens/UserShare";
+import Tips from "~/components/portfolio/tokens/UserTips";
 
 export default function UserTokens() {
   const { address } = useAccount();

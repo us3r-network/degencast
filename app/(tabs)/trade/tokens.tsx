@@ -1,13 +1,13 @@
+import { Link } from "expo-router";
 import React from "react";
-import { ScrollView, View, Pressable } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Loading } from "~/components/common/Loading";
 import { TokenInfo } from "~/components/common/TokenInfo";
+import TradeButton from "~/components/portfolio/TradeButton";
+import { Text } from "~/components/ui/text";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithStats } from "~/services/trade/types";
-import TradeButton from "../portfolio/TradeButton";
-import { Loading } from "../common/Loading";
-import { Text } from "~/components/ui/text";
-import { Link } from "expo-router";
 
 export default function CommunityTokens() {
   const { loading, items } = useCommunityTokens();

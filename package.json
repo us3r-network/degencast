@@ -70,11 +70,11 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
+    "tslib": "^2.3.1",
     "validator": "^13.11.0",
     "viem": "^2.9.5",
     "wagmi": "^2.5.13",
-    "zustand": "^4.5.2",
-    "tslib": "^2.3.1"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,15 +1,15 @@
+import { Link } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import useCommunityShares from "~/hooks/trade/useCommunityShares";
-import { ShareInfo } from "~/services/trade/types";
-import { CommunityInfo } from "../common/CommunityInfo";
-import { BuyButton } from "../portfolio/ShareButton";
-import { ArrowDown, ArrowUp } from "~/components/common/Icons";
 import { formatUnits } from "viem";
-import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
-import { Loading } from "../common/Loading";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
+import { ArrowDown, ArrowUp } from "~/components/common/Icons";
+import { Loading } from "~/components/common/Loading";
+import { BuyButton } from "~/components/portfolio/ShareButton";
 import { Text } from "~/components/ui/text";
-import { Link } from "expo-router";
+import useCommunityShares from "~/hooks/trade/useCommunityShares";
+import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
+import { ShareInfo } from "~/services/trade/types";
 
 export default function CommunityShares() {
   const { loading, items } = useCommunityShares();

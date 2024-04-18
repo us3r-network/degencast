@@ -74,7 +74,7 @@ export default function Wallets() {
   }
   return (
     <Select
-      className="w-40"
+      className="w-50"
       defaultValue={{
         value: activeWallet?.address || "",
         label: activeWallet?.address || "",
@@ -135,7 +135,7 @@ export default function Wallets() {
             </SelectItem>
           ))}
         </SelectGroup>
-        <View className="flex w-full items-center gap-[10px] p-2">
+        <View className="flex w-full gap-[10px] p-2">
           {unconnectedWallets.map((wallet) => (
             <View
               className="w-full flex-row items-center justify-between"
@@ -150,16 +150,16 @@ export default function Wallets() {
                 <Wallet className="size-4" />
                 <Text>{shortPubKey(wallet.address)}</Text>
               </Pressable>
-              <Pressable
-                onPress={async (event) => {
-                  console.log("unlinking wallet", wallet.address);
-                  await unlinkWallet(wallet.address);
+              <UnlinkButton
+                action={() => {
+                  console.log("unlinking farcaster", farcasterAccount.fid);
+                  if (farcasterAccount?.fid)
+                    unlinkFarcaster(farcasterAccount.fid);
                 }}
-              >
-                <MinusCircle className="size-4" />
-              </Pressable>
+              />
             </View>
           ))}
+          {/* link wallet */}
           <Pressable
             className="w-full flex-row items-center justify-between gap-2"
             onPress={linkWallet}
@@ -170,6 +170,7 @@ export default function Wallets() {
             </View>
             <PlusCircle className="size-4" />
           </Pressable>
+          {/* link farcaster */}
           {farcasterAccount?.fid ? (
             <View className="w-full flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
@@ -204,6 +205,7 @@ export default function Wallets() {
               <PlusCircle className="size-4" />
             </Pressable>
           )}
+          {/* logout */}
           <LogoutButton action={logout} />
         </View>
       </SelectContent>
