@@ -6,6 +6,7 @@ export type VolumeStats = {
 export type TokenInfoWithStats = {
   id: string;
   chain_id: number;
+  channel:string;
   tokenAddress: string;
   name?: string | undefined;
   imageURL?: string;
@@ -24,6 +25,7 @@ export type TokenInfoWithStats = {
 
 export type ShareInfo = {
   name?: string | undefined;
+  channelId: string;
   logo?: string;
   priceETH: string;
   sharesSubject: `0x${string}`;

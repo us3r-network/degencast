@@ -7,6 +7,7 @@ export default function useCommunityTokens() {
   const [items, setItems] = useState<TokenInfoWithStats[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const fetch = useCallback(async () => {
+    setItems([]);
     setLoading(true);
     const response = await communityTokens();
     const { code, msg, data } = response.data;

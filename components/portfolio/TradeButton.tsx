@@ -1,4 +1,5 @@
 import { LiFiWidget, WidgetConfig } from "@lifi/widget";
+// import { useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
@@ -26,10 +27,14 @@ export default function TradeButton({
   //     <Text className="text-xs font-bold text-secondary-foreground">Trade</Text>
   //   </Button>
   // );
+  // const { switchChain } = useSwitchChain();
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"secondary"}>
+        <Button
+          variant={"secondary"}
+          // onPress={() => switchChain({ chainId: fromChain })}
+        >
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>

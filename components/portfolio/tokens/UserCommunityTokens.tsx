@@ -1,6 +1,6 @@
 import { round } from "lodash";
 import React from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import {
@@ -13,11 +13,17 @@ import { DEFAULT_CHAIN } from "~/constants";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import TradeButton from "../TradeButton";
+import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
-export default function CommunityTokens() {
-  const { items } = useUserCommunityTokens();
+export default function CommunityTokens({
+  address,
+}: {
+  address: `0x${string}`;
+}) {
+  const { loading, items } = useUserCommunityTokens(address);
   const [open, setOpen] = React.useState(false);
+  console.log("my-tokens: ", address, items);
   return (
     <Collapsible
       className="flex w-full gap-2"
@@ -27,7 +33,7 @@ export default function CommunityTokens() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Community Token ({items.length})
+            Community Token ({loading?'loading...':items.length})
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
@@ -49,10 +55,19 @@ export default function CommunityTokens() {
   );
 }
 
+//todo: `/communities/${item.name}/shares`
 function Item(item: TokenInfoWithMetadata) {
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo name={item.name} logo={item.logo}/>
+      <Link href={`/communities/${item.tradeInfo?.channel}/tokens`} asChild>
+        <Pressable>
+          <TokenInfo
+            name={item.tradeInfo?.name}
+            logo={item.tradeInfo?.imageURL}
+            mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+          />{" "}
+        </Pressable>
+      </Link>
       <View className="flex-row items-center gap-2">
         <Text>{round(Number(item.balance), 2)}</Text>
         <TradeButton

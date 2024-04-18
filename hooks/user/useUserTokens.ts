@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import { base } from "viem/chains";
-import { useAccount, useBalance, useReadContracts } from "wagmi";
+import { useBalance, useReadContracts } from "wagmi";
 import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 
@@ -12,8 +12,10 @@ export enum TOKENS {
 
 const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
 
-export default function useUserTokens(chainId: number = base.id) {
-  const { address } = useAccount();
+export default function useUserTokens(
+  address: `0x${string}`,
+  chainId: number = base.id,
+) {
   const { data: nativeToken } = useBalance({
     address,
     chainId,
@@ -23,22 +25,26 @@ export default function useUserTokens(chainId: number = base.id) {
     contracts: [
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "name",
       },
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "balanceOf",
         args: [address!],
       },
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "decimals",
       },
       {
         address: DEGEN_ADDRESS,
+        chainId,
         abi: erc20Abi,
         functionName: "symbol",
       },
