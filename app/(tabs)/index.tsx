@@ -69,16 +69,6 @@ export default function ExploreScreen() {
                     onPress={() => {
                       const castHex = getCastHex(data);
                       // router.push(`/casts/${castHex}`);
-                      // navigation.navigate(
-                      //   ...([
-                      //     "casts/detail",
-                      //     {
-                      //       cast: data,
-                      //       farcasterUserDataObj: farcasterUserDataObj,
-                      //       community,
-                      //     },
-                      //   ] as never),
-                      // );
                       navigateToCastDetail(castHex, {
                         origin: CastDetailDataOrigin.Explore,
                         cast: data,
