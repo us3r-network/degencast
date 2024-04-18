@@ -18,7 +18,7 @@ export type CastDetailData = {
   farcasterUserDataObj: {
     [key: string]: UserData;
   };
-  community: CommunityInfo;
+  community?: CommunityInfo;
 };
 type castPageState = {
   castDetailData: {
