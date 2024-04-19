@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Text } from "~/components/ui/text";
+import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 import { cn } from "~/lib/utils";
 
@@ -17,7 +18,7 @@ const TABS = [
   { label: "Casts", value: "casts" },
 ];
 export default function PortfolioScreen() {
-  const headerHeight = useHeaderHeight();
+  const headerHeight = useHeaderHeight() || DEFAULT_HEADER_HEIGHT;
   const { login, ready, authenticated: privyAuthenticated } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
@@ -30,8 +31,6 @@ export default function PortfolioScreen() {
   );
 
   const [value, setValue] = useState("tokens");
-  if (!headerHeight)
-    return <SafeAreaView style={{ flex: 1 }} className="bg-background" />;
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}
@@ -52,7 +51,7 @@ export default function PortfolioScreen() {
                 <Tabs
                   value={value}
                   onValueChange={(value) => {
-                    router.navigate(`./${value}`);
+                    router.navigate(`portfolio/${value}`);
                     setValue(value);
                   }}
                   className="relative box-border w-full flex-1"
