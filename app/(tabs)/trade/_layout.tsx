@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Card, CardContent } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Text } from "~/components/ui/text";
+import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import { cn } from "~/lib/utils";
 
 const TABS = [
@@ -16,11 +17,9 @@ const TABS = [
 ];
 
 export default function TradeScreen() {
-  const headerHeight = useHeaderHeight();
+  const headerHeight = useHeaderHeight() || DEFAULT_HEADER_HEIGHT;
   const [value, setValue] = useState(TABS[0].value);
   const router = useRouter();
-  if (!headerHeight)
-    return <SafeAreaView style={{ flex: 1 }} className="bg-background" />;
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}
@@ -30,7 +29,7 @@ export default function TradeScreen() {
         <Tabs
           value={value}
           onValueChange={(value) => {
-            router.navigate(`./${value}`);
+            router.navigate(`trade/${value}`);
             setValue(value);
           }}
           className="relative mx-auto box-border w-full max-w-screen-sm flex-1"
