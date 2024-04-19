@@ -2,6 +2,7 @@ import { CommunityInfo } from "~/services/community/types/community";
 import { Button, ButtonProps } from "../ui/button";
 import { Text } from "../ui/text";
 import { cn } from "~/lib/utils";
+import { BuyButton } from "../portfolio/ShareButton";
 
 export default function CommunityBuyShareButton({
   communityInfo,
@@ -11,15 +12,30 @@ export default function CommunityBuyShareButton({
   communityInfo: CommunityInfo;
 }) {
   return (
-    <Button
-      className={cn(" flex-col items-center bg-secondary", className)}
-      onPress={() => {
-        alert("TODO");
+    <BuyButton
+      sharesSubject={communityInfo?.shares?.[0]?.subjectAddress || ("" as any)}
+      logo={communityInfo.logo}
+      name={communityInfo.name}
+      renderButton={({ fetchedPrice, perSharePrice, symbol }) => {
+        return (
+          <Button
+            variant={"secondary"}
+            className={cn(" flex-col items-center ", className)}
+            {...props}
+          >
+            {fetchedPrice ? (
+              <>
+                <Text>Buy with </Text>
+                <Text>
+                  {perSharePrice} {symbol}
+                </Text>
+              </>
+            ) : (
+              <Text> Fetching Price... </Text>
+            )}
+          </Button>
+        );
       }}
-      {...props}
-    >
-      <Text>Buy with </Text>
-      <Text>9,999 DEGEN</Text>
-    </Button>
+    />
   );
 }

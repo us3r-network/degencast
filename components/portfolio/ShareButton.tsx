@@ -150,10 +150,16 @@ export function BuyButton({
   logo,
   name,
   sharesSubject,
+  renderButton,
 }: {
   logo?: string;
   name?: string;
   sharesSubject: `0x${string}`;
+  renderButton?: (props: {
+    fetchedPrice: boolean;
+    perSharePrice: string;
+    symbol: string;
+  }) => React.ReactElement;
 }) {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -182,12 +188,23 @@ export function BuyButton({
     return data as bigint;
   }, [amount, getPrice, isSuccess]);
 
+  const fetchedPrice = !!(price && amount && token && token.decimals);
+
+  const perSharePrice = fetchedPrice
+    ? formatUnits(price / BigInt(amount), token.decimals!)
+    : "";
+  const symbol = token?.symbol || "";
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"secondary"}>
-          <Text>Buy</Text>
-        </Button>
+        {renderButton ? (
+          renderButton({ fetchedPrice, perSharePrice, symbol })
+        ) : (
+          <Button variant={"secondary"}>
+            <Text>Buy</Text>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
         <DialogHeader>
@@ -206,10 +223,10 @@ export function BuyButton({
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-lg font-bold">Quantity</Text>
-              {price && amount && token && token.decimals ? (
+              {fetchedPrice ? (
                 <Text className="text-xs">
-                  {formatUnits(price / BigInt(amount), token.decimals)}
-                  {token?.symbol} per share
+                  {perSharePrice}
+                  {symbol} per share
                 </Text>
               ) : (
                 <Text className="text-xs text-secondary">
@@ -221,9 +238,9 @@ export function BuyButton({
           </View>
           <View className="flex-row items-center justify-between">
             <Text className="text-lg font-bold">Total Cost</Text>
-            {price && amount && token && token.decimals ? (
+            {fetchedPrice ? (
               <Text>
-                {formatUnits(price, token.decimals)} {token.symbol}
+                {formatUnits(price, token.decimals!)} {token.symbol}
               </Text>
             ) : (
               <Text>fetching price...</Text>
