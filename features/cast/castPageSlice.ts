@@ -20,14 +20,29 @@ export type CastDetailData = {
   };
   community?: CommunityInfo;
 };
+
+export type CastReplayData = {
+  cast: FarCast;
+  farcasterUserDataObj: {
+    [key: string]: UserData;
+  };
+  community: CommunityInfo;
+};
+
 type castPageState = {
   castDetailData: {
     [key: string]: CastDetailData;
+  };
+  castReplyData: CastReplayData | null;
+  castReplyRecordData: {
+    [key: string]: Array<CastReplayData>;
   };
 };
 
 const castPageState: castPageState = {
   castDetailData: {},
+  castReplyData: null,
+  castReplyRecordData: {},
 };
 
 export const castPageSlice = createSlice({
@@ -43,10 +58,34 @@ export const castPageSlice = createSlice({
     ) => {
       state.castDetailData[action.payload.id] = action.payload.params;
     },
+    setCastReplyData: (
+      state: castPageState,
+      action: PayloadAction<CastReplayData | null>,
+    ) => {
+      state.castReplyData = action.payload;
+    },
+    addCastReplyRecordData: (
+      state: castPageState,
+      action: PayloadAction<{
+        id: string;
+        params: CastReplayData;
+      }>,
+    ) => {
+      if (!state.castReplyRecordData[action.payload.id]) {
+        state.castReplyRecordData[action.payload.id] = [];
+      }
+      state.castReplyRecordData[action.payload.id].unshift(
+        action.payload.params,
+      );
+    },
   },
 });
 
 const { actions, reducer } = castPageSlice;
-export const { upsertToCastDetailData } = actions;
+export const {
+  upsertToCastDetailData,
+  setCastReplyData,
+  addCastReplyRecordData,
+} = actions;
 export const selectCastPage = (state: RootState) => state.castPage;
 export default reducer;

@@ -31,6 +31,24 @@ export type SubmitCastBody = {
       }[]
     | undefined;
 };
+
+export type ReplyCastRes = Promise<
+  | {
+      text: string;
+      embeds: {
+        url: string | undefined;
+      }[];
+      parentCastId:
+        | {
+            fid: number;
+            hash: string;
+          }
+        | undefined;
+      hash: string;
+    }
+  | undefined
+>;
+
 export default function useFarcasterWrite() {
   const { user } = usePrivy();
 
@@ -118,6 +136,43 @@ export default function useFarcasterWrite() {
         };
         await submitCast(data);
         setWriting(false);
+      }
+    },
+    replayCast: async ({
+      text,
+      embeds,
+      parentCastId,
+    }: {
+      text: string;
+      embeds: {
+        url?: string | undefined;
+        castId?:
+          | {
+              fid: number;
+              hash: string;
+            }
+          | undefined;
+      }[];
+      parentCastId?:
+        | {
+            fid: number;
+            hash: string;
+          }
+        | undefined;
+    }): ReplyCastRes => {
+      const canWrite = await prepareWrite();
+      if (canWrite) {
+        setWriting(true);
+        const data = {
+          text,
+          embeds: embeds.map((embed) => ({
+            url: embed.url,
+          })),
+          parentCastId,
+        };
+        const res = await submitCast(data);
+        setWriting(false);
+        return { ...res, ...data };
       }
     },
     submitCastWithOpts: async (opts: SubmitCastBody) => {

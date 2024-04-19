@@ -29,12 +29,9 @@ import { UserData } from "~/utils/farcaster/user-data";
 export default function CastDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { getCastDetailData } = useCastPage();
-  const data = useMemo(
-    () => getCastDetailData(id as string),
-    [id, getCastDetailData],
-  );
-  const { cast } = data;
+  const { castDetailData } = useCastPage();
+  const data = castDetailData?.[id as string];
+  const { cast } = data || {};
   if (cast) {
     return <CachedCastDetail />;
   }
@@ -44,11 +41,8 @@ export default function CastDetail() {
 function CachedCastDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { getCastDetailData } = useCastPage();
-  const data = useMemo(
-    () => getCastDetailData(id as string),
-    [id, getCastDetailData],
-  );
+  const { castDetailData } = useCastPage();
+  const data = castDetailData?.[id as string];
   const { origin, cast, farcasterUserDataObj, community } = data;
   if (origin === CastDetailDataOrigin.Created) {
     return (
@@ -209,7 +203,14 @@ function CastDetailWithData({
                 </Text>
               </View>
               <View className="flex flex-row items-center gap-3">
-                {cast && <FCastActions cast={cast!} isDetail={true} />}
+                {cast && (
+                  <FCastActions
+                    cast={cast!}
+                    isDetail={true}
+                    farcasterUserDataObj={farcasterUserDataObj}
+                    communityInfo={community}
+                  />
+                )}
               </View>
             </View>
           ),
@@ -266,12 +267,14 @@ function CastDetailWithData({
                     className="flex-1"
                     cast={item.data}
                     farcasterUserDataObj={commentsFarcasterUserDataObj}
+                    communityInfo={community}
                   />
                 </Pressable>
               );
             }}
             keyExtractor={({ data }) => data.id}
             onEndReached={() => {
+              return;
               // TODO 没有分页，暂时不用加载更多
               // if (
               //   !cast ||

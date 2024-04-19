@@ -2,15 +2,19 @@ import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   CastDetailData,
+  CastReplayData,
   selectCastPage,
   upsertToCastDetailData,
+  setCastReplyData,
+  addCastReplyRecordData,
 } from "~/features/cast/castPageSlice";
 import { useRouter } from "expo-router";
 
 export default function useCastPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { castDetailData } = useAppSelector(selectCastPage);
+  const { castDetailData, castReplyData, castReplyRecordData } =
+    useAppSelector(selectCastPage);
 
   const navigateToCastDetail = useCallback(
     (id: string, params: CastDetailData) => {
@@ -19,14 +23,28 @@ export default function useCastPage() {
     },
     [router],
   );
-  const getCastDetailData = useCallback(
-    (id: string) => {
-      return castDetailData[id];
+
+  const navigateToCastReply = useCallback(
+    (id: string, params: CastReplayData) => {
+      dispatch(setCastReplyData(params));
+      router.push(`casts/${id}/reply` as any);
     },
-    [castDetailData],
+    [router],
   );
+
+  const addCastReplyRecordDataToStore = useCallback(
+    (id: string, params: CastReplayData) => {
+      dispatch(addCastReplyRecordData({ id, params }));
+    },
+    [dispatch],
+  );
+
   return {
-    getCastDetailData,
+    castDetailData,
+    castReplyData,
+    castReplyRecordData,
+    navigateToCastReply,
     navigateToCastDetail,
+    addCastReplyRecordDataToStore,
   };
 }

@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { TouchableOpacity, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
@@ -27,7 +27,7 @@ export default function ExploreScreen() {
   // const navigation = useNavigation();
   const { navigateToCastDetail } = useCastPage();
   return (
-    <View className={cn("flex-1 bg-background")}>
+    <View className={cn("flex-1 overflow-y-hidden bg-background pb-11 pt-16")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
         <GestureHandlerRootView
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -60,11 +60,12 @@ export default function ExploreScreen() {
               >
                 <Card
                   className={cn(
-                    "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none sm:max-h-[690px] sm:w-[390px]",
+                    // 卡片高度 = 100vh - 顶部标题栏(64) - 底部导航栏(98) - 底部空白空间(66) - 顶部空白空间(34)
+                    "h-[calc(100vh-64px-98px-66px-34px)] w-[calc(100vw-40px)] rounded-2xl border-none sm:max-h-[690px] sm:w-[390px]",
                     "bg-transparent",
                   )}
                 >
-                  <TouchableOpacity
+                  <Pressable
                     className={cn("h-full w-full overflow-hidden p-5")}
                     onPress={() => {
                       const castHex = getCastHex(data);
@@ -81,10 +82,12 @@ export default function ExploreScreen() {
                       cast={data}
                       farcasterUserDataObj={farcasterUserDataObj}
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                   <FCastActions
                     className=" absolute bottom-14 right-3"
                     cast={data}
+                    farcasterUserDataObj={farcasterUserDataObj}
+                    communityInfo={community}
                   />
                   {community ? (
                     <FCastCommunity
