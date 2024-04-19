@@ -1,10 +1,9 @@
-import { View, ViewProps, TouchableOpacity } from "react-native";
+import { View, ViewProps, Pressable, PressableProps } from "react-native";
 import { CommunityInfo } from "~/services/community/types/community";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
 import { cn } from "~/lib/utils";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
-import { Button } from "../ui/button";
 import { useRouter } from "expo-router";
 import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
 
@@ -12,25 +11,23 @@ export default function FCastCommunity({
   communityInfo,
   className,
   ...props
-}: ViewProps & {
+}: PressableProps & {
   communityInfo: CommunityInfo;
 }) {
   const router = useRouter();
   const { joined, joiningAction } = useJoinCommunityAction(communityInfo);
   return (
-    <View
+    <Pressable
       className={cn(
         "box-border flex h-[90px] w-[calc(100%-10px)] flex-row items-center gap-2 rounded-[30px] bg-[#5E3EA0] p-[20px]",
         className,
       )}
+      onPress={() => {
+        router.push(`/communities/${communityInfo.channelId}` as any);
+      }}
       {...props}
     >
-      <TouchableOpacity
-        className=" h-12 w-12 rounded-full bg-white"
-        onPress={() => {
-          router.push(`/communities/${communityInfo.channelId}` as any);
-        }}
-      >
+      <View className=" h-12 w-12 rounded-full bg-white">
         <Avatar
           alt={"logo"}
           className="h-full w-full rounded-full object-cover"
@@ -41,7 +38,7 @@ export default function FCastCommunity({
           </AvatarFallback>
         </Avatar>
         {!joined && (
-          <TouchableOpacity
+          <Pressable
             className=" absolute bottom-0 right-0"
             onPress={(e) => {
               e.stopPropagation();
@@ -49,9 +46,9 @@ export default function FCastCommunity({
             }}
           >
             <JoinIcon />
-          </TouchableOpacity>
+          </Pressable>
         )}
-      </TouchableOpacity>
+      </View>
       <Text className="line-clamp-2 flex-1 text-base text-white">
         {communityInfo.name}
       </Text>
@@ -59,7 +56,7 @@ export default function FCastCommunity({
         className="bg-secondary font-bold"
         communityInfo={communityInfo}
       />
-    </View>
+    </Pressable>
   );
 }
 

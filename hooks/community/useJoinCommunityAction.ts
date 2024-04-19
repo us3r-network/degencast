@@ -16,11 +16,15 @@ import { ApiRespCode } from "~/services/shared/types";
 import { CommunityInfo } from "~/services/community/types/community";
 import useAuth from "../user/useAuth";
 import { usePrivy } from "@privy-io/react-auth";
+import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
+import useFarcasterWrite from "../social-farcaster/useFarcasterWrite";
 
 export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
   const communityId = communityInfo?.id;
   const dispatch = useAppDispatch();
   const { login } = usePrivy();
+  const { currFid } = useFarcasterAccount();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
   const { authenticated } = useAuth();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);
@@ -43,6 +47,10 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
       login();
       return;
     }
+    if (!currFid) {
+      farcasterPrepareWrite();
+      return;
+    }
     if (isPending) return;
     try {
       dispatch(addOneToJoinActionPendingIds(communityId));
@@ -58,7 +66,16 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
     } finally {
       dispatch(removeOneFromJoinActionPendingIds(communityId));
     }
-  }, [dispatch, communityId, communityInfo, isPending, authenticated, login]);
+  }, [
+    dispatch,
+    communityId,
+    communityInfo,
+    isPending,
+    authenticated,
+    login,
+    currFid,
+    farcasterPrepareWrite,
+  ]);
 
   const unjoiningAction = useCallback(async () => {
     if (!authenticated) {

@@ -114,9 +114,11 @@ export function getFarcasterCastInfo(
   {
     endFarcasterCursor,
     pageSize,
+    withReplies = true,
   }: {
     endFarcasterCursor?: string;
     pageSize?: number;
+    withReplies?: boolean;
   },
 ): AxiosPromise<
   ApiResp<{
@@ -127,11 +129,12 @@ export function getFarcasterCastInfo(
   }>
 > {
   return request({
-    url: `${FARCASTER_API_URL}/3r-farcaster/cast/${hash}`,
+    url: `/3r-farcaster/cast/${hash}`,
     method: "get",
     params: {
       endFarcasterCursor,
       pageSize,
+      withReplies,
     },
   });
 }

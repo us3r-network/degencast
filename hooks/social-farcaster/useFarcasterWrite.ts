@@ -105,6 +105,7 @@ export default function useFarcasterWrite() {
     return true;
   };
   return {
+    prepareWrite,
     writing: writing && prepareing,
     // todo: add more post support!
     submitCast: async ({

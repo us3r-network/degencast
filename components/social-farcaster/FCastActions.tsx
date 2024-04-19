@@ -11,6 +11,8 @@ import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserData } from "~/utils/farcaster/user-data";
 import getCastHex from "~/utils/farcaster/getCastHex";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 
 export default function FCastActions({
   cast,
@@ -27,6 +29,8 @@ export default function FCastActions({
   const navigation = useNavigation();
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
+  const { currFid } = useFarcasterAccount();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
   const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
     { cast },
   );
@@ -54,6 +58,14 @@ export default function FCastActions({
     setOpenGiftModal(true);
   };
   const onComment = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (!currFid) {
+      farcasterPrepareWrite();
+      return;
+    }
     const castHex = getCastHex(cast);
     navigateToCastReply(castHex, {
       cast,

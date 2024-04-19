@@ -40,7 +40,7 @@ export default function useAllJoinedCommunities() {
       console.error(error);
       dispatch(setJoinedCommunitiesRequestStatus(AsyncRequestStatus.REJECTED));
     }
-  }, [joinedCommunitiesRequestStatus]);
+  }, [authenticated, joinedCommunitiesRequestStatus]);
 
   const clearJoinedCommunities = useCallback(() => {
     dispatch(setJoinedCommunities([]));
