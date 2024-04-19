@@ -6,13 +6,15 @@ import {
   selectCastPage,
   upsertToCastDetailData,
   setCastReplyData,
+  addCastReplyRecordData,
 } from "~/features/cast/castPageSlice";
 import { useRouter } from "expo-router";
 
 export default function useCastPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { castDetailData, castReplyData } = useAppSelector(selectCastPage);
+  const { castDetailData, castReplyData, castReplyRecordData } =
+    useAppSelector(selectCastPage);
 
   const navigateToCastDetail = useCallback(
     (id: string, params: CastDetailData) => {
@@ -30,16 +32,19 @@ export default function useCastPage() {
     [router],
   );
 
-  const getCastDetailData = useCallback(
-    (id: string) => {
-      return castDetailData[id];
+  const addCastReplyRecordDataToStore = useCallback(
+    (id: string, params: CastReplayData) => {
+      dispatch(addCastReplyRecordData({ id, params }));
     },
-    [castDetailData],
+    [dispatch],
   );
+
   return {
-    getCastDetailData,
-    navigateToCastDetail,
+    castDetailData,
     castReplyData,
+    castReplyRecordData,
     navigateToCastReply,
+    navigateToCastDetail,
+    addCastReplyRecordDataToStore,
   };
 }

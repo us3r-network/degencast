@@ -40,19 +40,19 @@ export default function FCastCommentActions({
       login();
       return;
     }
-    alert("TODO");
-  };
-  const onRepost = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
     const castHex = getCastHex(cast);
     navigateToCastReply(castHex, {
       cast,
       farcasterUserDataObj,
       community: communityInfo,
     });
+  };
+  const onRepost = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    alert("TODO");
   };
   return (
     <>

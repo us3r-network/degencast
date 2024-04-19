@@ -60,6 +60,7 @@ export default function ExploreScreen() {
               >
                 <Card
                   className={cn(
+                    // 卡片高度 = 100vh - 顶部标题栏(64) - 底部导航栏(98) - 底部空白空间(66) - 顶部空白空间(34)
                     "h-[calc(100vh-64px-98px-66px-34px)] w-[calc(100vw-40px)] rounded-2xl border-none sm:max-h-[690px] sm:w-[390px]",
                     "bg-transparent",
                   )}

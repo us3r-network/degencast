@@ -34,11 +34,15 @@ type castPageState = {
     [key: string]: CastDetailData;
   };
   castReplyData: CastReplayData | null;
+  castReplyRecordData: {
+    [key: string]: Array<CastReplayData>;
+  };
 };
 
 const castPageState: castPageState = {
   castDetailData: {},
   castReplyData: null,
+  castReplyRecordData: {},
 };
 
 export const castPageSlice = createSlice({
@@ -60,10 +64,28 @@ export const castPageSlice = createSlice({
     ) => {
       state.castReplyData = action.payload;
     },
+    addCastReplyRecordData: (
+      state: castPageState,
+      action: PayloadAction<{
+        id: string;
+        params: CastReplayData;
+      }>,
+    ) => {
+      if (!state.castReplyRecordData[action.payload.id]) {
+        state.castReplyRecordData[action.payload.id] = [];
+      }
+      state.castReplyRecordData[action.payload.id].unshift(
+        action.payload.params,
+      );
+    },
   },
 });
 
 const { actions, reducer } = castPageSlice;
-export const { upsertToCastDetailData, setCastReplyData } = actions;
+export const {
+  upsertToCastDetailData,
+  setCastReplyData,
+  addCastReplyRecordData,
+} = actions;
 export const selectCastPage = (state: RootState) => state.castPage;
 export default reducer;

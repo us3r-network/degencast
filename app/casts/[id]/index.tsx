@@ -29,11 +29,8 @@ import { UserData } from "~/utils/farcaster/user-data";
 export default function CastDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { getCastDetailData } = useCastPage();
-  const data = useMemo(
-    () => getCastDetailData(id as string),
-    [id, getCastDetailData],
-  );
+  const { castDetailData } = useCastPage();
+  const data = castDetailData?.[id as string];
   const { cast } = data || {};
   if (cast) {
     return <CachedCastDetail />;
@@ -44,11 +41,8 @@ export default function CastDetail() {
 function CachedCastDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { getCastDetailData } = useCastPage();
-  const data = useMemo(
-    () => getCastDetailData(id as string),
-    [id, getCastDetailData],
-  );
+  const { castDetailData } = useCastPage();
+  const data = castDetailData?.[id as string];
   const { origin, cast, farcasterUserDataObj, community } = data;
   if (origin === CastDetailDataOrigin.Created) {
     return (

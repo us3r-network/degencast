@@ -85,6 +85,7 @@ function CastReplyWithData({
   };
   community: CommunityInfo;
 }) {
+  const { addCastReplyRecordDataToStore } = useCastPage();
   const { warpcastChannels } = useWarpcastChannels();
   const params = useLocalSearchParams();
   const { id } = params;
@@ -145,7 +146,10 @@ function CastReplyWithData({
                         hash: getCastHex(cast),
                         fid: Number(cast.fid),
                       },
-                    }).then(() => {
+                    }).then((res) => {
+                      console.log("res", res);
+
+                      // addCastReplyRecordDataToStore()
                       navigation.goBack();
                       setValue("");
                       setImages([]);
