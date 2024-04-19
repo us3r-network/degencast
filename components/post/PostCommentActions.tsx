@@ -79,15 +79,22 @@ export const CommentButton = ({
 export const RepostButton = ({
   iconSize = 16,
   repostCount = 0,
+  reposted,
   ...props
 }: ActionButtonProps & {
   iconSize?: number;
   repostCount: number;
+  reposted?: boolean;
 }) => {
   return (
     <ActionButton {...props}>
-      <Repeat size={iconSize} className={cn(" stroke-secondary")} />
-      <ActionText className={cn(" text-secondary")}>
+      <Repeat
+        size={iconSize}
+        className={cn(" stroke-secondary", reposted && " stroke-primary ")}
+      />
+      <ActionText
+        className={cn(" text-secondary", reposted && " text-primary")}
+      >
         {repostCount || 0}
       </ActionText>
     </ActionButton>
@@ -102,6 +109,7 @@ export const PostCommentActions = ({
   onLike,
   onComment,
   onRepost,
+  reposted,
   className,
   ...props
 }: ViewProps & {
@@ -109,6 +117,7 @@ export const PostCommentActions = ({
   likeCount: number;
   commentCount: number;
   repostCount: number;
+  reposted: boolean;
   onLike: () => void;
   onComment: () => void;
   onRepost: () => void;
@@ -119,7 +128,11 @@ export const PostCommentActions = ({
       {...props}
     >
       <CommentButton onPress={onComment} commentCount={commentCount} />
-      <RepostButton onPress={onRepost} repostCount={repostCount} />
+      <RepostButton
+        onPress={onRepost}
+        repostCount={repostCount}
+        reposted={reposted}
+      />
       <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
     </View>
   );

@@ -114,7 +114,7 @@ export function getFarcasterCastInfo(
   {
     endFarcasterCursor,
     pageSize,
-    withReplies = true,
+    withReplies,
   }: {
     endFarcasterCursor?: string;
     pageSize?: number;
@@ -134,7 +134,7 @@ export function getFarcasterCastInfo(
     params: {
       endFarcasterCursor,
       pageSize,
-      withReplies,
+      ...(withReplies === false ? { withReplies } : {}),
     },
   });
 }
