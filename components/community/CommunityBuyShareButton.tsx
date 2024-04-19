@@ -12,13 +12,14 @@ export default function CommunityBuyShareButton({
 }) {
   return (
     <Button
-      className={cn(" bg-secondary", className)}
+      className={cn(" flex-col items-center bg-secondary", className)}
       onPress={() => {
         alert("TODO");
       }}
       {...props}
     >
-      <Text>Buy with 9,999 DEGEN</Text>
+      <Text>Buy with </Text>
+      <Text>9,999 DEGEN</Text>
     </Button>
   );
 }

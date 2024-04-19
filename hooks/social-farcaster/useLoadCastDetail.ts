@@ -16,7 +16,9 @@ export default function useLoadCastDetail() {
     try {
       setLoading(true);
       setCast(null);
-      const res = await getFarcasterCastInfo(id as string, {});
+      const res = await getFarcasterCastInfo(id as string, {
+        withReplies: false,
+      });
       const { code, data, msg } = res.data;
       if (code === ApiRespCode.SUCCESS) {
         const { farcasterUserData: farcasterUserDataTmp, cast: castTmp } = data;
