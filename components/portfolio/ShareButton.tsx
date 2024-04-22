@@ -269,9 +269,7 @@ export function BuyButton({
             </View>
           )}
         </View>
-        <DialogFooter className="w-full">
-          <AboutShare />
-        </DialogFooter>
+        <AboutShare />
       </DialogContent>
     </Dialog>
   );
