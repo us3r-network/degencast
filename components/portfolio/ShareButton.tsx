@@ -32,6 +32,7 @@ import {
 } from "../ui/collapsible";
 import { Item } from "@radix-ui/react-radio-group";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
+import { UnorderedList } from "../common/UnorderedList";
 
 export function SellButton({
   logo,
@@ -275,6 +276,13 @@ export function BuyButton({
   );
 }
 
+const shareInfo = [
+  "Share holders could claim airdrops after channel token launch",
+  "Share holders could receive channel allowance (same as your Degen allowance)",
+  "The price of channel shares will increase after each buy",
+  "5% of each trade goes into capital pool to support token launch, and Degencast takes a 1% commission",
+  "You will receive 500 points each time you purchase channel shares",
+];
 function AboutShare() {
   const [open, setOpen] = useState(false);
   return (
@@ -293,18 +301,7 @@ function AboutShare() {
       </CollapsibleTrigger>
 
       <CollapsibleContent className="flex w-full gap-2">
-        <Text>
-          Share holders could claim airdrops after channel token launch
-        </Text>
-        <Text>
-          Share holders could receive channel allowance (same as your Degen
-          allowance)
-        </Text>
-        <Text>The price of channel shares will increase after each buy</Text>
-        <Text>
-          5% of each trade goes into capital pool to support token launch, and
-          Degencast takes a 1% commission
-        </Text>
+        <UnorderedList texts={shareInfo} />
       </CollapsibleContent>
     </Collapsible>
   );
