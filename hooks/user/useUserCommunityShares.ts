@@ -17,6 +17,12 @@ export default function useUserCommunityShares(address: `0x${string}`) {
     }
   }, [status, dispatch]);
 
+  useEffect(() => {
+    if (status !== AsyncRequestStatus.PENDING) {
+      dispatch(fetchItems(address) as unknown as UnknownAction);
+    }
+  }, [address]);
+
   return {
     items,
     loading: status === AsyncRequestStatus.PENDING,
