@@ -11,12 +11,21 @@ import { View, Text, SafeAreaView } from "react-native";
 import { Share2 } from "~/components/common/Icons";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import PlatformSharingButton from "~/components/platform-sharing/PlatformSharingButton";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import { cn } from "~/lib/utils";
 import { CommunityData } from "~/services/community/api/community";
+import {
+  getCommunityFrameLink,
+  getCommunityWebsiteLink,
+} from "~/utils/platform-sharing/link";
+import {
+  getCommunityShareTextWithTwitter,
+  getCommunityShareTextWithWarpcast,
+} from "~/utils/platform-sharing/text";
 
 const initialRouteName = "tokens";
 
@@ -91,14 +100,16 @@ export default function CommunityDetail() {
                     textProps={{ className: "text-primary" }}
                   />
                 )}
-                <Button
-                  className="size-10 rounded-full bg-white"
-                  onPress={async () => {
-                    alert("TODO");
-                  }}
-                >
-                  <Share2 className={cn(" fill-primary stroke-primary")} />
-                </Button>
+                <PlatformSharingButton
+                  twitterText={getCommunityShareTextWithTwitter(
+                    community?.name || "",
+                  )}
+                  warpcastText={getCommunityShareTextWithWarpcast(
+                    community?.name || "",
+                  )}
+                  websiteLink={getCommunityWebsiteLink(id as string)}
+                  frameLink={getCommunityFrameLink(id as string)}
+                />
               </View>
             </View>
           ),
