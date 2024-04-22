@@ -23,7 +23,7 @@ export default function CommunityTokens({
 }) {
   const { loading, items } = useUserCommunityTokens(address);
   const [open, setOpen] = React.useState(false);
-  console.log("my-tokens: ", address, items);
+  // console.log("my-tokens: ", address, items);
   return (
     <Collapsible
       className="flex w-full gap-2"

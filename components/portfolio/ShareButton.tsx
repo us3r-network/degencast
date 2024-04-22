@@ -260,7 +260,7 @@ export function BuyButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-foreground/80"
+                className="text-white/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
                 target="_blank"
               >
@@ -280,25 +280,23 @@ export function BuyButton({
 function AboutShare() {
   const [open, setOpen] = useState(false);
   return (
-    <Collapsible
-      className="flex w-full gap-4"
-      open={open}
-      onOpenChange={setOpen}
-    >
-      <CollapsibleTrigger className="w-full">
-        <View className="w-full flex-row items-center justify-between">
+    <Collapsible className="flex gap-4" open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger >
+        <View className="flex-row items-center justify-between">
           <Text className="font-bold">About channel share</Text>
-          {open ? (
-            <ChevronUp color={"white"} />
-          ) : (
-            <ChevronDown color={"white"} />
-          )}{" "}
+          <View>
+            {open ? (
+              <ChevronUp color={"white"} />
+            ) : (
+              <ChevronDown color={"white"} />
+            )}
+          </View>
         </View>
       </CollapsibleTrigger>
 
       <CollapsibleContent className="flex w-full gap-2">
         <Text>
-          <li>Share holders could claim airdrops after channel token launch</li>
+          Share holders could claim airdrops after channel token launch
         </Text>
         <Text>
           Share holders could receive channel allowance (same as your Degen

@@ -2,15 +2,13 @@ import { useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import { base } from "viem/chains";
 import { useBalance, useReadContracts } from "wagmi";
-import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
+import { DEFAULT_CHAIN, DEGEN_ADDRESS, NATIVE_TOKEN } from "~/constants";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 
 export enum TOKENS {
   NATIVE = "native",
   DEGEN = "degen",
 }
-
-const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
 
 export default function useUserTokens(
   address: `0x${string}`,

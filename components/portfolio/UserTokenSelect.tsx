@@ -4,7 +4,7 @@ import { Chain } from "viem";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN } from "~/constants";
+import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
@@ -20,7 +20,7 @@ export default function ToeknSelect({
   supportTokenKeys?: TOKENS[];
   selectToken?: (token: TokenInfoWithMetadata) => void;
 }) {
-  const { userTokens } = useUserTokens(chain.id);
+  const { userTokens } = useUserTokens(NATIVE_TOKEN, chain.id);
   const tokens: TokenInfoWithMetadata[] = useMemo(() => {
     const items: TokenInfoWithMetadata[] = [];
     userTokens.forEach((value, key) => {
