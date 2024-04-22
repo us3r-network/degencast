@@ -13,6 +13,8 @@ import { UserData } from "~/utils/farcaster/user-data";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
+import FCastShareModal from "./FCastShareModal";
 
 export default function FCastActions({
   cast,
@@ -34,7 +36,10 @@ export default function FCastActions({
   const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
     { cast },
   );
+  const { recast, removeRecast, recasted, recastCount } =
+    useFarcasterRecastAction({ cast });
   const [openGiftModal, setOpenGiftModal] = useState(false);
+  const [openShareModal, setOpenShareModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
   const onLike = () => {
@@ -73,7 +78,9 @@ export default function FCastActions({
       community: communityInfo,
     });
   };
-  const onShare = () => {};
+  const onShare = () => {
+    setOpenShareModal(true);
+  };
   return (
     <>
       {isDetail ? (
@@ -104,6 +111,11 @@ export default function FCastActions({
         cast={cast}
         open={openGiftModal}
         onOpenChange={setOpenGiftModal}
+      />
+      <FCastShareModal
+        cast={cast}
+        open={openShareModal}
+        onOpenChange={setOpenShareModal}
       />
     </>
   );

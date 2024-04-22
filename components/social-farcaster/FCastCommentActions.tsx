@@ -7,6 +7,7 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 
 export default function FCastCommentActions({
   cast,
@@ -23,6 +24,8 @@ export default function FCastCommentActions({
   const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
     { cast },
   );
+  const { recast, removeRecast, recasted, recastCount } =
+    useFarcasterRecastAction({ cast });
   const onLike = () => {
     if (!authenticated) {
       login();
@@ -52,7 +55,12 @@ export default function FCastCommentActions({
       login();
       return;
     }
-    alert("TODO");
+    if (recasted) {
+      // removeRecast();
+      alert("already recasted");
+    } else {
+      recast();
+    }
   };
   return (
     <>
@@ -60,7 +68,8 @@ export default function FCastCommentActions({
         liked={liked}
         likeCount={likeCount}
         commentCount={Number(cast?.comment_count || cast?.repliesCount || 0)}
-        repostCount={Number(cast.recast_count || cast.recastsCount || 0)}
+        repostCount={recastCount}
+        reposted={recasted}
         onLike={onLike}
         onComment={onComment}
         onRepost={onRepost}
