@@ -30,6 +30,7 @@ jobs:
           EXPO_PUBLIC_API_BASE_URL: "${{ vars.EXPO_PUBLIC_API_BASE_URL }}"
           EXPO_PUBLIC_FARCASTER_API_URL: "${{ vars.EXPO_PUBLIC_FARCASTER_API_URL }}"
           EXPO_PUBLIC_FARCASTER_NETWORK: "${{ vars.EXPO_PUBLIC_FARCASTER_NETWORK }}"
+          EXPO_PUBLIC_DEGENCAST_WEB_HOST: "${{ vars.EXPO_PUBLIC_DEGENCAST_WEB_HOST }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -58,6 +59,7 @@ jobs:
           EXPO_PUBLIC_API_BASE_URL: "${{ vars.EXPO_PUBLIC_API_BASE_URL }}"
           EXPO_PUBLIC_FARCASTER_API_URL: "${{ vars.EXPO_PUBLIC_FARCASTER_API_URL }}"
           EXPO_PUBLIC_FARCASTER_NETWORK: "${{ vars.EXPO_PUBLIC_FARCASTER_NETWORK }}"
+          EXPO_PUBLIC_DEGENCAST_WEB_HOST: "${{ vars.EXPO_PUBLIC_DEGENCAST_WEB_HOST }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -86,6 +88,7 @@ jobs:
           EXPO_PUBLIC_API_BASE_URL: "${{ vars.EXPO_PUBLIC_API_BASE_URL }}"
           EXPO_PUBLIC_FARCASTER_API_URL: "${{ vars.EXPO_PUBLIC_FARCASTER_API_URL }}"
           EXPO_PUBLIC_FARCASTER_NETWORK: "${{ vars.EXPO_PUBLIC_FARCASTER_NETWORK }}"
+          EXPO_PUBLIC_DEGENCAST_WEB_HOST: "${{ vars.EXPO_PUBLIC_DEGENCAST_WEB_HOST }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"

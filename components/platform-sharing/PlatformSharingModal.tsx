@@ -1,79 +1,67 @@
-import { FarCast } from "~/services/farcaster/types";
-import * as Clipboard from "expo-clipboard";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { ImageSourcePropType, View } from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "../ui/text";
 import { Button, ButtonProps } from "../ui/button";
 import { Image } from "react-native";
-import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
-import useAuth from "~/hooks/user/useAuth";
-import { usePrivy } from "@privy-io/react-auth";
-import getCastHex from "~/utils/farcaster/getCastHex";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import { useNavigation } from "expo-router";
+import * as Clipboard from "expo-clipboard";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
-import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
+import { openWarpcastCreateCast } from "~/utils/platform-sharing/warpcast";
 
-export default function FCastShareModal({
-  cast,
+export default function PlatformSharingModal({
+  text,
+  twitterText,
+  warpcastText,
+  websiteLink,
+  frameLink,
   open,
   onOpenChange,
 }: {
-  cast: FarCast;
+  text?: string;
+  twitterText?: string;
+  warpcastText?: string;
+  websiteLink: string;
+  frameLink: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const castHex = getCastHex(cast);
-  const { login } = usePrivy();
-  const { authenticated } = useAuth();
-  const { recast, removeRecast, recasted, recastCount } =
-    useFarcasterRecastAction({ cast });
-  const onRecast = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
-    if (recasted) {
-      // removeRecast();
-      // alert("recast removed");
-      alert("Already recasted!");
+  const navigation = useNavigation();
+  const { signerPublicKey } = useFarcasterAccount();
+  const onCreateCast = async () => {
+    const createText = warpcastText || text || "";
+    if (!signerPublicKey) {
+      openWarpcastCreateCast(createText, frameLink);
     } else {
-      recast();
-      alert("Recast successfully!");
+      onOpenChange(false);
+      navigation.navigate(
+        ...(["create", { text: createText, embeds: frameLink }] as never),
+      );
     }
   };
 
-  const castWebLink = getCastDetailWebsiteLink(castHex);
-
   const onTwitterShare = () => {
-    openTwitterCreateTweet(
-      "Trade & explore news in @realdegencast",
-      castWebLink,
-    );
+    openTwitterCreateTweet(twitterText || text || "", websiteLink);
   };
 
   const onCopy = async () => {
-    await Clipboard.setStringAsync(castWebLink);
+    await Clipboard.setStringAsync(websiteLink);
     alert("Link copied to clipboard!");
   };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <View className="max-w-s flex flex-row gap-5 ">
           <ShareButton
             iconSource={require("~/assets/images/warpcast.png")}
-            text="Recast"
+            text="Share & Earn"
             points={999}
-            onPress={onRecast}
+            onPress={onCreateCast}
           />
-          {/* <ShareButton
-            iconSource={require("~/assets/images/warpcast.png")}
-            text="Quote"
-            points={999}
-          /> */}
           <ShareButton
             iconSource={require("~/assets/images/x.png")}
-            text="Share"
+            text="Share & Earn"
             points={999}
             onPress={onTwitterShare}
           />
