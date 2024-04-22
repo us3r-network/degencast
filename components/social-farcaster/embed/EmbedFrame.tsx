@@ -105,13 +105,13 @@ export default function EmbedFrame({
             return (
               <Button
                 key={idx}
-                variant={"outline"}
+                variant={"secondary"}
                 onPress={async (e) => {
                   e.stopPropagation();
                   await frameBtnAction(idx, button);
                 }}
               >
-                <Text>{button.label}</Text>
+                <Text className={"color-white"}>{button.label}</Text>
               </Button>
             );
           })}
