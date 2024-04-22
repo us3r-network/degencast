@@ -1,6 +1,6 @@
 import { id } from "@lifi/widget/_esm/i18n";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Slot, Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -42,7 +42,13 @@ export default function TradeScreen() {
             >
               <Card className="h-full w-full p-2 pt-8">
                 <CardContent className="native:gap-2 h-full gap-4 p-0 sm:p-4">
-                  <Slot />
+                  <Stack
+                    initialRouteName={tab.value}
+                    screenOptions={{
+                      header: () => null,
+                      contentStyle: { backgroundColor: "white" },
+                    }}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
