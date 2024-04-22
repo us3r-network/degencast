@@ -12,11 +12,12 @@ import {
 } from "@privy-io/react-auth";
 
 import { FarCast } from "~/services/farcaster/types";
-import { View, Text, Image, Platform, Linking } from "react-native";
+import { View, Image, Platform, Linking } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 
@@ -111,7 +112,7 @@ export default function EmbedFrame({
                   await frameBtnAction(idx, button);
                 }}
               >
-                <Text className={"color-white"}>{button.label}</Text>
+                <Text>{button.label}</Text>
               </Button>
             );
           })}
