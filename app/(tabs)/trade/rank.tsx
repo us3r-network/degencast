@@ -1,34 +1,39 @@
-import React, { useEffect } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { CommunityInfo as CommunityInfoType } from "~/services/community/types/community";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { Loading } from "~/components/common/Loading";
 import { Text } from "~/components/ui/text";
 import { Link } from "expo-router";
+import useCommunityRank from "~/hooks/trade/useCommunityRank";
 
 export default function CommunityRank() {
-  const {
-    loading,
-    trendingCommunities: items,
-    loadTrendingCommunities,
-  } = useLoadTrendingCommunities();
-  useEffect(() => {
-    loadTrendingCommunities();
-  }, [loadTrendingCommunities]);
+  const { loading, items, loadMore } = useCommunityRank();
+
   return (
     <View className="container h-full">
       {loading ? (
         <Loading />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} className="w-full">
-          <View className="flex w-full gap-4">
-            {items?.length > 0 &&
-              items.map((item, index) => (
+          <FlatList
+            data={items}
+            numColumns={1}
+            ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
+            renderItem={({ item, index }: { item: CommunityInfoType, index:number }) => {
+              return (
                 <Item key={item.channelId} item={item} index={index + 1} />
-              ))}
-          </View>
+              );
+            }}
+            onEndReached={() => {
+              if (loading) return;
+              loadMore();
+            }}
+            onEndReachedThreshold={1}
+            ListFooterComponent={() => {
+              return loading ? <Loading /> : null;
+            }}
+          />
         </ScrollView>
       )}
     </View>

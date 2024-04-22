@@ -1,6 +1,6 @@
 import { Link, Tabs } from "expo-router";
 import { Edit } from "lucide-react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Search } from "~/components/common/Icons";
@@ -10,12 +10,19 @@ import {
   TradeIcon,
 } from "~/components/common/SvgIcons";
 import TabBar from "~/components/layout/tabBar/TabBar";
-import UserLogout from "~/components/portfolio/user/UserLogout";
 import UserWallets from "~/components/portfolio/user/UserWallets";
 import { Button } from "~/components/ui/button";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
+import useCommunityRank from "~/hooks/trade/useCommunityRank";
+import useCommunityShares from "~/hooks/trade/useCommunityShares";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 
 export default function TabLayout() {
+  // preload trade data
+  useCommunityTokens();
+  useCommunityShares();
+  useCommunityRank();
+
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
@@ -79,7 +86,6 @@ export default function TabLayout() {
             headerRight: () => (
               <View className="flex-row items-center gap-4 p-4">
                 <UserWallets />
-                {/* <UserLogout /> */}
               </View>
             ),
           }}
