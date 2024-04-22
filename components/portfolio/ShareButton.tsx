@@ -7,10 +7,10 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTrigger,
-  DialogTitle,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import {
@@ -22,17 +22,10 @@ import {
   useShareContractSell,
 } from "~/hooks/trade/useShareContract";
 import { TokenInfoWithMetadata } from "~/services/user/types";
+import About from "../common/About";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import { Item } from "@radix-ui/react-radio-group";
-import { ChevronUp, ChevronDown } from "lucide-react-native";
-import { UnorderedList } from "../common/UnorderedList";
 
 export function SellButton({
   logo,
@@ -270,39 +263,18 @@ export function BuyButton({
             </View>
           )}
         </View>
-        <AboutShare />
+        {/* <DialogFooter> */}
+          <About title="About channel share" info={SHARE_INFO} />
+        {/* </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );
 }
 
-const shareInfo = [
+const SHARE_INFO = [
   "Share holders could claim airdrops after channel token launch",
   "Share holders could receive channel allowance (same as your Degen allowance)",
   "The price of channel shares will increase after each buy",
   "5% of each trade goes into capital pool to support token launch, and Degencast takes a 1% commission",
   "You will receive 500 points each time you purchase channel shares",
 ];
-function AboutShare() {
-  const [open, setOpen] = useState(false);
-  return (
-    <Collapsible className="flex gap-4" open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger >
-        <View className="flex-row items-center justify-between">
-          <Text className="font-bold">About channel share</Text>
-          <View>
-            {open ? (
-              <ChevronUp color={"white"} />
-            ) : (
-              <ChevronDown color={"white"} />
-            )}
-          </View>
-        </View>
-      </CollapsibleTrigger>
-
-      <CollapsibleContent className="flex w-full gap-2">
-        <UnorderedList texts={shareInfo} />
-      </CollapsibleContent>
-    </Collapsible>
-  );
-}
