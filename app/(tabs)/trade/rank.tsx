@@ -1,35 +1,41 @@
-import React, { useEffect } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { CommunityInfo as CommunityInfoType } from "~/services/community/types/community";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { Loading } from "~/components/common/Loading";
 import { Text } from "~/components/ui/text";
 import { Link } from "expo-router";
+import useCommunityRank from "~/hooks/trade/useCommunityRank";
 
 export default function CommunityRank() {
-  const {
-    loading,
-    trendingCommunities: items,
-    loadTrendingCommunities,
-  } = useLoadTrendingCommunities();
-  useEffect(() => {
-    loadTrendingCommunities();
-  }, [loadTrendingCommunities]);
+  const { loading, items, loadMore } = useCommunityRank();
+
   return (
     <View className="container h-full">
-      {loading ? (
+      {loading && items.length===0 ? (
         <Loading />
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} className="w-full">
-          <View className="flex w-full gap-4">
-            {items?.length > 0 &&
-              items.map((item, index) => (
+        // <ScrollView showsVerticalScrollIndicator={false} className="w-full">
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={items}
+            numColumns={1}
+            ItemSeparatorComponent={() => <View className="h-4" />}
+            renderItem={({ item, index }: { item: CommunityInfoType, index:number }) => {
+              return (
                 <Item key={item.channelId} item={item} index={index + 1} />
-              ))}
-          </View>
-        </ScrollView>
+              );
+            }}
+            onEndReached={() => {
+              if (loading) return;
+              loadMore();
+            }}
+            onEndReachedThreshold={1}
+            ListFooterComponent={() => {
+              return loading ? <Loading /> : null;
+            }}
+          />
+        // </ScrollView>
       )}
     </View>
   );

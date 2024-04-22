@@ -33,6 +33,7 @@ export default function CastsScreen() {
           <View className="flex-1">
             {casts.length > 0 && (
               <FlatList
+              showsVerticalScrollIndicator={false}
                 data={casts}
                 numColumns={2}
                 columnWrapperStyle={{ gap: 5 }}

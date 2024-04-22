@@ -3,13 +3,14 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchItems,
-  selectCommunityTokens,
-} from "~/features/trade/communityTokensSlice";
+  selectCommunityRank,
+} from "~/features/trade/communityRankSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useCommunityTokens() {
+export default function useCommunityRank() {
   const dispatch = useDispatch();
-  const { items, status, error } = useSelector(selectCommunityTokens);
+  const { items, status, error, nextPageNumber } =
+    useSelector(selectCommunityRank);
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE) {
@@ -17,9 +18,16 @@ export default function useCommunityTokens() {
     }
   }, [status, dispatch]);
 
+  const loadMore = () => {
+    if (status === AsyncRequestStatus.PENDING) return;
+    dispatch(fetchItems() as unknown as UnknownAction);
+  }
+
   return {
     items,
+    nextPageNumber,
     loading: status === AsyncRequestStatus.PENDING,
+    loadMore,
     error,
   };
 }

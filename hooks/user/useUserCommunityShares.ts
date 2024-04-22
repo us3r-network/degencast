@@ -3,19 +3,25 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchItems,
-  selectCommunityTokens,
-} from "~/features/trade/communityTokensSlice";
+  selectUserCommunityShares,
+} from "~/features/user/communitySharesSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useCommunityTokens() {
+export default function useUserCommunityShares(address: `0x${string}`) {
   const dispatch = useDispatch();
-  const { items, status, error } = useSelector(selectCommunityTokens);
+  const { items, status, error } = useSelector(selectUserCommunityShares);
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE) {
-      dispatch(fetchItems() as unknown as UnknownAction);
+      dispatch(fetchItems(address) as unknown as UnknownAction);
     }
   }, [status, dispatch]);
+
+  useEffect(() => {
+    if (status !== AsyncRequestStatus.PENDING) {
+      dispatch(fetchItems(address) as unknown as UnknownAction);
+    }
+  }, [address]);
 
   return {
     items,

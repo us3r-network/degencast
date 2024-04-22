@@ -10,6 +10,12 @@ import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import userAction from "~/features/user/userActionSlice";
 import castPage from "~/features/cast/castPageSlice";
+import communityTokens from "~/features/trade/communityTokensSlice";
+import communityShares from "~/features/trade/communitySharesSlice";
+import communityRank from "~/features/trade/communityRankSlice";
+import userCommunityTokens from "~/features/user/communityTokensSlice";
+import userCommunityShares from "~/features/user/communitySharesSlice";
+// import userTips from "~/features/user/tipsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +23,12 @@ export const store = configureStore({
     userAction,
     warpcastChannels,
     castPage,
+    communityTokens,
+    communityShares,
+    communityRank,
+    userCommunityTokens,
+    userCommunityShares,
+    // userTips,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
