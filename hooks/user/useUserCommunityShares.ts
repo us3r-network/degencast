@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchItems,
-  selectUserCommunityTokens,
-} from "~/features/user/communityTokensSlice";
+  selectUserCommunityShares,
+} from "~/features/user/communitySharesSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserCommunityTokens(address: `0x${string}`) {
+export default function useUserCommunityShares(address: `0x${string}`) {
   const dispatch = useDispatch();
-  const { items, status, error } = useSelector(selectUserCommunityTokens);
+  const { items, status, error } = useSelector(selectUserCommunityShares);
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE) {

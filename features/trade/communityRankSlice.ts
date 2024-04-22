@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AsyncRequestStatus } from "~/services/shared/types";
-import {
-  fetchTrendingCommunities,
-} from "~/services/community/api/community";
+import { fetchTrendingCommunities } from "~/services/community/api/community";
 import type { RootState } from "../../store/store";
 import { CommunityInfo } from "~/services/community/types/community";
 import uniqBy from "lodash/uniqBy";
@@ -24,10 +22,13 @@ const communityShareState: CommunityShareState = {
 const PAGE_SIZE = 30;
 export const fetchItems = createAsyncThunk(
   "communityRank/fetchItems",
-  async () => {
+  async (arg, thunkAPI) => {
+    const { communityRank } = thunkAPI.getState() as {
+      communityRank: CommunityShareState;
+    };
     const response = await fetchTrendingCommunities({
       pageSize: PAGE_SIZE,
-      pageNumber: communityShareState.nextPageNumber,
+      pageNumber: communityRank.nextPageNumber,
       type: undefined,
     });
     return response.data;
@@ -47,9 +48,9 @@ export const communityRankSlice = createSlice({
         state.status = AsyncRequestStatus.FULFILLED;
         const newItems = action.payload.data;
         state.items = uniqBy(state.items.concat(newItems), "channelId");
-        if (newItems.length > PAGE_SIZE) {
+        if (newItems.length >= PAGE_SIZE) {
           state.nextPageNumber += 1;
-        }else{
+        } else {
           state.nextPageNumber = 0;
         }
       })

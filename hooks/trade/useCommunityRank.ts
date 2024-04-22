@@ -18,11 +18,16 @@ export default function useCommunityRank() {
     }
   }, [status, dispatch]);
 
+  const loadMore = () => {
+    if (status === AsyncRequestStatus.PENDING) return;
+    dispatch(fetchItems() as unknown as UnknownAction);
+  }
+
   return {
     items,
     nextPageNumber,
     loading: status === AsyncRequestStatus.PENDING,
-    loadMore: fetchItems,
+    loadMore,
     error,
   };
 }

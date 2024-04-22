@@ -22,7 +22,6 @@ export default function TabLayout() {
   useCommunityTokens();
   useCommunityShares();
   useCommunityRank();
-
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs

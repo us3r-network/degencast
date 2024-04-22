@@ -12,14 +12,15 @@ export default function CommunityRank() {
 
   return (
     <View className="container h-full">
-      {loading ? (
+      {loading && items.length===0 ? (
         <Loading />
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} className="w-full">
+        // <ScrollView showsVerticalScrollIndicator={false} className="w-full">
           <FlatList
+            showsVerticalScrollIndicator={false}
             data={items}
             numColumns={1}
-            ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
+            ItemSeparatorComponent={() => <View className="h-4" />}
             renderItem={({ item, index }: { item: CommunityInfoType, index:number }) => {
               return (
                 <Item key={item.channelId} item={item} index={index + 1} />
@@ -34,7 +35,7 @@ export default function CommunityRank() {
               return loading ? <Loading /> : null;
             }}
           />
-        </ScrollView>
+        // </ScrollView>
       )}
     </View>
   );

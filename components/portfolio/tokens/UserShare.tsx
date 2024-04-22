@@ -9,14 +9,14 @@ import {
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
 import { Text } from "~/components/ui/text";
-import useUserShares from "~/hooks/user/useUserShares";
+import useUserCommunityShares from "~/hooks/user/useUserCommunityShares";
 import { ShareInfo } from "~/services/user/types";
 import { SellButton } from "../ShareButton";
 import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share({ address }: { address: `0x${string}` }) {
-  const { loading, items } = useUserShares(address);
+  const { loading, items } = useUserCommunityShares(address);
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
