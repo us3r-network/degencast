@@ -48,7 +48,8 @@ export default function useAllJoinedCommunities() {
   }, [dispatch]);
 
   const joinedCommunitiesPending =
-    joinedCommunitiesRequestStatus === AsyncRequestStatus.IDLE;
+    joinedCommunitiesRequestStatus === AsyncRequestStatus.PENDING;
+
   return {
     joinedCommunities,
     joinedCommunitiesPending,
