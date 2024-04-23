@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Chain } from "viem";
+import { useAccount } from "wagmi";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
@@ -9,7 +10,7 @@ import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 
-export default function ToeknSelect({
+export default function MyToeknSelect({
   chain = DEFAULT_CHAIN,
   defaultTokenKey,
   supportTokenKeys,
@@ -20,7 +21,8 @@ export default function ToeknSelect({
   supportTokenKeys?: TOKENS[];
   selectToken?: (token: TokenInfoWithMetadata) => void;
 }) {
-  const { userTokens } = useUserTokens(NATIVE_TOKEN, chain.id);
+  const account = useAccount();
+  const { userTokens } = useUserTokens(account.address, chain.id);
   const tokens: TokenInfoWithMetadata[] = useMemo(() => {
     const items: TokenInfoWithMetadata[] = [];
     userTokens.forEach((value, key) => {
