@@ -17,6 +17,7 @@ import ToeknSelect from "./UserTokenSelect";
 import { Input } from "../ui/input";
 import { Link } from "expo-router";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
+import { cn } from "~/lib/utils";
 
 export default function WithdrawButton({
   defaultAddress,
@@ -43,7 +44,7 @@ export default function WithdrawButton({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"link"}>
+        <Button size="sm" className={cn("p-0")} variant={"link"}>
           <Text>Withdraw</Text>
         </Button>
       </DialogTrigger>

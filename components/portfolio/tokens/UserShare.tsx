@@ -26,7 +26,9 @@ export default function Share({ address }: { address: `0x${string}` }) {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">Share ({loading?'loading...':items.length})</Text>
+          <Text className="text-lg font-bold">
+            Share {loading ? "" : `(${items.length})`}
+          </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
@@ -56,7 +58,7 @@ function Item(item: ShareInfo) {
         </Pressable>
       </Link>
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.amount), 2)}</Text>
+        <Text className="text-sm">{round(Number(item.amount), 2)}</Text>
         <SellButton
           logo={item.logo}
           name={item.name}

@@ -24,6 +24,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
 } from "~/components/ui/select";
 import { Text } from "~/components/ui/text";
@@ -74,7 +75,6 @@ export default function Wallets() {
   }
   return (
     <Select
-      className="w-50"
       defaultValue={{
         value: activeWallet?.address || "",
         label: activeWallet?.address || "",
@@ -87,15 +87,15 @@ export default function Wallets() {
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
       }}
     >
-      <SelectTrigger className="w-full rounded-full bg-white/50">
-        <View className="flex-row items-center gap-2">
+      <SelectTrigger className={cn("w-full rounded-full bg-white/50")}>
+        <View className="mr-2 flex-row items-center gap-2">
           <Wallet className="size-4 text-primary" />
           <Text className="font-bold text-primary">
             {shortPubKey(activeWallet?.address || "")}
           </Text>
         </View>
       </SelectTrigger>
-      <SelectContent className="flex w-full p-0">
+      <SelectContent className={cn("flex w-full p-0")}>
         <SelectGroup>
           {connectedWallets.map((wallet) => (
             <SelectItem
@@ -135,7 +135,8 @@ export default function Wallets() {
             </SelectItem>
           ))}
         </SelectGroup>
-        <View className="flex w-full gap-[10px] p-2">
+        {/* <SelectSeparator className={cn("bg-primary")} /> */}
+        <View className="flex w-full gap-[10px] bg-secondary/10 p-2">
           {unconnectedWallets.map((wallet) => (
             <View
               className="w-full flex-row items-center justify-between"
@@ -172,13 +173,13 @@ export default function Wallets() {
           </Pressable>
           {/* link farcaster */}
           {farcasterAccount?.fid ? (
-            <View className="w-full flex-row items-center justify-between">
+            <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
                 <Image
                   source={require("~/assets/images/farcaster.png")}
                   style={{ width: 16, height: 16 }}
                 />
-                <Text>
+                <Text className={cn("line-clamp-1 flex-1")}>
                   {farcasterAccount.displayName || farcasterAccount.username}
                 </Text>
               </View>

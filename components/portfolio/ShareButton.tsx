@@ -26,6 +26,7 @@ import About from "../common/About";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
+import { cn } from "~/lib/utils";
 
 export function SellButton({
   logo,
@@ -67,7 +68,7 @@ export function SellButton({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"secondary"}>
+        <Button className={cn("w-14")} size="sm" variant={"secondary"}>
           <Text>Sell</Text>
         </Button>
       </DialogTrigger>
@@ -195,7 +196,7 @@ export function BuyButton({
         {renderButton ? (
           renderButton({ fetchedPrice, perSharePrice, symbol })
         ) : (
-          <Button variant={"secondary"}>
+          <Button className={cn("w-14")} size="sm" variant={"secondary"}>
             <Text>Buy</Text>
           </Button>
         )}
@@ -264,7 +265,7 @@ export function BuyButton({
           )}
         </View>
         {/* <DialogFooter> */}
-          <About title="About channel share" info={SHARE_INFO} />
+        <About title="About channel share" info={SHARE_INFO} />
         {/* </DialogFooter> */}
       </DialogContent>
     </Dialog>

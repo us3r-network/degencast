@@ -6,6 +6,7 @@ import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
 import About from "../common/About";
 import { View } from "react-native";
+import { cn } from "~/lib/utils";
 
 export default function TradeButton({
   fromChain,
@@ -34,6 +35,8 @@ export default function TradeButton({
     <Dialog>
       <DialogTrigger asChild>
         <Button
+          className={cn("w-14")}
+          size="sm"
           variant={"secondary"}
           // onPress={() => switchChain({ chainId: fromChain })}
         >
