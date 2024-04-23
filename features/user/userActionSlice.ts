@@ -54,9 +54,11 @@ const defaultActionPointConfig: UserActionPointConfig = {
   View: { unit: 1, dailyLimit: 30 },
   Like: { unit: 1, dailyLimit: 30 },
   UnLike: { unit: -1 },
-  Tips: { unit: 1 },
-  ConnectFarcaster: { unit: 500 },
+  Tips: { unit: 5 },
+  ConnectFarcaster: { unit: 1000 },
   BuyChannelShare: { unit: 500 },
+  Invite: { unit: 200 },
+  SwapToken: { unit: 500 },
 };
 const userActionState: UserActionState = {
   actionPointConfig: defaultActionPointConfig,

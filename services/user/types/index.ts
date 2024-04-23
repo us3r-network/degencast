@@ -12,6 +12,8 @@ export enum UserActionName {
   Tips = "Tips",
   ConnectFarcaster = "ConnectFarcaster",
   BuyChannelShare = "BuyChannelShare",
+  Invite = "Invite",
+  SwapToken = "SwapToken",
 }
 
 export type UserActionData = {
