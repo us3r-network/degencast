@@ -18,7 +18,7 @@ export enum UserActionName {
 
 export type UserActionData = {
   action: UserActionName;
-  castHash: string;
+  castHash?: string;
   data?: {
     type: string;
     value: any;

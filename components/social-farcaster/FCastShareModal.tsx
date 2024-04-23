@@ -12,6 +12,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
+import useUserAction from "~/hooks/user/useUserAction";
 
 export default function FCastShareModal({
   cast,
@@ -22,6 +23,10 @@ export default function FCastShareModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { actionPointConfig } = useUserAction();
+  const {
+    Invite: { unit: inviteUnit },
+  } = actionPointConfig;
   const castHex = getCastHex(cast);
   const { login } = usePrivy();
   const { authenticated } = useAuth();
@@ -63,7 +68,6 @@ export default function FCastShareModal({
           <ShareButton
             iconSource={require("~/assets/images/warpcast.png")}
             text="Recast"
-            points={999}
             onPress={onRecast}
           />
           {/* <ShareButton
@@ -74,7 +78,7 @@ export default function FCastShareModal({
           <ShareButton
             iconSource={require("~/assets/images/x.png")}
             text="Share"
-            points={999}
+            points={inviteUnit}
             onPress={onTwitterShare}
           />
           <ShareButton

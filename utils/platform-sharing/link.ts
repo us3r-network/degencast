@@ -19,3 +19,10 @@ export const getCommunityWebsiteLink = (id: string) => {
 export const getCommunityFrameLink = (id: string) => {
   return `${DEGENCAST_WEB_HOST}/communities/${id}`;
 };
+
+export const getAppWebsiteLink = () => {
+  return DEGENCAST_WEB_HOST;
+};
+export const getAppFrameLink = () => {
+  return DEGENCAST_WEB_HOST;
+};

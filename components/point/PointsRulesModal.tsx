@@ -12,6 +12,16 @@ import { usePrivy } from "@privy-io/react-auth";
 import useAuth from "~/hooks/user/useAuth";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import PlatformSharingModal from "../platform-sharing/PlatformSharingModal";
+import { useState } from "react";
+import {
+  getAppShareTextWithTwitter,
+  getAppShareTextWithWarpcast,
+} from "~/utils/platform-sharing/text";
+import {
+  getAppFrameLink,
+  getAppWebsiteLink,
+} from "~/utils/platform-sharing/link";
 
 export default function PointsRulesModal({
   open,
@@ -40,6 +50,8 @@ export default function PointsRulesModal({
   const getPointsText = (unit: number) => {
     return unit > 1 ? `${unit} points` : `${unit} point`;
   };
+
+  const [openShare, setOpenShare] = useState(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
@@ -89,8 +101,8 @@ export default function PointsRulesModal({
             pointsText={`${getPointsText(inviteUnit)} each new user`}
             btnText="Share"
             onBtnPress={() => {
-              onOpenChange(false);
-              alert("Invite");
+              // onOpenChange(false);
+              setOpenShare(true);
             }}
           />
           <RuleItem
@@ -121,6 +133,14 @@ export default function PointsRulesModal({
             }}
           />
         </View>
+        <PlatformSharingModal
+          open={openShare}
+          onOpenChange={(open) => setOpenShare(open)}
+          twitterText={getAppShareTextWithTwitter()}
+          warpcastText={getAppShareTextWithWarpcast()}
+          websiteLink={getAppWebsiteLink()}
+          frameLink={getAppFrameLink()}
+        />
       </DialogContent>
     </Dialog>
   );
