@@ -1,6 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter, useSegments } from "expo-router";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -29,8 +29,8 @@ export default function PortfolioScreen() {
       }
     }, []),
   );
-
-  const [value, setValue] = useState("tokens");
+  const segments = useSegments();
+  const [value, setValue] = useState(segments[2] || TABS[0].value);
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}

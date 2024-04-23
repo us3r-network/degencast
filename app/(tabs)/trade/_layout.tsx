@@ -18,7 +18,8 @@ const TABS = [
 
 export default function TradeScreen() {
   const headerHeight = useHeaderHeight() || DEFAULT_HEADER_HEIGHT;
-  const [value, setValue] = useState(TABS[0].value);
+  const segments = useSegments();
+  const [value, setValue] = useState(segments[2] || TABS[0].value);
   const router = useRouter();
   return (
     <SafeAreaView
