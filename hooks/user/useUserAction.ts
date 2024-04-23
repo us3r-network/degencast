@@ -57,7 +57,7 @@ export default function useUserAction() {
         addManyToLikedActions([actionData]);
       }
       if (actionData.action === UserActionName.UnLike) {
-        removeOneLidedActions(actionData.castHash);
+        removeOneLidedActions(actionData.castHash!);
       }
     },
     [

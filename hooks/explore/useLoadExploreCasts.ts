@@ -95,13 +95,28 @@ export default function useLoadExploreCasts() {
       const cast = casts[idx].data as FarCast;
       const castHex = getCastHex(cast);
       submitSeenCast(castHex);
-      submitUserAction({
-        action: UserActionName.View,
-        castHash: castHex,
-      });
     },
-    [casts, loading, submitSeenCast, submitUserAction],
+    [casts, loading, submitSeenCast],
   );
+
+  // 停留两秒再上报用户行为加积分
+  const currentCastIndexRef = useRef(currentCastIndex);
+  useEffect(() => {
+    currentCastIndexRef.current = currentCastIndex;
+    const timer = setTimeout(() => {
+      if (currentCastIndexRef.current === currentCastIndex) {
+        const cast = casts[currentCastIndex].data as FarCast;
+        const castHex = getCastHex(cast);
+        submitUserAction({
+          action: UserActionName.View,
+          castHash: castHex,
+        });
+      }
+    }, 2000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentCastIndex, casts, submitUserAction]);
 
   useEffect(() => {
     (async () => {

@@ -7,6 +7,8 @@ import {
   useWallets,
 } from "@privy-io/react-auth";
 import { useState } from "react";
+import useUserAction from "../user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export type SubmitCastBody = {
   mentions?: number[] | undefined;
@@ -50,6 +52,7 @@ export type ReplyCastRes = Promise<
 >;
 
 export default function useFarcasterWrite() {
+  const { submitUserAction } = useUserAction();
   const { user } = usePrivy();
 
   const { createWallet } = useCreateWallet();
@@ -98,6 +101,9 @@ export default function useFarcasterWrite() {
       if (!farcasterAccount?.signerPublicKey) {
         console.log("Requesting farcaster signer");
         await requestFarcasterSigner(); // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
+        submitUserAction({
+          action: UserActionName.ConnectFarcaster,
+        });
         return false;
       }
     }

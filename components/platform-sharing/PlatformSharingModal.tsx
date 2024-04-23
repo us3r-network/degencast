@@ -9,6 +9,7 @@ import { useNavigation } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { openWarpcastCreateCast } from "~/utils/platform-sharing/warpcast";
+import useUserAction from "~/hooks/user/useUserAction";
 
 export default function PlatformSharingModal({
   text,
@@ -18,6 +19,7 @@ export default function PlatformSharingModal({
   frameLink,
   open,
   onOpenChange,
+  navigateToCreatePageAfter,
 }: {
   text?: string;
   twitterText?: string;
@@ -26,7 +28,12 @@ export default function PlatformSharingModal({
   frameLink: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  navigateToCreatePageAfter?: () => void;
 }) {
+  const { actionPointConfig } = useUserAction();
+  const {
+    Invite: { unit: inviteUnit },
+  } = actionPointConfig;
   const navigation = useNavigation();
   const { signerPublicKey } = useFarcasterAccount();
   const onCreateCast = async () => {
@@ -38,6 +45,7 @@ export default function PlatformSharingModal({
       navigation.navigate(
         ...(["create", { text: createText, embeds: [frameLink] }] as never),
       );
+      navigateToCreatePageAfter?.();
     }
   };
 
@@ -56,13 +64,13 @@ export default function PlatformSharingModal({
           <ShareButton
             iconSource={require("~/assets/images/warpcast.png")}
             text="Share & Earn"
-            points={999}
+            points={inviteUnit}
             onPress={onCreateCast}
           />
           <ShareButton
             iconSource={require("~/assets/images/x.png")}
             text="Share & Earn"
-            points={999}
+            points={inviteUnit}
             onPress={onTwitterShare}
           />
           <ShareButton
