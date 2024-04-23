@@ -1,6 +1,6 @@
 // TODO env
 export const DEGENCAST_WEB_HOST =
-  process.env.EXPO_PUBLIC_ALCHEMY_API_KEY || "https://dev.degencast.xyz";
+  process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://dev.degencast.xyz";
 
 export const getCastDetailWebsiteLink = (castHex: string) => {
   return `${DEGENCAST_WEB_HOST}/casts/${castHex}`;
