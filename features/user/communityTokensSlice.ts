@@ -1,16 +1,22 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AsyncRequestStatus } from "~/services/shared/types";
+import {
+  ApiResp,
+  ApiRespCode,
+  AsyncRequestStatus,
+} from "~/services/shared/types";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import type { RootState } from "../../store/store";
 import { myTokens } from "~/services/user/api";
 
 type UserCommunityTokenState = {
+  cache: Map<`0x${string}`, ApiResp<TokenInfoWithMetadata[]>>;
   items: TokenInfoWithMetadata[];
   status: AsyncRequestStatus;
   error: string | undefined;
 };
 
 const userCommunityTokenState: UserCommunityTokenState = {
+  cache: new Map(),
   items: [],
   status: AsyncRequestStatus.IDLE,
   error: undefined,
@@ -18,9 +24,17 @@ const userCommunityTokenState: UserCommunityTokenState = {
 
 export const fetchItems = createAsyncThunk(
   "userCommunityTokens/fetchItems",
-  async (address:`0x${string}`) => {
-    const response = await myTokens(address);
-    return response.data;
+  async (address: `0x${string}`, thunkAPI) => {
+    const { userCommunityTokens } = thunkAPI.getState() as {
+      userCommunityTokens: UserCommunityTokenState;
+    };
+    const existCache = userCommunityTokens.cache.get(address);
+    if (existCache?.data) {
+      return existCache;
+    } else {
+      const response = await myTokens(address);
+      return response.data;
+    }
   },
 );
 
@@ -36,6 +50,9 @@ export const userCommunityTokenSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
+        if (action.payload.code == ApiRespCode.SUCCESS) {
+          state.cache.set(action.meta.arg, action.payload);
+        }
         state.items = action.payload.data.filter(
           (item) =>
             item.name &&

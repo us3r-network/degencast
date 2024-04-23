@@ -26,7 +26,7 @@ export default function Tips() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Tips{loading ? "" : `(${items.length})`}
+            Tips {loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&

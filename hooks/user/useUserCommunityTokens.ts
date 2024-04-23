@@ -12,13 +12,13 @@ export default function useUserCommunityTokens(address: `0x${string}`) {
   const { items, status, error } = useSelector(selectUserCommunityTokens);
 
   useEffect(() => {
-    if (status === AsyncRequestStatus.IDLE) {
+    if (status === AsyncRequestStatus.IDLE && address) {
       dispatch(fetchItems(address) as unknown as UnknownAction);
     }
   }, [status, dispatch]);
 
   useEffect(() => {
-    if (status !== AsyncRequestStatus.PENDING) {
+    if (status !== AsyncRequestStatus.PENDING && address) {
       dispatch(fetchItems(address) as unknown as UnknownAction);
     }
   }, [address]);
