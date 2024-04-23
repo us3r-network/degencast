@@ -15,11 +15,13 @@ export default function MyToeknSelect({
   defaultTokenKey,
   supportTokenKeys,
   selectToken,
+  hidden = false,
 }: {
   chain?: Chain;
   defaultTokenKey?: TOKENS;
   supportTokenKeys?: TOKENS[];
   selectToken?: (token: TokenInfoWithMetadata) => void;
+  hidden?: boolean;
 }) {
   const account = useAccount();
   const { userTokens } = useUserTokens(account.address, chain.id);
@@ -60,6 +62,9 @@ export default function MyToeknSelect({
     }
   }, [defaultTokenKey, userTokens, tokens, supportTokenKeys]);
 
+  if (hidden) {
+    return null;
+  }
   return (
     <RadioGroup
       value={value}
