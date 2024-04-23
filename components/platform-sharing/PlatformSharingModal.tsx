@@ -19,6 +19,7 @@ export default function PlatformSharingModal({
   frameLink,
   open,
   onOpenChange,
+  navigateToCreatePageAfter,
 }: {
   text?: string;
   twitterText?: string;
@@ -27,6 +28,7 @@ export default function PlatformSharingModal({
   frameLink: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  navigateToCreatePageAfter?: () => void;
 }) {
   const { actionPointConfig } = useUserAction();
   const {
@@ -43,6 +45,7 @@ export default function PlatformSharingModal({
       navigation.navigate(
         ...(["create", { text: createText, embeds: [frameLink] }] as never),
       );
+      navigateToCreatePageAfter?.();
     }
   };
 

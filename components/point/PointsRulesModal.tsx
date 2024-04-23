@@ -140,6 +140,9 @@ export default function PointsRulesModal({
           warpcastText={getAppShareTextWithWarpcast()}
           websiteLink={getAppWebsiteLink()}
           frameLink={getAppFrameLink()}
+          navigateToCreatePageAfter={() => {
+            onOpenChange(false);
+          }}
         />
       </DialogContent>
     </Dialog>
