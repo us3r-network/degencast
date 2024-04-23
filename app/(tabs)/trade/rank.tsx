@@ -12,29 +12,33 @@ export default function CommunityRank() {
 
   return (
     <View className="container h-full">
-      {loading && items.length===0 ? (
+      {loading && items.length === 0 ? (
         <Loading />
       ) : (
         // <ScrollView showsVerticalScrollIndicator={false} className="w-full">
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={items}
-            numColumns={1}
-            ItemSeparatorComponent={() => <View className="h-4" />}
-            renderItem={({ item, index }: { item: CommunityInfoType, index:number }) => {
-              return (
-                <Item key={item.channelId} item={item} index={index + 1} />
-              );
-            }}
-            onEndReached={() => {
-              if (loading) return;
-              loadMore();
-            }}
-            onEndReachedThreshold={1}
-            ListFooterComponent={() => {
-              return loading ? <Loading /> : null;
-            }}
-          />
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={items}
+          numColumns={1}
+          ItemSeparatorComponent={() => <View className="h-4" />}
+          renderItem={({
+            item,
+            index,
+          }: {
+            item: CommunityInfoType;
+            index: number;
+          }) => {
+            return <Item key={item.channelId} item={item} index={index + 1} />;
+          }}
+          onEndReached={() => {
+            if (loading) return;
+            loadMore();
+          }}
+          onEndReachedThreshold={1}
+          ListFooterComponent={() => {
+            return loading ? <Loading /> : null;
+          }}
+        />
         // </ScrollView>
       )}
     </View>
@@ -43,17 +47,21 @@ export default function CommunityRank() {
 
 function Item({ item, index }: { item: CommunityInfoType; index: number }) {
   return (
-    <View className="flex-row items-center justify-between">
-      <View className="flex-1 flex-row items-center gap-4">
-        <Text className="text-md w-4 text-right font-bold">{index}</Text>{" "}
-        <Link href={`/communities/${item.channelId}/casts`} asChild>
+    <View className="flex-row items-center justify-between gap-2">
+      <View className="flex-1 flex-row items-center gap-2">
+        <Text className="w-6 text-center text-xs font-bold">{index}</Text>{" "}
+        <Link
+          className="flex-1"
+          href={`/communities/${item.channelId}/casts`}
+          asChild
+        >
           <Pressable>
             <CommunityInfo name={item.name} logo={item.logo} />
           </Pressable>
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
-        <Text>{item.memberInfo.newPostNumber}</Text>
+        <Text className="text-sm">{item.memberInfo.newPostNumber}</Text>
         <CommunityJoinButton communityInfo={item} />
       </View>
     </View>

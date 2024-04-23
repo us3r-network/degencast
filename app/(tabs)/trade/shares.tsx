@@ -33,22 +33,26 @@ export default function CommunityShares() {
 //todo: `/communities/${item.name}/shares`
 function Item({ item, index }: { item: ShareInfo; index: number }) {
   return (
-    <View className="flex-row items-center justify-between">
-      <View className="flex-1 flex-row items-center gap-4">
-        <Text className="text-md w-4 text-right font-bold">{index}</Text>
-        {item.trend === 1 && <ArrowUp className="size-4 text-[green]" />}
+    <View className="flex-row items-center justify-between gap-2">
+      <View className="flex-1 flex-row items-center gap-2">
+        <Text className="w-6 text-center text-xs font-bold">{index}</Text>
+        {/* {item.trend === 1 && <ArrowUp className="size-4 text-[green]" />}
         {item.trend === 0 && (
           <Text className="w-4 text-center font-bold">-</Text>
         )}
-        {item.trend === -1 && <ArrowDown className="size-4 text-[red]" />}
-        <Link href={`/communities/${item.channelId}/shares`} asChild>
+        {item.trend === -1 && <ArrowDown className="size-4 text-[red]" />} */}
+        <Link
+          className="flex-1"
+          href={`/communities/${item.channelId}/shares`}
+          asChild
+        >
           <Pressable>
             <CommunityInfo {...item} />
           </Pressable>
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
-        <Text>
+        <Text className="text-sm">
           {formatUnits(
             BigInt(item.priceETH),
             SHARE_CONTRACT_CHAIN.nativeCurrency.decimals,

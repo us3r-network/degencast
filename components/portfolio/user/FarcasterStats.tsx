@@ -5,13 +5,23 @@ import useFarcasterUserStats from "~/hooks/social-farcaster/useFarcasterUserStat
 export default function FarcasterStats({ fid }: { fid: number }) {
   const { farcasterUserStats } = useFarcasterUserStats(fid);
   return (
-    <View className="w-full flex-row gap-2">
-      <Text className="text-sm text-white">
-        {farcasterUserStats.followingCount} Following
-      </Text>
-      <Text className="text-sm text-white">
-        {farcasterUserStats.followerCount} Followers
-      </Text>
+    <View className="w-full flex-row gap-6">
+      <View className="flex-row items-center gap-2">
+        <Text className="text-sm font-bold text-white">
+          {new Intl.NumberFormat("en-US", {
+            notation: "compact",
+          }).format(farcasterUserStats.followingCount)}
+        </Text>
+        <Text className="text-sm  text-secondary">Following</Text>
+      </View>
+      <View className="flex-row items-center gap-2">
+        <Text className="text-sm font-bold text-white">
+          {new Intl.NumberFormat("en-US", {
+            notation: "compact",
+          }).format(farcasterUserStats.followerCount)}
+        </Text>
+        <Text className="text-sm  text-secondary">Followers</Text>
+      </View>
     </View>
   );
 }

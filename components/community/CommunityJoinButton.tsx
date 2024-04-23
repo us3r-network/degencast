@@ -20,6 +20,7 @@ export default function CommunityJoinButton({
   return (
     <Button
       className={cn("w-14 bg-secondary", className)}
+      size="sm"
       onPress={(e) => {
         e.stopPropagation();
         joinChangeAction();
@@ -27,10 +28,6 @@ export default function CommunityJoinButton({
       {...props}
     >
       <Text
-        className={cn(
-          "text-xs font-bold text-secondary-foreground",
-          textClassName,
-        )}
         {...(restTextProps || {})}
       >
         {(() => {

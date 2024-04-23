@@ -10,6 +10,7 @@ import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import TradeButton from "../TradeButton";
 import WithdrawButton from "../WithdrawButton";
+import { cn } from "~/lib/utils";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { userTokens } = useUserTokens(address);
@@ -66,12 +67,14 @@ function MyToken({
     <View className="flex-row items-center justify-between">
       <TokenInfo name={token.name} logo={token.logo} />
       <View className="flex-row items-center gap-2">
-        <Text>
+        <Text className="text-sm">
           {round(Number(token.balance), 2)} {token.symbol}
         </Text>
         {wallet &&
           (action === ACTION_TYPES.BUY ? (
             <Button
+              size="sm"
+              className={cn("w-14")}
               variant={"secondary"}
               onPress={async () => {
                 // Linking.openURL("https://buy-sandbox.moonpay.com/");

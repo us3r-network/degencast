@@ -14,7 +14,10 @@ type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
-      <Avatar alt={name || ""} className="size-8">
+      <Avatar
+        alt={name || ""}
+        className={cn("size-8 border-2 border-secondary/10")}
+      >
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="bg-secondary">
           <Text className="text-sm font-bold">
@@ -23,7 +26,7 @@ export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("font-bold", textClassName)}>
+        <Text className={cn("line-clamp-1 font-bold", textClassName)}>
           {name}
         </Text>
         {mc && mc > 0 && (
@@ -31,6 +34,7 @@ export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
+              notation: "compact",
             }).format(mc)}
           </Text>
         )}

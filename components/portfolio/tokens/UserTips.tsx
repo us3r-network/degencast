@@ -15,7 +15,7 @@ import { TipsInfo } from "~/services/user/types";
 
 const DEFAULT_ITEMS_NUM = 1;
 export default function Tips() {
-  const { items } = useUserTips();
+  const { loading, items } = useUserTips();
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -26,7 +26,7 @@ export default function Tips() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Tips ({items.length})
+            Tips{loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
@@ -53,9 +53,11 @@ function Item(item: TipsInfo) {
     <View className="flex-row items-center justify-between">
       <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.amount), 2)}</Text>
+        <Text  className="text-sm">{round(Number(item.amount), 2)}</Text>
         <Button
           disabled
+          size="sm"
+          className="w-14"
           variant={"secondary"}
           onPress={() => {
             // console.log("Claim button pressed");
