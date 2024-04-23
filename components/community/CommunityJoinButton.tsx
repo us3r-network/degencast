@@ -28,10 +28,6 @@ export default function CommunityJoinButton({
       {...props}
     >
       <Text
-        className={cn(
-          "text-xs font-bold text-secondary-foreground",
-          textClassName,
-        )}
         {...(restTextProps || {})}
       >
         {(() => {
