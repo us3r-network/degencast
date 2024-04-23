@@ -34,13 +34,14 @@ export type Embeds = {
     castId: { fid: number; hash: string };
   }[];
 };
-export function getEmbeds(cast: FarCast): Embeds {
+
+export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
   const imgs = [];
   const videos = [];
   const webpages = [];
   const casts = [];
 
-  for (const embed of cast.embeds) {
+  for (const embed of embeds) {
     if (embed?.castId) {
       casts.push(embed);
     } else if (embed?.url) {
@@ -60,4 +61,8 @@ export function getEmbeds(cast: FarCast): Embeds {
     }
   }
   return { imgs, webpages, casts, videos };
+}
+
+export function getEmbeds(cast: FarCast): Embeds {
+  return formatEmbeds(cast.embeds);
 }

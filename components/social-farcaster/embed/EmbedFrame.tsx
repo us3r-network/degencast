@@ -27,7 +27,7 @@ export default function EmbedFrame({
 }: {
   url: string;
   data: Frame;
-  cast: FarCast;
+  cast?: FarCast;
 }) {
   const { requestFarcasterSigner } = useExperimentalFarcasterSigner();
   const { user, login, ready, authenticated } = usePrivy();

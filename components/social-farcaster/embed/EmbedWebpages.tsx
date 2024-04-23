@@ -11,7 +11,7 @@ export default function EmbedWebpages({
   cast,
 }: {
   webpages: Embeds["webpages"];
-  cast: FarCast;
+  cast?: FarCast;
 }) {
   return (
     <View>
@@ -22,7 +22,7 @@ export default function EmbedWebpages({
   );
 }
 
-function EmbedWebpage({ url, cast }: { url: string; cast: FarCast }) {
+function EmbedWebpage({ url, cast }: { url: string; cast?: FarCast }) {
   const { embedFrameMetadata, embedOgMetadata, loadEmbedWebpagesMetadata } =
     useLoadEmbedWebpagesMetadata();
   useEffect(() => {
