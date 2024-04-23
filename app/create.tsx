@@ -1,5 +1,5 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { Stack, useNavigation } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, Image } from "react-native";
@@ -12,6 +12,7 @@ import { uploadImage } from "~/services/upload";
 import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
+import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
 
 const HomeChanel = {
   id: "",
@@ -21,9 +22,17 @@ const HomeChanel = {
   createdAt: 0,
 };
 export default function CreateScreen() {
+  const localSearchParams = useLocalSearchParams();
+  const { embeds: searchEmbeds, text: searchText } = (localSearchParams ||
+    {}) as {
+    embeds: string[];
+    text: string;
+  };
+  const embeds = searchEmbeds?.map((item) => ({ url: item }));
+
   const { submitCast, writing } = useFarcasterWrite();
   const navigation = useNavigation();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(searchText || "");
   const [images, setImages] = useState<string[]>([]);
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
   const { login, ready, user } = usePrivy();
@@ -60,9 +69,12 @@ export default function CreateScreen() {
                   onPress={() => {
                     submitCast({
                       text: value,
-                      embeds: images.map((item) => {
-                        return { url: item };
-                      }),
+                      embeds: [
+                        ...embeds,
+                        ...images.map((item) => {
+                          return { url: item };
+                        }),
+                      ],
                       channel: channel.url,
                     }).then(() => {
                       console.log("Cast submitted");
@@ -116,6 +128,9 @@ export default function CreateScreen() {
               setImages={setImages}
               channel={channel}
               setChannel={setChannel}
+              previewComponent={
+                embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
+              }
             />
           </View>
         )}

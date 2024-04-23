@@ -36,7 +36,7 @@ export default function PlatformSharingModal({
     } else {
       onOpenChange(false);
       navigation.navigate(
-        ...(["create", { text: createText, embeds: frameLink }] as never),
+        ...(["create", { text: createText, embeds: [frameLink] }] as never),
       );
     }
   };
