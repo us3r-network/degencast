@@ -8,6 +8,7 @@ import { Text } from "~/components/ui/text";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithStats } from "~/services/trade/types";
+import { TokenInfoWithMetadata } from "~/services/user/types";
 
 export default function CommunityTokens() {
   const { loading, items } = useCommunityTokens();
@@ -31,6 +32,13 @@ export default function CommunityTokens() {
 
 function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
   const change = Number(item.stats.price_change_percentage.h24);
+  const toekn: TokenInfoWithMetadata = {
+    chainId: item.chain_id,
+    contractAddress: item.tokenAddress,
+    name: item.name,
+    logo: item.imageURL,
+    tradeInfo: item,
+  };
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
@@ -50,14 +58,13 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
-        <Text className={cn("text-sm", change < 0 ? "text-[red]" : "text-[green]")}>
+        <Text
+          className={cn("text-sm", change < 0 ? "text-[red]" : "text-[green]")}
+        >
           {change > 0 ? "+" : ""}
           {change}%
         </Text>
-        <TradeButton
-          fromChain={item.chain_id}
-          fromToken={item.tokenAddress as `0x${string}`}
-        />
+        <TradeButton fromToken={toekn} />
       </View>
     </View>
   );

@@ -1,36 +1,29 @@
-import { LiFiWidget, WidgetConfig } from "@lifi/widget";
 // import { useSwitchChain } from "wagmi";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
-import About from "../common/About";
+import { useState } from "react";
 import { View } from "react-native";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Text } from "~/components/ui/text";
+import { NATIVE_TOKEN_METADATA } from "~/constants";
 import { cn } from "~/lib/utils";
+import { TokenInfoWithMetadata } from "~/services/user/types";
+import About from "../common/About";
+import { TokenInfo } from "../common/TokenInfo";
+import { Input } from "../ui/input";
 
 export default function TradeButton({
-  fromChain,
   fromToken,
-  toChain = DEFAULT_CHAIN.id,
-  toToken = NATIVE_TOKEN,
+  toToken,
 }: {
-  fromChain: number;
-  fromToken: `0x${string}`;
-  toChain?: number;
-  toToken?: `0x${string}`;
+  fromToken: TokenInfoWithMetadata;
+  toToken?: TokenInfoWithMetadata;
 }) {
-  // return (
-  //   <Button
-  //     variant={"secondary"}
-  //     onPress={() => {
-  //       console.log("Trade button pressed");
-  //       Linking.openURL("https://app.uniswap.org/");
-  //     }}
-  //   >
-  //     <Text className="text-xs font-bold text-secondary-foreground">Trade</Text>
-  //   </Button>
-  // );
-  // const { switchChain } = useSwitchChain();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -43,13 +36,11 @@ export default function TradeButton({
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-screen border-none p-2">
-        <Trade
-          fromChain={fromChain}
-          fromToken={fromToken}
-          toChain={toChain}
-          toToken={toToken}
-        />
+      <DialogContent className="w-screen border-none">
+        <DialogHeader>
+          <DialogTitle>Trade</DialogTitle>
+        </DialogHeader>
+        <SwapToken fromToken={fromToken} toToken={toToken} />
         <View className="p-4">
           <About title="Swap & Earn" info={TRADE_INFO} />
         </View>
@@ -60,44 +51,63 @@ export default function TradeButton({
 
 const TRADE_INFO = ["Swap 0.01 ETH = 500 Points"];
 
-function Trade({
-  fromChain,
+function SwapToken({
   fromToken,
-  toChain,
   toToken,
 }: {
-  fromChain: number;
-  fromToken: `0x${string}`;
-  toChain: number;
-  toToken: `0x${string}`;
+  fromToken: TokenInfoWithMetadata;
+  toToken?: TokenInfoWithMetadata;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
-  const DEFAULT_WIDGET_CONFIG: WidgetConfig = {
-    integrator: "DegenCast/US3R.NETWORK",
-    fromChain,
-    fromToken,
-    toChain,
-    toToken,
-    theme: {
-      palette: {
-        primary: {
-          main: "#A36EFE",
-        },
-        background: {
-          paper: "#4C2896", // bg color for cards
-          default: "#4C2896",
-        },
-        text: {
-          primary: "#fff",
-          secondary: "#A36EFE",
-        },
-      },
-    },
-  };
+  const [fromAmount, setFromAmount] = useState("0");
+  const [toAmount, setToAmount] = useState(0);
   return (
-    <LiFiWidget
-      integrator="DegenCast/US3R.NETWORK"
-      config={DEFAULT_WIDGET_CONFIG}
-    />
+    <View className="flex w-full gap-4">
+      <Token token={fromToken} />
+      <Token token={toToken || NATIVE_TOKEN_METADATA} />
+      <Button
+        variant="secondary"
+        onPress={() => {
+          // switchChain({ chainId: toChain });
+        }}
+      >
+        <Text>Swap</Text>
+      </Button>
+    </View>
+  );
+}
+
+function Token({ token }: { token: TokenInfoWithMetadata }) {
+  const [amount, setAmount] = useState("0");
+  const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
+  return (
+    <View className="flex-row items-start justify-between">
+      <View>
+        <TokenInfo name={token.name} logo={token.logo} />
+        {token.symbol && token.balance && (
+          <Text>
+            Balance: {token.balance}
+            {token.symbol}
+          </Text>
+        )}
+      </View>
+      <View className="flex gap-2">
+        <Input
+          className={cn("w-10 text-white")}
+          inputMode="numeric"
+          value={amount}
+          onChangeText={setAmount}
+        />
+        {amount && price && (
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              notation: "compact",
+            }).format(Number(amount) * price)}
+          </Text>
+        )}
+      </View>
+    </View>
   );
 }
