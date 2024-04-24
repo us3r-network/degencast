@@ -136,13 +136,16 @@ export default function useFarcasterWrite() {
         setWriting(true);
         const data = {
           text,
-          embeds: embeds.map((embed) => ({
-            url: embed.url,
-          })),
-          parentUrl: channel,
+          embeds: embeds.length
+            ? embeds.map((embed) => ({
+                url: embed.url,
+              }))
+            : undefined,
+          parentUrl: channel || undefined,
         };
-        await submitCast(data);
+        const result = await submitCast(data);
         setWriting(false);
+        return result;
       }
     },
     replayCast: async ({

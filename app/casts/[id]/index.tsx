@@ -15,25 +15,34 @@ import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
+import FCastUserInfo from "~/components/social-farcaster/FCastUserInfo";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
+import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
 import { CommunityInfo } from "~/services/community/types/community";
+import {
+  fetchCastWithHashFid,
+  fetchCastWithHash,
+} from "~/services/farcaster/neynar/farcaster";
 import { FarCast } from "~/services/farcaster/types";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserData } from "~/utils/farcaster/user-data";
 
 export default function CastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params;
+  const params = useLocalSearchParams<{ id: string; fid?: string }>();
+  const { id, fid } = params;
   const { castDetailData } = useCastPage();
   const data = castDetailData?.[id as string];
   const { cast } = data || {};
   if (cast) {
     return <CachedCastDetail />;
+  }
+  if (fid) {
+    return <FetchedNeynarCastDetail hash={id} fid={fid} />;
   }
   return <FetchedCastDetail />;
 }
@@ -60,6 +69,89 @@ function CachedCastDetail() {
       farcasterUserDataObj={farcasterUserDataObj}
       community={community!}
     />
+  );
+}
+
+function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
+  const navigation = useNavigation();
+  const { cast, loading, loadNeynarCastDetail } = useLoadNeynarCastDetail();
+  useEffect(() => {
+    loadNeynarCastDetail(hash);
+  }, [hash]);
+
+  return (
+    <SafeAreaView style={{ flex: 1 }} className="bg-white">
+      <Stack.Screen
+        options={{
+          header: () => (
+            <View className="flex flex-row items-center justify-between bg-white">
+              <View className="flex flex-row items-center">
+                <View className="w-fit p-3 ">
+                  <Button
+                    className="rounded-full bg-[#a36efe1a]"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onPress={() => {
+                      navigation.goBack();
+                    }}
+                  >
+                    <BackArrowIcon />
+                  </Button>
+                </View>
+                <Text className=" ml-2 text-xl font-bold  leading-none ">
+                  Cast
+                </Text>
+              </View>
+            </View>
+          ),
+        }}
+      />
+      <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
+        <View className="w-full flex-1 flex-col gap-7 px-5">
+          <FlatList
+            ListHeaderComponent={() => {
+              if (loading) {
+                return (
+                  <View className="flex h-full w-full items-center justify-center">
+                    <Loading />
+                  </View>
+                );
+              }
+              if (!cast) {
+                return null;
+              }
+              return (
+                <View className="mt-5 gap-6">
+                  <FCastUserInfo
+                    userData={{
+                      fid: cast.author.fid + "",
+                      pfp: cast.author.pfp_url,
+                      display: cast.author.display_name,
+                      userName: cast.author.username,
+                      bio: "",
+                      url: "",
+                    }}
+                  />
+                  <Text>{cast.text}</Text>
+                </View>
+              );
+            }}
+            data={[]}
+            ItemSeparatorComponent={() => <Separator className=" my-3" />}
+            renderItem={({ item }) => {
+              return null;
+            }}
+            onEndReached={() => {
+              return;
+            }}
+            onEndReachedThreshold={1}
+            ListFooterComponent={() => {
+              return <View className="mb-10" />;
+            }}
+          />
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
