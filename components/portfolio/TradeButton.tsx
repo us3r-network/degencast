@@ -4,6 +4,9 @@ import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
+import About from "../common/About";
+import { View } from "react-native";
+import { cn } from "~/lib/utils";
 
 export default function TradeButton({
   fromChain,
@@ -32,6 +35,8 @@ export default function TradeButton({
     <Dialog>
       <DialogTrigger asChild>
         <Button
+          className={cn("w-14")}
+          size="sm"
           variant={"secondary"}
           // onPress={() => switchChain({ chainId: fromChain })}
         >
@@ -45,10 +50,15 @@ export default function TradeButton({
           toChain={toChain}
           toToken={toToken}
         />
+        <View className="p-4">
+          <About title="Swap & Earn" info={TRADE_INFO} />
+        </View>
       </DialogContent>
     </Dialog>
   );
 }
+
+const TRADE_INFO = ["Swap 0.01 ETH = 500 Points"];
 
 function Trade({
   fromChain,

@@ -16,13 +16,16 @@ export function CommunityInfo({
 }: CommunityInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
-      <Avatar alt={name || ""} className="size-8">
+      <Avatar
+        alt={name || ""}
+        className={cn("size-8 border-2 border-secondary/10")}
+      >
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="bg-secondary">
-          <Text className="line-clamp-1 text-sm font-bold">{name}</Text>
+          <Text className="text-sm font-bold">{name?.substring(0, 2)}</Text>
         </AvatarFallback>
       </Avatar>
-      <Text className={cn("font-bold", textClassName)}>
+      <Text className={cn("line-clamp-1 font-bold", textClassName)}>
         {name}
       </Text>
     </View>

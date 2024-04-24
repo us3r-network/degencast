@@ -32,10 +32,14 @@ export default function CommunityTokens() {
 function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
   const change = Number(item.stats.price_change_percentage.h24);
   return (
-    <View className="flex-row items-center justify-between">
-      <View className="flex-1 flex-row items-center gap-4">
-        <Text className="text-md w-4 text-right font-bold">{index}</Text>
-        <Link href={`/communities/${item.channel}/tokens`} asChild>
+    <View className="flex-row items-center justify-between gap-2">
+      <View className="flex-1 flex-row items-center gap-2">
+        <Text className="w-6 text-center text-xs font-bold">{index}</Text>
+        <Link
+          className="flex-1"
+          href={`/communities/${item.channel}/tokens`}
+          asChild
+        >
           <Pressable>
             <TokenInfo
               name={item.name}
@@ -46,7 +50,7 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
-        <Text className={cn(change < 0 ? "text-[red]" : "text-[green]")}>
+        <Text className={cn("text-sm", change < 0 ? "text-[red]" : "text-[green]")}>
           {change > 0 ? "+" : ""}
           {change}%
         </Text>

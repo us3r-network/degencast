@@ -5,13 +5,23 @@
  * @LastEditTime: 2023-03-06 18:44:32
  * @Description: store
  */
+
 import { configureStore } from "@reduxjs/toolkit";
+import { enableMapSet } from "immer";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
+import communityRank from "~/features/trade/communityRankSlice";
+import communityShares from "~/features/trade/communitySharesSlice";
+import communityTokens from "~/features/trade/communityTokensSlice";
+import userCommunityShares from "~/features/user/communitySharesSlice";
+import userCommunityTokens from "~/features/user/communityTokensSlice";
 import userAction from "~/features/user/userActionSlice";
 import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
+// import userTips from "~/features/user/tipsSlice";
+
+enableMapSet();
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +31,12 @@ export const store = configureStore({
     userAuth,
     warpcastChannels,
     castPage,
+    communityTokens,
+    communityShares,
+    communityRank,
+    userCommunityTokens,
+    userCommunityShares,
+    // userTips,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

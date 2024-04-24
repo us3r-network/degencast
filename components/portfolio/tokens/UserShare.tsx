@@ -9,14 +9,14 @@ import {
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
 import { Text } from "~/components/ui/text";
-import useUserShares from "~/hooks/user/useUserShares";
+import useUserCommunityShares from "~/hooks/user/useUserCommunityShares";
 import { ShareInfo } from "~/services/user/types";
 import { SellButton } from "../ShareButton";
 import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share({ address }: { address: `0x${string}` }) {
-  const { loading, items } = useUserShares(address);
+  const { loading, items } = useUserCommunityShares(address);
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -26,7 +26,9 @@ export default function Share({ address }: { address: `0x${string}` }) {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">Share ({loading?'loading...':items.length})</Text>
+          <Text className="text-lg font-bold">
+            Share {loading ? "" : `(${items.length})`}
+          </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
@@ -56,7 +58,7 @@ function Item(item: ShareInfo) {
         </Pressable>
       </Link>
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.amount), 2)}</Text>
+        <Text className="text-sm">{round(Number(item.amount), 2)}</Text>
         <SellButton
           logo={item.logo}
           name={item.name}

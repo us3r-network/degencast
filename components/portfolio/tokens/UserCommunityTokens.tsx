@@ -23,7 +23,7 @@ export default function CommunityTokens({
 }) {
   const { loading, items } = useUserCommunityTokens(address);
   const [open, setOpen] = React.useState(false);
-  console.log("my-tokens: ", address, items);
+  // console.log("my-tokens: ", address, items);
   return (
     <Collapsible
       className="flex w-full gap-2"
@@ -33,7 +33,7 @@ export default function CommunityTokens({
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Community Token ({loading?'loading...':items.length})
+            Token {loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
@@ -69,7 +69,7 @@ function Item(item: TokenInfoWithMetadata) {
         </Pressable>
       </Link>
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.balance), 2)}</Text>
+        <Text className="text-sm">{round(Number(item.balance), 2)}</Text>
         <TradeButton
           fromChain={item.chainId || DEFAULT_CHAIN.id}
           fromToken={item.contractAddress as `0x${string}`}

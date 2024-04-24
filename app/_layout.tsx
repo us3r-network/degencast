@@ -4,12 +4,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Stack } from "expo-router";
+import { Href, Link, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import Toast, { ToastConfigParams } from "react-native-toast-message";
+
 import { useEffect } from "react";
-import { Platform } from "react-native";
-import { RootSiblingParent } from "react-native-root-siblings";
+import { Platform, View } from "react-native";
+
 import { Provider as ReduxProvider } from "react-redux";
+import { Text } from "~/components/ui/text";
 import { PortalHost } from "~/components/primitives/portal";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
@@ -19,17 +22,34 @@ import { store } from "~/store/store";
 // Import global CSS file
 import StateUpdateWrapper from "~/components/StateUpdateWrapper";
 import "../global.css";
+import { Button } from "~/components/ui/button";
 dayjs.extend(relativeTime);
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+  ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: "(tabs)",
+};
+
+const toastConfig = {
+  postToast: ({
+    props,
+  }: ToastConfigParams<{
+    hash: string;
+    fid: string;
+  }>) => (
+    <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="font-bold text-white">Cast created successfully!</Text>
+      <Link href={`/casts/${props.hash}?fid=${props.fid}` as Href<string>}>
+        <Text className="font-bold text-primary">View</Text>
+      </Link>
+    </View>
+  ),
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -49,28 +69,24 @@ export default function RootLayout() {
   const queryClient = new QueryClient();
   return (
     <ReduxProvider store={store}>
-        <PrivyProvider
-          appId={PRIVY_APP_ID}
-          config={{
-            ...privyConfig,
-          }}
-        >
-          <QueryClientProvider client={queryClient}>
-            <WagmiProvider config={wagmiConfig}>
-              <StateUpdateWrapper>
-                <RootSiblingParent>
-                  <Stack>
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                  </Stack>
-                  <PortalHost />
-                </RootSiblingParent>
-              </StateUpdateWrapper>
-            </WagmiProvider>
-          </QueryClientProvider>
-        </PrivyProvider>
+      <PrivyProvider
+        appId={PRIVY_APP_ID}
+        config={{
+          ...privyConfig,
+        }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <WagmiProvider config={wagmiConfig}>
+            <StateUpdateWrapper>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </Stack>
+              <PortalHost />
+              <Toast config={toastConfig} />
+            </StateUpdateWrapper>
+          </WagmiProvider>
+        </QueryClientProvider>
+      </PrivyProvider>
     </ReduxProvider>
   );
 }

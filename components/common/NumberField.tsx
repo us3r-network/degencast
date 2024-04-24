@@ -35,7 +35,7 @@ export default function NumberField({
       <TextInput
         inputMode="numeric"
         editable={true}
-        className="w-6 text-center font-bold text-foreground"
+        className="w-6 text-center font-bold text-white"
         value={String(value)}
       />
       <Button
