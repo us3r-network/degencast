@@ -6,7 +6,9 @@ import React, { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { useAccount } from "wagmi";
 import {
+  Cable,
   Copy,
+  Edit,
   LogOut,
   MinusCircle,
   Plug,
@@ -37,6 +39,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useAuth from "~/hooks/user/useAuth";
 import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
@@ -246,7 +249,7 @@ function LinkWallets() {
                         await connectWallet();
                       }}
                     >
-                      <Plug className="size-4" fill="secondary" />
+                      <Plug className="size-4 fill-secondary/50" />
                     </Pressable>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -297,8 +300,10 @@ function LinkWallets() {
 
 function FarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
+  const { prepareWrite } = useFarcasterWrite();
   if (!user) return null;
   const farcasterAccount = getUserFarcasterAccount(user);
+  console.log("farcasterAccount", farcasterAccount);
   if (farcasterAccount?.fid) {
     return (
       <View className="flex-row items-center justify-between">
@@ -313,12 +318,39 @@ function FarcasterAccount() {
             {farcasterAccount.displayName || farcasterAccount.username}
           </Text>
         </View>
-        <UnlinkButton
-          action={() => {
-            console.log("unlinking farcaster", farcasterAccount.fid);
-            if (farcasterAccount?.fid) unlinkFarcaster(farcasterAccount.fid);
-          }}
-        />
+        <View className="flex-row items-center gap-2">
+          {farcasterAccount.signerPublicKey ? (
+            <Tooltip delayDuration={150}>
+              <TooltipTrigger asChild>
+                <Pressable disabled>
+                  <Edit className="size-4 fill-secondary/50" />
+                </Pressable>
+              </TooltipTrigger>
+              <TooltipContent>
+                <Text>
+                  Farcaster Signer: {farcasterAccount.signerPublicKey}
+                </Text>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Tooltip delayDuration={150}>
+              <TooltipTrigger asChild>
+                <Pressable onPress={prepareWrite}>
+                  <Cable className="size-4" />
+                </Pressable>
+              </TooltipTrigger>
+              <TooltipContent>
+                <Text>Request Farcaster Signer to Write</Text>
+              </TooltipContent>
+            </Tooltip>
+          )}
+          <UnlinkButton
+            action={() => {
+              console.log("unlinking farcaster", farcasterAccount.fid);
+              if (farcasterAccount?.fid) unlinkFarcaster(farcasterAccount.fid);
+            }}
+          />
+        </View>
       </View>
     );
   } else {

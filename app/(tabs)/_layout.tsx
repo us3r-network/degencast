@@ -1,9 +1,8 @@
 import { Link, Tabs } from "expo-router";
-import { Edit } from "lucide-react-native";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Search } from "~/components/common/Icons";
+import { Search, Edit } from "~/components/common/Icons";
 import {
   ExploreIcon,
   PortfolioIcon,
