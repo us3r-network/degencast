@@ -3,12 +3,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
+import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { Text } from "~/components/ui/text";
-import { UnorderedList } from "../common/UnorderedList";
 import { cn } from "~/lib/utils";
+import { UnorderedList } from "../common/UnorderedList";
 
 export default function About({
   title,
