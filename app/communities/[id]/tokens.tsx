@@ -18,7 +18,7 @@ export default function TokensScreen() {
   return (
     <View className="flex-1">
       {communityToken ? (
-        <ScrollView className="flex-1">
+        <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
           <CommunityTokenInfo
             tokenInfo={{
               standard: communityToken.tokenStandard,
@@ -29,17 +29,21 @@ export default function TokensScreen() {
           />
         </ScrollView>
       ) : (
-        <View className=" mx-auto max-w-72 flex-col items-center gap-8">
+        <ScrollView
+          className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8"
+          showsHorizontalScrollIndicator={false}
+        >
           <Image
-            className="mt-20"
             source={require("~/assets/images/no-token.png")}
             style={{ width: 280, height: 280 }}
           />
-          <Text className=" text-xl font-bold text-primary">Coming Soon</Text>
+          <Text className=" text-center text-xl font-bold text-primary">
+            Coming Soon
+          </Text>
           <Text className="text-center text-base leading-8 text-secondary">
             The channel token launch progress hasn’t started yet.
           </Text>
-        </View>
+        </ScrollView>
         // <ShareActivities id={id as string} />
       )}
     </View>

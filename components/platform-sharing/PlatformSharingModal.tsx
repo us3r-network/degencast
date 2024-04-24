@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { ImageSourcePropType, View } from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "../ui/text";
@@ -60,6 +60,9 @@ export default function PlatformSharingModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
+        <DialogHeader>
+          <Text>Share</Text>
+        </DialogHeader>
         <View className="max-w-s flex flex-row gap-5 ">
           <ShareButton
             iconSource={require("~/assets/images/warpcast.png")}

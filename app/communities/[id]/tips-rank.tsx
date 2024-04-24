@@ -16,7 +16,16 @@ export default function TipsRankScreen() {
   return (
     <View className="flex-1">
       <FlatList
+        ListHeaderComponent={() => {
+          return (
+            <View className="mb-5 flex-row justify-between">
+              <Text className=" text-base font-medium">Rank</Text>
+              <Text className=" text-base font-medium">Tips Received</Text>
+            </View>
+          );
+        }}
         data={tipsRank}
+        showsHorizontalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
         renderItem={({ item }) => {
           return (

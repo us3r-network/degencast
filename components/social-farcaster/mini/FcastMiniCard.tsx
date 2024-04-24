@@ -35,7 +35,7 @@ export default function FcastMiniCard({
     <Card
       key={cast.id}
       className={cn(
-        "relative flex h-36 flex-col gap-5 overflow-hidden",
+        "relative flex min-h-36 flex-col gap-5 overflow-hidden",
         className,
       )}
       {...props}
@@ -45,7 +45,7 @@ export default function FcastMiniCard({
         <Avatar alt={"Avatar"} className=" h-4 w-4 rounded-full object-cover">
           <AvatarImage source={{ uri: userData?.pfp }} />
           <AvatarFallback>
-            <Text>{userData?.display.slice(0, 1)}</Text>
+            <Text>{userData?.userName}</Text>
           </AvatarFallback>
         </Avatar>
         <Text className="line-clamp-1 text-xs font-medium">
@@ -54,7 +54,7 @@ export default function FcastMiniCard({
       </View>
       {/* body - text & embed */}
       {!!cast.text && (
-        <View className="p-2">
+        <View className="p-2 pb-6">
           {/* <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} /> */}
           <Text className=" line-clamp-4 text-xs leading-6">{cast.text}</Text>
         </View>

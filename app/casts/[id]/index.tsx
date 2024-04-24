@@ -101,8 +101,9 @@ function CastDetailWithCreatedData({
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{
+          contentStyle: { backgroundColor: "white" },
           header: () => (
-            <View className="flex flex-row items-center justify-between">
+            <View className="flex flex-row items-center justify-between bg-white">
               <View className="flex flex-row items-center">
                 <View className="w-fit p-3 ">
                   <Button
@@ -183,8 +184,9 @@ function CastDetailWithData({
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{
+          contentStyle: { backgroundColor: "white" },
           header: () => (
-            <View className="flex flex-row items-center justify-between">
+            <View className="flex flex-row items-center justify-between bg-white">
               <View className="flex flex-row items-center">
                 <View className="w-fit p-3 ">
                   <Button
@@ -219,6 +221,7 @@ function CastDetailWithData({
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
         <View className="w-full flex-1 flex-col gap-7 px-5">
           <FlatList
+            showsHorizontalScrollIndicator={false}
             ListHeaderComponent={() => {
               if (castLoading) {
                 return (

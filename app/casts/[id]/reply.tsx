@@ -113,6 +113,7 @@ function CastReplyWithData({
         options={{
           title: "Cast",
           headerShadowVisible: false,
+          contentStyle: { backgroundColor: "white" },
           headerLeft: () => {
             return (
               <View className="w-fit p-3 ">
