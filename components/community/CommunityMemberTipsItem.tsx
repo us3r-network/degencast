@@ -16,7 +16,7 @@ export default function CommunityMemberTipsItem({
   const handle = memberTips?.username || "";
   const avatar =
     memberTips?.pfp ||
-    `https://ui-avatars.com/api/?name=${memberTips?.evmAddress?.slice(-2)}`;
+    `https://ui-avatars.com/api/?name=${memberTips?.evmAddress?.slice(-2) || ""}`;
   const tips = memberTips.tipsAmount || 0;
   return (
     <View className={cn("flex-row items-center gap-3", className)} {...props}>

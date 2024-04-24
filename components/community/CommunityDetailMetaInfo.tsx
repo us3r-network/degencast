@@ -16,7 +16,7 @@ export default function CommunityDetailMetaInfo({
   const { totalNumber, newPostNumber } = memberInfo || {};
   return (
     <View className={cn("flex-row gap-5", className)} {...props}>
-      <Avatar alt={name || ""} className=" size-20">
+      <Avatar alt={name || ""} className=" size-20 border border-secondary">
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="border-primary bg-secondary">
           <Text className="text-sm font-bold">{name}</Text>

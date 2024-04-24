@@ -37,6 +37,7 @@ function HasSubjectAddress() {
     <View className="flex-1 flex-col">
       <View className="flex-1">
         <FlatList
+          showsHorizontalScrollIndicator={false}
           ListHeaderComponent={() => {
             return (
               <View className="mb-5 flex-row justify-between">
@@ -70,14 +71,14 @@ function HasSubjectAddress() {
             ) : null;
           }}
           ListEmptyComponent={() => {
+            if (loading) return null;
             return (
-              <View className=" mx-auto max-w-72 flex-col items-center gap-8">
+              <View className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8">
                 <Image
-                  className="mt-20"
                   source={require("~/assets/images/no-shares.png")}
                   style={{ width: 280, height: 280 }}
                 />
-                <Text className=" text-xl font-bold text-primary">
+                <Text className=" text-center text-xl font-bold text-primary">
                   Congratulations!
                 </Text>
                 <Text className="text-center text-base leading-8 text-secondary">
@@ -97,9 +98,8 @@ function HasSubjectAddress() {
 
 function NoSubjectAddress() {
   return (
-    <View className=" mx-auto max-w-72 flex-col items-center gap-8">
+    <View className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8">
       <Image
-        className="mt-20"
         source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
       />

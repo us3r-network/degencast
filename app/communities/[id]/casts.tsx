@@ -28,11 +28,13 @@ export default function CastsScreen() {
           data={casts}
           numColumns={2}
           columnWrapperStyle={{ gap: 5 }}
+          showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
           renderItem={({ item }) => {
             const { data, platform, community } = item;
             return (
               <Pressable
+                className="flex-1"
                 onPress={() => {
                   const castHex = getCastHex(data);
                   navigateToCastDetail(castHex, {

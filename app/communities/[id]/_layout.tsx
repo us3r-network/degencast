@@ -6,7 +6,7 @@ import {
   useSegments,
   useNavigation,
 } from "expo-router";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import { Share2 } from "~/components/common/Icons";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
@@ -58,7 +58,12 @@ export default function CommunityDetail() {
   const params = useLocalSearchParams();
   const { id } = params;
   const segments = useSegments();
-  const activeScreen = segments[2] || initialRouteName;
+  const [activeScreen, setActiveScreen] = useState(initialRouteName);
+  useEffect(() => {
+    if (segments?.[2]) {
+      setActiveScreen(segments[2]);
+    }
+  }, [segments]);
   const router = useRouter();
   const { community, loading, loadCommunity } = useLoadCommunityDetail();
   useEffect(() => {
@@ -123,6 +128,7 @@ export default function CommunityDetail() {
               <Tabs
                 value={activeScreen}
                 onValueChange={(value) => {
+                  setActiveScreen(value);
                   router.push(`/communities/${id}/${value}` as any);
                 }}
                 className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2"
@@ -153,6 +159,7 @@ export default function CommunityDetail() {
                     initialRouteName={initialRouteName}
                     screenOptions={{
                       header: () => null,
+                      contentStyle: { backgroundColor: "white" },
                     }}
                   />
                 </CommunityContext.Provider>
