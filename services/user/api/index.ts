@@ -19,7 +19,7 @@ export function login(): RequestPromise<ApiResp<LoginRespEntity>> {
   });
 }
 
-export function postUserActions(actions: any[]) {
+export function postUserActions(actions: UserActionData[]) {
   return request({
     url: `/degencast-users/actions`,
     method: "post",

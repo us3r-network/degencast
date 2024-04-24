@@ -16,6 +16,7 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
 import { CommunityData } from "~/services/community/api/community";
 import {
@@ -53,9 +54,10 @@ export function useCommunityCtx() {
 }
 
 export default function CommunityDetail() {
+  const { currFid } = useFarcasterAccount();
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
   const segments = useSegments();
   const [activeScreen, setActiveScreen] = useState(initialRouteName);
@@ -67,7 +69,7 @@ export default function CommunityDetail() {
   const router = useRouter();
   const { community, loading, loadCommunity } = useLoadCommunityDetail();
   useEffect(() => {
-    loadCommunity(id as string);
+    loadCommunity(id);
   }, [id]);
 
   return (
@@ -112,8 +114,12 @@ export default function CommunityDetail() {
                   warpcastText={getCommunityShareTextWithWarpcast(
                     community?.name || "",
                   )}
-                  websiteLink={getCommunityWebsiteLink(id as string)}
-                  frameLink={getCommunityFrameLink(id as string)}
+                  websiteLink={getCommunityWebsiteLink(id, {
+                    fid: currFid,
+                  })}
+                  frameLink={getCommunityFrameLink(id, {
+                    fid: currFid,
+                  })}
                 />
               </View>
             </View>

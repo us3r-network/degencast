@@ -19,10 +19,7 @@ export enum UserActionName {
 export type UserActionData = {
   action: UserActionName;
   castHash?: string;
-  data?: {
-    type: string;
-    value: any;
-  };
+  data?: any;
 };
 
 export type UserActionPointConfig = {

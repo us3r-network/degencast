@@ -9,12 +9,16 @@ import { configureStore } from "@reduxjs/toolkit";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import userAction from "~/features/user/userActionSlice";
+import inviteCode from "~/features/user/inviteCodeSlice";
+import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 
 export const store = configureStore({
   reducer: {
     joinCommunity,
     userAction,
+    inviteCode,
+    userAuth,
     warpcastChannels,
     castPage,
   },

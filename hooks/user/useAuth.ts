@@ -1,18 +1,25 @@
 import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ApiRespCode } from "~/services/shared/types";
 import { login as signupDegencast } from "~/services/user/api";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import {
+  selectUserAuth,
+  setDegencastId,
+  setJustRegistered,
+} from "~/features/user/userAuthSlice";
 
 export default function useAuth() {
   const { user: privyUser, authenticated: privyAuthenticated } = usePrivy();
-  // todo: make this global if needed
-  const [degencastId, setDegencastId] = useState<number | null>(null);
+  const dispatch = useAppDispatch();
+
+  const { degencastId, justRegistered } = useAppSelector(selectUserAuth);
 
   const syncDegencastId = async (privyDid: string) => {
     const existId = await AsyncStorage.getItem(`degencastId_${privyDid}`);
     if (existId) {
-      setDegencastId(parseInt(existId));
+      dispatch(setDegencastId(parseInt(existId)));
     } else {
       const resp = await signupDegencast();
       console.log("login resp", resp);
@@ -20,7 +27,8 @@ export default function useAuth() {
         const id = resp.data?.data?.id;
         if (id) {
           await AsyncStorage.setItem(`degencastId_${privyDid}`, id.toString());
-          setDegencastId(id);
+          dispatch(setJustRegistered(true));
+          dispatch(setDegencastId(id));
         }
       } else {
         console.log("degencast login error: ", resp);
@@ -35,8 +43,17 @@ export default function useAuth() {
     }
   }, [privyAuthenticated, degencastId]);
 
+  useEffect(() => {
+    if (!privyAuthenticated) {
+      dispatch(setJustRegistered(false));
+      dispatch(setDegencastId(""));
+    }
+  }, [privyAuthenticated]);
+
   return {
     // user: { ...privyUser, degencastId },
     authenticated: privyAuthenticated && degencastId,
+    degencastId,
+    justRegistered,
   };
 }

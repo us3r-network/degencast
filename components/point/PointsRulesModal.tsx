@@ -32,7 +32,7 @@ export default function PointsRulesModal({
 }) {
   const { login } = usePrivy();
   const { authenticated } = useAuth();
-  const { signerPublicKey } = useFarcasterAccount();
+  const { signerPublicKey, currFid } = useFarcasterAccount();
   const { prepareWrite: connectFarcaster } = useFarcasterWrite();
   const router = useRouter();
   const { actionPointConfig } = useUserAction();
@@ -138,8 +138,12 @@ export default function PointsRulesModal({
           onOpenChange={(open) => setOpenShare(open)}
           twitterText={getAppShareTextWithTwitter()}
           warpcastText={getAppShareTextWithWarpcast()}
-          websiteLink={getAppWebsiteLink()}
-          frameLink={getAppFrameLink()}
+          websiteLink={getAppWebsiteLink({
+            fid: currFid,
+          })}
+          frameLink={getAppFrameLink({
+            fid: currFid,
+          })}
           navigateToCreatePageAfter={() => {
             onOpenChange(false);
           }}
