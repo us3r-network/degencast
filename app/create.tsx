@@ -13,6 +13,7 @@ import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannel
 import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
 import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
+import Toast from "react-native-toast-message";
 
 const HomeChanel = {
   id: "",
@@ -37,6 +38,8 @@ export default function CreateScreen() {
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
   const { login, ready, user } = usePrivy();
 
+  const fid = user?.farcaster?.fid;
+
   return (
     <SafeAreaView id="ss" className="h-full">
       <Stack.Screen
@@ -60,28 +63,45 @@ export default function CreateScreen() {
             );
           },
           headerRight: () => {
+            if (!fid) {
+              return null;
+            }
             return (
               <View className="w-fit p-3 ">
                 <Button
                   className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
                   size={"icon"}
                   variant={"ghost"}
-                  onPress={() => {
-                    submitCast({
+                  onPress={async () => {
+                    const data = {
                       text: value,
                       embeds: [
-                        ...embeds,
+                        ...(embeds || []),
                         ...images.map((item) => {
                           return { url: item };
                         }),
                       ],
                       channel: channel.url,
-                    }).then(() => {
-                      console.log("Cast submitted");
+                    };
+                    console.log("Submitting cast", data);
+                    const result = await submitCast(data);
+
+                    console.log("Cast submitted", result);
+                    if (result?.hash) {
                       setValue("");
                       setImages([]);
                       setChannel(HomeChanel);
-                    });
+                      Toast.show({
+                        type: "postToast",
+                        props: {
+                          hash: result?.hash,
+                          fid: fid,
+                        },
+                        // position: "bottom",
+                      });
+
+                      navigation.goBack();
+                    }
                   }}
                 >
                   <PostIcon />
@@ -92,10 +112,10 @@ export default function CreateScreen() {
         }}
       />
       <View
-        className="m-auto h-full w-full  space-y-2 md:w-[500px]"
+        className="m-auto h-full w-full space-y-2 bg-white md:w-[500px]"
         id="create-view"
       >
-        {(!user?.farcaster?.signerPublicKey && (
+        {(!fid && (
           <View className="flex-1 p-4 pt-16">
             <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
               <Text className="text-primary-foreground">
