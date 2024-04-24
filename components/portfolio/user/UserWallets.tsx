@@ -43,27 +43,24 @@ import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function Wallets() {
-  const { ready, user } = usePrivy();
+  const { ready } = usePrivy();
   const { authenticated } = useAuth();
+
   const { setActiveWallet } = useSetActiveWallet();
-
-  const linkedWallets = useMemo(
-    () => (user ? getUserWallets(user) : []),
-    [user],
-  );
   const { wallets: connectedWallets } = useWallets();
-  const unconnectedWallets = useMemo(() => {
-    return linkedWallets.filter(
-      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-    );
-  }, [linkedWallets, connectedWallets]);
-
   const { address: activeWalletAddress } = useAccount();
   const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    return connectedWallets.find(
+    console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    if (!connectedWallets?.length) return undefined;
+    const currentWallet = connectedWallets.find(
       (wallet) => wallet.address === activeWalletAddress,
     );
+    if (currentWallet) return currentWallet;
+    const firstInjectedWallet = connectedWallets.find(
+      (wallet) => wallet.connectorType === "injected",
+    );
+    if (firstInjectedWallet) return firstInjectedWallet;
+    return connectedWallets[0];
   }, [connectedWallets, activeWalletAddress]);
 
   if (!ready || !authenticated) {
@@ -85,7 +82,7 @@ export default function Wallets() {
     >
       <SelectTrigger className={cn("w-full rounded-full bg-white/50")}>
         <View className="mr-2 flex-row items-center gap-2">
-          <Wallet className="size-4 text-primary" />
+          <WalletIcon type={activeWallet?.walletClientType || ""} />
           <Text className="font-bold text-primary">
             {shortPubKey(activeWallet?.address || "")}
           </Text>
@@ -95,7 +92,7 @@ export default function Wallets() {
         <View className="flex w-60 items-start gap-4 divide-solid">
           <Catalog
             title="Connected Wallets"
-            icon={<Wallet className="size-4" />}
+            icon={<Wallet className="size-6" />}
           >
             <SelectGroup className={cn("flex gap-2")}>
               {connectedWallets.map((wallet) => (
@@ -123,7 +120,7 @@ export default function Wallets() {
               ))}
             </SelectGroup>
           </Catalog>
-          <Catalog title="Linked Wallets" icon={<Wallet className="size-4" />}>
+          <Catalog title="Linked Wallets" icon={<Wallet className="size-6" />}>
             <LinkWallets />
           </Catalog>
           <Catalog
@@ -167,32 +164,37 @@ function WalletIcon({ type }: { type: string | undefined }) {
     case "privy":
       return (
         <Image
-          style={{ width: 16, height: 16 }}
+          style={{ width: 24, height: 24 }}
           source={require("~/assets/images/privy-icon.webp")}
         />
       );
     case "metamask":
       return (
         <Image
-          style={{ width: 16, height: 16 }}
+          style={{ width: 24, height: 24 }}
           source={require("~/assets/images/metamask-icon.svg")}
         />
       );
     default:
-      return <Wallet className="size-4" />;
+      return <Wallet className="size-6" />;
   }
 }
 
 function LinkWallets() {
   const { user, linkWallet, unlinkWallet } = usePrivy();
   const { connectWallet } = useConnectWallet();
-
+  const { wallets: connectedWallets } = useWallets();
+  // const unconnectedWallets = useMemo(() => {
+  //   return linkedWallets.filter(
+  //     (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+  //   );
+  // }, [linkedWallets, connectedWallets]);
   const linkedWallets = useMemo(
     () => (user ? getUserWallets(user) : []),
     [user],
   );
+
   if (!user) return null;
-  console.log("linkedWallets", linkedWallets);
   return (
     <View className="flex w-full gap-2">
       {linkedWallets.map((wallet) => (
@@ -234,34 +236,47 @@ function LinkWallets() {
             </View>
           ) : (
             <View className="flex-row gap-2">
-              <Tooltip delayDuration={150}>
-                <TooltipTrigger asChild>
-                  <Pressable
-                    className="flex-row items-center gap-2"
-                    onPress={async (event) => {
-                      await connectWallet();
-                    }}
-                  >
-                    <Plug className="size-4" />
-                  </Pressable>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <Text>Connect Linked Wallet Address</Text>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip delayDuration={150}>
-                <TooltipTrigger asChild>
-                  <UnlinkButton
-                    action={() => {
-                      console.log("unlinking wallet", wallet.address);
-                      unlinkWallet(wallet.address);
-                    }}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <Text>Unlink Wallet</Text>
-                </TooltipContent>
-              </Tooltip>
+              {connectedWallets.find((w) => w.address === wallet.address) ? (
+                <Tooltip delayDuration={150}>
+                  <TooltipTrigger asChild>
+                    <Pressable
+                      disabled
+                      className="flex-row items-center gap-2"
+                      onPress={async (event) => {
+                        await connectWallet();
+                      }}
+                    >
+                      <Plug className="size-4" fill="secondary" />
+                    </Pressable>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <Text>Connected Wallet</Text>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip delayDuration={150}>
+                  <TooltipTrigger asChild>
+                    <Pressable
+                      className="flex-row items-center gap-2"
+                      onPress={async (event) => {
+                        await connectWallet();
+                      }}
+                    >
+                      <Plug className="size-4" />
+                    </Pressable>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <Text>Connect This Linked Wallet</Text>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+
+              <UnlinkButton
+                action={() => {
+                  console.log("unlinking wallet", wallet.address);
+                  unlinkWallet(wallet.address);
+                }}
+              />
             </View>
           )}
         </View>
@@ -272,10 +287,9 @@ function LinkWallets() {
         onPress={linkWallet}
       >
         <View className="flex-row items-center gap-2">
-          <Wallet className="size-4" />
+          <PlusCircle className="size-6" />
           <Text>Link a wallet</Text>
         </View>
-        <PlusCircle className="size-4" />
       </Pressable>
     </View>
   );
@@ -283,13 +297,13 @@ function LinkWallets() {
 
 function FarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
-  const farcasterAccount = getUserFarcasterAccount(user);
   if (!user) return null;
+  const farcasterAccount = getUserFarcasterAccount(user);
   if (farcasterAccount?.fid) {
     return (
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Avatar alt={farcasterAccount.username || ""} className="size-4">
+          <Avatar alt={farcasterAccount.username || ""} className="size-6">
             <AvatarImage source={{ uri: farcasterAccount.pfp || "" }} />
             <AvatarFallback className="bg-white">
               <User className="size-12 fill-primary/80 font-bold text-primary" />
@@ -299,20 +313,12 @@ function FarcasterAccount() {
             {farcasterAccount.displayName || farcasterAccount.username}
           </Text>
         </View>
-        <Tooltip delayDuration={150}>
-          <TooltipTrigger asChild>
-            <UnlinkButton
-              action={() => {
-                console.log("unlinking farcaster", farcasterAccount.fid);
-                if (farcasterAccount?.fid)
-                  unlinkFarcaster(farcasterAccount.fid);
-              }}
-            />
-          </TooltipTrigger>
-          <TooltipContent>
-            <Text>Unlink Farcaster Account</Text>
-          </TooltipContent>
-        </Tooltip>
+        <UnlinkButton
+          action={() => {
+            console.log("unlinking farcaster", farcasterAccount.fid);
+            if (farcasterAccount?.fid) unlinkFarcaster(farcasterAccount.fid);
+          }}
+        />
       </View>
     );
   } else {
@@ -322,13 +328,10 @@ function FarcasterAccount() {
         onPress={linkFarcaster}
       >
         <View className="flex-row items-center gap-2">
-          <Image
-            source={require("~/assets/images/farcaster.png")}
-            style={{ width: 16, height: 16 }}
-          />
+          <PlusCircle className="size-6" />
           <Text>Link a Farcaster</Text>
         </View>
-        <PlusCircle className="size-4" />
+        <PlusCircle className="size-6" />
       </Pressable>
     );
   }
@@ -339,9 +342,16 @@ function UnlinkButton({ action }: { action: () => void }) {
   return (
     <AlertDialog open={open}>
       <AlertDialogTrigger>
-        <Pressable onPress={() => setOpen(true)}>
-          <MinusCircle className="size-4" />
-        </Pressable>
+        <Tooltip delayDuration={150}>
+          <TooltipTrigger asChild>
+            <Pressable onPress={() => setOpen(true)}>
+              <MinusCircle className="size-4" />
+            </Pressable>
+          </TooltipTrigger>
+          <TooltipContent>
+            <Text>Unlink</Text>
+          </TooltipContent>
+        </Tooltip>
       </AlertDialogTrigger>
       <AlertDialogContent className="w-screen">
         <AlertDialogHeader>
@@ -380,7 +390,7 @@ function LogoutButton() {
           className="w-full flex-row items-center gap-2"
           onPress={() => setOpen(true)}
         >
-          <LogOut className="size-4" />
+          <LogOut className="size-6" />
           <Text className="font-bold">Logout</Text>
         </Pressable>
       </AlertDialogTrigger>
