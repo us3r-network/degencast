@@ -64,6 +64,7 @@ import {
   TrendingUp,
   TrendingDown,
   Repeat,
+  Plug,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -143,6 +144,7 @@ interopIcon(Minus);
 interopIcon(TrendingUp);
 interopIcon(TrendingDown);
 interopIcon(Repeat);
+interopIcon(Plug);
 export {
   Activity,
   Airplay,
@@ -208,4 +210,5 @@ export {
   TrendingUp,
   TrendingDown,
   Repeat,
+  Plug,
 };
