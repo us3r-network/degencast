@@ -10,6 +10,7 @@ import {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Atom,
   Baby,
   BadgeAlert,
@@ -148,6 +149,7 @@ interopIcon(Repeat);
 interopIcon(Plug);
 interopIcon(Cable);
 interopIcon(Edit);
+interopIcon(ArrowUpDown);
 export {
   Activity,
   Airplay,
@@ -160,6 +162,7 @@ export {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Atom,
   Baby,
   BadgeAlert,

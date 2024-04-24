@@ -223,7 +223,7 @@ function LinkWallets() {
                   </Pressable>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <Text>Copy Privy Embeded Wallet Address</Text>
+                  <Text>Copy the embeded wallet address and paste it into your crypto wallet to transfer. </Text>
                 </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={150}>

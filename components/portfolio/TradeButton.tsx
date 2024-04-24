@@ -16,6 +16,8 @@ import { TokenInfoWithMetadata } from "~/services/user/types";
 import About from "../common/About";
 import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
+import { ArrowUpDown } from "../common/Icons";
+import { Separator } from "../ui/separator";
 
 export default function TradeButton({
   fromToken,
@@ -40,7 +42,10 @@ export default function TradeButton({
         <DialogHeader>
           <DialogTitle>Trade</DialogTitle>
         </DialogHeader>
-        <SwapToken fromToken={fromToken} toToken={toToken} />
+        <SwapToken
+          token1={fromToken}
+          token2={toToken || NATIVE_TOKEN_METADATA}
+        />
         <View className="p-4">
           <About title="Swap & Earn" info={TRADE_INFO} />
         </View>
@@ -49,24 +54,42 @@ export default function TradeButton({
   );
 }
 
-const TRADE_INFO = ["Swap 0.01 ETH = 500 Points"];
+const TRADE_INFO = [
+  "For a one-time swap of token worth 30 USD, earn 500 points.",
+];
 
 function SwapToken({
-  fromToken,
-  toToken,
+  token1,
+  token2,
 }: {
-  fromToken: TokenInfoWithMetadata;
-  toToken?: TokenInfoWithMetadata;
+  token1: TokenInfoWithMetadata;
+  token2: TokenInfoWithMetadata;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
+  const [fromToken, setFromToken] = useState(token1);
+  const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState("0");
   const [toAmount, setToAmount] = useState(0);
   return (
-    <View className="flex w-full gap-4">
+    <View className="flex w-full gap-2">
       <Token token={fromToken} />
+      <View className="flex-row items-center">
+        <Separator className="flex-1 text-secondary" />
+        <Button
+          className="size-10 rounded-full border-2 border-secondary text-secondary"
+          onPress={() => {
+            setFromToken(toToken);
+            setToToken(fromToken);
+          }}
+        >
+          <ArrowUpDown />
+        </Button>
+        <Separator className="flex-1 text-secondary" />
+      </View>
       <Token token={toToken || NATIVE_TOKEN_METADATA} />
       <Button
         variant="secondary"
+        className="mt-6"
         onPress={() => {
           // switchChain({ chainId: toChain });
         }}
@@ -81,24 +104,24 @@ function Token({ token }: { token: TokenInfoWithMetadata }) {
   const [amount, setAmount] = useState("0");
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
-    <View className="flex-row items-start justify-between">
-      <View>
+    <View className="flex gap-2">
+      <View className="flex-row items-start justify-between">
         <TokenInfo name={token.name} logo={token.logo} />
-        {token.symbol && token.balance && (
-          <Text>
-            Balance: {token.balance}
-            {token.symbol}
-          </Text>
-        )}
-      </View>
-      <View className="flex gap-2">
         <Input
-          className={cn("w-10 text-white")}
+          className={cn(
+            "max-w-40 rounded-full border-none bg-secondary/20 text-end text-white",
+          )}
           inputMode="numeric"
           value={amount}
           onChangeText={setAmount}
         />
-        {amount && price && (
+      </View>
+      <View className="flex-row items-start justify-between">
+        <Text>
+          Balance: {token.balance || 0}
+          {token.symbol}
+        </Text>
+        {amount && price > 0 && (
           <Text>
             {new Intl.NumberFormat("en-US", {
               style: "currency",
