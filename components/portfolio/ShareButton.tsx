@@ -82,6 +82,7 @@ export function SellButton({
             <Text className="text-sm">{balance} shares</Text>
           </View>
           <ToeknSelect
+            hidden
             chain={SHARE_CONTRACT_CHAIN}
             supportTokenKeys={SHARE_SUPPORT_TOKENS}
             selectToken={setToken}

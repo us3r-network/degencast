@@ -11,9 +11,10 @@ export enum TOKENS {
 }
 
 export default function useUserTokens(
-  address: `0x${string}`,
+  address: `0x${string}` | undefined,
   chainId: number = base.id,
 ) {
+  if (!address) return { userTokens: new Map<TOKENS, TokenInfoWithMetadata>() };
   const { data: nativeToken } = useBalance({
     address,
     chainId,
