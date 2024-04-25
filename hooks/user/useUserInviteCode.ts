@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { useGlobalSearchParams } from "expo-router";
 import {
   selectInviteCode,
-  setUsedOtherInviteFid,
-  clearUsedOtherInviteFid,
+  setUsedInviterFid,
+  clearUsedInviterFid,
 } from "~/features/user/inviteCodeSlice";
 
 export default function useUserInviteCode() {
@@ -13,20 +13,20 @@ export default function useUserInviteCode() {
 
   const dispatch = useAppDispatch();
 
-  const { usedOtherInviteFid } = useAppSelector(selectInviteCode);
+  const { usedInviterFid } = useAppSelector(selectInviteCode);
 
   const checkInviteLinkParams = useCallback(async () => {
-    if (usedOtherInviteFid || !linkParamInviteFid) return;
-    dispatch(setUsedOtherInviteFid(linkParamInviteFid));
-  }, [linkParamInviteFid, usedOtherInviteFid]);
+    if (usedInviterFid || !linkParamInviteFid) return;
+    dispatch(setUsedInviterFid(linkParamInviteFid));
+  }, [linkParamInviteFid, usedInviterFid]);
 
-  const clearUsedOtherInviteData = useCallback(async () => {
-    dispatch(clearUsedOtherInviteFid());
+  const clearUsedInviterData = useCallback(async () => {
+    dispatch(clearUsedInviterFid());
   }, []);
 
   return {
-    usedOtherInviteFid,
+    usedInviterFid,
     checkInviteLinkParams,
-    clearUsedOtherInviteData,
+    clearUsedInviterData,
   };
 }

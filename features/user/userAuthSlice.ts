@@ -1,14 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
+import { AsyncRequestStatus } from "~/services/shared/types";
 
 type UserAuthState = {
   degencastId: string | number;
-  justRegistered: boolean;
+  degencastLoginRequestStatus: AsyncRequestStatus;
 };
 
 const userAuthState: UserAuthState = {
   degencastId: "",
-  justRegistered: false,
+  degencastLoginRequestStatus: AsyncRequestStatus.IDLE,
 };
 
 export const userAuthSlice = createSlice({
@@ -24,16 +25,20 @@ export const userAuthSlice = createSlice({
     clearDegencastId: (state: UserAuthState) => {
       state.degencastId = "";
     },
-    setJustRegistered: (
+    setDegencastLoginRequestStatus: (
       state: UserAuthState,
-      action: PayloadAction<boolean>,
+      action: PayloadAction<AsyncRequestStatus>,
     ) => {
-      state.justRegistered = action.payload;
+      state.degencastLoginRequestStatus = action.payload;
     },
   },
 });
 
 const { actions, reducer } = userAuthSlice;
-export const { setDegencastId, clearDegencastId, setJustRegistered } = actions;
+export const {
+  setDegencastId,
+  clearDegencastId,
+  setDegencastLoginRequestStatus,
+} = actions;
 export const selectUserAuth = (state: RootState) => state.userAuth;
 export default reducer;

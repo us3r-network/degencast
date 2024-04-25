@@ -9,10 +9,16 @@ import {
   UserActionPointConfig,
 } from "../types";
 
-export function login(): RequestPromise<ApiResp<LoginRespEntity>> {
+export function login(params?: {
+  inviterFid: string | number;
+}): RequestPromise<ApiResp<LoginRespEntity>> {
+  const { inviterFid } = params || {};
   return request({
     url: `degencast-users/login`,
     method: "post",
+    params: {
+      ...(inviterFid ? { inviterFid } : {}),
+    },
     headers: {
       needToken: true,
     },
