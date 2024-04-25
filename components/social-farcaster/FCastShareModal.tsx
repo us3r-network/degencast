@@ -13,6 +13,7 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 export default function FCastShareModal({
   cast,
@@ -23,6 +24,7 @@ export default function FCastShareModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { currFid } = useFarcasterAccount();
   const { actionPointConfig } = useUserAction();
   const {
     Invite: { unit: inviteUnit },
@@ -47,7 +49,9 @@ export default function FCastShareModal({
     }
   };
 
-  const castWebLink = getCastDetailWebsiteLink(castHex);
+  const castWebLink = getCastDetailWebsiteLink(castHex, {
+    fid: currFid,
+  });
 
   const onTwitterShare = () => {
     openTwitterCreateTweet(

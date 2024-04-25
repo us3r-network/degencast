@@ -8,7 +8,6 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
-import castPage from "~/features/cast/castPageSlice";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import communityRank from "~/features/trade/communityRankSlice";
@@ -17,6 +16,9 @@ import communityTokens from "~/features/trade/communityTokensSlice";
 import userCommunityShares from "~/features/user/communitySharesSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
 import userAction from "~/features/user/userActionSlice";
+import inviteCode from "~/features/user/inviteCodeSlice";
+import userAuth from "~/features/user/userAuthSlice";
+import castPage from "~/features/cast/castPageSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -25,6 +27,8 @@ export const store = configureStore({
   reducer: {
     joinCommunity,
     userAction,
+    inviteCode,
+    userAuth,
     warpcastChannels,
     castPage,
     communityTokens,
