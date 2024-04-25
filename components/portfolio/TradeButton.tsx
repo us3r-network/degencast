@@ -1,36 +1,31 @@
-import { LiFiWidget, WidgetConfig } from "@lifi/widget";
 // import { useSwitchChain } from "wagmi";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, NATIVE_TOKEN } from "~/constants";
-import About from "../common/About";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Text } from "~/components/ui/text";
+import { NATIVE_TOKEN_METADATA } from "~/constants";
 import { cn } from "~/lib/utils";
+import { TokenInfoWithMetadata } from "~/services/user/types";
+import About from "../common/About";
+import { TokenInfo } from "../common/TokenInfo";
+import { Input } from "../ui/input";
+import { ArrowUpDown } from "../common/Icons";
+import { Separator } from "../ui/separator";
 
 export default function TradeButton({
-  fromChain,
   fromToken,
-  toChain = DEFAULT_CHAIN.id,
-  toToken = NATIVE_TOKEN,
+  toToken,
 }: {
-  fromChain: number;
-  fromToken: `0x${string}`;
-  toChain?: number;
-  toToken?: `0x${string}`;
+  fromToken: TokenInfoWithMetadata;
+  toToken?: TokenInfoWithMetadata;
 }) {
-  // return (
-  //   <Button
-  //     variant={"secondary"}
-  //     onPress={() => {
-  //       console.log("Trade button pressed");
-  //       Linking.openURL("https://app.uniswap.org/");
-  //     }}
-  //   >
-  //     <Text className="text-xs font-bold text-secondary-foreground">Trade</Text>
-  //   </Button>
-  // );
-  // const { switchChain } = useSwitchChain();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -43,12 +38,13 @@ export default function TradeButton({
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-screen border-none p-2">
-        <Trade
-          fromChain={fromChain}
-          fromToken={fromToken}
-          toChain={toChain}
-          toToken={toToken}
+      <DialogContent className="w-screen border-none">
+        <DialogHeader>
+          <DialogTitle>Trade</DialogTitle>
+        </DialogHeader>
+        <SwapToken
+          token1={fromToken}
+          token2={toToken || NATIVE_TOKEN_METADATA}
         />
         <View className="p-4">
           <About title="Swap & Earn" info={TRADE_INFO} />
@@ -58,46 +54,104 @@ export default function TradeButton({
   );
 }
 
-const TRADE_INFO = ["Swap 0.01 ETH = 500 Points"];
+const TRADE_INFO = [
+  "For a one-time swap of token worth 30 USD, earn 500 points.",
+];
 
-function Trade({
-  fromChain,
-  fromToken,
-  toChain,
-  toToken,
+function SwapToken({
+  token1,
+  token2,
 }: {
-  fromChain: number;
-  fromToken: `0x${string}`;
-  toChain: number;
-  toToken: `0x${string}`;
+  token1: TokenInfoWithMetadata;
+  token2: TokenInfoWithMetadata;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
-  const DEFAULT_WIDGET_CONFIG: WidgetConfig = {
-    integrator: "DegenCast/US3R.NETWORK",
-    fromChain,
-    fromToken,
-    toChain,
-    toToken,
-    theme: {
-      palette: {
-        primary: {
-          main: "#A36EFE",
-        },
-        background: {
-          paper: "#4C2896", // bg color for cards
-          default: "#4C2896",
-        },
-        text: {
-          primary: "#fff",
-          secondary: "#A36EFE",
-        },
-      },
-    },
+  const [fromToken, setFromToken] = useState(token1);
+  const [toToken, setToToken] = useState(token2);
+  const [fromAmount, setFromAmount] = useState("0");
+  const [toAmount, setToAmount] = useState("0");
+  const fetchTransactionInfo = (amount: string) => {
+    console.log("fetchTransactionInfo", amount);
+    setFromAmount(amount);
+    setToAmount(amount);
   };
   return (
-    <LiFiWidget
-      integrator="DegenCast/US3R.NETWORK"
-      config={DEFAULT_WIDGET_CONFIG}
-    />
+    <View className="flex w-full gap-2">
+      <Token
+        token={fromToken}
+        amount={fromAmount}
+        setAmount={fetchTransactionInfo}
+      />
+      <View className="flex-row items-center">
+        <Separator className="flex-1 text-secondary" />
+        <Button
+          className="size-10 rounded-full border-2 border-secondary text-secondary"
+          onPress={() => {
+            setFromToken(toToken);
+            setToToken(fromToken);
+          }}
+        >
+          <ArrowUpDown />
+        </Button>
+        <Separator className="flex-1 text-secondary" />
+      </View>
+      <Token
+        token={toToken || NATIVE_TOKEN_METADATA}
+        amount={toAmount}
+      />
+      <Button
+        variant="secondary"
+        className="mt-6"
+        onPress={() => {
+          // switchChain({ chainId: toChain });
+        }}
+      >
+        <Text>Swap</Text>
+      </Button>
+    </View>
+  );
+}
+
+function Token({
+  token,
+  amount,
+  setAmount,
+}: {
+  token: TokenInfoWithMetadata;
+  amount?: string;
+  setAmount?: (amount: string) => void;
+}) {
+  const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
+  return (
+    <View className="flex gap-2">
+      <View className="flex-row items-start justify-between">
+        <TokenInfo name={token.name} logo={token.logo} />
+        <Input
+          editable={!!setAmount}
+          className={cn(
+            "max-w-40 rounded-full border-none bg-secondary/20 text-end text-white",
+          )}
+          inputMode="numeric"
+          defaultValue="0"
+          value={amount}
+          onChangeText={setAmount}
+        />
+      </View>
+      <View className="flex-row items-start justify-between">
+        <Text>
+          Balance: {token.balance || 0}
+          {token.symbol}
+        </Text>
+        {amount && price > 0 && (
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              notation: "compact",
+            }).format(Number(amount) * price)}
+          </Text>
+        )}
+      </View>
+    </View>
   );
 }

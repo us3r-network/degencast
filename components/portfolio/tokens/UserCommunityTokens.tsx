@@ -12,7 +12,7 @@ import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import TradeButton from "../TradeButton";
+import TradeButton from "../TradeButton_lifi";
 import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;

@@ -10,6 +10,7 @@ import {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Atom,
   Baby,
   BadgeAlert,
@@ -64,6 +65,8 @@ import {
   TrendingUp,
   TrendingDown,
   Repeat,
+  Plug,
+  Cable,Edit
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -143,6 +146,10 @@ interopIcon(Minus);
 interopIcon(TrendingUp);
 interopIcon(TrendingDown);
 interopIcon(Repeat);
+interopIcon(Plug);
+interopIcon(Cable);
+interopIcon(Edit);
+interopIcon(ArrowUpDown);
 export {
   Activity,
   Airplay,
@@ -155,6 +162,7 @@ export {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Atom,
   Baby,
   BadgeAlert,
@@ -208,4 +216,6 @@ export {
   TrendingUp,
   TrendingDown,
   Repeat,
+  Plug,
+  Cable,Edit
 };

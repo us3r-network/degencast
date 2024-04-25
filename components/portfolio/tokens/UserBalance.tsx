@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import TradeButton from "../TradeButton";
+import TradeButton from "../TradeButton_lifi";
 import WithdrawButton from "../WithdrawButton";
 import { cn } from "~/lib/utils";
 

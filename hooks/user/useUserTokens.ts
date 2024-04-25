@@ -2,7 +2,12 @@ import { useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
 import { base } from "viem/chains";
 import { useBalance, useReadContracts } from "wagmi";
-import { DEFAULT_CHAIN, DEGEN_ADDRESS, NATIVE_TOKEN } from "~/constants";
+import {
+  DEFAULT_CHAIN,
+  DEGEN_ADDRESS,
+  DEGEN_METADATA,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 
 export enum TOKENS {
@@ -56,24 +61,24 @@ export default function useUserTokens(
     if (nativeToken)
       tokens.set(TOKENS.NATIVE, {
         chainId: DEFAULT_CHAIN.id,
-        contractAddress: NATIVE_TOKEN,
-        name: "ETH",
+        contractAddress: NATIVE_TOKEN_METADATA.contractAddress,
+        name: NATIVE_TOKEN_METADATA.name,
         rawBalance: nativeToken.value,
         decimals: nativeToken.decimals,
         balance: formatUnits(nativeToken.value, nativeToken.decimals),
         symbol: nativeToken.symbol,
-        logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+        logo: NATIVE_TOKEN_METADATA.logo,
       });
     if (degenToken)
       tokens.set(TOKENS.DEGEN, {
         chainId: DEFAULT_CHAIN.id,
-        contractAddress: DEGEN_ADDRESS,
+        contractAddress: DEGEN_METADATA.contractAddress,
         name: degenToken[0],
         rawBalance: degenToken[1],
         decimals: degenToken[2],
         balance: formatUnits(degenToken[1], degenToken[2]),
         symbol: degenToken[3],
-        logo: "https://i.imgur.com/qLrLl4y_d.webp",
+        logo: DEGEN_METADATA.logo,
       });
     return tokens;
   }, [nativeToken, degenToken]);
