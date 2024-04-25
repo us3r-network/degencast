@@ -6,7 +6,8 @@ export function isImg(url?: string) {
     url.endsWith(".png") ||
     url.endsWith(".jpg") ||
     url.endsWith(".jpeg") ||
-    url.endsWith(".gif")
+    url.endsWith(".gif") ||
+    url.startsWith("https://imagedelivery")
   );
 }
 
@@ -42,7 +43,9 @@ export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
   const casts = [];
 
   for (const embed of embeds) {
-    if (embed?.castId) {
+    if (embed?.cast_id) {
+      casts.push(embed);
+    } else if (embed?.castId) {
       casts.push(embed);
     } else if (embed?.url) {
       if (isImg(embed.url)) {
