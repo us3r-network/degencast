@@ -12,7 +12,7 @@ import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import TradeButton from "../TradeButton_lifi";
+import TradeButton from "../TradeButton";
 import { Link } from "expo-router";
 
 const DEFAULT_ITEMS_NUM = 3;
@@ -71,8 +71,7 @@ function Item(item: TokenInfoWithMetadata) {
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">{round(Number(item.balance), 2)}</Text>
         <TradeButton
-          fromChain={item.chainId || DEFAULT_CHAIN.id}
-          fromToken={item.contractAddress as `0x${string}`}
+          fromToken={item}
         />
       </View>
     </View>

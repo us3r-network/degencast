@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { TokenInfoWithMetadata } from "~/services/user/types";
-import TradeButton from "../TradeButton_lifi";
+import TradeButton from "../TradeButton";
 import WithdrawButton from "../WithdrawButton";
 import { cn } from "~/lib/utils";
 
@@ -88,8 +88,7 @@ function MyToken({
           ) : (
             action === ACTION_TYPES.SWAP && (
               <TradeButton
-                fromChain={token.chainId}
-                fromToken={token.contractAddress as `0x${string}`}
+                fromToken={token}
               />
             )
           ))}
