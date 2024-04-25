@@ -35,6 +35,7 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
   const toekn: TokenInfoWithMetadata = {
     chainId: item.chain_id,
     contractAddress: item.tokenAddress,
+    decimals: 18,
     name: item.name,
     logo: item.imageURL,
     tradeInfo: item,

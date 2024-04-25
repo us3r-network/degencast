@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { NATIVE_TOKEN_METADATA } from "~/constants";
+import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import About from "../common/About";
@@ -18,6 +18,12 @@ import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { ArrowUpDown } from "../common/Icons";
 import { Separator } from "../ui/separator";
+import { getPrice, getQuote } from "~/services/trade/api/0x";
+import { parseUnits, formatUnits } from "viem";
+import { debounce } from "lodash";
+import { useAccount } from "wagmi";
+import useSwapToken from "~/hooks/trade/useSwapToken";
+import { Link } from "expo-router";
 
 export default function TradeButton({
   fromToken,
@@ -58,6 +64,7 @@ const TRADE_INFO = [
   "For a one-time swap of token worth 30 USD, earn 500 points.",
 ];
 
+const DEFAULT_AMOUNT = "0";
 function SwapToken({
   token1,
   token2,
@@ -66,21 +73,55 @@ function SwapToken({
   token2: TokenInfoWithMetadata;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
+  const account = useAccount();
   const [fromToken, setFromToken] = useState(token1);
   const [toToken, setToToken] = useState(token2);
-  const [fromAmount, setFromAmount] = useState("0");
-  const [toAmount, setToAmount] = useState("0");
-  const fetchTransactionInfo = (amount: string) => {
-    console.log("fetchTransactionInfo", amount);
-    setFromAmount(amount);
-    setToAmount(amount);
+  const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
+  const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
+
+  const {
+    fetchingPrice,
+    fetchPrice,
+    swapToken,
+    hash,
+    isConfirming,
+    isConfirmed,
+  } = useSwapToken(account.address);
+
+  useEffect(() => {
+    if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
+      return;
+    }
+    fetchPriceInfo(fromAmount);
+  }, [fromAmount]);
+
+  const fetchPriceInfo = async (amount: string) => {
+    console.log("fetchPriceInfo", amount);
+    const priceInfo = await fetchPrice({
+      sellToken: fromToken,
+      buyToken: toToken,
+      sellAmount: amount,
+    });
+    if (!priceInfo) return;
+    const { buyAmount } = priceInfo;
+    setToAmount(buyAmount);
   };
+
+  const swap = async () => {
+    console.log("swap", fromAmount);
+    swapToken({
+      sellToken: fromToken,
+      buyToken: toToken,
+      sellAmount: fromAmount,
+    });
+  };
+
   return (
     <View className="flex w-full gap-2">
       <Token
         token={fromToken}
         amount={fromAmount}
-        setAmount={fetchTransactionInfo}
+        setAmount={(amount) => setFromAmount(amount)}
       />
       <View className="flex-row items-center">
         <Separator className="flex-1 text-secondary" />
@@ -89,25 +130,42 @@ function SwapToken({
           onPress={() => {
             setFromToken(toToken);
             setToToken(fromToken);
+            setFromAmount(DEFAULT_AMOUNT);
+            setToAmount(DEFAULT_AMOUNT);
           }}
         >
           <ArrowUpDown />
         </Button>
         <Separator className="flex-1 text-secondary" />
       </View>
-      <Token
-        token={toToken || NATIVE_TOKEN_METADATA}
-        amount={toAmount}
-      />
+      <Token token={toToken || NATIVE_TOKEN_METADATA} amount={toAmount} />
       <Button
         variant="secondary"
         className="mt-6"
+        disabled={
+          fetchingPrice ||
+          Number(fromAmount) === 0 ||
+          Number(toAmount) === 0 ||
+          isConfirming
+        }
         onPress={() => {
-          // switchChain({ chainId: toChain });
+          swap();
         }}
       >
         <Text>Swap</Text>
       </Button>
+      {hash && (
+        <View className="flex gap-2">
+          <Text className="font-bold">Transaction Hash:</Text>
+          <Link
+            className="text-foreground/80"
+            href={`${DEFAULT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
+            target="_blank"
+          >
+            {hash}
+          </Link>
+        </View>
+      )}
     </View>
   );
 }
@@ -139,7 +197,7 @@ function Token({
       </View>
       <View className="flex-row items-start justify-between">
         <Text>
-          Balance: {token.balance || 0}
+          Balance: {token.balance || 0}{" "}
           {token.symbol}
         </Text>
         {amount && price > 0 && (
