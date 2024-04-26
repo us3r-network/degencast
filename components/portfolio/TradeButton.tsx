@@ -150,8 +150,9 @@ function SwapToken({
     hash,
     isConfirming,
     isConfirmed,
+    error,
   } = useSwapToken(account.address);
-
+  console.log(error);
   useEffect(() => {
     if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
       return;
@@ -224,12 +225,18 @@ function SwapToken({
         <View className="flex gap-2">
           <Text className="font-bold">Transaction Hash:</Text>
           <Link
-            className="text-foreground/80"
+            className="text-primary-foreground/80"
             href={`${DEFAULT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
             target="_blank"
           >
             {hash}
           </Link>
+        </View>
+      )}
+      {!!error && (
+        <View className="flex gap-2">
+          <Text className="font-bold text-destructive">Error: {error.name}</Text>
+          <Text className="text-destructive">Error: {error.message}</Text>
         </View>
       )}
     </View>

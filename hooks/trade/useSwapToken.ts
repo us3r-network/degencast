@@ -15,11 +15,19 @@ type SwapParams = {
 
 export default function useSwapToken(takerAddress?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
-  const { data: hash, sendTransaction } = useSendTransaction();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
+  const [error, setError] = useState<Error | null>();
+  const {
+    data: hash,
+    sendTransaction,
+    error: sendTransactionError,
+  } = useSendTransaction();
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: waitForTransactionReceiptError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const fetchPrice = async ({
     sellToken,
@@ -49,7 +57,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
       takerAddress,
     });
-    console.log("quote", price);
+    console.log("price", price);
     setFetchingPrice(false);
     if (!price) return;
     return {
@@ -75,19 +83,24 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     }
     console.log("start fetch quote from 0x");
     setFetchingPrice(true);
-    const quote = await getQuote({
-      sellToken: sellToken.address,
-      buyToken: buyToken.address,
-      sellAmount:
-        sellAmount &&
-        String(parseUnits(sellAmount, sellToken.decimals || DEFAULT_DECIMALS)),
-      buyAmount:
-        buyAmount &&
-        String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
-      takerAddress,
-    });
-    console.log("quote", quote);
-    sendTransaction({ to: quote.to, data: quote.data });
+    try {
+      const quote = await getQuote({
+        sellToken: sellToken.address,
+        buyToken: buyToken.address,
+        sellAmount:
+          sellAmount &&
+          String(parseUnits(sellAmount, sellToken.decimals || DEFAULT_DECIMALS)),
+        buyAmount:
+          buyAmount &&
+          String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
+        takerAddress,
+      });
+      console.log("quote", quote);
+      sendTransaction({ to: quote.to, data: quote.data, value: quote.value});
+    } catch (e) {
+      console.error("swapToken error", e);
+      // setError(e as Error)
+    }
     setFetchingPrice(false);
   };
 
@@ -98,5 +111,6 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     hash,
     isConfirming,
     isConfirmed,
+    error: error || sendTransactionError || waitForTransactionReceiptError,
   };
 }

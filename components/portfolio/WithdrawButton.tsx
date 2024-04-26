@@ -50,7 +50,9 @@ export default function WithdrawButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader className={cn("flex-row items-center justify-between gap-2")}>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Withdraw</DialogTitle>
           <ActiveWallet />
         </DialogHeader>
@@ -90,7 +92,7 @@ export default function WithdrawButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-white/80"
+                className="text-primary-foreground/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
                 target="_blank"
               >

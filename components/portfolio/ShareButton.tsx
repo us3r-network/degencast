@@ -72,7 +72,7 @@ export function SellButton({
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
             <CommunityInfo name={name} logo={logo} />
-            <Text className="text-sm">{balance} shares</Text>
+            <Text className="text-sm">{Number(balance)} shares</Text>
           </View>
           <ToeknSelect
             hidden
@@ -95,7 +95,7 @@ export function SellButton({
             <NumberField
               defaultValue={1}
               minValue={1}
-              maxValue={balance}
+              maxValue={Number(balance)}
               onChange={setAmount}
             />
           </View>
@@ -121,7 +121,7 @@ export function SellButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-foreground/80"
+                className="text-primary-foreground/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
                 target="_blank"
               >
@@ -247,7 +247,7 @@ export function BuyButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-white/80"
+                className="text-primary-foreground/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
                 target="_blank"
               >
