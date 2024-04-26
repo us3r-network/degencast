@@ -18,6 +18,8 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
+import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 
 export default function ExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
@@ -26,6 +28,7 @@ export default function ExploreScreen() {
   const router = useRouter();
   // const navigation = useNavigation();
   const { navigateToCastDetail } = useCastPage();
+  const { navigateToChannelExplore } = useChannelExplorePage();
   return (
     <View className={cn("flex-1 overflow-y-hidden bg-background pb-11 pt-16")}>
       <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
@@ -68,14 +71,22 @@ export default function ExploreScreen() {
                   <Pressable
                     className={cn("h-full w-full overflow-hidden p-5")}
                     onPress={() => {
-                      const castHex = getCastHex(data);
-                      // router.push(`/casts/${castHex}`);
-                      navigateToCastDetail(castHex, {
-                        origin: CastDetailDataOrigin.Explore,
-                        cast: data,
-                        farcasterUserDataObj: farcasterUserDataObj,
-                        community,
-                      });
+                      if (community?.channelId) {
+                        navigateToChannelExplore(community.channelId, {
+                          origin: ChannelExploreDataOrigin.Explore,
+                          cast: data,
+                          farcasterUserDataObj: farcasterUserDataObj,
+                          community,
+                        });
+                      } else {
+                        const castHex = getCastHex(data);
+                        navigateToCastDetail(castHex, {
+                          origin: CastDetailDataOrigin.Explore,
+                          cast: data,
+                          farcasterUserDataObj: farcasterUserDataObj,
+                          community,
+                        });
+                      }
                     }}
                   >
                     <FCast

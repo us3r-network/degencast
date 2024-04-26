@@ -8,11 +8,14 @@ import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import { useCommunityCtx } from "./_layout";
+import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
+import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 
 export default function CastsScreen() {
-  const navigation = useNavigation();
-
+  const { community } = useCommunityCtx();
   const { navigateToCastDetail } = useCastPage();
+  const { navigateToChannelExplore } = useChannelExplorePage();
   const params = useLocalSearchParams();
   const { id } = params;
   const { casts, farcasterUserDataObj, loading, loadCasts } =
@@ -31,18 +34,27 @@ export default function CastsScreen() {
           showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
           renderItem={({ item }) => {
-            const { data, platform, community } = item;
+            const { data, platform } = item;
             return (
               <Pressable
                 className="flex-1"
                 onPress={() => {
-                  const castHex = getCastHex(data);
-                  navigateToCastDetail(castHex, {
-                    origin: CastDetailDataOrigin.Community,
-                    cast: data,
-                    farcasterUserDataObj: farcasterUserDataObj,
-                    community,
-                  });
+                  if (community?.channelId) {
+                    navigateToChannelExplore(community.channelId, {
+                      origin: ChannelExploreDataOrigin.Explore,
+                      cast: data,
+                      farcasterUserDataObj: farcasterUserDataObj,
+                      community,
+                    });
+                  } else {
+                    const castHex = getCastHex(data);
+                    navigateToCastDetail(castHex, {
+                      origin: CastDetailDataOrigin.Community,
+                      cast: data,
+                      farcasterUserDataObj: farcasterUserDataObj,
+                      community,
+                    });
+                  }
                 }}
               >
                 <FcastMiniCard
@@ -53,7 +65,7 @@ export default function CastsScreen() {
               </Pressable>
             );
           }}
-          keyExtractor={({ data, platform, community }) => data.id}
+          keyExtractor={({ data, platform }) => data.id}
           onEndReached={() => {
             if (loading) return;
             loadCasts(id as string);

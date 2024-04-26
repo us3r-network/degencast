@@ -16,7 +16,6 @@ export default function CommunityJoinButton({
 }) {
   const { joined, isPending, joinChangeAction } =
     useJoinCommunityAction(communityInfo);
-  const { className: textClassName, ...restTextProps } = textProps || {};
   return (
     <Button
       className={cn("w-14 bg-secondary", className)}
@@ -27,9 +26,7 @@ export default function CommunityJoinButton({
       }}
       {...props}
     >
-      <Text
-        {...(restTextProps || {})}
-      >
+      <Text {...(textProps || {})}>
         {(() => {
           if (joined) {
             if (isPending) {
