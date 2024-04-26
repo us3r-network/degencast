@@ -60,14 +60,13 @@ export default function useUserTokens(
     const tokens = new Map<TOKENS, TokenWithTradeInfo>();
     if (nativeToken)
       tokens.set(TOKENS.NATIVE, {
+        ...nativeToken,
         chainId: DEFAULT_CHAIN.id,
         address: NATIVE_TOKEN_METADATA.address,
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: nativeToken.value,
-        decimals: nativeToken.decimals,
         balance: formatUnits(nativeToken.value, nativeToken.decimals),
-        symbol: nativeToken.symbol,
-        logoURI: NATIVE_TOKEN_METADATA.logo,
+        logoURI: NATIVE_TOKEN_METADATA.logoURI,
       });
     if (degenToken)
       tokens.set(TOKENS.DEGEN, {
@@ -78,7 +77,7 @@ export default function useUserTokens(
         decimals: degenToken[2],
         balance: formatUnits(degenToken[1], degenToken[2]),
         symbol: degenToken[3],
-        logoURI: DEGEN_METADATA.logo,
+        logoURI: DEGEN_METADATA.logoURI,
       });
     return tokens;
   }, [nativeToken, degenToken]);

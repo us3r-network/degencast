@@ -73,7 +73,7 @@ export default function MyToeknSelect({
             textClassName="text-primary-foreground"
           />
           <Text className="text-secondary">
-            {Number(token.balance).toFixed(4)}
+            {Number(token.balance).toFixed(4)} {token.symbol}
           </Text>
         </View>
       ))}

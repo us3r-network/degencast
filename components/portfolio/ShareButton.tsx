@@ -53,15 +53,8 @@ export function SellButton({
     isSuccess,
   } = useShareContractSell(sharesSubject);
 
-  const balance = useMemo(() => {
-    const { data } = getBalance(account?.address);
-    return Number(data);
-  }, [getBalance, account?.address, isSuccess]);
-  const price = useMemo(() => {
-    const { data } = getPrice(SHARE_ACTION.SELL, amount, true);
-    return data as bigint;
-  }, [amount, getPrice, isSuccess]);
-
+  const { data: balance } = getBalance(account?.address);
+  const { data: price } = getPrice(SHARE_ACTION.SELL, amount, true);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -119,7 +112,7 @@ export function SellButton({
           <Button
             variant={"secondary"}
             className="w-full"
-            disabled={waiting || writing || balance <= 0}
+            disabled={!account || waiting || writing || balance <= 0}
             onPress={() => sell(amount)}
           >
             <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
@@ -157,6 +150,7 @@ export function BuyButton({
     symbol: string;
   }) => React.ReactElement;
 }) {
+  const account = useAccount();
   const [amount, setAmount] = useState(1);
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
@@ -172,14 +166,8 @@ export function BuyButton({
     isSuccess,
   } = useShareContractBuy(sharesSubject);
 
-  const supply = useMemo(() => {
-    const { data } = getSupply();
-    return Number(data);
-  }, [getSupply, isSuccess]);
-  const price = useMemo(() => {
-    const { data } = getPrice(SHARE_ACTION.BUY, amount, true);
-    return data as bigint;
-  }, [amount, getPrice, isSuccess]);
+  const { data: supply } = getSupply();
+  const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
 
   const fetchedPrice = !!(price && amount && token && token.decimals);
 
@@ -209,7 +197,7 @@ export function BuyButton({
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
             <CommunityInfo name={name} logo={logo} />
-            <Text>Capital Pool: {supply}</Text>
+            <Text>Capital Pool: {Number(supply)}</Text>
           </View>
           <ToeknSelect
             chain={SHARE_CONTRACT_CHAIN}
@@ -246,7 +234,10 @@ export function BuyButton({
             variant={"secondary"}
             className="w-full"
             disabled={
-              waiting || writing || Number(token?.rawBalance) < Number(price)
+              !account ||
+              waiting ||
+              writing ||
+              Number(token?.rawBalance) < Number(price)
             }
             onPress={() => buy(amount, price)}
           >
