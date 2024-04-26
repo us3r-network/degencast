@@ -53,7 +53,7 @@ export default function Wallets() {
   const { wallets: connectedWallets } = useWallets();
   const { address: activeWalletAddress } = useAccount();
   const activeWallet = useMemo(() => {
-    console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
     if (!connectedWallets?.length) return undefined;
     const currentWallet = connectedWallets.find(
       (wallet) => wallet.address === activeWalletAddress,
@@ -303,7 +303,7 @@ function FarcasterAccount() {
   const { prepareWrite } = useFarcasterWrite();
   if (!user) return null;
   const farcasterAccount = getUserFarcasterAccount(user);
-  console.log("farcasterAccount", farcasterAccount);
+  // console.log("farcasterAccount", farcasterAccount);
   if (farcasterAccount?.fid) {
     return (
       <View className="flex-row items-center justify-between">

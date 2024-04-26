@@ -1,13 +1,13 @@
 import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 import {
-  TokenInfoWithStats,
+  TokenTradeInfo,
   ShareInfo,
   TipsInfo,
 } from "../types";
 
 export function communityTokens(): RequestPromise<
-  ApiResp<TokenInfoWithStats[]>
+  ApiResp<TokenTradeInfo[]>
 > {
   return request({
     url: `topics/trade-tokens`,

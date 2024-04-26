@@ -4,13 +4,14 @@ import {
   ApiRespCode,
   AsyncRequestStatus,
 } from "~/services/shared/types";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import type { RootState } from "../../store/store";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import { myTokens } from "~/services/user/api";
+import type { RootState } from "../../store/store";
+import { Item } from "~/components/primitives/radio-group";
 
 type UserCommunityTokenState = {
-  cache: Map<`0x${string}`, ApiResp<TokenInfoWithMetadata[]>>;
-  items: TokenInfoWithMetadata[];
+  cache: Map<`0x${string}`, ApiResp<TokenWithTradeInfo[]>>;
+  items: TokenWithTradeInfo[];
   status: AsyncRequestStatus;
   error: string | undefined;
 };
@@ -59,7 +60,13 @@ export const userCommunityTokenSlice = createSlice({
             item.balance &&
             Number(item.balance) > 0 &&
             item.tradeInfo?.channel,
-        );
+        ).map((item) => { //todo: rewrite here after api is ready
+          return {
+            ...item,
+            address: item.contractAddress,
+            logoURI: item.logo,
+          } as TokenWithTradeInfo;
+        });
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;

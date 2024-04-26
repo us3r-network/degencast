@@ -34,7 +34,7 @@ export async function getQuote({
     return resp.data;
   } catch (error) {
     console.error("something wrong with quote api call!");
-    // throw new Error("something went wrong...");
+    throw new Error("something went wrong...");
   }
 }
 

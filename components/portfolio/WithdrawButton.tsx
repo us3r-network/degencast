@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Chain, parseEther } from "viem";
@@ -10,14 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Text, TextClassContext } from "~/components/ui/text";
+import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import ToeknSelect from "./UserTokenSelect";
-import { Input } from "../ui/input";
-import { Link } from "expo-router";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
 import { cn } from "~/lib/utils";
+import { TokenWithTradeInfo } from "~/services/trade/types";
+import { Input } from "../ui/input";
+import ActiveWallet from "./ActiveWallet";
+import ToeknSelect from "./UserTokenSelect";
 
 export default function WithdrawButton({
   defaultAddress,
@@ -29,7 +30,7 @@ export default function WithdrawButton({
   // console.log("SendButton tokens", availableTokens);
   const [address, setAddress] = useState(defaultAddress);
   const [amount, setAmount] = useState("");
-  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
   const { data: hash, isPending, sendTransaction } = useSendTransaction();
   const send = async () => {
     // console.log("Send", { address, amount, token });
@@ -49,8 +50,11 @@ export default function WithdrawButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Withdraw</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
@@ -88,7 +92,7 @@ export default function WithdrawButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-white/80"
+                className="text-primary-foreground/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
                 target="_blank"
               >

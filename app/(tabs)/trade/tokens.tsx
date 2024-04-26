@@ -7,8 +7,7 @@ import TradeButton from "~/components/portfolio/TradeButton";
 import { Text } from "~/components/ui/text";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
-import { TokenInfoWithStats } from "~/services/trade/types";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function CommunityTokens() {
   const { loading, items } = useCommunityTokens();
@@ -21,7 +20,7 @@ export default function CommunityTokens() {
           <View className="flex w-full gap-4">
             {items?.length > 0 &&
               items.map((item, index) => (
-                <Item key={item.tokenAddress} item={item} index={index + 1} />
+                <Item key={item.address} item={item} index={index + 1} />
               ))}
           </View>
         </ScrollView>
@@ -30,30 +29,22 @@ export default function CommunityTokens() {
   );
 }
 
-function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
-  const change = Number(item.stats.price_change_percentage.h24);
-  const toekn: TokenInfoWithMetadata = {
-    chainId: item.chain_id,
-    contractAddress: item.tokenAddress,
-    decimals: 18,
-    name: item.name,
-    logo: item.imageURL,
-    tradeInfo: item,
-  };
+function Item({ item, index }: { item: TokenWithTradeInfo; index: number }) {
+  const change = Number(item.tradeInfo?.stats.price_change_percentage.h24) || 0;
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
         <Text className="w-6 text-center text-xs font-bold">{index}</Text>
         <Link
           className="flex-1"
-          href={`/communities/${item.channel}/tokens`}
+          href={`/communities/${item.channelId}/tokens`}
           asChild
         >
           <Pressable>
             <TokenInfo
               name={item.name}
-              logo={item.imageURL}
-              mc={Number(item.stats.fdv_usd)}
+              logo={item.logoURI}
+              mc={Number(item.tradeInfo?.stats?.fdv_usd)}
             />
           </Pressable>
         </Link>
@@ -65,7 +56,7 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
           {change > 0 ? "+" : ""}
           {change}%
         </Text>
-        <TradeButton fromToken={toekn} />
+        <TradeButton toToken={item} />
       </View>
     </View>
   );

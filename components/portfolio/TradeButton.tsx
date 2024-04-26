@@ -1,6 +1,9 @@
 // import { useSwitchChain } from "wagmi";
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { base } from "viem/chains";
+import { useAccount } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -11,26 +14,23 @@ import {
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
+import useSwapToken from "~/hooks/trade/useSwapToken";
+import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
+import { ArrowUpDown } from "../common/Icons";
 import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
-import { ArrowUpDown } from "../common/Icons";
 import { Separator } from "../ui/separator";
-import { getPrice, getQuote } from "~/services/trade/api/0x";
-import { parseUnits, formatUnits } from "viem";
-import { debounce } from "lodash";
-import { useAccount } from "wagmi";
-import useSwapToken from "~/hooks/trade/useSwapToken";
-import { Link } from "expo-router";
+import ActiveWallet from "./ActiveWallet";
 
 export default function TradeButton({
-  fromToken,
-  toToken,
+  fromToken = NATIVE_TOKEN_METADATA,
+  toToken = NATIVE_TOKEN_METADATA,
 }: {
-  fromToken: TokenInfoWithMetadata;
-  toToken?: TokenInfoWithMetadata;
+  fromToken?: TokenWithTradeInfo;
+  toToken?: TokenWithTradeInfo;
 }) {
   return (
     <Dialog>
@@ -39,19 +39,24 @@ export default function TradeButton({
           className={cn("w-14")}
           size="sm"
           variant={"secondary"}
+          disabled={
+            (!fromToken && !toToken) ||
+            fromToken.chainId !== base.id ||
+            toToken.chainId !== base.id
+          }
           // onPress={() => switchChain({ chainId: fromChain })}
         >
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Trade</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
-        <SwapToken
-          token1={fromToken}
-          token2={toToken || NATIVE_TOKEN_METADATA}
-        />
+        <SwapToken token1={fromToken} token2={toToken} />
         <View className="p-4">
           <About title="Swap & Earn" info={TRADE_INFO} />
         </View>
@@ -69,8 +74,8 @@ function SwapToken({
   token1,
   token2,
 }: {
-  token1: TokenInfoWithMetadata;
-  token2: TokenInfoWithMetadata;
+  token1: TokenWithTradeInfo;
+  token2: TokenWithTradeInfo;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
@@ -79,6 +84,65 @@ function SwapToken({
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
   const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
 
+  const fromTokenInfo = useUserToken(
+    account.address,
+    fromToken.address,
+    fromToken.chainId,
+  );
+  const toTokenInfo = useUserToken(
+    account.address,
+    toToken.address,
+    toToken.chainId,
+  );
+  const nativeTokenInfo = useUserNativeToken(account.address, toToken.chainId);
+
+  useEffect(() => {
+    if (
+      !fromTokenInfo ||
+      !fromTokenInfo.balance ||
+      !fromToken ||
+      fromToken.address === NATIVE_TOKEN_METADATA.address
+    )
+      return;
+    setFromToken({
+      ...fromToken,
+      balance: fromTokenInfo.balance,
+      symbol: fromTokenInfo.symbol,
+    });
+  }, [fromTokenInfo]);
+
+  useEffect(() => {
+    if (
+      !toTokenInfo ||
+      !toTokenInfo.balance ||
+      !toToken ||
+      toToken.address === NATIVE_TOKEN_METADATA.address
+    )
+      return;
+
+    setToToken({
+      ...toToken,
+      balance: toTokenInfo.balance,
+      symbol: toTokenInfo.symbol,
+    });
+  }, [toTokenInfo]);
+
+  useEffect(() => {
+    if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
+    if (fromToken.address === NATIVE_TOKEN_METADATA.address)
+      setFromToken({
+        ...fromToken,
+        balance: nativeTokenInfo.balance,
+        symbol: nativeTokenInfo.symbol,
+      });
+    if (toToken.address === NATIVE_TOKEN_METADATA.address)
+      setToToken({
+        ...toToken,
+        balance: nativeTokenInfo.balance,
+        symbol: nativeTokenInfo.symbol,
+      });
+  }, [nativeTokenInfo]);
+
   const {
     fetchingPrice,
     fetchPrice,
@@ -86,8 +150,9 @@ function SwapToken({
     hash,
     isConfirming,
     isConfirmed,
+    error,
   } = useSwapToken(account.address);
-
+  console.log(error);
   useEffect(() => {
     if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
       return;
@@ -96,7 +161,7 @@ function SwapToken({
   }, [fromAmount]);
 
   const fetchPriceInfo = async (amount: string) => {
-    console.log("fetchPriceInfo", amount);
+    // console.log("fetchPriceInfo", amount);
     const priceInfo = await fetchPrice({
       sellToken: fromToken,
       buyToken: toToken,
@@ -108,7 +173,7 @@ function SwapToken({
   };
 
   const swap = async () => {
-    console.log("swap", fromAmount);
+    // console.log("swap", fromAmount);
     swapToken({
       sellToken: fromToken,
       buyToken: toToken,
@@ -143,6 +208,8 @@ function SwapToken({
         variant="secondary"
         className="mt-6"
         disabled={
+          !fromToken?.balance ||
+          Number(fromToken?.balance) < Number(fromAmount) ||
           fetchingPrice ||
           Number(fromAmount) === 0 ||
           Number(toAmount) === 0 ||
@@ -158,12 +225,18 @@ function SwapToken({
         <View className="flex gap-2">
           <Text className="font-bold">Transaction Hash:</Text>
           <Link
-            className="text-foreground/80"
+            className="text-primary-foreground/80"
             href={`${DEFAULT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
             target="_blank"
           >
             {hash}
           </Link>
+        </View>
+      )}
+      {!!error && (
+        <View className="flex gap-2">
+          <Text className="font-bold text-destructive">Error: {error.name}</Text>
+          <Text className="text-destructive">Error: {error.message}</Text>
         </View>
       )}
     </View>
@@ -175,10 +248,11 @@ function Token({
   amount,
   setAmount,
 }: {
-  token: TokenInfoWithMetadata;
+  token: TokenWithTradeInfo;
   amount?: string;
   setAmount?: (amount: string) => void;
 }) {
+  // console.log("Token", token, amount);
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
     <View className="flex gap-2">
@@ -196,10 +270,16 @@ function Token({
         />
       </View>
       <View className="flex-row items-start justify-between">
-        <Text>
-          Balance: {token.balance || 0}{" "}
-          {token.symbol}
-        </Text>
+        <View className="flex-row items-center gap-2">
+          <Text className="font-bold text-secondary">Balance:</Text>
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 4,
+              notation: "compact",
+            }).format(Number(token.balance) || 0)}{" "}
+            {token?.symbol}
+          </Text>
+        </View>
         {amount && price > 0 && (
           <Text>
             {new Intl.NumberFormat("en-US", {
