@@ -1,7 +1,10 @@
 import { useRouter } from "expo-router";
-import { Pressable, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSharedValue } from "react-native-reanimated";
+import { Platform, Pressable, View } from "react-native";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
+import Animated, { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
@@ -15,13 +18,136 @@ import useLoadExploreCasts, {
 } from "~/hooks/explore/useLoadExploreCasts";
 import { cn } from "~/lib/utils";
 import getCastHex from "~/utils/farcaster/getCastHex";
-import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
+import useLoadScrollingExploreCasts from "~/hooks/explore/useLoadScrollingExploreCasts";
+import { useRef, useState } from "react";
 
 export default function ExploreScreen() {
+  if (Platform.OS === "web") {
+    return <PcExploreScreen />;
+  } else {
+    return <MobileExploreScreen />;
+  }
+}
+
+function PcExploreScreen() {
+  const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
+    useLoadScrollingExploreCasts();
+  // const navigation = useNavigation();
+  const { navigateToCastDetail } = useCastPage();
+  const { navigateToChannelExplore } = useChannelExplorePage();
+  const [itemHeight, setItemHeight] = useState(0);
+  const viewabilityConfigCallbackPairs = useRef([
+    {
+      viewabilityConfig: {
+        viewAreaCoveragePercentThreshold: 80,
+      },
+      onViewableItemsChanged: ({ viewableItems, changed }: any) => {
+        if (viewableItems.length === 1) {
+          setCurrentCastIndex(viewableItems?.[0]?.index || 0);
+        }
+      },
+    },
+  ]);
+  return (
+    <View className={cn("flex-1 overflow-y-hidden bg-background pt-16")}>
+      <View
+        className="h-full w-full"
+        onLayout={(e) => {
+          setItemHeight(e.nativeEvent.layout.height);
+        }}
+      >
+        <Animated.FlatList
+          className="h-full w-full items-center"
+          data={casts}
+          horizontal={false}
+          initialNumToRender={2}
+          renderScrollComponent={(props) => <ScrollView {...props} />}
+          disableIntervalMomentum={true}
+          pagingEnabled={true}
+          decelerationRate="fast"
+          snapToAlignment="center"
+          showsHorizontalScrollIndicator={false}
+          viewabilityConfigCallbackPairs={
+            viewabilityConfigCallbackPairs.current
+          }
+          getItemLayout={(item, index) => {
+            return {
+              length: itemHeight,
+              offset: itemHeight * index,
+              index,
+            };
+          }}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            const { data, platform, community } = item as any;
+            return (
+              <Animated.View
+                className={cn("h-full w-fit rounded-2xl py-2")}
+                style={{
+                  height: itemHeight,
+                }}
+              >
+                <Card
+                  className={cn(
+                    "h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:w-[390px]",
+                  )}
+                  style={{ height: itemHeight - 60 }}
+                >
+                  <Pressable
+                    className={cn("h-full w-full overflow-hidden p-5")}
+                    onPress={() => {
+                      if (community?.channelId) {
+                        navigateToChannelExplore(community.channelId, {
+                          origin: ChannelExploreDataOrigin.Explore,
+                          cast: data,
+                          farcasterUserDataObj: farcasterUserDataObj,
+                          community,
+                        });
+                      } else {
+                        const castHex = getCastHex(data);
+                        navigateToCastDetail(castHex, {
+                          origin: CastDetailDataOrigin.Explore,
+                          cast: data,
+                          farcasterUserDataObj: farcasterUserDataObj,
+                          community,
+                        });
+                      }
+                    }}
+                  >
+                    <FCast
+                      cast={data}
+                      farcasterUserDataObj={farcasterUserDataObj}
+                    />
+                  </Pressable>
+                  <FCastActions
+                    className=" absolute bottom-14 right-3"
+                    cast={data}
+                    farcasterUserDataObj={farcasterUserDataObj}
+                    communityInfo={community}
+                  />
+                  {community ? (
+                    <FCastCommunity
+                      communityInfo={community}
+                      className="absolute -bottom-11 right-1/2 translate-x-1/2"
+                    />
+                  ) : (
+                    <FCastCommunityDefault className="absolute -bottom-11 right-1/2 translate-x-1/2" />
+                  )}
+                </Card>
+              </Animated.View>
+            );
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
+function MobileExploreScreen() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
     useLoadExploreCasts();
   const animatedValue = useSharedValue(0);

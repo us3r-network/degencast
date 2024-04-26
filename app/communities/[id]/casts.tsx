@@ -41,7 +41,7 @@ export default function CastsScreen() {
                 onPress={() => {
                   if (community?.channelId) {
                     navigateToChannelExplore(community.channelId, {
-                      origin: ChannelExploreDataOrigin.Explore,
+                      origin: ChannelExploreDataOrigin.Community,
                       cast: data,
                       farcasterUserDataObj: farcasterUserDataObj,
                       community,
