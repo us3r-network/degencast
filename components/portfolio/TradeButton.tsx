@@ -1,6 +1,8 @@
 // import { useSwitchChain } from "wagmi";
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { useAccount } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -11,19 +13,17 @@ import {
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
+import useSwapToken from "~/hooks/trade/useSwapToken";
+import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import About from "../common/About";
+import { ArrowUpDown, Wallet } from "../common/Icons";
 import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
-import { ArrowUpDown } from "../common/Icons";
 import { Separator } from "../ui/separator";
-import { getPrice, getQuote } from "~/services/trade/api/0x";
-import { parseUnits, formatUnits } from "viem";
-import { debounce } from "lodash";
-import { useAccount } from "wagmi";
-import useSwapToken from "~/hooks/trade/useSwapToken";
-import { Link } from "expo-router";
+import { shortPubKey } from "~/utils/shortPubKey";
+import { useConnectWallet } from "@privy-io/react-auth";
 
 export default function TradeButton({
   fromToken,
@@ -74,10 +74,70 @@ function SwapToken({
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
+  const { connectWallet } = useConnectWallet();
   const [fromToken, setFromToken] = useState(token1);
   const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
   const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
+
+  const fromTokenInfo = useUserToken(
+    account.address,
+    fromToken.contractAddress,
+    fromToken.chainId,
+  );
+  const toTokenInfo = useUserToken(
+    account.address,
+    toToken.contractAddress,
+    toToken.chainId,
+  );
+  const nativeTokenInfo = useUserNativeToken(account.address, toToken.chainId);
+
+  useEffect(() => {
+    if (
+      !fromTokenInfo ||
+      !fromTokenInfo.balance ||
+      !fromToken ||
+      fromToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress
+    )
+      return;
+    setFromToken({
+      ...fromToken,
+      balance: fromTokenInfo.balance,
+      symbol: fromTokenInfo.symbol,
+    });
+  }, [fromTokenInfo]);
+
+  useEffect(() => {
+    if (
+      !toTokenInfo ||
+      !toTokenInfo.balance ||
+      !toToken ||
+      toToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress
+    )
+      return;
+
+    setToToken({
+      ...toToken,
+      balance: toTokenInfo.balance,
+      symbol: toTokenInfo.symbol,
+    });
+  }, [toTokenInfo]);
+
+  useEffect(() => {
+    if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
+    if (fromToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress)
+      setFromToken({
+        ...fromToken,
+        balance: nativeTokenInfo.balance,
+        symbol: nativeTokenInfo.symbol,
+      });
+    if (toToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress)
+      setToToken({
+        ...toToken,
+        balance: nativeTokenInfo.balance,
+        symbol: nativeTokenInfo.symbol,
+      });
+  }, [nativeTokenInfo]);
 
   const {
     fetchingPrice,
@@ -96,7 +156,7 @@ function SwapToken({
   }, [fromAmount]);
 
   const fetchPriceInfo = async (amount: string) => {
-    console.log("fetchPriceInfo", amount);
+    // console.log("fetchPriceInfo", amount);
     const priceInfo = await fetchPrice({
       sellToken: fromToken,
       buyToken: toToken,
@@ -108,7 +168,7 @@ function SwapToken({
   };
 
   const swap = async () => {
-    console.log("swap", fromAmount);
+    // console.log("swap", fromAmount);
     swapToken({
       sellToken: fromToken,
       buyToken: toToken,
@@ -118,6 +178,15 @@ function SwapToken({
 
   return (
     <View className="flex w-full gap-2">
+      {account.address && (
+        <View className="flex-row items-center gap-2">
+          <Text className="font-bold text-secondary">Connected Wallet:</Text>{" "}
+          <Text>{shortPubKey(account.address)}</Text>
+          <Button variant="link" onPress={connectWallet}>
+            <Wallet className="font-bold text-secondary" />
+          </Button>
+        </View>
+      )}
       <Token
         token={fromToken}
         amount={fromAmount}
@@ -143,6 +212,8 @@ function SwapToken({
         variant="secondary"
         className="mt-6"
         disabled={
+          !fromToken?.balance ||
+          Number(fromToken?.balance) < Number(fromAmount) ||
           fetchingPrice ||
           Number(fromAmount) === 0 ||
           Number(toAmount) === 0 ||
@@ -179,6 +250,7 @@ function Token({
   amount?: string;
   setAmount?: (amount: string) => void;
 }) {
+  console.log("Token", token, amount);
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
     <View className="flex gap-2">
@@ -196,10 +268,16 @@ function Token({
         />
       </View>
       <View className="flex-row items-start justify-between">
-        <Text>
-          Balance: {token.balance || 0}{" "}
-          {token.symbol}
-        </Text>
+        <View className="flex-row items-center gap-2">
+          <Text className="font-bold text-secondary">Balance:</Text>
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 4,
+              notation: "compact",
+            }).format(Number(token.balance) || 0)}{" "}
+            {token?.symbol}
+          </Text>
+        </View>
         {amount && price > 0 && (
           <Text>
             {new Intl.NumberFormat("en-US", {

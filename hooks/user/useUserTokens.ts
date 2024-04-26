@@ -38,7 +38,7 @@ export default function useUserTokens(
         chainId,
         abi: erc20Abi,
         functionName: "balanceOf",
-        args: [address!],
+        args: [address],
       },
       {
         address: DEGEN_ADDRESS,
@@ -86,4 +86,82 @@ export default function useUserTokens(
   return {
     userTokens,
   };
+}
+
+export function useUserNativeToken(
+  address: `0x${string}` | undefined,
+  chainId: number = base.id,
+) {
+  if (!address) return undefined;
+  const { data } = useBalance({
+    address,
+    chainId,
+  });
+  const token: TokenInfoWithMetadata | undefined = useMemo(
+    () =>
+      data && {
+        chainId: DEFAULT_CHAIN.id,
+        contractAddress: NATIVE_TOKEN_METADATA.contractAddress,
+        name: NATIVE_TOKEN_METADATA.name,
+        rawBalance: data.value,
+        decimals: data.decimals,
+        balance: formatUnits(data.value, data.decimals),
+        symbol: data.symbol,
+        logo: NATIVE_TOKEN_METADATA.logo,
+      },
+    [data],
+  );
+  return token;
+}
+
+export function useUserToken(
+  address: `0x${string}` | undefined,
+  contractAddress: `0x${string}`,
+  chainId: number = base.id,
+) {
+  if (!address) return undefined;
+  const { data } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: contractAddress,
+        chainId,
+        abi: erc20Abi,
+        functionName: "name",
+      },
+      {
+        address: contractAddress,
+        chainId,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [address],
+      },
+      {
+        address: contractAddress,
+        chainId,
+        abi: erc20Abi,
+        functionName: "decimals",
+      },
+      {
+        address: contractAddress,
+        chainId,
+        abi: erc20Abi,
+        functionName: "symbol",
+      },
+    ],
+  });
+  const token: TokenInfoWithMetadata | undefined = useMemo(
+    () =>
+      data && {
+        chainId,
+        contractAddress,
+        name: data[0],
+        rawBalance: data[1],
+        decimals: data[2],
+        balance: formatUnits(data[1], data[2]),
+        symbol: data[3],
+      },
+    [data],
+  );
+  return token;
 }

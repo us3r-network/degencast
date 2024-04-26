@@ -31,7 +31,7 @@ export type UserActionPointConfig = {
 
 export type TokenInfoWithMetadata = {
   chainId: number;
-  contractAddress: string;
+  contractAddress: `0x${string}`;
   name?: string | undefined;
   channelId?: string;
   rawBalance?: BigInt | string;

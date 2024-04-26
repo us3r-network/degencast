@@ -9,9 +9,9 @@ export const EXPO_PUBLIC_ALCHEMY_API_KEY =
   process.env.EXPO_PUBLIC_ALCHEMY_API_KEY || "demo";
 
 export const DEFAULT_CHAIN = base;
-export const NATIVE_TOKEN_ADDRESS =
+export const NATIVE_TOKEN_ADDRESS:`0x${string}` =
   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"; //ETH
-export const DEGEN_ADDRESS = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
+export const DEGEN_ADDRESS:`0x${string}` = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
 
 export const NATIVE_TOKEN_METADATA: TokenInfoWithMetadata = {
   chainId: DEFAULT_CHAIN.id,
