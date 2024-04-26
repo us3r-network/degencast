@@ -38,7 +38,7 @@ const TABS = [
 ];
 
 const CommunityContext = createContext<{
-  community: CommunityData | null;
+  community: CommunityData | null | undefined;
   loading: boolean;
 }>({
   community: null,
@@ -100,13 +100,7 @@ export default function CommunityDetail() {
                 </Text>
               </View>
               <View className="mr-5 flex flex-row items-center gap-3">
-                {community && (
-                  <CommunityJoinButton
-                    communityInfo={community}
-                    className="bg-white"
-                    textProps={{ className: "text-primary" }}
-                  />
-                )}
+                {community && <CommunityJoinButton communityInfo={community} />}
                 <PlatformSharingButton
                   twitterText={getCommunityShareTextWithTwitter(
                     community?.name || "",

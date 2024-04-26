@@ -34,12 +34,10 @@ export function getFarcasterTrending({
   start,
   end,
   least,
-  channelId,
 }: {
   start: number;
   end: number;
   least?: number;
-  channelId?: string;
 }): RequestPromise<
   ApiResp<{
     casts: Array<TrendingCastData>;
@@ -58,11 +56,14 @@ export function getFarcasterTrending({
       startIndex: start,
       endIndex: end,
       ...(least ? { least } : {}),
-      channelId: channelId ?? "",
     },
   });
 }
 
+export type ChannelCastData = {
+  data: any;
+  platform: SocialPlatform;
+};
 export function getFarcasterTrendingWithChannelId({
   start,
   end,
@@ -75,14 +76,18 @@ export function getFarcasterTrendingWithChannelId({
   channelId: string;
 }): RequestPromise<
   ApiResp<{
-    casts: Array<TrendingCastData>;
+    casts: Array<ChannelCastData>;
     farcasterUserData: Array<FarcasterUserData>;
     pageInfo: FarcasterPageInfo;
+    likeActions: Array<UserActionData>;
   }>
 > {
-  return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/trending`,
+  return request({
+    url: `/3r-farcaster/trending`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params: {
       startIndex: start,
       endIndex: end,

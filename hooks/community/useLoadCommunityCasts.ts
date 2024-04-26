@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import {
-  TrendingCastData,
+  ChannelCastData,
   getFarcasterTrendingWithChannelId,
 } from "~/services/farcaster/api";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
@@ -8,7 +8,7 @@ import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 const PAGE_SIZE = 30;
 
 export default function useLoadCommunityCasts() {
-  const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
+  const [casts, setCasts] = useState<Array<ChannelCastData>>([]);
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const channelIdRef = useRef("");
