@@ -25,13 +25,14 @@ import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import ActiveWallet from "./ActiveWallet";
+import { base } from "viem/chains";
 
 export default function TradeButton({
-  fromToken,
-  toToken,
+  fromToken = NATIVE_TOKEN_METADATA,
+  toToken = NATIVE_TOKEN_METADATA,
 }: {
-  fromToken?: TokenInfoWithMetadata;
-  toToken?: TokenInfoWithMetadata;
+  fromToken: TokenInfoWithMetadata;
+  toToken: TokenInfoWithMetadata;
 }) {
   return (
     <Dialog>
@@ -40,6 +41,11 @@ export default function TradeButton({
           className={cn("w-14")}
           size="sm"
           variant={"secondary"}
+          disabled={
+            (!fromToken && !toToken) ||
+            fromToken.chainId !== base.id ||
+            toToken.chainId !== base.id
+          }
           // onPress={() => switchChain({ chainId: fromChain })}
         >
           <Text>Trade</Text>
@@ -52,10 +58,7 @@ export default function TradeButton({
           <DialogTitle>Trade</DialogTitle>
           <ActiveWallet />
         </DialogHeader>
-        <SwapToken
-          token1={fromToken || NATIVE_TOKEN_METADATA}
-          token2={toToken || NATIVE_TOKEN_METADATA}
-        />
+        <SwapToken token1={fromToken} token2={toToken} />
         <View className="p-4">
           <About title="Swap & Earn" info={TRADE_INFO} />
         </View>
