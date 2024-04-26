@@ -2,12 +2,11 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,12 +20,14 @@ import {
   useShareContractInfo,
   useShareContractSell,
 } from "~/hooks/trade/useShareContract";
+import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
 import About from "../common/About";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
-import { cn } from "~/lib/utils";
+import UserWallets from "./user/UserWallets";
+import ActiveWallet from "./ActiveWallet";
 
 export function SellButton({
   logo,
@@ -38,9 +39,6 @@ export function SellButton({
   sharesSubject: `0x${string}`;
 }) {
   const account = useAccount();
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
-
   const [amount, setAmount] = useState(1);
   const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
 
@@ -73,8 +71,11 @@ export function SellButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Sell</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
@@ -157,9 +158,6 @@ export function BuyButton({
     symbol: string;
   }) => React.ReactElement;
 }) {
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
-
   const [amount, setAmount] = useState(1);
   const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
 
@@ -203,8 +201,11 @@ export function BuyButton({
         )}
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Buy Shares & get allowance</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">

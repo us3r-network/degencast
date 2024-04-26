@@ -7,7 +7,7 @@ export type TokenInfoWithStats = {
   id: string;
   chain_id: number;
   channel:string;
-  tokenAddress: string;
+  tokenAddress: `0x${string}`;
   name?: string | undefined;
   imageURL?: string;
   volumeStats: VolumeStats[];

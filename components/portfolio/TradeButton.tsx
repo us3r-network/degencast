@@ -1,4 +1,5 @@
 // import { useSwitchChain } from "wagmi";
+import { useConnectWallet } from "@privy-io/react-auth";
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -17,19 +18,19 @@ import useSwapToken from "~/hooks/trade/useSwapToken";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenInfoWithMetadata } from "~/services/user/types";
+import { shortPubKey } from "~/utils/shortPubKey";
 import About from "../common/About";
 import { ArrowUpDown, Wallet } from "../common/Icons";
 import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { shortPubKey } from "~/utils/shortPubKey";
-import { useConnectWallet } from "@privy-io/react-auth";
+import ActiveWallet from "./ActiveWallet";
 
 export default function TradeButton({
   fromToken,
   toToken,
 }: {
-  fromToken: TokenInfoWithMetadata;
+  fromToken?: TokenInfoWithMetadata;
   toToken?: TokenInfoWithMetadata;
 }) {
   return (
@@ -45,11 +46,14 @@ export default function TradeButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Trade</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <SwapToken
-          token1={fromToken}
+          token1={fromToken || NATIVE_TOKEN_METADATA}
           token2={toToken || NATIVE_TOKEN_METADATA}
         />
         <View className="p-4">
@@ -74,7 +78,6 @@ function SwapToken({
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
   const [fromToken, setFromToken] = useState(token1);
   const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
@@ -178,15 +181,6 @@ function SwapToken({
 
   return (
     <View className="flex w-full gap-2">
-      {account.address && (
-        <View className="flex-row items-center gap-2">
-          <Text className="font-bold text-secondary">Connected Wallet:</Text>{" "}
-          <Text>{shortPubKey(account.address)}</Text>
-          <Button variant="link" onPress={connectWallet}>
-            <Wallet className="font-bold text-secondary" />
-          </Button>
-        </View>
-      )}
       <Token
         token={fromToken}
         amount={fromAmount}
@@ -250,7 +244,7 @@ function Token({
   amount?: string;
   setAmount?: (amount: string) => void;
 }) {
-  console.log("Token", token, amount);
+  // console.log("Token", token, amount);
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
     <View className="flex gap-2">

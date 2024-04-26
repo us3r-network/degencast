@@ -18,6 +18,7 @@ import { Input } from "../ui/input";
 import { Link } from "expo-router";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
 import { cn } from "~/lib/utils";
+import ActiveWallet from "./ActiveWallet";
 
 export default function WithdrawButton({
   defaultAddress,
@@ -49,8 +50,9 @@ export default function WithdrawButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader className={cn("flex-row items-center justify-between gap-2")}>
           <DialogTitle>Withdraw</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">

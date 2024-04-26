@@ -65,7 +65,7 @@ function Item({ item, index }: { item: TokenInfoWithStats; index: number }) {
           {change > 0 ? "+" : ""}
           {change}%
         </Text>
-        <TradeButton fromToken={toekn} />
+        <TradeButton toToken={toekn} />
       </View>
     </View>
   );
