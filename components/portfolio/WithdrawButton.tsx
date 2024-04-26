@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Chain, parseEther } from "viem";
@@ -10,15 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Text, TextClassContext } from "~/components/ui/text";
+import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import ToeknSelect from "./UserTokenSelect";
-import { Input } from "../ui/input";
-import { Link } from "expo-router";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
 import { cn } from "~/lib/utils";
+import { TokenWithTradeInfo } from "~/services/trade/types";
+import { Input } from "../ui/input";
 import ActiveWallet from "./ActiveWallet";
+import ToeknSelect from "./UserTokenSelect";
 
 export default function WithdrawButton({
   defaultAddress,
@@ -30,7 +30,7 @@ export default function WithdrawButton({
   // console.log("SendButton tokens", availableTokens);
   const [address, setAddress] = useState(defaultAddress);
   const [amount, setAmount] = useState("");
-  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
   const { data: hash, isPending, sendTransaction } = useSendTransaction();
   const send = async () => {
     // console.log("Send", { address, amount, token });

@@ -1,8 +1,8 @@
 // import { useSwitchChain } from "wagmi";
-import { useConnectWallet } from "@privy-io/react-auth";
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { base } from "viem/chains";
 import { useAccount } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
@@ -17,22 +17,20 @@ import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import { shortPubKey } from "~/utils/shortPubKey";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
-import { ArrowUpDown, Wallet } from "../common/Icons";
+import { ArrowUpDown } from "../common/Icons";
 import { TokenInfo } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import ActiveWallet from "./ActiveWallet";
-import { base } from "viem/chains";
 
 export default function TradeButton({
   fromToken = NATIVE_TOKEN_METADATA,
   toToken = NATIVE_TOKEN_METADATA,
 }: {
-  fromToken: TokenInfoWithMetadata;
-  toToken: TokenInfoWithMetadata;
+  fromToken?: TokenWithTradeInfo;
+  toToken?: TokenWithTradeInfo;
 }) {
   return (
     <Dialog>
@@ -76,8 +74,8 @@ function SwapToken({
   token1,
   token2,
 }: {
-  token1: TokenInfoWithMetadata;
-  token2: TokenInfoWithMetadata;
+  token1: TokenWithTradeInfo;
+  token2: TokenWithTradeInfo;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
@@ -88,12 +86,12 @@ function SwapToken({
 
   const fromTokenInfo = useUserToken(
     account.address,
-    fromToken.contractAddress,
+    fromToken.address,
     fromToken.chainId,
   );
   const toTokenInfo = useUserToken(
     account.address,
-    toToken.contractAddress,
+    toToken.address,
     toToken.chainId,
   );
   const nativeTokenInfo = useUserNativeToken(account.address, toToken.chainId);
@@ -103,7 +101,7 @@ function SwapToken({
       !fromTokenInfo ||
       !fromTokenInfo.balance ||
       !fromToken ||
-      fromToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress
+      fromToken.address === NATIVE_TOKEN_METADATA.address
     )
       return;
     setFromToken({
@@ -118,7 +116,7 @@ function SwapToken({
       !toTokenInfo ||
       !toTokenInfo.balance ||
       !toToken ||
-      toToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress
+      toToken.address === NATIVE_TOKEN_METADATA.address
     )
       return;
 
@@ -131,13 +129,13 @@ function SwapToken({
 
   useEffect(() => {
     if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
-    if (fromToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress)
+    if (fromToken.address === NATIVE_TOKEN_METADATA.address)
       setFromToken({
         ...fromToken,
         balance: nativeTokenInfo.balance,
         symbol: nativeTokenInfo.symbol,
       });
-    if (toToken.contractAddress === NATIVE_TOKEN_METADATA.contractAddress)
+    if (toToken.address === NATIVE_TOKEN_METADATA.address)
       setToToken({
         ...toToken,
         balance: nativeTokenInfo.balance,
@@ -243,7 +241,7 @@ function Token({
   amount,
   setAmount,
 }: {
-  token: TokenInfoWithMetadata;
+  token: TokenWithTradeInfo;
   amount?: string;
   setAmount?: (amount: string) => void;
 }) {

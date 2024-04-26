@@ -1,21 +1,14 @@
-import { UnknownAction } from "@reduxjs/toolkit";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
-import {
-  fetchItems,
-  selectCommunityTokens,
-} from "~/features/trade/communityTokensSlice";
-import { AsyncRequestStatus } from "~/services/shared/types";
 import { getPrice, getQuote } from "~/services/trade/api/0x";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 const DEFAULT_DECIMALS = 18;
 
 type SwapParams = {
-  sellToken: TokenInfoWithMetadata;
-  buyToken: TokenInfoWithMetadata;
+  sellToken: TokenWithTradeInfo;
+  buyToken: TokenWithTradeInfo;
   sellAmount?: string;
   buyAmount?: string;
 };
@@ -46,8 +39,8 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     console.log("start fetch price from 0x");
     setFetchingPrice(true);
     const price = await getPrice({
-      sellToken: sellToken.contractAddress,
-      buyToken: buyToken.contractAddress,
+      sellToken: sellToken.address,
+      buyToken: buyToken.address,
       sellAmount:
         sellAmount &&
         String(parseUnits(sellAmount, sellToken.decimals || DEFAULT_DECIMALS)),
@@ -83,8 +76,8 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     console.log("start fetch quote from 0x");
     setFetchingPrice(true);
     const quote = await getQuote({
-      sellToken: sellToken.contractAddress,
-      buyToken: buyToken.contractAddress,
+      sellToken: sellToken.address,
+      buyToken: buyToken.address,
       sellAmount:
         sellAmount &&
         String(parseUnits(sellAmount, sellToken.decimals || DEFAULT_DECIMALS)),

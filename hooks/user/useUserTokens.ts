@@ -8,7 +8,7 @@ import {
   DEGEN_METADATA,
   NATIVE_TOKEN_METADATA,
 } from "~/constants";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export enum TOKENS {
   NATIVE = "native",
@@ -19,7 +19,7 @@ export default function useUserTokens(
   address: `0x${string}` | undefined,
   chainId: number = base.id,
 ) {
-  if (!address) return { userTokens: new Map<TOKENS, TokenInfoWithMetadata>() };
+  if (!address) return { userTokens: new Map<TOKENS, TokenWithTradeInfo>() };
   const { data: nativeToken } = useBalance({
     address,
     chainId,
@@ -56,29 +56,29 @@ export default function useUserTokens(
   });
   // console.log("balance: ", nativeToken, degenToken);
 
-  const userTokens: Map<TOKENS, TokenInfoWithMetadata> = useMemo(() => {
-    const tokens = new Map<TOKENS, TokenInfoWithMetadata>();
+  const userTokens: Map<TOKENS, TokenWithTradeInfo> = useMemo(() => {
+    const tokens = new Map<TOKENS, TokenWithTradeInfo>();
     if (nativeToken)
       tokens.set(TOKENS.NATIVE, {
         chainId: DEFAULT_CHAIN.id,
-        contractAddress: NATIVE_TOKEN_METADATA.contractAddress,
+        address: NATIVE_TOKEN_METADATA.address,
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: nativeToken.value,
         decimals: nativeToken.decimals,
         balance: formatUnits(nativeToken.value, nativeToken.decimals),
         symbol: nativeToken.symbol,
-        logo: NATIVE_TOKEN_METADATA.logo,
+        logoURI: NATIVE_TOKEN_METADATA.logo,
       });
     if (degenToken)
       tokens.set(TOKENS.DEGEN, {
         chainId: DEFAULT_CHAIN.id,
-        contractAddress: DEGEN_METADATA.contractAddress,
+        address: DEGEN_METADATA.address,
         name: degenToken[0],
         rawBalance: degenToken[1],
         decimals: degenToken[2],
         balance: formatUnits(degenToken[1], degenToken[2]),
         symbol: degenToken[3],
-        logo: DEGEN_METADATA.logo,
+        logoURI: DEGEN_METADATA.logo,
       });
     return tokens;
   }, [nativeToken, degenToken]);
@@ -97,16 +97,15 @@ export function useUserNativeToken(
     address,
     chainId,
   });
-  const token: TokenInfoWithMetadata | undefined = useMemo(
+  const token: TokenWithTradeInfo | undefined = useMemo(
     () =>
       data && {
+        ...data,
         chainId: DEFAULT_CHAIN.id,
-        contractAddress: NATIVE_TOKEN_METADATA.contractAddress,
+        address: NATIVE_TOKEN_METADATA.address,
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: data.value,
-        decimals: data.decimals,
         balance: formatUnits(data.value, data.decimals),
-        symbol: data.symbol,
         logo: NATIVE_TOKEN_METADATA.logo,
       },
     [data],
@@ -150,11 +149,11 @@ export function useUserToken(
       },
     ],
   });
-  const token: TokenInfoWithMetadata | undefined = useMemo(
+  const token: TokenWithTradeInfo | undefined = useMemo(
     () =>
       data && {
         chainId,
-        contractAddress,
+        address:contractAddress,
         name: data[0],
         rawBalance: data[1],
         decimals: data[2],

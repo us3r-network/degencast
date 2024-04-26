@@ -21,12 +21,11 @@ import {
   useShareContractSell,
 } from "~/hooks/trade/useShareContract";
 import { cn } from "~/lib/utils";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
-import UserWallets from "./user/UserWallets";
 import ActiveWallet from "./ActiveWallet";
 
 export function SellButton({
@@ -40,7 +39,7 @@ export function SellButton({
 }) {
   const account = useAccount();
   const [amount, setAmount] = useState(1);
-  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
   const { getBalance, getPrice } = useShareContractInfo(sharesSubject);
   const {
@@ -159,7 +158,7 @@ export function BuyButton({
   }) => React.ReactElement;
 }) {
   const [amount, setAmount] = useState(1);
-  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
   const { getPrice, getSupply } = useShareContractInfo(sharesSubject);
   const {
