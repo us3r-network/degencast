@@ -24,17 +24,17 @@ import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import useLoadScrollingExploreCasts from "~/hooks/explore/useLoadScrollingExploreCasts";
 import { useRef, useState } from "react";
-import { isDesktop } from "react-device-detect";
+// import { isDesktop } from "react-device-detect";
 
-export default function ExploreScreen() {
-  if (Platform.OS === "web" && isDesktop) {
-    return <PcExploreScreen />;
-  } else {
-    return <MobileExploreScreen />;
-  }
-}
+// export default function ExploreScreen() {
+//   if (Platform.OS === "web" && isDesktop) {
+//     return <ExploreScreenScroll />;
+//   } else {
+//     return <ExploreScreenDrag />;
+//   }
+// }
 
-function PcExploreScreen() {
+export default function ExploreScreenScroll() {
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
     useLoadScrollingExploreCasts();
   // const navigation = useNavigation();
@@ -148,7 +148,7 @@ function PcExploreScreen() {
   );
 }
 
-function MobileExploreScreen() {
+function ExploreScreenDrag() {
   const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
     useLoadExploreCasts();
   const animatedValue = useSharedValue(0);
