@@ -25,7 +25,7 @@ export function InfoButton({
           <Info className="size-4 text-secondary" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen border-none">
+      <DialogContent className="w-screen">
         <DialogHeader>
           <DialogTitle><TextWithTag>{title}</TextWithTag></DialogTitle>
         </DialogHeader>

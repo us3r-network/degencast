@@ -49,7 +49,7 @@ export default function WithdrawButton({
           <Text>Withdraw</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen border-none">
+      <DialogContent className="w-screen">
         <DialogHeader
           className={cn("flex-row items-center justify-between gap-2")}
         >
