@@ -45,7 +45,7 @@ export default function CastsScreen() {
                       className="flex-1"
                       onPress={() => {
                         const castHex = getCastHex(data);
-                        navigateToChannelExplore(data.rootParentUrl || "", {
+                        navigateToChannelExplore(data.rootParentUrl || "home", {
                           origin: ChannelExploreDataOrigin.Protfolio,
                           cast: data,
                           farcasterUserDataObj: farcasterUserDataObj,
