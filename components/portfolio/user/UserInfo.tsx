@@ -42,7 +42,9 @@ export default function UserInfo() {
             <Text className="text-sm text-white">@{userHandle}</Text>
           )}
         </View>
-        {farcasterAccount?.fid && <FarcasterStats fid={farcasterAccount.fid} />}
+        {farcasterAccount?.fid && (
+          <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
+        )}
         <UserGlobalPoints />
       </View>
     </View>

@@ -3,6 +3,8 @@ import React from "react";
 import { View } from "react-native";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
+import { InfoButton } from "~/components/common/InfoButton";
+import { COMING_SOON_TAG } from "~/components/common/TextWithTag";
 import { Button } from "~/components/ui/button";
 import {
   Collapsible,
@@ -26,8 +28,9 @@ export default function Tips() {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Tips {loading ? "" : `(${items.length})`}
+            Channel Tips {loading ? "" : `(${items.length})`}
           </Text>
+          <InfoButton title={TIPS_TITLE} info={TIPS_INFO} />
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
@@ -53,7 +56,7 @@ function Item(item: TipsInfo) {
     <View className="flex-row items-center justify-between">
       <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
-        <Text  className="text-sm">{round(Number(item.amount), 2)}</Text>
+        <Text className="text-sm">{round(Number(item.amount), 2)}</Text>
         <Button
           disabled
           size="sm"
@@ -69,3 +72,6 @@ function Item(item: TipsInfo) {
     </View>
   );
 }
+
+const TIPS_TITLE = `About Channel Tips ${COMING_SOON_TAG}`;
+const TIPS_INFO = `Tips are a way to show appreciation for a channel`;

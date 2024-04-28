@@ -23,10 +23,11 @@ import {
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
-import { CommunityInfo } from "../common/CommunityInfo";
-import NumberField from "../common/NumberField";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
+import NumberField from "~/components/common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
 import ActiveWallet from "./ActiveWallet";
+import { COMING_SOON_TAG } from "~/components/common/TextWithTag";
 
 export function SellButton({
   logo,
@@ -62,9 +63,9 @@ export function SellButton({
           <Text>Sell</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen border-none">
+      <DialogContent className="w-screen">
         <DialogHeader
-          className={cn("flex-row items-center justify-between gap-2")}
+          className={cn("flex gap-2")}
         >
           <DialogTitle>Sell</DialogTitle>
           <ActiveWallet />
@@ -187,9 +188,9 @@ export function BuyButton({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="w-screen border-none">
+      <DialogContent className="w-screen">
         <DialogHeader
-          className={cn("flex-row items-center justify-between gap-2")}
+          className={cn("flex gap-2")}
         >
           <DialogTitle>Buy Shares & get allowance</DialogTitle>
           <ActiveWallet />
@@ -257,17 +258,17 @@ export function BuyButton({
           )}
         </View>
         {/* <DialogFooter> */}
-        <About title="About channel share" info={SHARE_INFO} />
+        <About title={SHARE_TITLE} info={SHARE_INFO} />
         {/* </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );
 }
 
-const SHARE_INFO = [
-  "Share holders could claim airdrops after channel token launch",
-  "Share holders could receive channel allowance (same as your Degen allowance)",
+export const SHARE_TITLE = "About Channel Share";
+export const SHARE_INFO = [
+  `Share holders could claim airdrops after channel token launch ${COMING_SOON_TAG}`,
+  `Share holders could receive channel allowance (same as your Degen allowance) ${COMING_SOON_TAG}`,
   "The price of channel shares will increase after each buy",
-  "5% of each trade goes into capital pool to support token launch, and Degencast takes a 1% commission",
-  "You will receive 500 points each time you purchase channel shares",
+  "4% of each trade goes into capital pool to support channel rewards, and Degencast takes a 1% commission",
 ];

@@ -12,7 +12,7 @@ import {
 import { Text } from "~/components/ui/text";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import TradeButton from "../TradeButton";
+import TradeButton from "../../trade/TradeButton";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function CommunityTokens({
@@ -32,7 +32,7 @@ export default function CommunityTokens({
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Token {loading ? "" : `(${items.length})`}
+            Channel Tokens {loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&

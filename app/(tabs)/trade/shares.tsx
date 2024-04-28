@@ -4,7 +4,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { formatUnits } from "viem";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
-import { BuyButton } from "~/components/portfolio/ShareButton";
+import { BuyButton } from "~/components/trade/ShareButton";
 import { Text } from "~/components/ui/text";
 import useCommunityShares from "~/hooks/trade/useCommunityShares";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";

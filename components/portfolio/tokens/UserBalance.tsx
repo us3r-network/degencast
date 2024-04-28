@@ -9,8 +9,8 @@ import { Text } from "~/components/ui/text";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import TradeButton from "../TradeButton";
-import WithdrawButton from "../WithdrawButton";
+import TradeButton from "../../trade/TradeButton";
+import WithdrawButton from "../../trade/WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { userTokens } = useUserTokens(address);
@@ -19,7 +19,6 @@ export default function Balance({ address }: { address: `0x${string}` }) {
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">Balance</Text>
-          <Info size={16} />
         </View>
         <WithdrawButton defaultAddress={address} />
       </View>

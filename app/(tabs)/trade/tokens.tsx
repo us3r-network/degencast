@@ -3,7 +3,7 @@ import React from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import { TokenInfo } from "~/components/common/TokenInfo";
-import TradeButton from "~/components/portfolio/TradeButton";
+import TradeButton from "~/components/trade/TradeButton";
 import { Text } from "~/components/ui/text";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";

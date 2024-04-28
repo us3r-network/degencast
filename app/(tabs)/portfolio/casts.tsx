@@ -7,8 +7,8 @@ import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
+import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { ProfileFeedsGroups } from "~/services/farcaster/types";
 import getCastHex from "~/utils/farcaster/getCastHex";
@@ -20,7 +20,7 @@ export default function CastsScreen() {
   const farcasterAccount = getUserFarcasterAccount(user);
   const fid = params.fid || farcasterAccount?.fid;
   const { casts, farcasterUserDataObj, loading, loadCasts } = useUserCasts();
-  const { navigateToCastDetail } = useCastPage();
+  const { navigateToChannelExplore } = useChannelExplorePage();
   useEffect(() => {
     if (fid) loadCasts({ fid: String(fid), group: ProfileFeedsGroups.POSTS });
   }, [fid]);
@@ -33,7 +33,7 @@ export default function CastsScreen() {
           <View className="flex-1">
             {casts.length > 0 && (
               <FlatList
-              showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
                 data={casts}
                 numColumns={2}
                 columnWrapperStyle={{ gap: 5 }}
@@ -45,8 +45,8 @@ export default function CastsScreen() {
                       className="flex-1"
                       onPress={() => {
                         const castHex = getCastHex(data);
-                        navigateToCastDetail(castHex, {
-                          origin: CastDetailDataOrigin.Community,
+                        navigateToChannelExplore(data.rootParentUrl || "home", {
+                          origin: ChannelExploreDataOrigin.Protfolio,
                           cast: data,
                           farcasterUserDataObj: farcasterUserDataObj,
                         });

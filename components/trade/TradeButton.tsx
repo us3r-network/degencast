@@ -49,9 +49,9 @@ export default function TradeButton({
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen border-none">
+      <DialogContent className="w-screen">
         <DialogHeader
-          className={cn("flex-row items-center justify-between gap-2")}
+          className={cn("flex gap-2")}
         >
           <DialogTitle>Trade</DialogTitle>
           <ActiveWallet />
