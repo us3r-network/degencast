@@ -48,6 +48,7 @@ export type ShareInfo = {
   priceETH?: string;
   sharesSubject: `0x${string}`;
   trend: number;
+  amount?: number;
 };
 
 export type TipsInfo = {

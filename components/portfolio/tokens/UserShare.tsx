@@ -10,9 +10,10 @@ import {
 } from "~/components/ui/collapsible";
 import { Text } from "~/components/ui/text";
 import useUserCommunityShares from "~/hooks/user/useUserCommunityShares";
-import { ShareInfo } from "~/services/user/types";
-import { SellButton } from "../ShareButton";
+import { ShareInfo } from "~/services/trade/types";
+import { SHARE_INFO, SHARE_TITLE, SellButton } from "../ShareButton";
 import { Link } from "expo-router";
+import { InfoButton } from "~/components/common/InfoButton";
 
 const DEFAULT_ITEMS_NUM = 3;
 export default function Share({ address }: { address: `0x${string}` }) {
@@ -27,8 +28,9 @@ export default function Share({ address }: { address: `0x${string}` }) {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">
-            Share {loading ? "" : `(${items.length})`}
+            Channel Share {loading ? "" : `(${items.length})`}
           </Text>
+          <InfoButton title={SHARE_TITLE} info={SHARE_INFO} />
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
