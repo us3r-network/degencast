@@ -281,7 +281,7 @@ function SearchHeader({
             "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
           )}
           ref={searchInputRef}
-          placeholder="Search communities"
+          placeholder="Search channel"
           value={value}
           autoFocus={true}
           onChangeText={(text) => setValue(text)}
@@ -391,15 +391,15 @@ function DefaultSearchIcon() {
         />
 
         <Text className="text-lg font-bold color-[#4C2896]">
-          Community Not Found
+          Channel Not Found
         </Text>
         <Text className="text-center text-base leading-8 color-[#A36EFE]">
-          The community you’re looking for does not seem to exist.
+          The channel you’re looking for does not seem to exist.
         </Text>
 
         <Link href="/(tabs)/trade" asChild>
           <Button className="w-72 rounded-md  web:bg-[#A36EFE] web:hover:bg-[#A36EFE] web:active:bg-[#A36EFE]">
-            <Text className="color-white">Explore more communities</Text>
+            <Text className="color-white">Explore channels in rank</Text>
           </Button>
         </Link>
       </View>

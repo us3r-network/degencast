@@ -1,10 +1,9 @@
-import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
+import { ShareInfo, TokenWithTradeInfo } from "~/services/trade/types";
+import request, { RequestPromise } from "../../shared/api/request";
 import {
   LoginRespEntity,
-  ShareInfo,
   TipsInfo,
-  TokenInfoWithMetadata,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
@@ -69,7 +68,7 @@ export function getUserPoints(): RequestPromise<ApiResp<{ value: number }>> {
 
 export function myTokens(
   pubkey: `0x${string}`,
-): RequestPromise<ApiResp<TokenInfoWithMetadata[]>> {
+): RequestPromise<ApiResp<TokenWithTradeInfo[]>> {
   return request({
     url: `topics/my-tokens`,
     method: "get",

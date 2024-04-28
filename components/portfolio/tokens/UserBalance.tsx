@@ -7,10 +7,10 @@ import { TokenInfo } from "~/components/common/TokenInfo";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import TradeButton from "../TradeButton_lifi";
-import WithdrawButton from "../WithdrawButton";
 import { cn } from "~/lib/utils";
+import { TokenWithTradeInfo } from "~/services/trade/types";
+import TradeButton from "../TradeButton";
+import WithdrawButton from "../WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { userTokens } = useUserTokens(address);
@@ -25,13 +25,13 @@ export default function Balance({ address }: { address: `0x${string}` }) {
       </View>
       {userTokens.has(TOKENS.NATIVE) && (
         <MyToken
-          token={userTokens.get(TOKENS.NATIVE) as TokenInfoWithMetadata}
+          token={userTokens.get(TOKENS.NATIVE) as TokenWithTradeInfo}
           action={ACTION_TYPES.BUY}
         />
       )}
       {userTokens.has(TOKENS.DEGEN) && (
         <MyToken
-          token={userTokens.get(TOKENS.DEGEN) as TokenInfoWithMetadata}
+          token={userTokens.get(TOKENS.DEGEN) as TokenWithTradeInfo}
           action={ACTION_TYPES.SWAP}
         />
       )}
@@ -48,7 +48,7 @@ function MyToken({
   token,
   action,
 }: {
-  token: TokenInfoWithMetadata;
+  token: TokenWithTradeInfo;
   action: ACTION_TYPES;
 }) {
   const { wallets } = useWallets();
@@ -65,7 +65,7 @@ function MyToken({
   };
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo name={token.name} logo={token.logo} />
+      <TokenInfo name={token.name} logo={token.logoURI} />
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">
           {round(Number(token.balance), 2)} {token.symbol}
@@ -88,8 +88,7 @@ function MyToken({
           ) : (
             action === ACTION_TYPES.SWAP && (
               <TradeButton
-                fromChain={token.chainId}
-                fromToken={token.contractAddress as `0x${string}`}
+                fromToken={token}
               />
             )
           ))}

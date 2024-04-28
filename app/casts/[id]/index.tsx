@@ -7,6 +7,7 @@ import {
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import { Loading } from "~/components/common/Loading";
+import { PostDetailActions } from "~/components/post/PostActions";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions, {
   CreatedFCastActions,
@@ -16,6 +17,8 @@ import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
 import FCastUserInfo from "~/components/social-farcaster/FCastUserInfo";
+import NeynarEmbeds from "~/components/social-farcaster/NeynarEmbeds";
+import NeynarText from "~/components/social-farcaster/NeynarText";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
@@ -24,10 +27,7 @@ import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
 import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
 import { CommunityInfo } from "~/services/community/types/community";
-import {
-  fetchCastWithHashFid,
-  fetchCastWithHash,
-} from "~/services/farcaster/neynar/farcaster";
+
 import { FarCast } from "~/services/farcaster/types";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserData } from "~/utils/farcaster/user-data";
@@ -132,7 +132,8 @@ function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
                       url: "",
                     }}
                   />
-                  <Text>{cast.text}</Text>
+                  <NeynarText text={cast.text} />
+                  <NeynarEmbeds embeds={cast.embeds} />
                 </View>
               );
             }}

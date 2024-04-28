@@ -2,12 +2,11 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,12 +20,13 @@ import {
   useShareContractInfo,
   useShareContractSell,
 } from "~/hooks/trade/useShareContract";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { cn } from "~/lib/utils";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
 import { CommunityInfo } from "../common/CommunityInfo";
 import NumberField from "../common/NumberField";
 import ToeknSelect from "./UserTokenSelect";
-import { cn } from "~/lib/utils";
+import ActiveWallet from "./ActiveWallet";
 
 export function SellButton({
   logo,
@@ -38,11 +38,8 @@ export function SellButton({
   sharesSubject: `0x${string}`;
 }) {
   const account = useAccount();
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
-
   const [amount, setAmount] = useState(1);
-  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
   const { getBalance, getPrice } = useShareContractInfo(sharesSubject);
   const {
@@ -56,15 +53,8 @@ export function SellButton({
     isSuccess,
   } = useShareContractSell(sharesSubject);
 
-  const balance = useMemo(() => {
-    const { data } = getBalance(account?.address);
-    return Number(data);
-  }, [getBalance, account?.address, isSuccess]);
-  const price = useMemo(() => {
-    const { data } = getPrice(SHARE_ACTION.SELL, amount, true);
-    return data as bigint;
-  }, [amount, getPrice, isSuccess]);
-
+  const { data: balance } = getBalance(account?.address);
+  const { data: price } = getPrice(SHARE_ACTION.SELL, amount, true);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -73,13 +63,16 @@ export function SellButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Sell</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
             <CommunityInfo name={name} logo={logo} />
-            <Text className="text-sm">{balance} shares</Text>
+            <Text className="text-sm">{Number(balance)} shares</Text>
           </View>
           <ToeknSelect
             hidden
@@ -102,7 +95,7 @@ export function SellButton({
             <NumberField
               defaultValue={1}
               minValue={1}
-              maxValue={balance}
+              maxValue={Number(balance)}
               onChange={setAmount}
             />
           </View>
@@ -119,7 +112,7 @@ export function SellButton({
           <Button
             variant={"secondary"}
             className="w-full"
-            disabled={waiting || writing || balance <= 0}
+            disabled={!account || waiting || writing || balance <= 0}
             onPress={() => sell(amount)}
           >
             <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
@@ -128,7 +121,7 @@ export function SellButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-foreground/80"
+                className="text-primary-foreground/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
                 target="_blank"
               >
@@ -157,11 +150,9 @@ export function BuyButton({
     symbol: string;
   }) => React.ReactElement;
 }) {
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
-
+  const account = useAccount();
   const [amount, setAmount] = useState(1);
-  const [token, setToken] = useState<TokenInfoWithMetadata | undefined>();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
   const { getPrice, getSupply } = useShareContractInfo(sharesSubject);
   const {
@@ -175,14 +166,8 @@ export function BuyButton({
     isSuccess,
   } = useShareContractBuy(sharesSubject);
 
-  const supply = useMemo(() => {
-    const { data } = getSupply();
-    return Number(data);
-  }, [getSupply, isSuccess]);
-  const price = useMemo(() => {
-    const { data } = getPrice(SHARE_ACTION.BUY, amount, true);
-    return data as bigint;
-  }, [amount, getPrice, isSuccess]);
+  const { data: supply } = getSupply();
+  const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
 
   const fetchedPrice = !!(price && amount && token && token.decimals);
 
@@ -203,13 +188,16 @@ export function BuyButton({
         )}
       </DialogTrigger>
       <DialogContent className="w-screen border-none">
-        <DialogHeader>
+        <DialogHeader
+          className={cn("flex-row items-center justify-between gap-2")}
+        >
           <DialogTitle>Buy Shares & get allowance</DialogTitle>
+          <ActiveWallet />
         </DialogHeader>
         <View className="flex gap-4">
           <View className="flex-row items-center justify-between">
             <CommunityInfo name={name} logo={logo} />
-            <Text>Capital Pool: {supply}</Text>
+            <Text>Capital Pool: {Number(supply)}</Text>
           </View>
           <ToeknSelect
             chain={SHARE_CONTRACT_CHAIN}
@@ -246,7 +234,10 @@ export function BuyButton({
             variant={"secondary"}
             className="w-full"
             disabled={
-              waiting || writing || Number(token?.rawBalance) < Number(price)
+              !account ||
+              waiting ||
+              writing ||
+              Number(token?.rawBalance) < Number(price)
             }
             onPress={() => buy(amount, price)}
           >
@@ -256,7 +247,7 @@ export function BuyButton({
             <View className="flex gap-2">
               <Text className="font-bold">Transaction Hash:</Text>
               <Link
-                className="text-white/80"
+                className="text-primary-foreground/80"
                 href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data?.transactionHash}`}
                 target="_blank"
               >

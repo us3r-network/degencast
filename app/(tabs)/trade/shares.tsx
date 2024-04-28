@@ -3,7 +3,6 @@ import React from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { formatUnits } from "viem";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
-import { ArrowDown, ArrowUp } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
 import { BuyButton } from "~/components/portfolio/ShareButton";
 import { Text } from "~/components/ui/text";
@@ -52,13 +51,15 @@ function Item({ item, index }: { item: ShareInfo; index: number }) {
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm">
-          {formatUnits(
-            BigInt(item.priceETH),
-            SHARE_CONTRACT_CHAIN.nativeCurrency.decimals,
-          )}{" "}
-          {SHARE_CONTRACT_CHAIN.nativeCurrency.symbol}
-        </Text>
+        {item.priceETH && (
+          <Text className="text-sm">
+            {formatUnits(
+              BigInt(item.priceETH),
+              SHARE_CONTRACT_CHAIN.nativeCurrency.decimals,
+            )}{" "}
+            {SHARE_CONTRACT_CHAIN.nativeCurrency.symbol}
+          </Text>
+        )}
         <BuyButton
           logo={item.logo}
           name={item.name}
