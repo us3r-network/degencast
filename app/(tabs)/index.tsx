@@ -46,21 +46,19 @@ export default function ExploreScreenScroll() {
   const flatListRef = useRef<FlatList<any>>(null);
 
   return (
-    <View className={cn("flex-1 overflow-y-hidden bg-background px-5  pt-16")}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <View className={cn("flex-1 bg-background pt-16")}>
+      <View className={cn("h-full w-full")}>
         <FlatList
           ref={flatListRef}
           style={{ flex: 1 }}
-          className={cn("h-full w-full items-center")}
+          className="h-full w-full items-center"
           data={casts}
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           initialNumToRender={2}
           disableIntervalMomentum={true}
           pagingEnabled={true}
-          decelerationRate={0.5}
-          onStartShouldSetResponder={() => true}
-          onMoveShouldSetResponder={() => true}
+          decelerationRate={0}
           viewabilityConfigCallbackPairs={
             viewabilityConfigCallbackPairs.current
           }
@@ -76,15 +74,19 @@ export default function ExploreScreenScroll() {
             const { data, platform, community } = item as any;
 
             return (
-              <Animated.View
-                className={cn("h-full w-fit rounded-2xl py-2")}
+              <View
+                className={cn("h-full w-fit py-2 ")}
                 style={{
                   height: itemHeight,
                 }}
               >
                 <Card
-                  className={cn("w-full rounded-2xl border-none sm:w-[390px]")}
-                  style={{ height: itemHeight - 60 }}
+                  className={cn(
+                    "box-border h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:w-[390px]",
+                  )}
+                  style={{
+                    height: itemHeight - 60,
+                  }}
                 >
                   <Pressable
                     className={cn("h-full w-full overflow-hidden p-5")}
@@ -127,11 +129,11 @@ export default function ExploreScreenScroll() {
                     <FCastCommunityDefault className="absolute -bottom-11 right-1/2 translate-x-1/2" />
                   )}
                 </Card>
-              </Animated.View>
+              </View>
             );
           }}
         />
-      </GestureHandlerRootView>
+      </View>
     </View>
   );
 }
