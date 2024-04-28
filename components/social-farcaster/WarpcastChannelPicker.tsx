@@ -41,11 +41,13 @@ export default function WarpcastChannelPicker({
       });
     }
     return warpcastChannels
-      .filter((item) => item.name.includes(filter))
-      .slice(0, 150)
+      .filter((item) =>
+        item.name.toLocaleLowerCase().includes(filter.toLowerCase()),
+      )
       .sort((a, b) => {
         return a.createdAt - b.createdAt;
-      });
+      })
+      .slice(0, 150);
   }, [filter, warpcastChannels]);
 
   return (
