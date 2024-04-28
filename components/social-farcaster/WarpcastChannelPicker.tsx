@@ -77,7 +77,7 @@ export default function WarpcastChannelPicker({
             <Button
               variant={"ghost"}
               size={"icon"}
-              className="rounded-md bg-[#a36efe1a]"
+              className="rounded-md bg-[#a36efe1a] web:hover:color-black web:active:color-black"
               onPress={() => {
                 setOpen(false);
               }}
