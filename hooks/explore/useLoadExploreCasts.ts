@@ -104,9 +104,9 @@ export default function useLoadExploreCasts() {
   useEffect(() => {
     currentCastIndexRef.current = currentCastIndex;
     const timer = setTimeout(() => {
-      if (currentCastIndexRef.current === currentCastIndex) {
-        const cast = casts[currentCastIndex].data as FarCast;
-        const castHex = getCastHex(cast);
+      const cast = casts?.[currentCastIndex]?.data as FarCast;
+      const castHex = cast ? getCastHex(cast) : "";
+      if (castHex && currentCastIndexRef.current === currentCastIndex) {
         submitUserAction({
           action: UserActionName.View,
           castHash: castHex,
