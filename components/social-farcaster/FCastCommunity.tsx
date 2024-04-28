@@ -34,7 +34,7 @@ export default function FCastCommunity({
         >
           <AvatarImage source={{ uri: communityInfo.logo }} />
           <AvatarFallback>
-            <Text>{communityInfo.name.slice(0, 2)}</Text>
+            <Text>{communityInfo?.name?.slice(0, 2)}</Text>
           </AvatarFallback>
         </Avatar>
         {!joined && (

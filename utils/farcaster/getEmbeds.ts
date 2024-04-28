@@ -31,9 +31,10 @@ export type Embeds = {
   webpages: {
     url: string;
   }[];
-  casts: {
+  casts: Array<{
     castId: { fid: number; hash: string };
-  }[];
+    cast_id?: { fid: number; hash: string };
+  }>;
 };
 
 export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
