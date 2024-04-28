@@ -65,7 +65,7 @@ export function SellButton({
       </DialogTrigger>
       <DialogContent className="w-screen">
         <DialogHeader
-          className={cn("flex-row items-center justify-between gap-2")}
+          className={cn("flex gap-2")}
         >
           <DialogTitle>Sell</DialogTitle>
           <ActiveWallet />
@@ -190,7 +190,7 @@ export function BuyButton({
       </DialogTrigger>
       <DialogContent className="w-screen">
         <DialogHeader
-          className={cn("flex-row items-center justify-between gap-2")}
+          className={cn("flex gap-2")}
         >
           <DialogTitle>Buy Shares & get allowance</DialogTitle>
           <ActiveWallet />

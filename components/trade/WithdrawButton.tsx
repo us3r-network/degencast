@@ -51,7 +51,7 @@ export default function WithdrawButton({
       </DialogTrigger>
       <DialogContent className="w-screen">
         <DialogHeader
-          className={cn("flex-row items-center justify-between gap-2")}
+          className={cn("flex gap-2")}
         >
           <DialogTitle>Withdraw</DialogTitle>
           <ActiveWallet />

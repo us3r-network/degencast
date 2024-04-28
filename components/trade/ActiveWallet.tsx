@@ -11,20 +11,22 @@ export default function ActiveWallet() {
   const { connectWallet } = useConnectWallet();
   if (account.address)
     return (
-      <View className="flex-row items-center">
-        <Button variant="link" onPress={connectWallet}>
-          <Wallet className="font-bold text-secondary" />
-        </Button>
+      <View className="flex-row items-center justify-between">
         <Text>{shortPubKey(account.address)}</Text>
+        <Button className="flex-row items-center gap-2 p-0" onPress={connectWallet}>
+          <Wallet className="font-bold text-secondary" />
+          <Text className="font-bold text-secondary">Switch</Text>
+        </Button>
       </View>
     );
   else
     return (
-      <View className="flex-row items-center">
-        <Button variant="link" onPress={connectWallet}>
-          <Wallet className="font-bold text-secondary" />
-        </Button>
+      <View className="flex-row items-center justify-between">
         <Text className="font-bold text-secondary">No Active Wallet</Text>{" "}
+        <Button className="flex-row items-center gap-2 p-0" onPress={connectWallet}>
+          <Wallet className="font-bold text-secondary" />
+          <Text className="font-bold text-secondary">Connect</Text>
+        </Button>
       </View>
     );
 }
