@@ -2,7 +2,7 @@ import { CommunityInfo } from "~/services/community/types/community";
 import { Button, ButtonProps } from "../ui/button";
 import { Text } from "../ui/text";
 import { cn } from "~/lib/utils";
-import { BuyButton } from "../portfolio/ShareButton";
+import { BuyButton } from "../trade/ShareButton";
 
 export default function CommunityBuyShareButton({
   communityInfo,

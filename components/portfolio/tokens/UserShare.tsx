@@ -11,7 +11,7 @@ import {
 import { Text } from "~/components/ui/text";
 import useUserCommunityShares from "~/hooks/user/useUserCommunityShares";
 import { ShareInfo } from "~/services/trade/types";
-import { SHARE_INFO, SHARE_TITLE, SellButton } from "../ShareButton";
+import { SHARE_INFO, SHARE_TITLE, SellButton } from "../../trade/ShareButton";
 import { Link } from "expo-router";
 import { InfoButton } from "~/components/common/InfoButton";
 
