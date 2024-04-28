@@ -24,9 +24,10 @@ import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import useLoadScrollingExploreCasts from "~/hooks/explore/useLoadScrollingExploreCasts";
 import { useRef, useState } from "react";
+import { isDesktop } from "react-device-detect";
 
 export default function ExploreScreen() {
-  if (Platform.OS === "web") {
+  if (Platform.OS === "web" && isDesktop) {
     return <PcExploreScreen />;
   } else {
     return <MobileExploreScreen />;
