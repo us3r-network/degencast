@@ -21,7 +21,6 @@ export default function FCastEmbeds({
   const embedCasts = embeds.casts;
   const embedVideos = embeds.videos;
   const embedWebpages = embeds.webpages;
-
   return (
     <View className={cn("flex flex-col gap-5", className)} {...props}>
       {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />}

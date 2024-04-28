@@ -9,7 +9,7 @@ import { Card } from "~/components/ui/card";
 import { UserDataType } from "@external-types/farcaster";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
-  const embedCastIds = casts.map((embed) => embed.castId);
+  const embedCastIds = casts.map((embed) => embed.castId || embed.cast_id);
   const { embedCastsMetadata, loadEmbedCastsMetadata } =
     useLoadEmbedCastsMetadata();
   useEffect(() => {
