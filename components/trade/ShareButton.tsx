@@ -7,6 +7,7 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -64,9 +65,7 @@ export function SellButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen">
-        <DialogHeader
-          className={cn("flex gap-2")}
-        >
+        <DialogHeader className={cn("flex gap-2")}>
           <DialogTitle>Sell</DialogTitle>
           <ActiveWallet />
         </DialogHeader>
@@ -189,9 +188,7 @@ export function BuyButton({
         )}
       </DialogTrigger>
       <DialogContent className="w-screen">
-        <DialogHeader
-          className={cn("flex gap-2")}
-        >
+        <DialogHeader className={cn("flex gap-2")}>
           <DialogTitle>Buy Shares & get allowance</DialogTitle>
           <ActiveWallet />
         </DialogHeader>
@@ -201,6 +198,7 @@ export function BuyButton({
             <Text>Capital Pool: {Number(supply)}</Text>
           </View>
           <ToeknSelect
+            hidden
             chain={SHARE_CONTRACT_CHAIN}
             supportTokenKeys={SHARE_SUPPORT_TOKENS}
             selectToken={setToken}
@@ -257,9 +255,9 @@ export function BuyButton({
             </View>
           )}
         </View>
-        {/* <DialogFooter> */}
-        <About title={SHARE_TITLE} info={SHARE_INFO} />
-        {/* </DialogFooter> */}
+        <DialogFooter>
+          <About title={SHARE_TITLE} info={SHARE_INFO} />
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
