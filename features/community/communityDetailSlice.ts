@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 import { CommunityInfo } from "~/services/community/types/community";
 
-type communityDetailState = {
+type CommunityDetailState = {
   basicData: {
     [key: string]: CommunityInfo;
   };
@@ -12,7 +12,7 @@ type communityDetailState = {
   detailPendingIds: string[];
 };
 
-const communityDetailState: communityDetailState = {
+const communityDetailState: CommunityDetailState = {
   basicData: {},
   detailData: {},
   detailPendingIds: [],
@@ -23,7 +23,7 @@ export const communityDetailSlice = createSlice({
   initialState: communityDetailState,
   reducers: {
     upsertCommunityBasicData: (
-      state: communityDetailState,
+      state: CommunityDetailState,
       action: PayloadAction<{
         id: string;
         data: CommunityInfo;
@@ -32,7 +32,7 @@ export const communityDetailSlice = createSlice({
       state.basicData[action.payload.id] = action.payload.data;
     },
     upsertCommunityDetailData: (
-      state: communityDetailState,
+      state: CommunityDetailState,
       action: PayloadAction<{
         id: string;
         data: CommunityInfo;
@@ -41,13 +41,13 @@ export const communityDetailSlice = createSlice({
       state.detailData[action.payload.id] = action.payload.data;
     },
     addCommunityDetailPendingId: (
-      state: communityDetailState,
+      state: CommunityDetailState,
       action: PayloadAction<string>,
     ) => {
       state.detailPendingIds.push(action.payload);
     },
     removeCommunityDetailPendingId: (
-      state: communityDetailState,
+      state: CommunityDetailState,
       action: PayloadAction<string>,
     ) => {
       state.detailPendingIds = state.detailPendingIds.filter(
