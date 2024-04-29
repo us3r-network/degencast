@@ -21,6 +21,7 @@ import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
 import communityDetail from "~/features/community/communityDetailSlice";
+import communityDetailTipsRank from "~/features/community/communityDetailTipsRankSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -40,6 +41,7 @@ export const store = configureStore({
     userCommunityShares,
     channelExplorePage,
     communityDetail,
+    communityDetailTipsRank,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>
