@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { useRouter } from "expo-router";
 import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
+import useCommunityPage from "~/hooks/community/useCommunityPage";
 
 export default function FCastCommunity({
   communityInfo,
@@ -16,6 +17,7 @@ export default function FCastCommunity({
 }) {
   const router = useRouter();
   const { joined, joiningAction } = useJoinCommunityAction(communityInfo);
+  const { navigateToCommunityDetail } = useCommunityPage();
   return (
     <Pressable
       className={cn(
@@ -23,7 +25,8 @@ export default function FCastCommunity({
         className,
       )}
       onPress={() => {
-        router.push(`/communities/${communityInfo.channelId}` as any);
+        if (!communityInfo.channelId) return;
+        navigateToCommunityDetail(communityInfo.channelId, communityInfo);
       }}
       {...props}
     >
