@@ -66,7 +66,9 @@ import {
   TrendingDown,
   Repeat,
   Plug,
-  Cable,Edit
+  Cable,
+  Edit,
+  Cross,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -150,6 +152,7 @@ interopIcon(Plug);
 interopIcon(Cable);
 interopIcon(Edit);
 interopIcon(ArrowUpDown);
+interopIcon(Cross);
 export {
   Activity,
   Airplay,
@@ -217,5 +220,7 @@ export {
   TrendingDown,
   Repeat,
   Plug,
-  Cable,Edit
+  Cable,
+  Edit,
+  Cross,
 };

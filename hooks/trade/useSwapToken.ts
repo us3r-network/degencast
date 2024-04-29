@@ -22,9 +22,11 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     error: sendTransactionError,
   } = useSendTransaction();
   const {
-    isLoading: isConfirming,
-    isSuccess: isConfirmed,
-    error: waitForTransactionReceiptError,
+    data: transactionReceipt,
+    error: transationError,
+    isLoading: transationLoading,
+    isSuccess,
+    status:transationStatus,
   } = useWaitForTransactionReceipt({
     hash,
   });
@@ -108,9 +110,10 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     fetchingPrice,
     fetchPrice,
     swapToken,
-    hash,
-    isConfirming,
-    isConfirmed,
-    error: error || sendTransactionError || waitForTransactionReceiptError,
+    transactionReceipt,
+    transationStatus,
+    transationLoading,
+    isSuccess,
+    error: error || sendTransactionError || transationError,
   };
 }

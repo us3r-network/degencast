@@ -70,7 +70,6 @@ export default function MyToeknSelect({
           <TokenInfo
             name={token.name}
             logo={token.logoURI}
-            textClassName="text-primary-foreground"
           />
           <Text className="text-secondary">
             {Number(token.balance).toFixed(4)} {token.symbol}

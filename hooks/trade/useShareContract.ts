@@ -85,7 +85,7 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
     error: writeError,
   } = useWriteContract();
   const {
-    data,
+    data: transactionReceipt,
     error: transationError,
     isLoading: waiting,
     isSuccess,
@@ -108,7 +108,7 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
 
   return {
     buy,
-    data,
+    transactionReceipt,
     status,
     writeError,
     transationError,
@@ -140,7 +140,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   };
 
   const {
-    data,
+    data: transactionReceipt,
     isError: transationError,
     isLoading: waiting,
     isSuccess,
@@ -150,7 +150,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   });
   return {
     sell,
-    data,
+    transactionReceipt,
     status,
     writeError,
     transationError,

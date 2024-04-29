@@ -6,13 +6,11 @@ import { Text } from "~/components/ui/text";
 type CommunityInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   name?: string;
   logo?: string;
-  textClassName?: string;
 };
 
 export function CommunityInfo({
   name,
   logo,
-  textClassName,
 }: CommunityInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
@@ -25,7 +23,7 @@ export function CommunityInfo({
           <Text className="text-sm font-bold">{name?.substring(0, 2)}</Text>
         </AvatarFallback>
       </Avatar>
-      <Text className={cn("line-clamp-1 font-bold", textClassName)}>
+      <Text className={cn("line-clamp-1 font-bold")}>
         {name}
       </Text>
     </View>
