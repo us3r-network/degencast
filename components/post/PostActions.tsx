@@ -30,7 +30,7 @@ export const LikeButton = ({
   ...props
 }: ButtonProps & {
   liked: boolean;
-  likeCount: number;
+  likeCount?: number;
   iconSize?: number;
 }) => {
   return (
@@ -45,9 +45,11 @@ export const LikeButton = ({
           liked && " fill-primary-foreground stroke-primary-foreground",
         )}
       />
-      <ActionText className={cn("", liked && " text-primary-foreground")}>
-        {likeCount || 0}
-      </ActionText>
+      {likeCount !== undefined && (
+        <ActionText className={cn("", liked && " text-primary-foreground")}>
+          {likeCount || 0}
+        </ActionText>
+      )}
     </ActionButton>
   );
 };
@@ -110,7 +112,7 @@ export const ExplorePostActions = ({
   ...props
 }: ViewProps & {
   liked: boolean;
-  likeCount: number;
+  likeCount?: number;
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
@@ -133,7 +135,7 @@ export const ExplorePostActions = ({
 
 export const PostDetailActions = ({
   liked = false,
-  likeCount = 0,
+  likeCount,
   onLike,
   onGift,
   onShare,

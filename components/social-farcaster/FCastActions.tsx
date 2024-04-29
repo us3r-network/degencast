@@ -86,7 +86,6 @@ export default function FCastActions({
       {isDetail ? (
         <PostDetailActions
           liked={liked}
-          likeCount={likeCount}
           onLike={onLike}
           onGift={onGift}
           onShare={onShare}
