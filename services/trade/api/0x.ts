@@ -1,7 +1,7 @@
 import axios from "axios";
+import { ZERO_X_API_KEY } from "~/constants";
 
 const ZERO_X_API_ENDPOINT = "https://base.api.0x.org/swap/v1";
-const ZERO_X_API_KEY = "9afab301-2647-442b-84b1-2433ca2f19b0";
 
 type SwapParams = {
   sellToken?: string;
