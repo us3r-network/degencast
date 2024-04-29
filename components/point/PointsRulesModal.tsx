@@ -62,7 +62,7 @@ export default function PointsRulesModal({
           <Atom color="#FFFFFF" className=" h-7 w-7" />
           <Text className=" text-2xl text-white">{totalPoints}</Text>
         </View>
-        <Separator className="bg-[#A36EFE1A] bg-opacity-10" />
+        <Separator className=" bg-secondary/10" />
         <ScrollView
           showsHorizontalScrollIndicator={false}
           className="max-w-s flex-col gap-5 max-sm:max-h-[50vh] "
