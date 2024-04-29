@@ -6,6 +6,7 @@ import { CommunityInfo } from "~/services/community/types/community";
 
 export enum CastDetailDataOrigin {
   Explore,
+  ChannelCastExplore,
   Comments,
   Community,
   Protfolio,

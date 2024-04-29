@@ -67,10 +67,16 @@ export default function CommunityDetail() {
     }
   }, [segments]);
   const router = useRouter();
-  const { community, loading, loadCommunity } = useLoadCommunityDetail();
+  const { communityDetail, communityBasic, loading, loadCommunityDetail } =
+    useLoadCommunityDetail(id);
+
+  const community = communityDetail || communityBasic;
+
   useEffect(() => {
-    loadCommunity(id);
-  }, [id]);
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
 
   return (
     <SafeAreaView

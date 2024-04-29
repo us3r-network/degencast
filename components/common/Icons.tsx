@@ -68,7 +68,7 @@ import {
   Plug,
   Cable,
   Edit,
-  Cross,
+  Home,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -152,7 +152,7 @@ interopIcon(Plug);
 interopIcon(Cable);
 interopIcon(Edit);
 interopIcon(ArrowUpDown);
-interopIcon(Cross);
+interopIcon(Home);
 export {
   Activity,
   Airplay,
@@ -222,5 +222,5 @@ export {
   Plug,
   Cable,
   Edit,
-  Cross,
+  Home,
 };

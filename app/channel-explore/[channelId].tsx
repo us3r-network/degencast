@@ -4,7 +4,7 @@ import {
   useGlobalSearchParams,
   useLocalSearchParams,
 } from "expo-router";
-import { Pressable, SafeAreaView, View } from "react-native";
+import { Dimensions, Pressable, SafeAreaView, View } from "react-native";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
 import FCastCommunity, {
@@ -27,6 +27,8 @@ import { FarCast, SocialPlatform } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
 import { ChannelCastData } from "~/services/farcaster/api";
+import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
+import { Home } from "~/components/common/Icons";
 
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
@@ -36,20 +38,28 @@ export default function ChannelExploreScreen() {
 
   const { channelExploreData } = useChannelExplorePage();
   const {
-    community: fetchedCommunity,
+    communityDetail,
+    communityBasic,
     loading: communityLoading,
-    loadCommunity,
-  } = useLoadCommunityDetail();
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId);
+
   useEffect(() => {
-    loadCommunity(channelId);
-  }, [channelId]);
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
 
   const channelPageData = channelExploreData?.[channelId];
   const {
+    origin: channelPageOrigin,
     cast: channelPageCast,
     farcasterUserDataObj: channelPageCastUserDataObj,
-    community: channelPageCommunity,
   } = channelPageData || {};
+
+  const showGoHomeBtn = ![ChannelExploreDataOrigin.Explore].includes(
+    channelPageOrigin,
+  );
 
   const cast = useMemo(() => {
     return channelPageCast && castHex && castHex === getCastHex(channelPageCast)
@@ -58,13 +68,8 @@ export default function ChannelExploreScreen() {
   }, [channelPageCast, castHex]);
 
   const community = useMemo(() => {
-    return (
-      fetchedCommunity ||
-      (channelId === channelPageCommunity?.channelId
-        ? channelPageCommunity
-        : undefined)
-    );
-  }, [fetchedCommunity, channelId, channelPageCommunity]);
+    return communityDetail || communityBasic;
+  }, [communityDetail, communityBasic]);
 
   const initCast = useMemo(() => {
     return cast
@@ -97,7 +102,7 @@ export default function ChannelExploreScreen() {
           header: () => (
             <View className="flex flex-row items-center justify-between  bg-white">
               <View className="flex flex-row items-center">
-                <View className="w-fit p-3 ">
+                <View className="w-fit flex-row items-center gap-3 p-3 ">
                   <Button
                     className="rounded-full bg-[#a36efe1a]"
                     size={"icon"}
@@ -108,10 +113,23 @@ export default function ChannelExploreScreen() {
                   >
                     <BackArrowIcon />
                   </Button>
+                  {showGoHomeBtn && (
+                    <Button
+                      className="rounded-full bg-[#a36efe1a]"
+                      size={"icon"}
+                      variant={"ghost"}
+                      onPress={() => {
+                        navigation.navigate("index" as never);
+                      }}
+                    >
+                      <Home
+                        className=" stroke-primary"
+                        size={16}
+                        strokeWidth={3}
+                      />
+                    </Button>
+                  )}
                 </View>
-                <Text className=" ml-2 text-xl font-bold  leading-none ">
-                  {community?.name}
-                </Text>
               </View>
               <View className="flex flex-row items-center gap-3 pr-3">
                 <Link href={`/create?channelId=${channelId}` as any} asChild>
@@ -164,15 +182,13 @@ function ChannelExploreSwipList({
 }) {
   const { navigateToCastDetail } = useCastPage();
 
-  const [itemHeight, setItemHeight] = useState(0);
+  // const [itemHeight, setItemHeight] = useState(0);
   const viewabilityConfigCallbackPairs = useRef([
     {
       viewabilityConfig: {
         itemVisiblePercentThreshold: 50,
       },
       onViewableItemsChanged: ({ viewableItems, changed }: any) => {
-        console.log("viewableItems", viewableItems);
-        console.log("changed", changed);
         if (viewableItems.length === 1) {
           setCurrentCastIndex(viewableItems?.[0]?.index || 0);
         }
@@ -180,12 +196,14 @@ function ChannelExploreSwipList({
     },
   ]);
 
+  const itemHeight = Dimensions.get("window").height - 64 - 90;
+
   return (
     <View
       className="w-full flex-1"
-      onLayout={(e) => {
-        setItemHeight(e.nativeEvent.layout.height);
-      }}
+      // onLayout={(e) => {
+      //   setItemHeight(e.nativeEvent.layout.height);
+      // }}
     >
       <Animated.FlatList
         data={casts}
@@ -204,7 +222,7 @@ function ChannelExploreSwipList({
           const { data, platform } = item as ChannelCastData;
           return (
             <View
-              className={cn("h-full w-full")}
+              className={cn("relative h-full w-full")}
               style={{ height: itemHeight }}
             >
               <Pressable
@@ -213,7 +231,7 @@ function ChannelExploreSwipList({
                   const castHex = getCastHex(data);
                   // router.push(`/casts/${castHex}`);
                   navigateToCastDetail(castHex, {
-                    origin: CastDetailDataOrigin.Explore,
+                    origin: CastDetailDataOrigin.ChannelCastExplore,
                     cast: data,
                     farcasterUserDataObj: farcasterUserDataObj,
                     community: community,
@@ -227,7 +245,7 @@ function ChannelExploreSwipList({
                 />
               </Pressable>
               <FCastActions
-                className=" absolute bottom-14 right-3"
+                className=" absolute bottom-[10px] right-0"
                 cast={data}
                 farcasterUserDataObj={farcasterUserDataObj}
                 communityInfo={community}

@@ -60,6 +60,40 @@ export function getFarcasterTrending({
   });
 }
 
+export type NaynarFarcasterTrendingPageInfo = {
+  cursor: string;
+  hasNextPage: boolean;
+};
+export function getNaynarFarcasterTrending({
+  cursor,
+  limit,
+  least,
+}: {
+  cursor: string;
+  limit: number;
+  least?: number;
+}): RequestPromise<
+  ApiResp<{
+    casts: Array<TrendingCastData>;
+    farcasterUserData: Array<FarcasterUserData>;
+    pageInfo: NaynarFarcasterTrendingPageInfo;
+    likeActions: Array<UserActionData>;
+  }>
+> {
+  return request({
+    url: `/topics/casts/naynar-trending`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+    params: {
+      cursor,
+      limit,
+      ...(least ? { least } : {}),
+    },
+  });
+}
+
 export type ChannelCastData = {
   data: any;
   platform: SocialPlatform;

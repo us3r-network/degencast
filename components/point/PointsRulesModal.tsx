@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
-import { View, ViewProps } from "react-native";
+import { ScrollView, View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "../ui/text";
 import { Button } from "../ui/button";
@@ -62,8 +62,11 @@ export default function PointsRulesModal({
           <Atom color="#FFFFFF" className=" h-7 w-7" />
           <Text className=" text-2xl text-white">{totalPoints}</Text>
         </View>
-        <Separator decorative className=" my-5" />
-        <View className="max-w-s flex-col gap-5 ">
+        <Separator className=" bg-secondary/10" />
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          className="max-w-s flex-col gap-5 max-sm:max-h-[50vh] "
+        >
           <RuleItem
             text="Connect Farcaster"
             pointsText={getPointsText(connectFarcasterUnit)}
@@ -132,7 +135,7 @@ export default function PointsRulesModal({
               router.navigate("/");
             }}
           />
-        </View>
+        </ScrollView>
         <PlatformSharingModal
           open={openShare}
           onOpenChange={(open) => setOpenShare(open)}

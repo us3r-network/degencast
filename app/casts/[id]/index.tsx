@@ -6,6 +6,7 @@ import {
 } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
+import { Home } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
 import { PostDetailActions } from "~/components/post/PostActions";
 import FCast from "~/components/social-farcaster/FCast";
@@ -53,15 +54,6 @@ function CachedCastDetail() {
   const { castDetailData } = useCastPage();
   const data = castDetailData?.[id as string];
   const { origin, cast, farcasterUserDataObj, community } = data;
-  if (origin === CastDetailDataOrigin.Created) {
-    return (
-      <CastDetailWithCreatedData
-        cast={cast!}
-        farcasterUserDataObj={farcasterUserDataObj}
-        community={community!}
-      />
-    );
-  }
   return (
     <CastDetailWithData
       castLoading={false}
@@ -86,7 +78,7 @@ function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
           header: () => (
             <View className="flex flex-row items-center justify-between bg-white">
               <View className="flex flex-row items-center">
-                <View className="w-fit p-3 ">
+                <View className="w-fit flex-row items-center gap-3 p-3 ">
                   <Button
                     className="rounded-full bg-[#a36efe1a]"
                     size={"icon"}
@@ -97,10 +89,21 @@ function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
                   >
                     <BackArrowIcon />
                   </Button>
+                  <Button
+                    className="rounded-full bg-[#a36efe1a]"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onPress={() => {
+                      navigation.navigate("index" as never);
+                    }}
+                  >
+                    <Home
+                      className=" stroke-primary"
+                      size={16}
+                      strokeWidth={3}
+                    />
+                  </Button>
                 </View>
-                <Text className=" ml-2 text-xl font-bold  leading-none ">
-                  Cast
-                </Text>
               </View>
             </View>
           ),
@@ -177,72 +180,6 @@ function FetchedCastDetail() {
   );
 }
 
-function CastDetailWithCreatedData({
-  cast,
-  farcasterUserDataObj,
-  community,
-}: {
-  cast: FarCast;
-  farcasterUserDataObj: {
-    [key: string]: UserData;
-  };
-  community: CommunityInfo;
-}) {
-  const router = useRouter();
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Stack.Screen
-        options={{
-          contentStyle: { backgroundColor: "white" },
-          header: () => (
-            <View className="flex flex-row items-center justify-between bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit p-3 ">
-                  <Button
-                    className="rounded-full bg-[#a36efe1a]"
-                    size={"icon"}
-                    variant={"ghost"}
-                    onPress={() => {
-                      router.push("/");
-                    }}
-                  >
-                    <BackArrowIcon />
-                  </Button>
-                </View>
-                <Text className=" ml-2 text-xl font-bold  leading-none ">
-                  Cast
-                </Text>
-              </View>
-              <View className="flex flex-row items-center gap-3">
-                {cast && <CreatedFCastActions cast={cast!} />}
-              </View>
-            </View>
-          ),
-        }}
-      />
-      <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 flex-col gap-7 px-5">
-          <FCast
-            cast={cast}
-            farcasterUserDataObj={farcasterUserDataObj}
-            hidePoints
-          />
-        </View>
-
-        {community ? (
-          <FCastCommunity
-            className="w-full rounded-b-none"
-            communityInfo={community}
-          />
-        ) : (
-          <FCastCommunityDefault className="w-full rounded-b-none" />
-        )}
-      </View>
-    </SafeAreaView>
-  );
-}
-
 function CastDetailWithData({
   castLoading,
   cast,
@@ -256,9 +193,9 @@ function CastDetailWithData({
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail } = useCastPage();
+  const { navigateToCastDetail, castDetailData } = useCastPage();
   const navigation = useNavigation();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
 
   const {
@@ -270,8 +207,15 @@ function CastDetailWithData({
   } = useLoadCastComments();
 
   useEffect(() => {
-    loadCastComments(id as string);
+    loadCastComments(id);
   }, [id]);
+
+  const channelPageData = castDetailData?.[id];
+  const { origin: castPageOrigin } = channelPageData || {};
+
+  const showGoHomeBtn = ![CastDetailDataOrigin.Explore].includes(
+    castPageOrigin,
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -281,7 +225,7 @@ function CastDetailWithData({
           header: () => (
             <View className="flex flex-row items-center justify-between bg-white">
               <View className="flex flex-row items-center">
-                <View className="w-fit p-3 ">
+                <View className="w-fit flex-row items-center gap-3 p-3 ">
                   <Button
                     className="rounded-full bg-[#a36efe1a]"
                     size={"icon"}
@@ -292,10 +236,23 @@ function CastDetailWithData({
                   >
                     <BackArrowIcon />
                   </Button>
+                  {showGoHomeBtn && (
+                    <Button
+                      className="rounded-full bg-[#a36efe1a]"
+                      size={"icon"}
+                      variant={"ghost"}
+                      onPress={() => {
+                        navigation.navigate("index" as never);
+                      }}
+                    >
+                      <Home
+                        className=" stroke-primary"
+                        size={16}
+                        strokeWidth={3}
+                      />
+                    </Button>
+                  )}
                 </View>
-                <Text className=" ml-2 text-xl font-bold  leading-none ">
-                  Cast
-                </Text>
               </View>
               <View className="flex flex-row items-center gap-3">
                 {cast && (

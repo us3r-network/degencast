@@ -20,6 +20,7 @@ import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
+import communityDetail from "~/features/community/communityDetailSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -38,6 +39,7 @@ export const store = configureStore({
     userCommunityTokens,
     userCommunityShares,
     channelExplorePage,
+    communityDetail,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>

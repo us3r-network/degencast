@@ -1,9 +1,6 @@
 import { useRouter } from "expo-router";
-import { Platform, Pressable, View } from "react-native";
-import {
-  GestureHandlerRootView,
-  ScrollView,
-} from "react-native-gesture-handler";
+import { Dimensions, FlatList, Pressable, View } from "react-native";
+import { GestureHandlerRootView, State } from "react-native-gesture-handler";
 import Animated, { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
@@ -22,25 +19,16 @@ import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
-import useLoadScrollingExploreCasts from "~/hooks/explore/useLoadScrollingExploreCasts";
+import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
+// import useLoadScrollingExploreCasts from "~/hooks/explore/useLoadScrollingExploreCasts";
 import { useRef, useState } from "react";
-// import { isDesktop } from "react-device-detect";
-
-// export default function ExploreScreen() {
-//   if (Platform.OS === "web" && isDesktop) {
-//     return <ExploreScreenScroll />;
-//   } else {
-//     return <ExploreScreenDrag />;
-//   }
-// }
 
 export default function ExploreScreenScroll() {
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
-    useLoadScrollingExploreCasts();
+    useLoadExploreCastsWithNaynar();
   // const navigation = useNavigation();
   const { navigateToCastDetail } = useCastPage();
   const { navigateToChannelExplore } = useChannelExplorePage();
-  const [itemHeight, setItemHeight] = useState(0);
   const viewabilityConfigCallbackPairs = useRef([
     {
       viewabilityConfig: {
@@ -53,25 +41,24 @@ export default function ExploreScreenScroll() {
       },
     },
   ]);
+  const itemHeight = Dimensions.get("window").height - 64 - 98;
+
+  const flatListRef = useRef<FlatList<any>>(null);
+
   return (
-    <View className={cn("flex-1 overflow-y-hidden bg-background pt-16")}>
-      <View
-        className="h-full w-full"
-        onLayout={(e) => {
-          setItemHeight(e.nativeEvent.layout.height);
-        }}
-      >
-        <Animated.FlatList
+    <View className={cn("flex-1 bg-background pt-16")}>
+      <View className={cn("h-full w-full")}>
+        <FlatList
+          ref={flatListRef}
+          style={{ flex: 1 }}
           className="h-full w-full items-center"
           data={casts}
           horizontal={false}
+          showsHorizontalScrollIndicator={false}
           initialNumToRender={2}
-          renderScrollComponent={(props) => <ScrollView {...props} />}
           disableIntervalMomentum={true}
           pagingEnabled={true}
-          decelerationRate="fast"
-          snapToAlignment="center"
-          showsHorizontalScrollIndicator={false}
+          decelerationRate={0}
           viewabilityConfigCallbackPairs={
             viewabilityConfigCallbackPairs.current
           }
@@ -85,18 +72,21 @@ export default function ExploreScreenScroll() {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             const { data, platform, community } = item as any;
+
             return (
-              <Animated.View
-                className={cn("h-full w-fit rounded-2xl py-2")}
+              <View
+                className={cn("h-full w-fit py-2 ")}
                 style={{
                   height: itemHeight,
                 }}
               >
                 <Card
                   className={cn(
-                    "h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:w-[390px]",
+                    "box-border h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:w-[390px]",
                   )}
-                  style={{ height: itemHeight - 60 }}
+                  style={{
+                    height: itemHeight - 60,
+                  }}
                 >
                   <Pressable
                     className={cn("h-full w-full overflow-hidden p-5")}
@@ -130,7 +120,7 @@ export default function ExploreScreenScroll() {
                     farcasterUserDataObj={farcasterUserDataObj}
                     communityInfo={community}
                   />
-                  {community ? (
+                  {community?.channelId ? (
                     <FCastCommunity
                       communityInfo={community}
                       className="absolute -bottom-11 right-1/2 translate-x-1/2"
@@ -139,7 +129,7 @@ export default function ExploreScreenScroll() {
                     <FCastCommunityDefault className="absolute -bottom-11 right-1/2 translate-x-1/2" />
                   )}
                 </Card>
-              </Animated.View>
+              </View>
             );
           }}
         />
