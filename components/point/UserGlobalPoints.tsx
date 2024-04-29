@@ -34,8 +34,8 @@ export default function UserGlobalPoints() {
             </Button>
           )}
         </Badge>
+        <PointsRulesModal open={open} onOpenChange={setOpen} />
       </Pressable>
-      <PointsRulesModal open={open} onOpenChange={setOpen} />
     </>
   );
 }
