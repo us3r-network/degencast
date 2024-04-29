@@ -69,6 +69,7 @@ import {
   Cable,
   Edit,
   Home,
+  Download,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -153,6 +154,7 @@ interopIcon(Cable);
 interopIcon(Edit);
 interopIcon(ArrowUpDown);
 interopIcon(Home);
+interopIcon(Download);
 export {
   Activity,
   Airplay,
@@ -223,4 +225,5 @@ export {
   Cable,
   Edit,
   Home,
+  Download,
 };
