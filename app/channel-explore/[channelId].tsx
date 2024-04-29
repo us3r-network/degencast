@@ -38,20 +38,23 @@ export default function ChannelExploreScreen() {
 
   const { channelExploreData } = useChannelExplorePage();
   const {
-    community: fetchedCommunity,
+    communityDetail,
+    communityBasic,
     loading: communityLoading,
-    loadCommunity,
-  } = useLoadCommunityDetail();
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId);
+
   useEffect(() => {
-    loadCommunity(channelId);
-  }, [channelId]);
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
 
   const channelPageData = channelExploreData?.[channelId];
   const {
     origin: channelPageOrigin,
     cast: channelPageCast,
     farcasterUserDataObj: channelPageCastUserDataObj,
-    community: channelPageCommunity,
   } = channelPageData || {};
 
   const showGoHomeBtn = ![ChannelExploreDataOrigin.Explore].includes(
@@ -65,13 +68,8 @@ export default function ChannelExploreScreen() {
   }, [channelPageCast, castHex]);
 
   const community = useMemo(() => {
-    return (
-      fetchedCommunity ||
-      (channelId === channelPageCommunity?.channelId
-        ? channelPageCommunity
-        : undefined)
-    );
-  }, [fetchedCommunity, channelId, channelPageCommunity]);
+    return communityDetail || communityBasic;
+  }, [communityDetail, communityBasic]);
 
   const initCast = useMemo(() => {
     return cast
