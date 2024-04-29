@@ -20,7 +20,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
         <View className="flex-row items-center gap-2">
           <Text className="text-lg font-bold">Balance</Text>
         </View>
-        <WithdrawButton defaultAddress={address} />
+        <WithdrawButton />
       </View>
       {userTokens.has(TOKENS.NATIVE) && (
         <MyToken

@@ -8,9 +8,9 @@ type UnorderedListProps = React.ComponentPropsWithoutRef<typeof View> & {
 
 export const UnorderedList = ({ texts }: UnorderedListProps) => {
   return (
-    <View className="w-full gap-4">
+    <View className="w-full gap-2">
       {texts.map((item, index) => (
-        <View className="w-full flex-row gap-4">
+        <View className="w-full flex-row gap-2">
           <Text>{"\u2022"}</Text>
           <TextWithTag>{item}</TextWithTag>
         </View>

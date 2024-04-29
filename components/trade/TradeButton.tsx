@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,10 +21,16 @@ import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
 import { ArrowUpDown } from "../common/Icons";
-import { TokenInfo } from "../common/TokenInfo";
+import { TokenInfo, TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import ActiveWallet from "./ActiveWallet";
+import {
+  ErrorInfo,
+  TransactionSuccessInfo,
+  TransationData,
+} from "./TranasactionResult";
+import { debounce, set } from "lodash";
 
 export default function TradeButton({
   fromToken = NATIVE_TOKEN_METADATA,
@@ -32,8 +39,15 @@ export default function TradeButton({
   fromToken?: TokenWithTradeInfo;
   toToken?: TokenWithTradeInfo;
 }) {
+  const [transationData, setTransationData] = useState<TransationData>();
+  const [error, setError] = useState("");
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={() => {
+        setTransationData(undefined);
+        setError("");
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           className={cn("w-14")}
@@ -44,23 +58,51 @@ export default function TradeButton({
             fromToken.chainId !== base.id ||
             toToken.chainId !== base.id
           }
-          // onPress={() => switchChain({ chainId: fromChain })}
         >
           <Text>Trade</Text>
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen">
-        <DialogHeader
-          className={cn("flex gap-2")}
-        >
-          <DialogTitle>Trade</DialogTitle>
-          <ActiveWallet />
-        </DialogHeader>
-        <SwapToken token1={fromToken} token2={toToken} />
-        <View className="p-4">
-          <About title="Swap & Earn" info={TRADE_INFO} />
-        </View>
-      </DialogContent>
+      {!transationData && !error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Trade</DialogTitle>
+            <ActiveWallet />
+          </DialogHeader>
+          <SwapToken
+            token1={fromToken}
+            token2={toToken}
+            onSuccess={setTransationData}
+            onError={setError}
+          />
+          <DialogFooter>
+            <About title="Swap & Earn" info={TRADE_INFO} />
+          </DialogFooter>
+        </DialogContent>
+      )}
+      {transationData && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Transaction</DialogTitle>
+          </DialogHeader>
+          <TransactionSuccessInfo
+            data={transationData}
+            buttonText="Trade more"
+            buttonAction={() => setTransationData(undefined)}
+          />
+        </DialogContent>
+      )}
+      {error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <ErrorInfo
+            error={error}
+            buttonText="Try Again"
+            buttonAction={() => setError("")}
+          />
+        </DialogContent>
+      )}
     </Dialog>
   );
 }
@@ -73,9 +115,13 @@ const DEFAULT_AMOUNT = "0";
 function SwapToken({
   token1,
   token2,
+  onSuccess,
+  onError,
 }: {
   token1: TokenWithTradeInfo;
   token2: TokenWithTradeInfo;
+  onSuccess?: (data: TransationData) => void;
+  onError?: (error: string) => void;
 }) {
   // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
@@ -147,21 +193,24 @@ function SwapToken({
     fetchingPrice,
     fetchPrice,
     swapToken,
-    hash,
-    isConfirming,
-    isConfirmed,
+    transactionReceipt,
+    transationStatus,
+    transationLoading,
+    isSuccess,
     error,
   } = useSwapToken(account.address);
-  console.log(error);
+
   useEffect(() => {
     if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
       return;
     }
-    fetchPriceInfo(fromAmount);
+    setToAmount("");
+    debounce(() => fetchPriceInfo(fromAmount), 500, { maxWait: 2000 })();
+    // fetchPriceInfo(fromAmount)
   }, [fromAmount]);
 
   const fetchPriceInfo = async (amount: string) => {
-    // console.log("fetchPriceInfo", amount);
+    console.log("fetchPriceInfo", amount);
     const priceInfo = await fetchPrice({
       sellToken: fromToken,
       buyToken: toToken,
@@ -180,6 +229,40 @@ function SwapToken({
       sellAmount: fromAmount,
     });
   };
+
+  useEffect(() => {
+    if (
+      isSuccess &&
+      transactionReceipt &&
+      fromToken &&
+      fromAmount &&
+      toToken &&
+      toAmount
+    ) {
+      const transationData = {
+        transactionReceipt,
+        description: (
+          <View className="flex items-center gap-2">
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white">Swap</Text>
+              <TokenWithValue token={fromToken} value={fromAmount} />
+            </View>
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white">to</Text>
+              <TokenWithValue token={toToken} value={toAmount} />
+            </View>
+          </View>
+        ),
+      };
+      onSuccess?.(transationData);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (error) {
+      onError?.("Something Wrong!");
+    }
+  }, [error]);
 
   return (
     <View className="flex w-full gap-2">
@@ -213,7 +296,7 @@ function SwapToken({
           fetchingPrice ||
           Number(fromAmount) === 0 ||
           Number(toAmount) === 0 ||
-          isConfirming
+          transationLoading
         }
         onPress={() => {
           swap();
@@ -221,24 +304,6 @@ function SwapToken({
       >
         <Text>Swap</Text>
       </Button>
-      {hash && (
-        <View className="flex gap-2">
-          <Text className="font-bold">Transaction Hash:</Text>
-          <Link
-            className="text-primary-foreground/80"
-            href={`${DEFAULT_CHAIN.blockExplorers.default.url}/tx/${hash}`}
-            target="_blank"
-          >
-            {hash}
-          </Link>
-        </View>
-      )}
-      {!!error && (
-        <View className="flex gap-2">
-          <Text className="font-bold text-destructive">Error: {error.name}</Text>
-          <Text className="text-destructive">Error: {error.message}</Text>
-        </View>
-      )}
     </View>
   );
 }
