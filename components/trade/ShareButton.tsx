@@ -220,7 +220,7 @@ export function BuyButton({
   logo?: string;
   name?: string;
   sharesSubject: `0x${string}`;
-  renderButton?: React.ReactElement;
+  renderButton?: () => React.ReactElement;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -234,7 +234,7 @@ export function BuyButton({
     >
       <DialogTrigger asChild>
         {renderButton ? (
-          renderButton
+          renderButton()
         ) : (
           <Button className={cn("w-14")} size="sm" variant={"secondary"}>
             <Text>Buy</Text>
@@ -411,13 +411,52 @@ export const SHARE_INFO = [
   "4% of each trade goes into capital pool to support channel rewards, and Degencast takes a 1% commission",
 ];
 
-export const shareInfo = (
-  sharesSubject: `0x${string}`,
-  token = NATIVE_TOKEN_METADATA, // todo: use default token(ETH), update to use token from share contract
+// export const BuyButtonWithPrice = forwardRef<
+//   React.ElementRef<typeof Button>,
+//   React.ComponentPropsWithoutRef<typeof Button> & {
+//     token?: TokenWithTradeInfo;
+//     amount?: number;
+//     sharesSubject: `0x${string}`;
+//   }
+// >(({ sharesSubject, token = NATIVE_TOKEN_METADATA, amount = 1 }, ref) => {
+//   const { getPrice } = useShareContractInfo(sharesSubject);
+//   const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
+//   const fetchedPrice = !!(price && amount && token && token.decimals);
+//   const perSharePrice = fetchedPrice
+//     ? formatUnits(price / BigInt(amount), token.decimals!)
+//     : "";
+//   const symbol = token?.symbol || "";
+
+//   return (
+//     <Button
+//       variant={"secondary"}
+//       className={cn(" flex-col items-center ")}
+//       ref={ref}
+//     >
+//       {fetchedPrice ? (
+//         <>
+//           <Text>Buy with </Text>
+//           <Text>
+//             {perSharePrice} {symbol}
+//           </Text>
+//         </>
+//       ) : (
+//         <Text> Fetching Price... </Text>
+//       )}
+//     </Button>
+//   );
+// });
+
+export const BuyButtonWithPrice = ({
+  sharesSubject,
+  token = NATIVE_TOKEN_METADATA,
   amount = 1,
-) => {
-  const { getPrice, getSupply } = useShareContractInfo(sharesSubject);
-  const { data: supply } = getSupply();
+}: {
+  sharesSubject: `0x${string}`;
+  token?: TokenWithTradeInfo;
+  amount?: number;
+}) => {
+  const { getPrice } = useShareContractInfo(sharesSubject);
   const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
   const fetchedPrice = !!(price && amount && token && token.decimals);
   const perSharePrice = fetchedPrice
@@ -425,5 +464,21 @@ export const shareInfo = (
     : "";
   const symbol = token?.symbol || "";
 
-  return { price, supply, perSharePrice, symbol };
+  return (
+    <Button
+      variant={"secondary"}
+      className={cn(" flex-col items-center ")}
+    >
+      {fetchedPrice ? (
+        <>
+          <Text>Buy with </Text>
+          <Text>
+            {perSharePrice} {symbol}
+          </Text>
+        </>
+      ) : (
+        <Text> Fetching Price... </Text>
+      )}
+    </Button>
+  );
 };
