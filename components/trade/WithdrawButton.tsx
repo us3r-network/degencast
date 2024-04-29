@@ -17,7 +17,7 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import ActiveWallet from "./ActiveWallet";
-import { TransactionSuccessInfo, TransationData } from "./TranasactionResult";
+import { ErrorInfo, TransactionSuccessInfo, TransationData } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
 
 export default function WithdrawButton({
@@ -29,7 +29,12 @@ export default function WithdrawButton({
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={() => {
+        setTransationData(undefined);
+        setError("");
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="sm" className={cn("p-0")} variant={"link"}>
           <Text>Withdraw</Text>
@@ -55,8 +60,20 @@ export default function WithdrawButton({
           </DialogHeader>
           <TransactionSuccessInfo
             data={transationData}
-            buttonText="Trade more"
+            buttonText="Withdraw more"
             buttonAction={() => setTransationData(undefined)}
+          />
+        </DialogContent>
+      )}
+      {error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <ErrorInfo
+            error={error}
+            buttonText="Try Again"
+            buttonAction={() => setError("")}
           />
         </DialogContent>
       )}
@@ -105,12 +122,18 @@ const SendToken = forwardRef<
   // }, [token]);
 
   useEffect(() => {
-    if (isSuccess && transactionReceipt && token && amount) {
+    if (isSuccess && transactionReceipt && address && token && amount) {
       const transationData = {
         transactionReceipt,
-        from: <Text className="text-white">{amount} shares</Text>,
-        to: <TokenWithValue token={token} value={amount} />,
-        description: "Transaction Completed!",
+        description: (
+          <View className="flex items-center gap-2">
+            <View className="flex-row items-center gap-2">
+              <Text>Withdraw</Text>
+              <TokenWithValue token={token} value={amount} />
+            </View>
+            <Text>from {address}</Text>
+          </View>
+        ),
       };
       onSuccess?.(transationData);
     }

@@ -25,7 +25,11 @@ import { TokenInfo, TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import ActiveWallet from "./ActiveWallet";
-import { TransactionSuccessInfo, TransationData } from "./TranasactionResult";
+import {
+  ErrorInfo,
+  TransactionSuccessInfo,
+  TransationData,
+} from "./TranasactionResult";
 import { debounce, set } from "lodash";
 
 export default function TradeButton({
@@ -38,7 +42,12 @@ export default function TradeButton({
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={() => {
+        setTransationData(undefined);
+        setError("");
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           className={cn("w-14")}
@@ -79,6 +88,18 @@ export default function TradeButton({
             data={transationData}
             buttonText="Trade more"
             buttonAction={() => setTransationData(undefined)}
+          />
+        </DialogContent>
+      )}
+      {error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <ErrorInfo
+            error={error}
+            buttonText="Try Again"
+            buttonAction={() => setError("")}
           />
         </DialogContent>
       )}
@@ -220,9 +241,18 @@ function SwapToken({
     ) {
       const transationData = {
         transactionReceipt,
-        from: <TokenWithValue token={fromToken} value={fromAmount} />,
-        to: <TokenWithValue token={toToken} value={toAmount} />,
-        description: "Transaction Completed!",
+        description: (
+          <View className="flex items-center gap-2">
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white">Swap</Text>
+              <TokenWithValue token={fromToken} value={fromAmount} />
+            </View>
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white">to</Text>
+              <TokenWithValue token={toToken} value={toAmount} />
+            </View>
+          </View>
+        ),
       };
       onSuccess?.(transationData);
     }

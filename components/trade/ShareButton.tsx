@@ -28,7 +28,11 @@ import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
 import ActiveWallet from "./ActiveWallet";
-import { TransactionSuccessInfo, TransationData } from "./TranasactionResult";
+import {
+  ErrorInfo,
+  TransactionSuccessInfo,
+  TransationData,
+} from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
 import { TokenWithValue } from "../common/TokenInfo";
 
@@ -44,7 +48,12 @@ export function SellButton({
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={() => {
+        setTransationData(undefined);
+        setError("");
+      }}
+    >
       <DialogTrigger asChild>
         <Button className={cn("w-14")} size="sm" variant={"secondary"}>
           <Text>Sell</Text>
@@ -74,6 +83,18 @@ export function SellButton({
             data={transationData}
             buttonText="Sell more"
             buttonAction={() => setTransationData(undefined)}
+          />
+        </DialogContent>
+      )}
+      {error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <ErrorInfo
+            error={error}
+            buttonText="Try Again"
+            buttonAction={() => setError("")}
           />
         </DialogContent>
       )}
@@ -115,9 +136,14 @@ const SellShare = forwardRef<
       if (isSuccess && transactionReceipt && token && price) {
         const transationData = {
           transactionReceipt,
-          from: <Text className="text-white">{amount} shares</Text>,
-          to: <TokenWithValue token={token} value={price} />,
-          description: "Transaction Completed!",
+          description: (
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white">
+                Sell {amount} shares and receive
+              </Text>
+              <TokenWithValue token={token} value={price} />
+            </View>
+          ),
         };
         onSuccess?.(transationData);
       }
@@ -200,7 +226,12 @@ export function BuyButton({
   const [error, setError] = useState("");
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={() => {
+        setTransationData(undefined);
+        setError("");
+      }}
+    >
       <DialogTrigger asChild>
         {renderButton ? (
           renderButton
@@ -237,6 +268,18 @@ export function BuyButton({
             data={transationData}
             buttonText="Buy more"
             buttonAction={() => setTransationData(undefined)}
+          />
+        </DialogContent>
+      )}
+      {error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <ErrorInfo
+            error={error}
+            buttonText="Try Again"
+            buttonAction={() => setError("")}
           />
         </DialogContent>
       )}
@@ -287,9 +330,12 @@ const BuyShare = forwardRef<
       if (isSuccess && transactionReceipt && token && price) {
         const transationData = {
           transactionReceipt,
-          from: <TokenWithValue token={token} value={price} />,
-          to: <Text>{amount} shares</Text>,
-          description: "Transaction Completed!",
+          description: (
+            <View className="flex-row items-center gap-2">
+              <Text>Buy {amount} shares and cost</Text>
+              <TokenWithValue token={token} value={price} />
+            </View>
+          ),
         };
         onSuccess?.(transationData);
       }

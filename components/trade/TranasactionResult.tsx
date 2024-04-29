@@ -3,15 +3,13 @@ import { View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
-import { Check, Cross } from "../common/Icons";
+import { Check, X } from "../common/Icons";
 import { TransactionReceipt } from "viem";
 import { ReactNode } from "react";
 
 export type TransationData = {
   transactionReceipt: TransactionReceipt;
-  from: ReactNode;
-  to: ReactNode;
-  description: string;
+  description: ReactNode;
 };
 
 type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
@@ -31,12 +29,8 @@ export function TransactionSuccessInfo({
       <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
         <Check className="size-8 text-[green]" />
       </View>
-      <Text className="font-bold">{data.description}</Text>
-      <View className="flex items-center gap-1">
-        <View>{data.from}</View>
-        <Text className="text-secondary">to</Text>
-        <View>{data.to}</View>
-      </View>
+      <Text className="font-bold">Transaction Completed!</Text>
+      {data.description}
       <View className="w-full flex-row justify-items-stretch gap-4">
         <Link
           className="flex-1/2 text-primary-foreground/80"
@@ -70,7 +64,7 @@ export function ErrorInfo({ error, buttonText, buttonAction }: ErrorInfoProps) {
   return (
     <View className="flex items-center gap-6">
       <View className="size-16 items-center justify-center rounded-full bg-[red]/40">
-        <Cross className="size-8 text-[red]" />
+        <X className="size-8 text-[red]" />
       </View>
       <Text className="font-bold">{error}</Text>
       <View className="w-full flex-row justify-items-stretch gap-4">
