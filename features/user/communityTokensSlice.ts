@@ -60,13 +60,7 @@ export const userCommunityTokenSlice = createSlice({
             item.balance &&
             Number(item.balance) > 0 &&
             item.tradeInfo?.channel,
-        ).map((item) => { //todo: rewrite here after api is ready
-          return {
-            ...item,
-            address: item.contractAddress,
-            logoURI: item.logo,
-          } as TokenWithTradeInfo;
-        });
+        )
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;
