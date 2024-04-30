@@ -20,6 +20,7 @@ import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
+import Toast from "react-native-toast-message";
 
 export default function EmbedFrame({
   url,
@@ -52,7 +53,10 @@ export default function EmbedFrame({
         return;
       }
       if (Platform.OS === "web") {
-        alert("Not supported yet");
+        Toast.show({
+          type: "info",
+          text1: "Not supported yet",
+        });
       }
       console.log("not support yet TODO", btn.action);
     },

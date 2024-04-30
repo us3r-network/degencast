@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import useUserDegenAllowanceAction from "~/hooks/user/useUserDegenAllowanceAction";
 import { Image } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function FCastGiftModal({
   totalAllowance,
@@ -108,9 +109,11 @@ export default function FCastGiftModal({
             variant={"secondary"}
             disabled={loading}
             onPress={() => {
-              // TODO toast
               if (!Number(allowanceValue)) {
-                console.error("no allowance value");
+                Toast.show({
+                  type: "error",
+                  text1: "No allowance value",
+                });
                 return;
               }
               if (
