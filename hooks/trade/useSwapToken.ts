@@ -26,7 +26,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     error: transationError,
     isLoading: transationLoading,
     isSuccess,
-    status:transationStatus,
+    status: transationStatus,
   } = useWaitForTransactionReceipt({
     hash,
   });
@@ -42,7 +42,11 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
       console.log("no sellToken or buyToken");
       return;
     }
-    if (!sellAmount && !buyAmount && !(sellAmount && buyAmount)) {
+    if (
+      !Number(sellAmount) &&
+      !Number(buyAmount) &&
+      !(Number(sellAmount) && Number(buyAmount))
+    ) {
       console.log("no sellAmount or buyAmount");
       return;
     }
@@ -80,7 +84,11 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     if (!sellToken || !buyToken) {
       return;
     }
-    if (!sellAmount && !buyAmount && !(sellAmount && buyAmount)) {
+    if (
+      !Number(sellAmount) &&
+      !Number(buyAmount) &&
+      !(Number(sellAmount) && Number(buyAmount))
+    ) {
       return;
     }
     console.log("start fetch quote from 0x");
@@ -91,14 +99,16 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         buyToken: buyToken.address,
         sellAmount:
           sellAmount &&
-          String(parseUnits(sellAmount, sellToken.decimals || DEFAULT_DECIMALS)),
+          String(
+            parseUnits(sellAmount, sellToken.decimals || DEFAULT_DECIMALS),
+          ),
         buyAmount:
           buyAmount &&
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
         takerAddress,
       });
       console.log("quote", quote);
-      sendTransaction({ to: quote.to, data: quote.data, value: quote.value});
+      sendTransaction({ to: quote.to, data: quote.data, value: quote.value });
     } catch (e) {
       console.error("swapToken error", e);
       // setError(e as Error)

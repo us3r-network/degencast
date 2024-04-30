@@ -17,6 +17,9 @@ export async function getQuote({
   sellAmount,
   takerAddress,
 }: SwapParams) {
+  if (!Number(sellAmount)) {
+    return;
+  }
   try {
     const resp = await axios({
       url: `${ZERO_X_API_ENDPOINT}/quote`,
@@ -44,6 +47,9 @@ export async function getPrice({
   sellAmount,
   buyAmount,
 }: SwapParams) {
+  if (!Number(sellAmount) && !Number(buyAmount)) {
+    return;
+  }
   try {
     const resp = await axios({
       url: `${ZERO_X_API_ENDPOINT}/price`,
