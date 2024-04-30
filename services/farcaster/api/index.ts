@@ -98,6 +98,12 @@ export type ChannelCastData = {
   data: any;
   platform: SocialPlatform;
 };
+export type ChannelTrendingCastData = {
+  casts: Array<ChannelCastData>;
+  farcasterUserData: Array<FarcasterUserData>;
+  pageInfo: FarcasterPageInfo;
+  likeActions: Array<UserActionData>;
+};
 export function getFarcasterTrendingWithChannelId({
   start,
   end,
@@ -108,14 +114,7 @@ export function getFarcasterTrendingWithChannelId({
   end: number;
   least?: number;
   channelId: string;
-}): RequestPromise<
-  ApiResp<{
-    casts: Array<ChannelCastData>;
-    farcasterUserData: Array<FarcasterUserData>;
-    pageInfo: FarcasterPageInfo;
-    likeActions: Array<UserActionData>;
-  }>
-> {
+}): RequestPromise<ApiResp<ChannelTrendingCastData>> {
   return request({
     url: `/3r-farcaster/trending`,
     method: "get",

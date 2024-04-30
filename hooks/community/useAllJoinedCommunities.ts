@@ -8,6 +8,7 @@ import {
 } from "~/features/community/joinCommunitySlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import useAuth from "../user/useAuth";
+import { upsertManyToCommunityBasicData } from "~/features/community/communityDetailSlice";
 
 export default function useAllJoinedCommunities() {
   const dispatch = useAppDispatch();
@@ -33,6 +34,13 @@ export default function useAllJoinedCommunities() {
         dispatch(
           setJoinedCommunitiesRequestStatus(AsyncRequestStatus.FULFILLED),
         );
+        const communityBasicData = data
+          .filter((item) => !!item.channelId)
+          .map((item) => ({
+            id: item.channelId as string,
+            data: item,
+          }));
+        dispatch(upsertManyToCommunityBasicData(communityBasicData));
       } else {
         throw new Error(msg);
       }

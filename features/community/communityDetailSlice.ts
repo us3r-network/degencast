@@ -22,6 +22,19 @@ export const communityDetailSlice = createSlice({
   name: "communityDetail",
   initialState: communityDetailState,
   reducers: {
+    upsertManyToCommunityBasicData: (
+      state: CommunityDetailState,
+      action: PayloadAction<
+        Array<{
+          id: string;
+          data: CommunityInfo;
+        }>
+      >,
+    ) => {
+      action.payload.forEach((item) => {
+        state.basicData[item.id] = item.data;
+      });
+    },
     upsertCommunityBasicData: (
       state: CommunityDetailState,
       action: PayloadAction<{
@@ -59,6 +72,7 @@ export const communityDetailSlice = createSlice({
 
 const { actions, reducer } = communityDetailSlice;
 export const {
+  upsertManyToCommunityBasicData,
   upsertCommunityBasicData,
   upsertCommunityDetailData,
   addCommunityDetailPendingId,
