@@ -38,16 +38,15 @@ export const communityTokenSlice = createSlice({
         //todo: rewrite here after api is ready
         state.items = action.payload.data.map((item) => {
           return {
-            chainId: item.chain_id,
-            address: item.tokenAddress,
-            decimals: 18,
-            symbol: "",
-            name: item.name,
-            logoURI: item.imageURL,
-            channelId: item.channel,
-            tradeInfo: item,
+            ...item,
+            decimals: item.decimals || 18,
+            symbol: item.symbol || "",
+            name: item.name || item.tradeInfo.name,
+            logoURI: item.logoURI || item.tradeInfo.imageURL,
+            channelId: item.tradeInfo.channel,
           } as TokenWithTradeInfo;
         });
+        // state.items = action.payload.data;
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;
