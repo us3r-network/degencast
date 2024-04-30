@@ -1,54 +1,65 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import {
+  addManyItems,
+  selectCommunityDetailTipsRank,
+  setLoading,
+  setPageInfo,
+} from "~/features/community/communityDetailTipsRankSlice";
 import { fetchCommunityTipsRank } from "~/services/community/api/tips";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 
 const PAGE_SIZE = 20;
-export default function useLoadCommunityTipsRank() {
-  const [tipsRank, setTipsRank] = useState<Array<any>>([]);
-  const [loading, setLoading] = useState(false);
-  const pageInfoRef = useRef({
+const groupDataDefault = {
+  items: [],
+  pageInfo: {
     hasNextPage: true,
     nextPageNumber: 1,
-  });
-  const [pageInfo, setPageInfo] = useState(pageInfoRef.current);
-  const channelIdRef = useRef("");
+  },
+  loading: false,
+};
+export default function useLoadCommunityTipsRank(channelId: string) {
+  const dispatch = useAppDispatch();
+  const { groupData } = useAppSelector(selectCommunityDetailTipsRank);
+  const {
+    items: tipsRank,
+    pageInfo,
+    loading,
+  } = groupData[channelId] || groupDataDefault;
 
-  const loadTipsRank = async (channelId: string) => {
-    if (channelId !== channelIdRef.current) {
-      channelIdRef.current = channelId;
-      setTipsRank([]);
-      pageInfoRef.current = {
-        hasNextPage: true,
-        nextPageNumber: 1,
-      };
-    }
-    const { hasNextPage, nextPageNumber } = pageInfoRef.current;
-
-    if (hasNextPage === false) {
+  const loadTipsRank = useCallback(async () => {
+    const { hasNextPage, nextPageNumber } = pageInfo;
+    if (!channelId || loading || hasNextPage === false) {
       return;
     }
-    setLoading(true);
+    dispatch(setLoading({ channelId, loading: true }));
     try {
       const resp = await fetchCommunityTipsRank({
         pageSize: PAGE_SIZE,
         pageNumber: nextPageNumber,
-        channelId: channelIdRef.current,
+        channelId,
       });
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      setTipsRank((pre) => [...pre, ...(data || [])]);
+      dispatch(addManyItems({ channelId, items: data }));
 
       const hasNextPage = data?.length >= PAGE_SIZE;
-      pageInfoRef.current.hasNextPage = hasNextPage;
-      pageInfoRef.current.nextPageNumber += 1;
-      setPageInfo({ ...pageInfoRef.current });
+      dispatch(
+        setPageInfo({
+          channelId,
+          pageInfo: {
+            hasNextPage,
+            nextPageNumber: nextPageNumber + 1,
+          },
+        }),
+      );
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      dispatch(setLoading({ channelId, loading: false }));
     }
-  };
+  }, [channelId, loading, pageInfo]);
 
   return {
     loading,

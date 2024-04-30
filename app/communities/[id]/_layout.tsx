@@ -16,6 +16,7 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
 import { CommunityData } from "~/services/community/api/community";
@@ -77,6 +78,13 @@ export default function CommunityDetail() {
       loadCommunityDetail();
     }
   }, [communityDetail, loadCommunityDetail]);
+
+  const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(id);
+  useEffect(() => {
+    if (tipsRank.length === 0) {
+      loadTipsRank();
+    }
+  }, [tipsRank]);
 
   return (
     <SafeAreaView

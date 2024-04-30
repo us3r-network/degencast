@@ -1,18 +1,13 @@
 import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
 import { FlatList, View } from "react-native";
 import CommunityMemberTipsItem from "~/components/community/CommunityMemberTipsItem";
 import { Text } from "~/components/ui/text";
 import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
 
 export default function TipsRankScreen() {
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
-  const { tipsRank, loading, loadTipsRank } = useLoadCommunityTipsRank();
-  useEffect(() => {
-    loadTipsRank(id as string);
-  }, [id]);
-
+  const { tipsRank, loading, loadTipsRank } = useLoadCommunityTipsRank(id);
   return (
     <View className="flex-1">
       <FlatList
@@ -32,12 +27,12 @@ export default function TipsRankScreen() {
             <CommunityMemberTipsItem className="flex-1" memberTips={item} />
           );
         }}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => index.toString()}
         onEndReached={() => {
           if (tipsRank.length === 0 || loading) return;
-          loadTipsRank(id as string);
+          loadTipsRank();
         }}
-        onEndReachedThreshold={1}
+        onEndReachedThreshold={0.1}
         ListFooterComponent={() => {
           return loading ? (
             <View className="flex items-center justify-center p-5">
