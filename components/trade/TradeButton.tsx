@@ -1,6 +1,6 @@
 // import { useSwitchChain } from "wagmi";
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
@@ -30,7 +30,7 @@ import {
   TransactionSuccessInfo,
   TransationData,
 } from "./TranasactionResult";
-import { debounce, set } from "lodash";
+import { debounce, throttle } from "lodash";
 
 export default function TradeButton({
   fromToken = NATIVE_TOKEN_METADATA,
@@ -200,15 +200,6 @@ function SwapToken({
     error,
   } = useSwapToken(account.address);
 
-  useEffect(() => {
-    if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
-      return;
-    }
-    setToAmount("");
-    debounce(() => fetchPriceInfo(fromAmount), 500, { maxWait: 2000 })();
-    // fetchPriceInfo(fromAmount)
-  }, [fromAmount]);
-
   const fetchPriceInfo = async (amount: string) => {
     console.log("fetchPriceInfo", amount);
     const priceInfo = await fetchPrice({
@@ -221,6 +212,11 @@ function SwapToken({
     setToAmount(buyAmount);
   };
 
+  const debouncedFetchPriceInfo = useCallback(
+    throttle(debounce(fetchPriceInfo, 500), 1000), // 0x api rate limit 1/second
+    [],
+  );
+
   const swap = async () => {
     // console.log("swap", fromAmount);
     swapToken({
@@ -229,6 +225,14 @@ function SwapToken({
       sellAmount: fromAmount,
     });
   };
+
+  useEffect(() => {
+    if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
+      return;
+    }
+    setToAmount("");
+    debouncedFetchPriceInfo(fromAmount);
+  }, [fromAmount]);
 
   useEffect(() => {
     if (
@@ -272,7 +276,7 @@ function SwapToken({
         setAmount={(amount) => setFromAmount(amount)}
       />
       <View className="flex-row items-center">
-        <Separator className="flex-1 text-secondary" />
+        <Separator className="flex-1 bg-secondary" />
         <Button
           className="size-10 rounded-full border-2 border-secondary text-secondary"
           onPress={() => {
@@ -284,7 +288,7 @@ function SwapToken({
         >
           <ArrowUpDown />
         </Button>
-        <Separator className="flex-1 text-secondary" />
+        <Separator className="flex-1 bg-secondary" />
       </View>
       <Token token={toToken || NATIVE_TOKEN_METADATA} amount={toAmount} />
       <Button
@@ -322,11 +326,11 @@ function Token({
   return (
     <View className="flex gap-2">
       <View className="flex-row items-start justify-between">
-        <TokenInfo name={token.name} logo={token.logo} />
+        <TokenInfo name={token.name} logo={token.logoURI} />
         <Input
           editable={!!setAmount}
           className={cn(
-            "max-w-40 rounded-full border-none bg-secondary/20 text-end text-white",
+            "max-w-40 rounded-full border-none bg-white/40 text-end text-xl font-bold text-white",
           )}
           inputMode="numeric"
           defaultValue="0"
@@ -336,8 +340,8 @@ function Token({
       </View>
       <View className="flex-row items-start justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="font-bold text-secondary">Balance:</Text>
-          <Text>
+          <Text className="text-xs font-bold text-secondary">Balance:</Text>
+          <Text className="text-xs">
             {new Intl.NumberFormat("en-US", {
               maximumFractionDigits: 4,
               notation: "compact",
@@ -346,7 +350,7 @@ function Token({
           </Text>
         </View>
         {amount && price > 0 && (
-          <Text>
+          <Text className="text-xs">
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
