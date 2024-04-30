@@ -82,8 +82,10 @@ export default function SearchScreen() {
   }, [value]);
 
   useEffect(() => {
-    loadTrendingCommunities();
-  }, []);
+    if (trendingCommunities.length === 0) {
+      loadTrendingCommunities();
+    }
+  }, [trendingCommunities]);
 
   return (
     <ScrollView>

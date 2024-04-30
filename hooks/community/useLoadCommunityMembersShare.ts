@@ -1,60 +1,33 @@
-import { useRef, useState } from "react";
-import { fetchCommunityShares } from "~/services/community/api/share";
+import { useCallback } from "react";
+import {
+  fetchItems,
+  groupDataDefault,
+  selectCommunityDetailShares,
+} from "~/features/community/communityDetailSharesSlice";
+import { AsyncRequestStatus } from "~/services/shared/types";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 
-const PAGE_SIZE = 20;
+export default function useLoadCommunityMembersShare(channelId: string) {
+  const dispatch = useAppDispatch();
+  const groupData = useAppSelector(selectCommunityDetailShares);
+  const {
+    items: membersShare,
+    pageInfo,
+    status,
+    errorMsg,
+  } = groupData[channelId] || groupDataDefault;
+  const loading = status === AsyncRequestStatus.PENDING;
 
-export default function useLoadCommunityMembersShare() {
-  const [membersShare, setMembersShare] = useState<Array<any>>([]);
-  const [loading, setLoading] = useState(false);
-  const pageInfoRef = useRef({
-    hasNextPage: true,
-    nextPageNumber: 1,
-  });
-  const [pageInfo, setPageInfo] = useState(pageInfoRef.current);
-  const channelIdRef = useRef("");
-
-  const loadMembersShare = async (channelId: string) => {
-    if (channelId !== channelIdRef.current) {
-      channelIdRef.current = channelId;
-      setMembersShare([]);
-      pageInfoRef.current = {
-        hasNextPage: true,
-        nextPageNumber: 1,
-      };
-    }
-    const { hasNextPage, nextPageNumber } = pageInfoRef.current;
-
-    if (hasNextPage === false) {
-      return;
-    }
-    setLoading(true);
-    try {
-      const resp = await fetchCommunityShares({
-        pageSize: PAGE_SIZE,
-        pageNumber: nextPageNumber,
-        channelId: channelIdRef.current,
-      });
-      if (resp.data.code !== 0) {
-        throw new Error(resp.data.msg);
-      }
-      const { data } = resp.data;
-      setMembersShare((prev) => [...prev, ...(data || [])]);
-
-      const hasNextPage = data?.length >= PAGE_SIZE;
-      pageInfoRef.current.hasNextPage = hasNextPage;
-      pageInfoRef.current.nextPageNumber += 1;
-      setPageInfo({ ...pageInfoRef.current });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadMembersShare = useCallback(async () => {
+    if (loading) return;
+    dispatch(fetchItems({ channelId }));
+  }, [channelId, loading]);
 
   return {
     loading,
     membersShare,
     pageInfo,
+    errorMsg,
     loadMembersShare,
   };
 }
