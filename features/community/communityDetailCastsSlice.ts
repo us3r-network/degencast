@@ -7,6 +7,7 @@ import {
   getFarcasterTrendingWithChannelId,
 } from "~/services/farcaster/api";
 import { UserData, userDataObjFromArr } from "~/utils/farcaster/user-data";
+import { cloneDeep } from "lodash";
 
 type CommunityDetailCastsState = {
   [channelId: string]: {
@@ -85,7 +86,7 @@ export const communityDetailCastsSlice = createSlice({
       .addCase(fetchItems.pending, (state, action) => {
         const { channelId } = action.meta.arg;
         if (!state[channelId]) {
-          state[channelId] = groupDataDefault;
+          state[channelId] = cloneDeep(groupDataDefault);
         }
         state[channelId].errorMsg = "";
         state[channelId].status = AsyncRequestStatus.PENDING;

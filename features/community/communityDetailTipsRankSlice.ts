@@ -5,6 +5,7 @@ import {
   fetchCommunityTipsRank,
 } from "~/services/community/api/tips";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { cloneDeep } from "lodash";
 
 type CommunityDetailTipsRankState = {
   [channelId: string]: {
@@ -81,7 +82,7 @@ export const communityDetailTipsRankSlice = createSlice({
       .addCase(fetchItems.pending, (state, action) => {
         const { channelId } = action.meta.arg;
         if (!state[channelId]) {
-          state[channelId] = groupDataDefault;
+          state[channelId] = cloneDeep(groupDataDefault);
         }
         state[channelId].errorMsg = "";
         state[channelId].status = AsyncRequestStatus.PENDING;

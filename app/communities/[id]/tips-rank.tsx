@@ -3,8 +3,20 @@ import { FlatList, View } from "react-native";
 import CommunityMemberTipsItem from "~/components/community/CommunityMemberTipsItem";
 import { Text } from "~/components/ui/text";
 import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
+import { useCommunityCtx } from "./_layout";
+import { Image } from "react-native";
 
 export default function TipsRankScreen() {
+  const { community } = useCommunityCtx();
+  const communityShare = community?.shares?.[0];
+  const subjectAddress = communityShare?.subjectAddress;
+  if (subjectAddress) {
+    return <HasSubjectAddress />;
+  }
+  return <NoSubjectAddress />;
+}
+
+function HasSubjectAddress() {
   const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
   const { tipsRank, loading, loadTipsRank } = useLoadCommunityTipsRank(id);
@@ -41,6 +53,23 @@ export default function TipsRankScreen() {
           ) : null;
         }}
       />
+    </View>
+  );
+}
+
+function NoSubjectAddress() {
+  return (
+    <View className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8">
+      <Image
+        source={require("~/assets/images/no-token.png")}
+        style={{ width: 280, height: 280 }}
+      />
+      <Text className=" text-center text-xl font-bold text-primary">
+        Coming Soon
+      </Text>
+      <Text className="text-center text-base leading-8 text-secondary">
+        Channel allowances and tipping features are coming soon!
+      </Text>
     </View>
   );
 }

@@ -6,6 +6,7 @@ import {
   fetchCommunityShares,
 } from "~/services/community/api/share";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { cloneDeep } from "lodash";
 
 type CommunityShareStatistics = {
   holders: number;
@@ -71,7 +72,7 @@ export const communityShareStatisticsSlice = createSlice({
       .addCase(fetchStatistics.pending, (state, action) => {
         const { channelId } = action.meta.arg;
         if (!state[channelId]) {
-          state[channelId] = groupDataDefault;
+          state[channelId] = cloneDeep(groupDataDefault);
         }
         state[channelId].errorMsg = "";
         state[channelId].status = AsyncRequestStatus.PENDING;
