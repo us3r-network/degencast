@@ -91,7 +91,7 @@ function HasSubjectAddress() {
           }}
         />
       </View>
-      <View className=" pt-5">
+      <View className=" py-5">
         <CommunityBuyShareButton communityInfo={community} />
       </View>
     </View>
@@ -105,8 +105,12 @@ function NoSubjectAddress() {
         source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
       />
-      <Text className=" text-xl font-bold text-primary">
-        No subject address
+      <Text className=" text-center text-xl font-bold text-primary">
+        Coming Soon
+      </Text>
+      <Text className="text-center text-base leading-8 text-secondary">
+        Channel NFT & Channel fan tokens Voting rights in channel casts Every
+        trade incurs a 4% fee to encourage creators
       </Text>
     </View>
   );

@@ -1,5 +1,5 @@
 import { FarCast } from "~/services/farcaster/types";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { View } from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "../ui/text";
@@ -7,6 +7,8 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import useUserDegenAllowanceAction from "~/hooks/user/useUserDegenAllowanceAction";
+import { Image } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function FCastGiftModal({
   totalAllowance,
@@ -21,7 +23,6 @@ export default function FCastGiftModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const tipsCount = [69, 420, 42069, 69420];
   const [allowanceValue, setAllowanceValue] = useState("");
   const { loading, degenAllowanceAction } = useUserDegenAllowanceAction({
     cast,
@@ -29,36 +30,55 @@ export default function FCastGiftModal({
       onOpenChange(false);
     },
   });
+  const tipsCount = [
+    { label: "5%", value: remainingAllowance * 0.05 },
+    { label: "25%", value: remainingAllowance * 0.25 },
+    { label: "50%", value: remainingAllowance * 0.5 },
+    { label: "100%", value: remainingAllowance },
+  ];
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
+        <DialogHeader>
+          <Text>Tips with allowance</Text>
+        </DialogHeader>
         <View className="max-w-s flex flex-col gap-5 ">
           <View className=" flex flex-row items-center justify-between gap-5">
-            <Text className=" text-xs text-white">
-              Get equal points when tips
-            </Text>
+            <Text className=" text-xs text-white">Get 5 points when tips</Text>
+            <View className="flex flex-row items-center gap-2">
+              <Image
+                source={require("~/assets/images/degen-icon-2.png")}
+                resizeMode="contain"
+                style={{ width: 20, height: 20 }}
+              />
+              <Text className=" text-base font-medium">DEGEN</Text>
+            </View>
           </View>
           <View className="flex flex-row items-center justify-between gap-1">
-            {tipsCount.map((item) => {
-              const isAllowance = remainingAllowance >= item;
+            {tipsCount.map(({ label, value }) => {
+              const isAllowance =
+                Number(remainingAllowance) !== 0 &&
+                Number(remainingAllowance) >= Number(value);
               return (
                 <Button
-                  key={item}
+                  key={label}
                   disabled={!isAllowance || loading}
                   className={cn(
                     "min-w-[80px] rounded-full border bg-white p-2  hover:cursor-pointer",
                   )}
                   onPress={() => {
-                    setAllowanceValue(`${item}`);
+                    setAllowanceValue(`${value}`);
                   }}
                 >
                   <Text
                     className={cn(
                       "text-sm text-black",
-                      allowanceValue === `${item}` && "text-[#F41F4C]",
+                      isAllowance &&
+                        allowanceValue === `${value}` &&
+                        " text-primary",
                     )}
                   >
-                    ${item}
+                    {label}
                   </Text>
                 </Button>
               );
@@ -83,29 +103,32 @@ export default function FCastGiftModal({
               />
               <Text className=" text-base font-medium text-white">DEGEN</Text>
             </View>
-            <Button
-              className="rounded-full bg-[#F41F4C] font-bold text-white hover:cursor-pointer"
-              disabled={loading}
-              onPress={() => {
-                // TODO toast
-                if (!Number(allowanceValue)) {
-                  console.error("no allowance value");
-                  return;
-                }
-                if (
-                  Number.isNaN(Number(allowanceValue)) ||
-                  Number.isNaN(Number(totalAllowance)) ||
-                  Number(allowanceValue) > Number(totalAllowance)
-                ) {
-                  console.error("not enough allowance");
-                  return;
-                }
-                degenAllowanceAction(Number(allowanceValue));
-              }}
-            >
-              <Text>Tip by Reply</Text>
-            </Button>
           </View>
+          <Button
+            className="font-bold text-white"
+            variant={"secondary"}
+            disabled={loading}
+            onPress={() => {
+              if (!Number(allowanceValue)) {
+                Toast.show({
+                  type: "error",
+                  text1: "No allowance value",
+                });
+                return;
+              }
+              if (
+                Number.isNaN(Number(allowanceValue)) ||
+                Number.isNaN(Number(totalAllowance)) ||
+                Number(allowanceValue) > Number(totalAllowance)
+              ) {
+                console.error("not enough allowance");
+                return;
+              }
+              degenAllowanceAction(Number(allowanceValue));
+            }}
+          >
+            <Text>Tip</Text>
+          </Button>
           <View className="flex flex-row items-center justify-between">
             <Text className=" text-base font-medium text-white">
               Daily Allowance:
