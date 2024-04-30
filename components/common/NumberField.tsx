@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { TextInput, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { View } from "react-native";
 import { Button } from "../ui/button";
 import { Minus, Plus } from "./Icons";
+import { Input } from "../ui/input";
+import { cn } from "~/lib/utils";
+import { debounce } from "lodash";
 
 type NumberFieldProps = React.ComponentPropsWithoutRef<typeof View> & {
   defaultValue?: number;
@@ -16,36 +19,46 @@ export default function NumberField({
   maxValue = 999,
   onChange,
 }: NumberFieldProps) {
-  const [value, setValue] = useState(defaultValue || 0);
+  const [value, setValue] = useState<string>(String(defaultValue || 0));
+  const debouncedChange = useCallback(
+    debounce(onChange ? onChange : () => {}, 500),
+    [],
+  );
+  useEffect(() => {
+    if (!Number(value) || !onChange) {
+      return;
+    }
+    debouncedChange(Number(value));
+  }, [value]);
+
   // onChange && defaultValue && onChange(defaultValue);
   return (
     <View className="flex-row gap-2">
       <Button
         className="size-8 rounded-full"
         variant={"secondary"}
-        disabled={Boolean(value <= minValue)}
+        disabled={Boolean(Number(value) <= minValue)}
         onPress={() => {
-          const newValue = value - 1;
-          if (!minValue || value > minValue) setValue(newValue);
-          onChange && onChange(newValue);
+          const newValue = Number(value) - 1;
+          if (!minValue || Number(value) > minValue) setValue(String(newValue));
         }}
       >
         <Minus />
       </Button>
-      <TextInput
+      <Input
         inputMode="numeric"
         editable={true}
-        className="w-6 text-center font-bold text-white"
-        value={String(value)}
+        className={cn("max-w-16 text-center font-bold text-white")}
+        value={value}
+        onChangeText={(text) => setValue(text)}
       />
       <Button
         className="size-8 rounded-full"
         variant={"secondary"}
-        disabled={Boolean(value >= maxValue)}
+        disabled={Boolean(Number(value) >= maxValue)}
         onPress={() => {
-          const newValue = value + 1;
-          if (!maxValue || value < maxValue) setValue(newValue);
-          onChange && onChange(newValue);
+          const newValue = Number(value) + 1;
+          if (!maxValue || Number(value) < maxValue) setValue(String(newValue));
         }}
       >
         <Plus />

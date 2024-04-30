@@ -1,5 +1,5 @@
 // import { useSwitchChain } from "wagmi";
-import { Link } from "expo-router";
+import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
+import { NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
@@ -30,7 +30,6 @@ import {
   TransactionSuccessInfo,
   TransationData,
 } from "./TranasactionResult";
-import { debounce, throttle } from "lodash";
 
 export default function TradeButton({
   fromToken = NATIVE_TOKEN_METADATA,
