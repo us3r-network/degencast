@@ -12,8 +12,8 @@ import { useEffect } from "react";
 import { Platform, View } from "react-native";
 
 import { Provider as ReduxProvider } from "react-redux";
-import { Text } from "~/components/ui/text";
 import { PortalHost } from "~/components/primitives/portal";
+import { Text } from "~/components/ui/text";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
 import { PRIVY_APP_ID } from "~/constants";
@@ -22,13 +22,12 @@ import { store } from "~/store/store";
 // Import global CSS file
 import StateUpdateWrapper from "~/components/StateUpdateWrapper";
 import "../global.css";
-import { Button } from "~/components/ui/button";
 dayjs.extend(relativeTime);
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+  ErrorBoundary
 } from "expo-router";
 
 export const unstable_settings = {
