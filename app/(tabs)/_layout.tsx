@@ -1,9 +1,8 @@
 import { Link, Tabs } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Search, Edit } from "~/components/common/Icons";
-import InstallPWAButton from "~/components/common/InstallPwaButton";
+import { Edit, Search } from "~/components/common/Icons";
 import {
   ExploreIcon,
   PortfolioIcon,
@@ -46,7 +45,6 @@ export default function TabLayout() {
             },
             headerRight: () => (
               <View className="mr-4 flex-row items-center gap-4">
-                <InstallPWAButton />
                 <Link href="/search" asChild>
                   <Button size={"icon"} className="rounded-full bg-white">
                     <Search />

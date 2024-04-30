@@ -9,14 +9,14 @@ export default function InstallPWAButton() {
 
   useEffect(() => {
     const handler = (e: any) => {
-      console.log("window", window)
+      console.log("window in beforeinstallprompt", window)
       e.preventDefault();
       console.log("we are being triggered :D");
       setSupportsPWA(true);
       setPromptInstall(e);
     };
     window.addEventListener("beforeinstallprompt", handler);
-
+    console.log("window", window)
     return () => window.removeEventListener("transitionend", handler);
   }, []);
 
