@@ -49,6 +49,7 @@ export default function FCastShareModal({
       });
     } else {
       recast();
+      onOpenChange(false);
       Toast.show({
         type: "success",
         text1: "Recast successfully!",
