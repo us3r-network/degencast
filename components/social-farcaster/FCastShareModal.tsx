@@ -70,6 +70,7 @@ export default function FCastShareModal({
 
   const onCopy = async () => {
     await Clipboard.setStringAsync(castWebLink);
+    onOpenChange(false);
     Toast.show({
       type: "info",
       text1: "Link copied to clipboard!",
