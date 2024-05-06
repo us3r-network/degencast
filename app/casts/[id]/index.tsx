@@ -204,11 +204,11 @@ function CastDetailWithData({
     loading: commentsLoading,
     firstLoaded: commentsFirstLoaded,
     loadCastComments,
-  } = useLoadCastComments();
+  } = useLoadCastComments(id);
 
   useEffect(() => {
-    loadCastComments(id);
-  }, [id]);
+    loadCastComments();
+  }, [loadCastComments]);
 
   const channelPageData = castDetailData?.[id];
   const { origin: castPageOrigin } = channelPageData || {};
@@ -327,17 +327,15 @@ function CastDetailWithData({
             }}
             keyExtractor={({ data }) => data.id}
             onEndReached={() => {
-              return;
-              // TODO 没有分页，暂时不用加载更多
-              // if (
-              //   !cast ||
-              //   commentsLoading ||
-              //   (commentsFirstLoaded && comments?.length === 0)
-              // )
-              //   return;
-              // loadCastComments(id as string);
+              if (
+                !cast ||
+                commentsLoading ||
+                (commentsFirstLoaded && comments?.length === 0)
+              )
+                return;
+              loadCastComments();
             }}
-            onEndReachedThreshold={1}
+            onEndReachedThreshold={0.1}
             ListFooterComponent={() => {
               return <View className="mb-10" />;
             }}
