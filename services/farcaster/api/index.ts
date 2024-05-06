@@ -177,6 +177,25 @@ export function getFarcasterCastInfo(
   });
 }
 
+export function getFarcasterCastComments(
+  hash: string,
+  params: {
+    pageSize?: number;
+    pageNumber?: number;
+  },
+): AxiosPromise<
+  ApiResp<{
+    casts: { data: FarCast; platform: "farcaster" }[];
+    farcasterUserData: FarcasterUserData[];
+  }>
+> {
+  return request({
+    url: `/3r-farcaster/casts/${hash}/replies`,
+    method: "get",
+    params,
+  });
+}
+
 // TODO:
 export function getSearchResult(query: string) {
   return axios({
