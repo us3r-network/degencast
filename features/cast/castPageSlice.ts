@@ -27,7 +27,7 @@ export type CastReplayData = {
   farcasterUserDataObj: {
     [key: string]: UserData;
   };
-  community: CommunityInfo;
+  community?: CommunityInfo;
 };
 
 type castPageState = {

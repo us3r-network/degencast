@@ -85,7 +85,7 @@ export default function ChannelExploreScreen() {
     farcasterUserDataObj: exploreFarcasterUserDataObj,
     setCurrentCastIndex,
   } = useLoadChannelExploreCasts({
-    channelId,
+    channelId: channelId === "home" ? "" : channelId,
     initCast,
   });
 
@@ -154,7 +154,7 @@ export default function ChannelExploreScreen() {
           setCurrentCastIndex={setCurrentCastIndex}
         />
 
-        {community ? (
+        {community?.channelId ? (
           <FCastCommunity
             className="w-full rounded-b-none"
             communityInfo={community}
