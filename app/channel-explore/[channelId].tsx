@@ -245,7 +245,7 @@ function ChannelExploreSwipList({
                 />
               </Pressable>
               <FCastActions
-                className=" absolute bottom-[10px] right-0"
+                className=" absolute bottom-[10px] right-5"
                 cast={data}
                 farcasterUserDataObj={farcasterUserDataObj}
                 communityInfo={community}
