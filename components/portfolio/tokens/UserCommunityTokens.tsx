@@ -55,22 +55,29 @@ export default function CommunityTokens({
 }
 
 function Item(item: TokenWithTradeInfo) {
+  console.log("item", item);
   return (
     <View className="flex-row items-center justify-between">
-      <Link href={`/communities/${item.channelId}/tokens`} asChild>
-        <Pressable>
-          <TokenInfo
-            name={item.name}
-            logo={item.logoURI}
-            mc={Number(item.tradeInfo?.stats?.fdv_usd)}
-          />{" "}
-        </Pressable>
-      </Link>
+      {item.tradeInfo?.channel ? (
+        <Link href={`/communities/${item.tradeInfo?.channel}/tokens`} asChild>
+          <Pressable>
+            <TokenInfo
+              name={item.name}
+              logo={item.logoURI}
+              mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+            />
+          </Pressable>
+        </Link>
+      ) : (
+        <TokenInfo
+          name={item.name}
+          logo={item.logoURI}
+          mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+        />
+      )}
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">{round(Number(item.balance), 2)}</Text>
-        <TradeButton
-          fromToken={item}
-        />
+        <TradeButton fromToken={item} />
       </View>
     </View>
   );
