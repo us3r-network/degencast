@@ -7,7 +7,7 @@ export default function useFarcasterAccount() {
   ) as FarcasterWithMetadata;
   const signerPublicKey = farcasterAccount?.signerPublicKey || "";
 
-  const currFid = user?.farcaster?.fid;
+  const currFid = user?.farcaster?.fid || "";
 
   return { farcasterAccount, signerPublicKey, currFid };
 }

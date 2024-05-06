@@ -1,5 +1,5 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { Stack, useNavigation } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, Image } from "react-native";
@@ -12,6 +12,8 @@ import { uploadImage } from "~/services/upload";
 import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
+import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
+import Toast from "react-native-toast-message";
 
 const HomeChanel = {
   id: "",
@@ -21,12 +23,22 @@ const HomeChanel = {
   createdAt: 0,
 };
 export default function CreateScreen() {
+  const localSearchParams = useLocalSearchParams();
+  const { embeds: searchEmbeds, text: searchText } = (localSearchParams ||
+    {}) as {
+    embeds: string[];
+    text: string;
+  };
+  const embeds = searchEmbeds?.map((item) => ({ url: item }));
+
   const { submitCast, writing } = useFarcasterWrite();
   const navigation = useNavigation();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(searchText || "");
   const [images, setImages] = useState<string[]>([]);
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
   const { login, ready, user } = usePrivy();
+
+  const fid = user?.farcaster?.fid;
 
   return (
     <SafeAreaView id="ss" className="h-full">
@@ -51,25 +63,45 @@ export default function CreateScreen() {
             );
           },
           headerRight: () => {
+            if (!fid) {
+              return null;
+            }
             return (
               <View className="w-fit p-3 ">
                 <Button
                   className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
                   size={"icon"}
                   variant={"ghost"}
-                  onPress={() => {
-                    submitCast({
+                  onPress={async () => {
+                    const data = {
                       text: value,
-                      embeds: images.map((item) => {
-                        return { url: item };
-                      }),
+                      embeds: [
+                        ...(embeds || []),
+                        ...images.map((item) => {
+                          return { url: item };
+                        }),
+                      ],
                       channel: channel.url,
-                    }).then(() => {
-                      console.log("Cast submitted");
+                    };
+                    console.log("Submitting cast", data);
+                    const result = await submitCast(data);
+
+                    console.log("Cast submitted", result);
+                    if (result?.hash) {
                       setValue("");
                       setImages([]);
                       setChannel(HomeChanel);
-                    });
+                      Toast.show({
+                        type: "postToast",
+                        props: {
+                          hash: result?.hash,
+                          fid: fid,
+                        },
+                        // position: "bottom",
+                      });
+
+                      navigation.goBack();
+                    }
                   }}
                 >
                   <PostIcon />
@@ -80,10 +112,10 @@ export default function CreateScreen() {
         }}
       />
       <View
-        className="m-auto h-full w-full  space-y-2 md:w-[500px]"
+        className="m-auto h-full w-full space-y-2 bg-white md:w-[500px]"
         id="create-view"
       >
-        {(!user?.farcaster?.signerPublicKey && (
+        {(!fid && (
           <View className="flex-1 p-4 pt-16">
             <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
               <Text className="text-primary-foreground">
@@ -116,6 +148,9 @@ export default function CreateScreen() {
               setImages={setImages}
               channel={channel}
               setChannel={setChannel}
+              previewComponent={
+                embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
+              }
             />
           </View>
         )}

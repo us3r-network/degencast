@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useState } from "react";
-import { communityTokens } from "~/services/trade/api";
-import { ApiRespCode } from "~/services/shared/types";
-import { TokenInfoWithStats } from "~/services/trade/types";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchItems,
+  selectCommunityTokens,
+} from "~/features/trade/communityTokensSlice";
+import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useCommunityTokens() {
-  const [items, setItems] = useState<TokenInfoWithStats[]>([]);
-  const fetch = useCallback(async () => {
-    const response = await communityTokens();
-    const { code, msg, data } = response.data;
-    if (code === ApiRespCode.SUCCESS) {
-        setItems(data);
-    } else {
-      throw new Error(msg);
-    }
-  }, []);
+  const dispatch = useDispatch();
+  const { items, status, error } = useSelector(selectCommunityTokens);
 
   useEffect(() => {
-    fetch().catch(console.error);
-  }, [fetch]);
+    if (status === AsyncRequestStatus.IDLE) {
+      dispatch(fetchItems() as unknown as UnknownAction);
+    }
+  }, [status, dispatch]);
 
   return {
     items,
+    loading: status === AsyncRequestStatus.PENDING,
+    error,
   };
 }

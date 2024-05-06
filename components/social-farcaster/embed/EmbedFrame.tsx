@@ -12,13 +12,15 @@ import {
 } from "@privy-io/react-auth";
 
 import { FarCast } from "~/services/farcaster/types";
-import { View, Text, Image, Platform, Linking } from "react-native";
+import { View, Image, Platform, Linking } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
+import Toast from "react-native-toast-message";
 
 export default function EmbedFrame({
   url,
@@ -27,7 +29,7 @@ export default function EmbedFrame({
 }: {
   url: string;
   data: Frame;
-  cast: FarCast;
+  cast?: FarCast;
 }) {
   const { requestFarcasterSigner } = useExperimentalFarcasterSigner();
   const { user, login, ready, authenticated } = usePrivy();
@@ -51,7 +53,10 @@ export default function EmbedFrame({
         return;
       }
       if (Platform.OS === "web") {
-        alert("Not supported yet");
+        Toast.show({
+          type: "info",
+          text1: "Not supported yet",
+        });
       }
       console.log("not support yet TODO", btn.action);
     },
@@ -105,7 +110,7 @@ export default function EmbedFrame({
             return (
               <Button
                 key={idx}
-                variant={"outline"}
+                variant={"secondary"}
                 onPress={async (e) => {
                   e.stopPropagation();
                   await frameBtnAction(idx, button);

@@ -1,20 +1,23 @@
 import { round } from "lodash";
 import React from "react";
-import { Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
-import useUserShares from "~/hooks/user/useUserShares";
-import { ShareInfo } from "~/services/user/types";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../ui/collapsible";
-import { SellButton } from "../ShareButton";
-import { CommunityInfo } from "../../common/CommunityInfo";
+} from "~/components/ui/collapsible";
+import { Text } from "~/components/ui/text";
+import useUserCommunityShares from "~/hooks/user/useUserCommunityShares";
+import { ShareInfo } from "~/services/trade/types";
+import { SHARE_INFO, SHARE_TITLE, SellButton } from "../../trade/ShareButton";
+import { Link } from "expo-router";
+import { InfoButton } from "~/components/common/InfoButton";
 
 const DEFAULT_ITEMS_NUM = 3;
-export default function Share() {
-  const { items } = useUserShares();
+export default function Share({ address }: { address: `0x${string}` }) {
+  const { loading, items } = useUserCommunityShares(address);
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -24,9 +27,10 @@ export default function Share() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">
-            Share ({items.length})
+          <Text className="text-lg font-bold">
+            Channel Share {loading ? "" : `(${items.length})`}
           </Text>
+          <InfoButton title={SHARE_TITLE} info={SHARE_INFO} />
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
@@ -50,9 +54,13 @@ export default function Share() {
 function Item(item: ShareInfo) {
   return (
     <View className="flex-row items-center justify-between">
-      <CommunityInfo {...item} />
+      <Link href={`/communities/${item.channelId}/shares`} asChild>
+        <Pressable>
+          <CommunityInfo {...item} />
+        </Pressable>
+      </Link>
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.amount), 2)}</Text>
+        <Text className="text-sm">{round(Number(item.amount), 2)}</Text>
         <SellButton
           logo={item.logo}
           name={item.name}

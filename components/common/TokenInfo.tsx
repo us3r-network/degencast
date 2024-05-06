@@ -1,38 +1,74 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { round, upperFirst } from "lodash";
+import { upperFirst } from "lodash";
 import { cn } from "~/lib/utils";
+import { Text } from "~/components/ui/text";
+import { formatUnits } from "viem";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   name?: string;
   logo?: string;
   mc?: number;
-  textClassName?: string;
+  balance?: string;
+  symbol?: string;
 };
 
-export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
+export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
-      <Avatar alt={name || ""} className="size-8">
+      <Avatar
+        alt={name || ""}
+        className={cn("size-8 border-2 border-secondary/10")}
+      >
         <AvatarImage source={{ uri: logo || "" }} />
-        <AvatarFallback className="border-primary bg-secondary">
+        <AvatarFallback className="bg-secondary">
           <Text className="text-sm font-bold">
             {upperFirst(name?.slice(0, 2))}
           </Text>
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("text-md font-bold text-primary", textClassName)}>
-          {name}
-        </Text>
+        <Text className={cn("line-clamp-1 font-bold")}>{name}</Text>
         {mc && mc > 0 && (
           <Text className="text-xs text-secondary">
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
+              notation: "compact",
             }).format(mc)}
           </Text>
         )}
+      </View>
+    </View>
+  );
+}
+
+type TokenWithValueProps = React.ComponentPropsWithoutRef<typeof View> & {
+  token: TokenWithTradeInfo;
+  value: bigint | number | string;
+};
+
+export function TokenWithValue({ token, value }: TokenWithValueProps) {
+  return (
+    <View className="flex-1 flex-row items-center gap-2">
+      <Avatar
+        alt={token.name || ""}
+        className={cn("size-8 border-2 border-secondary/10")}
+      >
+        <AvatarImage source={{ uri: token.logoURI || "" }} />
+        <AvatarFallback className="bg-secondary">
+          <Text className="text-sm font-bold">
+            {upperFirst(token.name?.slice(0, 2))}
+          </Text>
+        </AvatarFallback>
+      </Avatar>
+      <View>
+        <Text className={cn("line-clamp-1 font-bold")}>
+          {typeof value === "number" || typeof value === "string"
+            ? `${value}  ${token.symbol}`
+            : `${formatUnits(value, token.decimals || 18)} ${token.symbol}`}
+        </Text>
       </View>
     </View>
   );

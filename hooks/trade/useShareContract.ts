@@ -42,7 +42,7 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
       functionName,
       args: [sharesSubject, BigInt(amount)],
     });
-    return { data, status };
+    return { data: data as bigint, status };
   };
 
   const getBalance = (account: `0x${string}` | undefined) => {
@@ -53,7 +53,7 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
       functionName: "sharesBalance",
       args: [sharesSubject, account],
     });
-    return { data, status };
+    return { data: data as bigint, status };
   };
 
   const getSupply = () => {
@@ -64,7 +64,7 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
       functionName: "sharesSupply",
       args: [sharesSubject],
     });
-    return { data, status };
+    return { data: data as bigint, status };
   };
 
   return {
@@ -85,7 +85,7 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
     error: writeError,
   } = useWriteContract();
   const {
-    data,
+    data: transactionReceipt,
     error: transationError,
     isLoading: waiting,
     isSuccess,
@@ -108,7 +108,7 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
 
   return {
     buy,
-    data,
+    transactionReceipt,
     status,
     writeError,
     transationError,
@@ -140,7 +140,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   };
 
   const {
-    data,
+    data: transactionReceipt,
     isError: transationError,
     isLoading: waiting,
     isSuccess,
@@ -150,7 +150,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   });
   return {
     sell,
-    data,
+    transactionReceipt,
     status,
     writeError,
     transationError,

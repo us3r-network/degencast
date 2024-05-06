@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useState } from "react";
-import { communityShares } from "~/services/trade/api";
-import { ApiRespCode } from "~/services/shared/types";
-import { ShareInfo } from "~/services/trade/types";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchItems,
+  selectCommunityShares,
+} from "~/features/trade/communitySharesSlice";
+import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useCommunityShares() {
-  const [items, setItems] = useState<ShareInfo[]>([]);
-  const fetch = useCallback(async () => {
-    const response = await communityShares();
-    const { code, msg, data } = response.data;
-    if (code === ApiRespCode.SUCCESS) {
-        setItems(data);
-    } else {
-      throw new Error(msg);
-    }
-  }, []);
+  const dispatch = useDispatch();
+  const { items, status, error } = useSelector(selectCommunityShares);
 
   useEffect(() => {
-    fetch().catch(console.error);
-  }, [fetch]);
+    if (status === AsyncRequestStatus.IDLE) {
+      dispatch(fetchItems() as unknown as UnknownAction);
+    }
+  }, [status, dispatch]);
 
   return {
     items,
+    loading: status === AsyncRequestStatus.PENDING,
+    error,
   };
 }

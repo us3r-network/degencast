@@ -6,16 +6,30 @@ import {
   useSegments,
   useNavigation,
 } from "expo-router";
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import { Share2 } from "~/components/common/Icons";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import PlatformSharingButton from "~/components/platform-sharing/PlatformSharingButton";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import useLoadCommunityMembersShare from "~/hooks/community/useLoadCommunityMembersShare";
+import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
+import { CommunityData } from "~/services/community/api/community";
+import {
+  getCommunityFrameLink,
+  getCommunityWebsiteLink,
+} from "~/utils/platform-sharing/link";
+import {
+  getCommunityShareTextWithTwitter,
+  getCommunityShareTextWithWarpcast,
+} from "~/utils/platform-sharing/text";
 
 const initialRouteName = "tokens";
 
@@ -26,23 +40,73 @@ const TABS = [
   { label: "Casts", value: "casts" },
 ];
 
+const CommunityContext = createContext<{
+  community: CommunityData | null | undefined;
+  loading: boolean;
+}>({
+  community: null,
+  loading: false,
+});
+
+export function useCommunityCtx() {
+  const context = useContext(CommunityContext);
+  if (!context) {
+    throw new Error("useCommunityCtx must be used within CommunityContext");
+  }
+  return context;
+}
+
 export default function CommunityDetail() {
+  const { currFid } = useFarcasterAccount();
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
   const segments = useSegments();
-  const activeScreen = segments[2] || initialRouteName;
-  const router = useRouter();
-  const { community, loading, loadCommunity } = useLoadCommunityDetail();
+  const [activeScreen, setActiveScreen] = useState(initialRouteName);
   useEffect(() => {
-    loadCommunity(id as string);
-  }, [id]);
+    if (segments?.[2]) {
+      setActiveScreen(segments[2]);
+    }
+  }, [segments]);
+  const router = useRouter();
+  const { communityDetail, communityBasic, loading, loadCommunityDetail } =
+    useLoadCommunityDetail(id);
+
+  const community = communityDetail || communityBasic;
+
+  useEffect(() => {
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
+
+  const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(id);
+  const { membersShare, loadMembersShare } = useLoadCommunityMembersShare(id);
+  const { casts, loadCasts } = useLoadCommunityCasts(id);
+
+  useEffect(() => {
+    if (tipsRank.length === 0) {
+      loadTipsRank();
+    }
+  }, [tipsRank]);
+
+  useEffect(() => {
+    if (membersShare.length === 0) {
+      loadMembersShare();
+    }
+  }, [membersShare]);
+
+  useEffect(() => {
+    if (casts.length === 0) {
+      loadCasts();
+    }
+  }, [casts]);
 
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}
-      className="bg-primary"
+      className="bg-background"
     >
       <Stack.Screen
         options={{
@@ -67,27 +131,27 @@ export default function CommunityDetail() {
                 </Text>
               </View>
               <View className="mr-5 flex flex-row items-center gap-3">
-                {community && (
-                  <CommunityJoinButton
-                    communityInfo={community}
-                    className="bg-white"
-                    textProps={{ className: "text-primary" }}
-                  />
-                )}
-                <Button
-                  className="size-10 rounded-full bg-white"
-                  onPress={async () => {
-                    alert("TODO");
-                  }}
-                >
-                  <Share2 className={cn(" fill-primary stroke-primary")} />
-                </Button>
+                {community && <CommunityJoinButton communityInfo={community} />}
+                <PlatformSharingButton
+                  twitterText={getCommunityShareTextWithTwitter(
+                    community?.name || "",
+                  )}
+                  warpcastText={getCommunityShareTextWithWarpcast(
+                    community?.name || "",
+                  )}
+                  websiteLink={getCommunityWebsiteLink(id, {
+                    fid: currFid,
+                  })}
+                  frameLink={getCommunityFrameLink(id, {
+                    fid: currFid,
+                  })}
+                />
               </View>
             </View>
           ),
         }}
       />
-      <View className=" flex-1 flex-col gap-7 p-5">
+      <View className=" m-auto  w-full flex-1 flex-col gap-7 p-5 pb-0 sm:w-full sm:max-w-screen-sm">
         {community && (
           <>
             <CommunityDetailMetaInfo communityInfo={community} />
@@ -95,6 +159,7 @@ export default function CommunityDetail() {
               <Tabs
                 value={activeScreen}
                 onValueChange={(value) => {
+                  setActiveScreen(value);
                   router.push(`/communities/${id}/${value}` as any);
                 }}
                 className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2"
@@ -119,13 +184,16 @@ export default function CommunityDetail() {
                   ))}
                 </TabsList>
               </Tabs>
-              <Card className="box-border h-full w-full p-5">
-                <Stack
-                  initialRouteName={initialRouteName}
-                  screenOptions={{
-                    header: () => null,
-                  }}
-                />
+              <Card className="box-border h-full w-full rounded-b-none p-5 pb-0 ">
+                <CommunityContext.Provider value={{ community, loading }}>
+                  <Stack
+                    initialRouteName={initialRouteName}
+                    screenOptions={{
+                      header: () => null,
+                      contentStyle: { backgroundColor: "white" },
+                    }}
+                  />
+                </CommunityContext.Provider>
               </Card>
             </View>
           </>

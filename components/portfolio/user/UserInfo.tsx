@@ -1,14 +1,16 @@
 import { usePrivy } from "@privy-io/react-auth";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { User } from "~/components/common/Icons";
+import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Text } from "~/components/ui/text";
 import {
   getUserAvatar,
   getUserFarcasterAccount,
   getUserHandle,
   getUserName,
 } from "~/utils/privy";
-import UserGlobalPoints from "../../point/UserGlobalPoints";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import FarcasterStats from "./FarcasterStats";
 
 export default function UserInfo() {
@@ -27,24 +29,22 @@ export default function UserInfo() {
     <View className="mx-8 w-full flex-row items-center gap-4">
       <Avatar alt={userHandle} className="size-20">
         <AvatarImage source={{ uri: userAvatar }} />
-        <AvatarFallback>
-          <Text>{userName}</Text>
+        <AvatarFallback className="bg-white">
+          <User className="size-12 fill-primary/80 font-bold text-primary" />
         </AvatarFallback>
       </Avatar>
       <View className="flex w-full gap-2">
-        <View className="inline-block w-full space-x-2 ">
+        <View className="inline-block w-full space-x-2">
           {userName && (
-            <Text className="text-lg font-bold text-primary-foreground">
-              {userName}
-            </Text>
+            <Text className="text-lg font-bold text-white">{userName}</Text>
           )}
           {userHandle && (
-            <Text className="text-sm text-primary-foreground">
-              @{userHandle}
-            </Text>
+            <Text className="text-sm text-white">@{userHandle}</Text>
           )}
         </View>
-        {farcasterAccount?.fid && <FarcasterStats fid={farcasterAccount.fid} />}
+        {farcasterAccount?.fid && (
+          <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
+        )}
         <UserGlobalPoints />
       </View>
     </View>

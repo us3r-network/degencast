@@ -1,21 +1,71 @@
-import { View, ViewProps, TouchableOpacity } from "react-native";
+import { View, ViewProps, Pressable, PressableProps } from "react-native";
 import { CommunityInfo } from "~/services/community/types/community";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
 import { cn } from "~/lib/utils";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
-import { Button } from "../ui/button";
 import { useRouter } from "expo-router";
+import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
+import useCommunityPage from "~/hooks/community/useCommunityPage";
 
 export default function FCastCommunity({
   communityInfo,
   className,
   ...props
-}: ViewProps & {
+}: PressableProps & {
   communityInfo: CommunityInfo;
 }) {
   const router = useRouter();
   const { joined, joiningAction } = useJoinCommunityAction(communityInfo);
+  const { navigateToCommunityDetail } = useCommunityPage();
+  return (
+    <Pressable
+      className={cn(
+        "box-border flex h-[90px] w-[calc(100%-10px)] flex-row items-center gap-2 rounded-[30px] bg-[#5E3EA0] p-[20px]",
+        className,
+      )}
+      onPress={() => {
+        if (!communityInfo.channelId) return;
+        navigateToCommunityDetail(communityInfo.channelId, communityInfo);
+      }}
+      {...props}
+    >
+      <View className=" h-12 w-12 rounded-full bg-white">
+        <Avatar
+          alt={"logo"}
+          className="h-full w-full rounded-full object-cover"
+        >
+          <AvatarImage source={{ uri: communityInfo.logo }} />
+          <AvatarFallback>
+            <Text>{communityInfo?.name?.slice(0, 2)}</Text>
+          </AvatarFallback>
+        </Avatar>
+        {!joined && (
+          <Pressable
+            className=" absolute bottom-0 right-0"
+            onPress={(e) => {
+              e.stopPropagation();
+              joiningAction();
+            }}
+          >
+            <JoinIcon />
+          </Pressable>
+        )}
+      </View>
+      <Text className="line-clamp-2 flex-1 text-base text-white">
+        {communityInfo.name}
+      </Text>
+      {/* {communityInfo?.shares?.[0]?.subjectAddress && (
+        <CommunityBuyShareButton
+          className="bg-secondary font-bold"
+          communityInfo={communityInfo}
+        />
+      )} */}
+    </Pressable>
+  );
+}
+
+export function FCastCommunityDefault({ className, ...props }: ViewProps) {
   return (
     <View
       className={cn(
@@ -24,41 +74,19 @@ export default function FCastCommunity({
       )}
       {...props}
     >
-      <TouchableOpacity
-        className=" h-12 w-12 rounded-full bg-white"
-        onPress={() => {
-          router.push(`/communities/${communityInfo.channelId}`);
-        }}
+      <Avatar
+        alt={"logo"}
+        className="flex h-12 w-12 items-center  justify-center rounded-full bg-white object-cover"
       >
-        <Avatar
-          alt={"logo"}
-          className="h-full w-full rounded-full object-cover"
-        >
-          <AvatarImage source={{ uri: communityInfo.logo }} />
-          <AvatarFallback>
-            <Text>{communityInfo.name.slice(0, 2)}</Text>
-          </AvatarFallback>
-        </Avatar>
-        {!joined && (
-          <TouchableOpacity
-            className=" absolute bottom-0 right-0"
-            onPress={(e) => {
-              e.stopPropagation();
-              joiningAction();
-            }}
-          >
-            <JoinIcon />
-          </TouchableOpacity>
-        )}
-      </TouchableOpacity>
-      <Text className="line-clamp-2 flex-1 text-base text-white">
-        {communityInfo.name}
-      </Text>
-      <Button className="bg-secondary font-bold" onPress={() => {}}>
-        <Text className="font-bold text-secondary-foreground">
-          Buy with 9999 DEGEN
-        </Text>
-      </Button>
+        <AvatarImage
+          style={{ width: 20, height: 20 }}
+          source={require("~/assets/images/channel-home-icon.png")}
+        />
+        <AvatarFallback>
+          <Text>Home</Text>
+        </AvatarFallback>
+      </Avatar>
+      <Text className="line-clamp-2 flex-1 text-base text-white">Home</Text>
     </View>
   );
 }

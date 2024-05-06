@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useCallback } from "react";
 import {
   addOneToUnreportedActions,
@@ -15,10 +14,11 @@ import { UserActionData, UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import getActionPoint from "~/utils/action/getActionPoint";
 import useUserCastLikeActionsUtil from "./useUserCastLikeActionsUtil";
+import useAuth from "./useAuth";
 
 export default function useUserAction() {
   const dispatch = useAppDispatch();
-  const { authenticated } = usePrivy();
+  const { authenticated } = useAuth();
 
   const {
     actionPointConfig,
@@ -57,7 +57,7 @@ export default function useUserAction() {
         addManyToLikedActions([actionData]);
       }
       if (actionData.action === UserActionName.UnLike) {
-        removeOneLidedActions(actionData.castHash);
+        removeOneLidedActions(actionData.castHash!);
       }
     },
     [

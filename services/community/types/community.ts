@@ -1,3 +1,5 @@
+import { TradeInfo } from "./trade";
+
 export type CommunityEntity = {
   id: number;
   name: string;
@@ -14,6 +16,8 @@ export type CommunityEntity = {
   tokens?: Array<{
     url: string;
     contract: string;
+    tokenStandard: string;
+    tradeInfo: TradeInfo;
   }>;
   nfts?: Array<{
     url: string;
@@ -29,6 +33,7 @@ export type CommunityEntity = {
     parent_url: string;
   }>;
   channelId?: string;
+  shares?: Array<{ subjectAddress: `0x${string}` }>;
 };
 
 export type CommunityStatistics = {

@@ -44,20 +44,20 @@ export default function CardSwipe({
     })
     .onEnd((e) => {
       if (currentIndex === index) {
-        // If the swipe distance is greater than 200 or the swipe velocity is greater than 1000
+        // If the swipe distance is greater than 100 or the swipe velocity is greater than 1000
         // go to the next card
         if (
-          Math.abs(e.translationX) > 200 ||
+          Math.abs(e.translationX) > 100 ||
           Math.abs(e.velocityX) > 1000 ||
-          Math.abs(e.translationY) > 200 ||
+          Math.abs(e.translationY) > 100 ||
           Math.abs(e.velocityY) > 1000
         ) {
-          x.value = withTiming(width * xDirection.value, {}, () => {
+          x.value = withTiming(width * xDirection.value, {}, (bool) => {
             runOnJS(onNext)();
           });
           animatedValue.value = withTiming(currentIndex + 1);
         } else {
-          // If the swipe distance is less than 200 or the swipe velocity is less than 1000
+          // If the swipe distance is less than 100 or the swipe velocity is less than 1000
           // go back to the original position
           x.value = withTiming(0, { duration: 500 });
           y.value = withTiming(0, { duration: 500 });
@@ -72,17 +72,17 @@ export default function CardSwipe({
     const translateY = interpolate(
       animatedValue.value,
       [index - 1, index],
-      [-40, 0],
+      [-22, 0],
     );
     const scale = interpolate(
       animatedValue.value,
       [index - 1, index],
-      [0.9, 1],
+      [0.95, 1],
     );
 
     return {
       transform: [
-        { translateX: x.value },
+        { translateX: currentItem ? x.value : 0 },
         { translateY: currentItem ? y.value : translateY },
         { scale: currentItem ? 1 : scale },
       ],

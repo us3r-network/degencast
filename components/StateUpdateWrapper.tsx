@@ -5,9 +5,10 @@ import useSeenCasts from "~/hooks/user/useSeenCasts";
 import useAuth from "~/hooks/user/useAuth";
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
+import useUserInviteCode from "~/hooks/user/useUserInviteCode";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
-  const { authenticated } = useAuth();
+  const { authenticated, checkDegencastLogin } = useAuth();
 
   // user action
   const { fetchUserActionConfig, submitUnreportedActions } = useUserAction();
@@ -16,6 +17,21 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { loadAllJoinedCommunities, clearJoinedCommunities } =
     useAllJoinedCommunities();
   const { loadWarpcastChannels } = useWarpcastChannels();
+  const { checkInviteLinkParams, clearUsedInviterData } = useUserInviteCode();
+
+  useEffect(() => {
+    checkDegencastLogin();
+  }, [checkDegencastLogin]);
+
+  useEffect(() => {
+    checkInviteLinkParams();
+  }, [checkInviteLinkParams]);
+
+  useEffect(() => {
+    if (authenticated) {
+      clearUsedInviterData();
+    }
+  }, [authenticated, clearUsedInviterData]);
 
   useEffect(() => {
     loadWarpcastChannels();

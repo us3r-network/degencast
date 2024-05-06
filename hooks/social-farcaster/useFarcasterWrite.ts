@@ -1,4 +1,3 @@
-import { CastAddBody } from "@farcaster/hub-web";
 import {
   FarcasterWithMetadata,
   useCreateWallet,
@@ -8,6 +7,8 @@ import {
   useWallets,
 } from "@privy-io/react-auth";
 import { useState } from "react";
+import useUserAction from "../user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export type SubmitCastBody = {
   mentions?: number[] | undefined;
@@ -32,7 +33,26 @@ export type SubmitCastBody = {
       }[]
     | undefined;
 };
+
+export type ReplyCastRes = Promise<
+  | {
+      text: string;
+      embeds: {
+        url: string | undefined;
+      }[];
+      parentCastId:
+        | {
+            fid: number;
+            hash: string;
+          }
+        | undefined;
+      hash: string;
+    }
+  | undefined
+>;
+
 export default function useFarcasterWrite() {
+  const { submitUserAction } = useUserAction();
   const { user } = usePrivy();
 
   const { createWallet } = useCreateWallet();
@@ -81,6 +101,9 @@ export default function useFarcasterWrite() {
       if (!farcasterAccount?.signerPublicKey) {
         console.log("Requesting farcaster signer");
         await requestFarcasterSigner(); // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
+        submitUserAction({
+          action: UserActionName.ConnectFarcaster,
+        });
         return false;
       }
     }
@@ -88,6 +111,7 @@ export default function useFarcasterWrite() {
     return true;
   };
   return {
+    prepareWrite,
     writing: writing && prepareing,
     // todo: add more post support!
     submitCast: async ({
@@ -112,13 +136,53 @@ export default function useFarcasterWrite() {
         setWriting(true);
         const data = {
           text,
+          embeds: embeds.length
+            ? embeds.map((embed) => ({
+                url: embed.url,
+              }))
+            : undefined,
+          parentUrl: channel || undefined,
+        };
+        const result = await submitCast(data);
+        setWriting(false);
+        return result;
+      }
+    },
+    replayCast: async ({
+      text,
+      embeds,
+      parentCastId,
+    }: {
+      text: string;
+      embeds: {
+        url?: string | undefined;
+        castId?:
+          | {
+              fid: number;
+              hash: string;
+            }
+          | undefined;
+      }[];
+      parentCastId?:
+        | {
+            fid: number;
+            hash: string;
+          }
+        | undefined;
+    }): ReplyCastRes => {
+      const canWrite = await prepareWrite();
+      if (canWrite) {
+        setWriting(true);
+        const data = {
+          text,
           embeds: embeds.map((embed) => ({
             url: embed.url,
           })),
-          parentUrl: channel,
+          parentCastId,
         };
-        await submitCast(data);
+        const res = await submitCast(data);
         setWriting(false);
+        return { ...res, ...data };
       }
     },
     submitCastWithOpts: async (opts: SubmitCastBody) => {

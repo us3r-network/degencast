@@ -4,6 +4,8 @@ import useFarcasterWrite from "../social-farcaster/useFarcasterWrite";
 import { FarCast } from "~/services/farcaster/types";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
 import getCastHex from "~/utils/farcaster/getCastHex";
+import useUserAction from "./useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export default function useUserDegenAllowanceAction({
   cast,
@@ -12,6 +14,7 @@ export default function useUserDegenAllowanceAction({
   cast: FarCast;
   onSuccess?: () => void;
 }) {
+  const { submitUserAction } = useUserAction();
   const { currFid } = useFarcasterAccount();
   const { submitCastWithOpts } = useFarcasterWrite();
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,6 +32,10 @@ export default function useUserDegenAllowanceAction({
             fid: Number(cast.fid),
           },
         });
+        submitUserAction({
+          action: UserActionName.Tips,
+          castHash: castHex,
+        });
         await notifyTipApi({
           fromFid: currFid as number,
           amount: Number(allowanceValue),
@@ -43,7 +50,7 @@ export default function useUserDegenAllowanceAction({
         setLoading(false);
       }
     },
-    [cast, currFid, loading, onSuccess, submitCastWithOpts],
+    [cast, currFid, loading, onSuccess, submitCastWithOpts, submitUserAction],
   );
 
   return { loading, degenAllowanceAction };

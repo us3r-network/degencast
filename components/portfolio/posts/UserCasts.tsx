@@ -1,13 +1,18 @@
 import { usePrivy } from "@privy-io/react-auth";
+import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, View, Text } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
+import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { ProfileFeedsGroups } from "~/services/farcaster/types";
+import getCastHex from "~/utils/farcaster/getCastHex";
 import { getUserFarcasterAccount } from "~/utils/privy";
-import { Image } from "expo-image";
-import { Button } from "~/components/ui/button";
 
 export default function CastsScreen() {
   const params = useLocalSearchParams();
@@ -15,42 +20,59 @@ export default function CastsScreen() {
   const farcasterAccount = getUserFarcasterAccount(user);
   const fid = params.fid || farcasterAccount?.fid;
   const { casts, farcasterUserDataObj, loading, loadCasts } = useUserCasts();
+  const { navigateToCastDetail } = useCastPage();
   useEffect(() => {
     if (fid) loadCasts({ fid: String(fid), group: ProfileFeedsGroups.POSTS });
   }, [fid]);
   if (fid) {
     return (
-      <View className="flex-1">
-        {casts.length > 0 && (
-          <FlatList
-            data={casts}
-            numColumns={2}
-            columnWrapperStyle={{ gap: 5 }}
-            ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-            renderItem={({ item }) => {
-              const { data, platform } = item;
-              return (
-                <FcastMiniCard
-                  className="flex-1"
-                  cast={data}
-                  farcasterUserDataObj={farcasterUserDataObj}
-                />
-              );
-            }}
-            keyExtractor={({ data, platform }) => data.id}
-            onEndReached={() => {
-              if (loading) return;
-              loadCasts({ fid: String(fid), group: ProfileFeedsGroups.POSTS });
-            }}
-            onEndReachedThreshold={1}
-            ListFooterComponent={() => {
-              return loading ? (
-                <View className="flex items-center justify-center p-5">
-                  Loading ...
-                </View>
-              ) : null;
-            }}
-          />
+      <View className="container h-full">
+        {loading && casts.length === 0 ? (
+          <Loading />
+        ) : (
+          <View className="flex-1">
+            {casts.length > 0 && (
+              <FlatList
+                data={casts}
+                numColumns={2}
+                columnWrapperStyle={{ gap: 5 }}
+                ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
+                renderItem={({ item }) => {
+                  const { data, platform } = item;
+                  return (
+                    <Pressable
+                      className="flex-1"
+                      onPress={() => {
+                        const castHex = getCastHex(data);
+                        navigateToCastDetail(castHex, {
+                          origin: CastDetailDataOrigin.Community,
+                          cast: data,
+                          farcasterUserDataObj: farcasterUserDataObj,
+                        });
+                      }}
+                    >
+                      <FcastMiniCard
+                        cast={data}
+                        farcasterUserDataObj={farcasterUserDataObj}
+                      />
+                    </Pressable>
+                  );
+                }}
+                keyExtractor={({ data, platform }) => data.id}
+                onEndReached={() => {
+                  if (loading) return;
+                  loadCasts({
+                    fid: String(fid),
+                    group: ProfileFeedsGroups.POSTS,
+                  });
+                }}
+                onEndReachedThreshold={1}
+                ListFooterComponent={() => {
+                  return loading ? <Loading /> : null;
+                }}
+              />
+            )}
+          </View>
         )}
       </View>
     );
@@ -71,14 +93,14 @@ export default function CastsScreen() {
             Please connect Farcaster to display & create your casts
           </Text>
           <Button
-            className="flex-row items-center justify-between gap-2 rounded-lg bg-primary px-6 py-3"
+            className="flex-row items-center justify-between gap-2"
             onPress={linkFarcaster}
           >
             <Image
               source={require("~/assets/images/farcaster.png")}
               style={{ width: 16, height: 16 }}
             />
-            <Text className="text-primary-foreground">Link Farcaster</Text>
+            <Text>Link Farcaster</Text>
           </Button>
         </View>
       );

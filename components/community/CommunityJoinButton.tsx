@@ -16,23 +16,17 @@ export default function CommunityJoinButton({
 }) {
   const { joined, isPending, joinChangeAction } =
     useJoinCommunityAction(communityInfo);
-  const { className: textClassName, ...restTextProps } = textProps || {};
   return (
     <Button
       className={cn("w-14 bg-secondary", className)}
+      size="sm"
       onPress={(e) => {
         e.stopPropagation();
         joinChangeAction();
       }}
       {...props}
     >
-      <Text
-        className={cn(
-          "text-xs font-bold text-secondary-foreground",
-          textClassName,
-        )}
-        {...(restTextProps || {})}
-      >
+      <Text {...(textProps || {})}>
         {(() => {
           if (joined) {
             if (isPending) {

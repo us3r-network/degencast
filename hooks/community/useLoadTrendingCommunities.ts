@@ -1,89 +1,27 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback } from "react";
 import {
-  TrendingCommunitiesData,
-  fetchTrendingCommunities,
-} from "~/services/community/api/community";
+  fetchItems,
+  selectCommunityTrending,
+} from "~/features/community/communityTrendingSlice";
+import { AsyncRequestStatus } from "~/services/shared/types";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 
-const PAGE_SIZE = 30;
-export const getDefaultTrendingCommunitiesCachedData = () => {
-  return {
-    data: [] as TrendingCommunitiesData,
-    pageInfo: {
-      hasNextPage: true,
-    },
-    nextPageNumber: 1,
-    type: "",
-  };
-};
+export default function useLoadTrendingCommunities() {
+  const dispatch = useAppDispatch();
+  const data = useAppSelector(selectCommunityTrending);
+  const { items: trendingCommunities, pageInfo, status, errorMsg } = data;
+  const loading = status === AsyncRequestStatus.PENDING;
 
-type TrendingCommunitiesCachedData = ReturnType<
-  typeof getDefaultTrendingCommunitiesCachedData
->;
-
-type TrendingCommunitiesOpts = {
-  cachedDataRefValue?: TrendingCommunitiesCachedData;
-};
-
-export default function useLoadTrendingCommunities(
-  opts?: TrendingCommunitiesOpts,
-) {
-  const { cachedDataRefValue } = opts || {};
-  const defaultCachedDataRef = useRef({
-    ...getDefaultTrendingCommunitiesCachedData(),
-  });
-  const cachedData = cachedDataRefValue || defaultCachedDataRef.current;
-
-  const [trendingCommunities, setTrendingCommunities] =
-    useState<TrendingCommunitiesData>(cachedData.data);
-  const [loading, setLoading] = useState(false);
-  const [pageInfo, setPageInfo] = useState(cachedData.pageInfo);
-
-  const loadTrendingCommunities = useCallback(
-    async (params?: { type?: string }) => {
-      const { type } = params || {};
-      if (type !== cachedData?.type) {
-        setTrendingCommunities([]);
-        setPageInfo({ hasNextPage: true });
-        Object.assign(cachedData, {
-          ...getDefaultTrendingCommunitiesCachedData(),
-          type,
-        });
-      }
-      if (cachedData.pageInfo.hasNextPage === false) {
-        return;
-      }
-      setLoading(true);
-      try {
-        const res = await fetchTrendingCommunities({
-          pageSize: PAGE_SIZE,
-          pageNumber: cachedData.nextPageNumber,
-          type: cachedData?.type || undefined,
-        });
-        const { code, msg, data } = res.data;
-        if (code === 0) {
-          const newCommunities = data || [];
-          const hasNextPage = newCommunities.length >= PAGE_SIZE;
-          setTrendingCommunities((prev) => [...prev, ...newCommunities]);
-          setPageInfo({ hasNextPage });
-          cachedData.data = cachedData.data.concat(newCommunities);
-          cachedData.nextPageNumber += 1;
-          cachedData.pageInfo.hasNextPage = hasNextPage;
-        } else {
-          throw new Error(msg);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const loadTrendingCommunities = useCallback(async () => {
+    if (loading) return;
+    dispatch(fetchItems());
+  }, [loading]);
 
   return {
     loading,
     trendingCommunities,
-    loadTrendingCommunities,
     pageInfo,
+    errorMsg,
+    loadTrendingCommunities,
   };
 }

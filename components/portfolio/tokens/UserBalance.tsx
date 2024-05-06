@@ -1,36 +1,36 @@
 import { MoonpayConfig, useWallets } from "@privy-io/react-auth";
 import { round } from "lodash";
-import { Linking, Text, View } from "react-native";
+import { View } from "react-native";
 import { useAccount } from "wagmi";
+import { Info } from "~/components/common/Icons";
+import { TokenInfo } from "~/components/common/TokenInfo";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
-import { TokenInfoWithMetadata } from "~/services/user/types";
-import { Info } from "../../common/Icons";
-import { TokenInfo } from "../../common/TokenInfo";
-import { Button } from "../../ui/button";
-import WithdrawButton from "../WithdrawButton";
+import { cn } from "~/lib/utils";
+import { TokenWithTradeInfo } from "~/services/trade/types";
+import TradeButton from "../../trade/TradeButton";
+import WithdrawButton from "../../trade/WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
-  const { userTokens } = useUserTokens();
+  const { userTokens } = useUserTokens(address);
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">Balance</Text>
-          <Info size={16} />
+          <Text className="text-lg font-bold">Balance</Text>
         </View>
-        <WithdrawButton
-          defaultAddress={address}
-        />
+        <WithdrawButton />
       </View>
       {userTokens.has(TOKENS.NATIVE) && (
         <MyToken
-          token={userTokens.get(TOKENS.NATIVE) as TokenInfoWithMetadata}
+          token={userTokens.get(TOKENS.NATIVE) as TokenWithTradeInfo}
           action={ACTION_TYPES.BUY}
         />
       )}
       {userTokens.has(TOKENS.DEGEN) && (
         <MyToken
-          token={userTokens.get(TOKENS.DEGEN) as TokenInfoWithMetadata}
+          token={userTokens.get(TOKENS.DEGEN) as TokenWithTradeInfo}
           action={ACTION_TYPES.SWAP}
         />
       )}
@@ -47,7 +47,7 @@ function MyToken({
   token,
   action,
 }: {
-  token: TokenInfoWithMetadata;
+  token: TokenWithTradeInfo;
   action: ACTION_TYPES;
 }) {
   const { wallets } = useWallets();
@@ -64,15 +64,17 @@ function MyToken({
   };
   return (
     <View className="flex-row items-center justify-between">
-      <TokenInfo name={token.name} logo={token.logo} />
+      <TokenInfo name={token.name} logo={token.logoURI} />
       <View className="flex-row items-center gap-2">
-        <Text>
+        <Text className="text-sm">
           {round(Number(token.balance), 2)} {token.symbol}
         </Text>
         {wallet &&
           (action === ACTION_TYPES.BUY ? (
             <Button
-              className="w-14 bg-secondary"
+              size="sm"
+              className={cn("w-14")}
+              variant={"secondary"}
               onPress={async () => {
                 // Linking.openURL("https://buy-sandbox.moonpay.com/");
                 await wallet.fund({
@@ -80,23 +82,13 @@ function MyToken({
                 });
               }}
             >
-              <Text className="text-xs font-bold text-secondary-foreground">
-                Buy
-              </Text>
+              <Text>Buy</Text>
             </Button>
           ) : (
             action === ACTION_TYPES.SWAP && (
-              <Button
-                className="w-14 bg-secondary"
-                onPress={() => {
-                  console.log("Trade button pressed");
-                  Linking.openURL("https://app.uniswap.org/");
-                }}
-              >
-                <Text className="text-xs font-bold text-secondary-foreground">
-                  Swap
-                </Text>
-              </Button>
+              <TradeButton
+                fromToken={token}
+              />
             )
           ))}
       </View>

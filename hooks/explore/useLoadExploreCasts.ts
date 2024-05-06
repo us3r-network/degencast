@@ -11,9 +11,10 @@ import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
 import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
 
-const FIRST_PAGE_SIZE = 20;
+const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
+export const MAX_VISIBLE_ITEMS = 3;
 
 export default function useLoadExploreCasts() {
   const { addManyToLikedActions } = useUserCastLikeActionsUtil();
@@ -28,8 +29,8 @@ export default function useLoadExploreCasts() {
     endIndex: 0,
   });
 
-  const loadCasts = async () => {
-    const { hasNextPage, endIndex } = pageInfoRef.current;
+  const loadCasts = async (start: number, end: number) => {
+    const { hasNextPage } = pageInfoRef.current;
 
     if (hasNextPage === false) {
       return;
@@ -37,8 +38,8 @@ export default function useLoadExploreCasts() {
     setLoading(true);
     try {
       const resp = await getFarcasterTrending({
-        start: endIndex === 0 ? 0 : endIndex + 1,
-        end: endIndex === 0 ? FIRST_PAGE_SIZE - 1 : endIndex + NEXT_PAGE_SIZE,
+        start,
+        end,
       });
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg);
@@ -69,28 +70,59 @@ export default function useLoadExploreCasts() {
     }
   };
 
+  const loadFirstPageCasts = async () => {
+    await loadCasts(0, FIRST_PAGE_SIZE - 1);
+  };
+
+  const loadNextPageCasts = async () => {
+    const { endIndex } = pageInfoRef.current;
+    await loadCasts(endIndex + 1, endIndex + NEXT_PAGE_SIZE);
+  };
+
   const removeCast = useCallback(
     (idx: number) => {
+      // move pointer
       const nextIdx = idx + 1;
       setCurrentCastIndex(nextIdx);
+
+      // load more casts
       const remainingLen = casts.length - nextIdx;
       if (!loading && remainingLen <= LOAD_MORE_CRITICAL_NUM) {
-        loadCasts();
+        loadNextPageCasts();
       }
-      const cast = casts[idx].data as FarCast;
+
       // seen casts
+      const cast = casts[idx].data as FarCast;
       const castHex = getCastHex(cast);
       submitSeenCast(castHex);
-      submitUserAction({
-        action: UserActionName.View,
-        castHash: castHex,
-      });
     },
-    [casts, loading, submitSeenCast, submitUserAction],
+    [casts, loading, submitSeenCast],
   );
 
+  // 停留两秒再上报用户行为加积分
+  const currentCastIndexRef = useRef(currentCastIndex);
   useEffect(() => {
-    loadCasts();
+    currentCastIndexRef.current = currentCastIndex;
+    const timer = setTimeout(() => {
+      const cast = casts?.[currentCastIndex]?.data as FarCast;
+      const castHex = cast ? getCastHex(cast) : "";
+      if (castHex && currentCastIndexRef.current === currentCastIndex) {
+        submitUserAction({
+          action: UserActionName.View,
+          castHash: castHex,
+        });
+      }
+    }, 2000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentCastIndex, casts, submitUserAction]);
+
+  useEffect(() => {
+    (async () => {
+      await loadFirstPageCasts();
+      await loadNextPageCasts();
+    })();
   }, []);
 
   return {

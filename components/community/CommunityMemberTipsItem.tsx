@@ -2,18 +2,22 @@ import { View, ViewProps } from "react-native";
 import { Text } from "~/components/ui/text";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "~/lib/utils";
+import { CommunityMemberTipsRank } from "~/services/community/api/tips";
+import { shortAddress } from "~/utils/shortAddress";
 
 export default function CommunityMemberTipsItem({
   memberTips,
   className,
   ...props
 }: ViewProps & {
-  memberTips: any;
+  memberTips: CommunityMemberTipsRank;
 }) {
-  const name = "John Doe " + memberTips.id;
-  const handle = "johndoe" + memberTips.id;
-  const avatar = `https://ui-avatars.com/api/?name=John+Doe+${memberTips.id}`;
-  const tips = memberTips.id;
+  const name = memberTips?.displayName || shortAddress(memberTips?.evmAddress);
+  const handle = memberTips?.username || "";
+  const avatar =
+    memberTips?.pfp ||
+    `https://ui-avatars.com/api/?name=${memberTips?.evmAddress?.slice(-2) || ""}`;
+  const tips = memberTips.tipsAmount || 0;
   return (
     <View className={cn("flex-row items-center gap-3", className)} {...props}>
       <Avatar alt={name || ""} className=" size-10">
