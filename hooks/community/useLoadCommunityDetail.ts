@@ -20,7 +20,7 @@ export default function useLoadCommunityDetail(id: string) {
   const loading = detailPendingIds.includes(id);
 
   const loadCommunityDetail = useCallback(async () => {
-    if (!id || loading) {
+    if (!id || id === "home" || loading) {
       return;
     }
     try {

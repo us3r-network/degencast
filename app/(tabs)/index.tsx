@@ -91,22 +91,28 @@ export default function ExploreScreenScroll() {
                   <Pressable
                     className={cn("h-full w-full overflow-hidden p-5")}
                     onPress={() => {
-                      if (community?.channelId) {
-                        navigateToChannelExplore(community.channelId, {
-                          origin: ChannelExploreDataOrigin.Explore,
-                          cast: data,
-                          farcasterUserDataObj: farcasterUserDataObj,
-                          community,
-                        });
-                      } else {
-                        const castHex = getCastHex(data);
-                        navigateToCastDetail(castHex, {
-                          origin: CastDetailDataOrigin.Explore,
-                          cast: data,
-                          farcasterUserDataObj: farcasterUserDataObj,
-                          community,
-                        });
-                      }
+                      navigateToChannelExplore(community?.channelId || "home", {
+                        origin: ChannelExploreDataOrigin.Explore,
+                        cast: data,
+                        farcasterUserDataObj: farcasterUserDataObj,
+                        community,
+                      });
+                      // if (community?.channelId) {
+                      //   navigateToChannelExplore(community.channelId, {
+                      //     origin: ChannelExploreDataOrigin.Explore,
+                      //     cast: data,
+                      //     farcasterUserDataObj: farcasterUserDataObj,
+                      //     community,
+                      //   });
+                      // } else {
+                      //   const castHex = getCastHex(data);
+                      //   navigateToCastDetail(castHex, {
+                      //     origin: CastDetailDataOrigin.Explore,
+                      //     cast: data,
+                      //     farcasterUserDataObj: farcasterUserDataObj,
+                      //     community,
+                      //   });
+                      // }
                     }}
                   >
                     <FCast

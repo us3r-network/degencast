@@ -344,7 +344,7 @@ function CastDetailWithData({
           />
         </View>
 
-        {community ? (
+        {community?.channelId ? (
           <FCastCommunity
             className="w-full rounded-b-none"
             communityInfo={community}
