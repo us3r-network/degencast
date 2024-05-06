@@ -1,5 +1,6 @@
 import {
   FarcasterWithMetadata,
+  User,
   useCreateWallet,
   useExperimentalFarcasterSigner,
   useLinkAccount,
@@ -62,7 +63,7 @@ export default function useFarcasterWrite() {
   );
 
   const linkHanler = {
-    onSuccess: (user: unknown) => {
+    onSuccess: (user: User) => {
       console.log("Linked farcaster account", user);
       prepareWrite();
     },

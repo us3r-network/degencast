@@ -155,7 +155,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
         {icon}
         <Text className="font-bold">{title}</Text>
       </View>
-      <View className="pl-4 flex gap-2">{children}</View>
+      <View className="flex gap-2 pl-4">{children}</View>
     </View>
   );
 }
@@ -194,7 +194,6 @@ function LinkWallets() {
       (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
     );
   }, [linkedWallets, connectedWallets]);
-
 
   if (!user) return null;
   return (
@@ -365,7 +364,6 @@ function FarcasterAccount() {
           <PlusCircle className="size-6" />
           <Text>Link a Farcaster</Text>
         </View>
-        <PlusCircle className="size-6" />
       </Pressable>
     );
   }
@@ -373,17 +371,30 @@ function FarcasterAccount() {
 
 function UnlinkButton({ action }: { action: () => void }) {
   const [open, setOpen] = useState(false);
+  const { user } = usePrivy();
+  const linkAccountNum =
+    user?.linkedAccounts?.filter(
+      (account) =>
+        !(account.type === "wallet" && account.connectorType === "embedded"),
+    ).length || 0;
   return (
     <AlertDialog open={open}>
       <AlertDialogTrigger>
         <Tooltip delayDuration={150}>
           <TooltipTrigger asChild>
-            <Pressable onPress={() => setOpen(true)}>
+            <Pressable
+              onPress={() => setOpen(true)}
+              disabled={linkAccountNum <= 1}
+            >
               <MinusCircle className="size-4" />
             </Pressable>
           </TooltipTrigger>
           <TooltipContent>
-            <Text>Unlink</Text>
+            <Text>
+              {linkAccountNum <= 1
+                ? "You could NOT unlink the only account!"
+                : "Unlink"}
+            </Text>
           </TooltipContent>
         </Tooltip>
       </AlertDialogTrigger>
