@@ -88,7 +88,7 @@ function MyToken({
               <Text>Buy</Text>
             </Button>
           ) : (
-            action === ACTION_TYPES.SWAP && <TradeButton fromToken={token} />
+            action === ACTION_TYPES.SWAP && <TradeButton token1={token} />
           ))}
       </View>
     </View>

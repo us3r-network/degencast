@@ -32,14 +32,78 @@ import {
 } from "./TranasactionResult";
 
 export default function TradeButton({
-  fromToken = NATIVE_TOKEN_METADATA,
-  toToken = NATIVE_TOKEN_METADATA,
+  token1 = NATIVE_TOKEN_METADATA,
+  token2 = NATIVE_TOKEN_METADATA,
 }: {
-  fromToken?: TokenWithTradeInfo;
-  toToken?: TokenWithTradeInfo;
+  token1?: TokenWithTradeInfo;
+  token2?: TokenWithTradeInfo;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
+
+  const account = useAccount();
+  const token1Info = useUserToken(
+    account.address,
+    token1.address,
+    token1.chainId,
+  );
+  const token2Info = useUserToken(
+    account.address,
+    token2.address,
+    token2.chainId,
+  );
+  const nativeTokenInfo = useUserNativeToken(
+    account.address,
+    NATIVE_TOKEN_METADATA.chainId,
+  );
+
+  useEffect(() => {
+    if (
+      !token1Info ||
+      !token1Info.balance ||
+      !token1Info ||
+      token1Info.address === NATIVE_TOKEN_METADATA.address
+    )
+      return;
+    token1 = {
+      ...token1,
+      balance: token1Info.balance,
+      symbol: token1Info.symbol,
+    };
+  }, [token1Info]);
+
+  useEffect(() => {
+    if (
+      !token2Info ||
+      !token2Info.balance ||
+      !token2Info ||
+      token2Info.address === NATIVE_TOKEN_METADATA.address
+    )
+      return;
+
+    token2 = {
+      ...token2,
+      balance: token2Info.balance,
+      symbol: token2Info.symbol,
+    };
+  }, [token2Info]);
+
+  useEffect(() => {
+    if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
+    if (token1.address === NATIVE_TOKEN_METADATA.address)
+      token1 = {
+        ...token1,
+        balance: nativeTokenInfo.balance,
+        symbol: nativeTokenInfo.symbol,
+      };
+    if (token2.address === NATIVE_TOKEN_METADATA.address)
+      token2 = {
+        ...token2,
+        balance: nativeTokenInfo.balance,
+        symbol: nativeTokenInfo.symbol,
+      };
+  }, [nativeTokenInfo]);
+
   return (
     <Dialog
       onOpenChange={() => {
@@ -53,9 +117,9 @@ export default function TradeButton({
           size="sm"
           variant={"secondary"}
           disabled={
-            (!fromToken && !toToken) ||
-            fromToken.chainId !== base.id ||
-            toToken.chainId !== base.id
+            (!token1 && !token2) ||
+            token1.chainId !== base.id ||
+            token2.chainId !== base.id
           }
         >
           <Text>Trade</Text>
@@ -68,8 +132,8 @@ export default function TradeButton({
             <ActiveWallet />
           </DialogHeader>
           <SwapToken
-            token1={fromToken}
-            token2={toToken}
+            token1={token1}
+            token2={token2}
             onSuccess={setTransationData}
             onError={setError}
           />
@@ -122,71 +186,11 @@ function SwapToken({
   onSuccess?: (data: TransationData) => void;
   onError?: (error: string) => void;
 }) {
-  // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
   const [fromToken, setFromToken] = useState(token1);
   const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
   const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
-
-  const fromTokenInfo = useUserToken(
-    account.address,
-    fromToken.address,
-    fromToken.chainId,
-  );
-  const toTokenInfo = useUserToken(
-    account.address,
-    toToken.address,
-    toToken.chainId,
-  );
-  const nativeTokenInfo = useUserNativeToken(account.address, toToken.chainId);
-
-  useEffect(() => {
-    if (
-      !fromTokenInfo ||
-      !fromTokenInfo.balance ||
-      !fromToken ||
-      fromToken.address === NATIVE_TOKEN_METADATA.address
-    )
-      return;
-    setFromToken({
-      ...fromToken,
-      balance: fromTokenInfo.balance,
-      symbol: fromTokenInfo.symbol,
-    });
-  }, [fromTokenInfo]);
-
-  useEffect(() => {
-    if (
-      !toTokenInfo ||
-      !toTokenInfo.balance ||
-      !toToken ||
-      toToken.address === NATIVE_TOKEN_METADATA.address
-    )
-      return;
-
-    setToToken({
-      ...toToken,
-      balance: toTokenInfo.balance,
-      symbol: toTokenInfo.symbol,
-    });
-  }, [toTokenInfo]);
-
-  useEffect(() => {
-    if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
-    if (fromToken.address === NATIVE_TOKEN_METADATA.address)
-      setFromToken({
-        ...fromToken,
-        balance: nativeTokenInfo.balance,
-        symbol: nativeTokenInfo.symbol,
-      });
-    if (toToken.address === NATIVE_TOKEN_METADATA.address)
-      setToToken({
-        ...toToken,
-        balance: nativeTokenInfo.balance,
-        symbol: nativeTokenInfo.symbol,
-      });
-  }, [nativeTokenInfo]);
 
   const {
     fetchingPrice,
@@ -200,12 +204,13 @@ function SwapToken({
   } = useSwapToken(account.address);
 
   const fetchPriceInfo = async (amount: string) => {
-    console.log("fetchPriceInfo", amount);
+    // console.log("fetchPriceInfo", fromToken, toToken, amount);
     const priceInfo = await fetchPrice({
       sellToken: fromToken,
       buyToken: toToken,
       sellAmount: amount,
     });
+    console.log("fetchPriceInfo", priceInfo, fromToken, toToken, amount);
     if (!priceInfo) return;
     const { buyAmount } = priceInfo;
     setToAmount(buyAmount);
@@ -279,8 +284,14 @@ function SwapToken({
         <Button
           className="size-10 rounded-full border-2 border-secondary text-secondary"
           onPress={() => {
-            setFromToken(toToken);
-            setToToken(fromToken);
+            console.log("swap", fromToken, toToken, token1, token2);
+            if (fromToken.address === token1.address) {
+              setFromToken(token2);
+              setToToken(token1);
+            } else {
+              setFromToken(token1);
+              setToToken(token2);
+            }
             setFromAmount(DEFAULT_AMOUNT);
             setToAmount(DEFAULT_AMOUNT);
           }}

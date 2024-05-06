@@ -77,7 +77,7 @@ function Item(item: TokenWithTradeInfo) {
       )}
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">{round(Number(item.balance), 2)}</Text>
-        <TradeButton fromToken={item} />
+        <TradeButton token1={item} />
       </View>
     </View>
   );
