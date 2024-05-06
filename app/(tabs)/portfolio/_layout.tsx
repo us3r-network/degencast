@@ -19,16 +19,19 @@ const TABS = [
 ];
 export default function PortfolioScreen() {
   const headerHeight = useHeaderHeight() || DEFAULT_HEADER_HEIGHT;
-  const { login, ready, authenticated: privyAuthenticated } = usePrivy();
+  const { ready, authenticated: privyAuthenticated } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
-  useFocusEffect(
-    useCallback(() => {
-      if (ready && !privyAuthenticated) {
-        login();
-      }
-    }, []),
-  );
+  const login = ()=>{
+    router.push("/login");
+  };
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (ready && !privyAuthenticated) {
+  //       login();
+  //     }
+  //   }, []),
+  // );
   const segments = useSegments();
   const [value, setValue] = useState(segments[2] || TABS[0].value);
   return (
