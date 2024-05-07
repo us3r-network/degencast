@@ -12,8 +12,8 @@ export default function UserTokens() {
       <View className="flex w-full gap-6">
         {address && <Balance address={address as `0x${string}`} />}
         {address && <CommunityTokens address={address as `0x${string}`} />}
-        {address && <Share address={address as `0x${string}`} />}
-        <Tips />
+        {/* {address && <Share address={address as `0x${string}`} />}
+        <Tips /> */}
       </View>
     </ScrollView>
   );

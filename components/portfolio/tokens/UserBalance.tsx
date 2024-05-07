@@ -67,7 +67,10 @@ function MyToken({
       <TokenInfo name={token.name} logo={token.logoURI} />
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">
-          {round(Number(token.balance), 2)} {token.symbol}
+          {Number(token.balance) && Number(token.balance) > 1
+            ? round(Number(token.balance), 2)
+            : round(Number(token.balance), 6)}
+          {token.symbol}
         </Text>
         {wallet &&
           (action === ACTION_TYPES.BUY ? (
@@ -85,11 +88,7 @@ function MyToken({
               <Text>Buy</Text>
             </Button>
           ) : (
-            action === ACTION_TYPES.SWAP && (
-              <TradeButton
-                fromToken={token}
-              />
-            )
+            action === ACTION_TYPES.SWAP && <TradeButton token1={token} />
           ))}
       </View>
     </View>

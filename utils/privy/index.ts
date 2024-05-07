@@ -12,7 +12,7 @@ export const getUserName = (user: User | null) => {
     const twitter = user?.linkedAccounts?.find((account) => account.type === 'twitter_oauth');
     const google = user?.linkedAccounts?.find((account) => account.type === 'google_oauth');
     const wallets = user?.linkedAccounts?.filter((account) => account.type === 'wallet');
-    const defaultWalletAddress = (wallets![0] as unknown as WalletWithMetadata).address;
+    const defaultWalletAddress = (wallets![0] as unknown as WalletWithMetadata)?.address;
     return (farcaster as FarcasterWithMetadata)?.displayName || (twitter as TwitterOAuthWithMetadata)?.name || (google as GoogleOAuthWithMetadata)?.name || shortAddress(defaultWalletAddress);
 }
 

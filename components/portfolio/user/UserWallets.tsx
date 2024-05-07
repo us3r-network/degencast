@@ -93,10 +93,7 @@ export default function Wallets() {
       </SelectTrigger>
       <SelectContent>
         <View className="flex w-60 items-start gap-4 divide-solid">
-          <Catalog
-            title="Connected Wallets"
-            icon={<Wallet className="size-6" />}
-          >
+          <Catalog title="Active Wallets" icon={<Wallet className="size-6" />}>
             <SelectGroup className={cn("flex gap-2")}>
               {connectedWallets.map((wallet) => (
                 <SelectItem
@@ -122,10 +119,11 @@ export default function Wallets() {
                 </SelectItem>
               ))}
             </SelectGroup>
-          </Catalog>
-          <Catalog title="Linked Wallets" icon={<Wallet className="size-6" />}>
             <LinkWallets />
           </Catalog>
+          {/* <Catalog title="Linked Wallets" icon={<Wallet className="size-6" />}>
+            <LinkWallets />
+          </Catalog> */}
           <Catalog
             title="Farcaster Account"
             icon={
@@ -157,7 +155,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
         {icon}
         <Text className="font-bold">{title}</Text>
       </View>
-      <View className="pl-4">{children}</View>
+      <View className="flex gap-2 pl-4">{children}</View>
     </View>
   );
 }
@@ -187,20 +185,20 @@ function LinkWallets() {
   const { user, linkWallet, unlinkWallet } = usePrivy();
   const { connectWallet } = useConnectWallet();
   const { wallets: connectedWallets } = useWallets();
-  // const unconnectedWallets = useMemo(() => {
-  //   return linkedWallets.filter(
-  //     (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-  //   );
-  // }, [linkedWallets, connectedWallets]);
   const linkedWallets = useMemo(
     () => (user ? getUserWallets(user) : []),
     [user],
   );
+  const unconnectedLinkedWallets = useMemo(() => {
+    return linkedWallets.filter(
+      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+    );
+  }, [linkedWallets, connectedWallets]);
 
   if (!user) return null;
   return (
     <View className="flex w-full gap-2">
-      {linkedWallets.map((wallet) => (
+      {unconnectedLinkedWallets.map((wallet) => (
         <View
           className="w-full flex-row items-center justify-between"
           key={wallet.address}
@@ -223,7 +221,10 @@ function LinkWallets() {
                   </Pressable>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <Text>Copy the embeded wallet address and paste it into your crypto wallet to transfer. </Text>
+                  <Text>
+                    Copy the embeded wallet address and paste it into your
+                    crypto wallet to transfer.{" "}
+                  </Text>
                 </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={150}>
@@ -363,7 +364,6 @@ function FarcasterAccount() {
           <PlusCircle className="size-6" />
           <Text>Link a Farcaster</Text>
         </View>
-        <PlusCircle className="size-6" />
       </Pressable>
     );
   }
@@ -371,17 +371,30 @@ function FarcasterAccount() {
 
 function UnlinkButton({ action }: { action: () => void }) {
   const [open, setOpen] = useState(false);
+  const { user } = usePrivy();
+  const linkAccountNum =
+    user?.linkedAccounts?.filter(
+      (account) =>
+        !(account.type === "wallet" && account.connectorType === "embedded"),
+    ).length || 0;
   return (
     <AlertDialog open={open}>
       <AlertDialogTrigger>
         <Tooltip delayDuration={150}>
           <TooltipTrigger asChild>
-            <Pressable onPress={() => setOpen(true)}>
+            <Pressable
+              onPress={() => setOpen(true)}
+              disabled={linkAccountNum <= 1}
+            >
               <MinusCircle className="size-4" />
             </Pressable>
           </TooltipTrigger>
           <TooltipContent>
-            <Text>Unlink</Text>
+            <Text>
+              {linkAccountNum <= 1
+                ? "You could NOT unlink the only account!"
+                : "Unlink"}
+            </Text>
           </TooltipContent>
         </Tooltip>
       </AlertDialogTrigger>

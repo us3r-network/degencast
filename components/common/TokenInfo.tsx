@@ -12,9 +12,10 @@ type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   mc?: number;
   balance?: string;
   symbol?: string;
+  textClassName?: string;
 };
 
-export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
+export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
       <Avatar
@@ -29,7 +30,9 @@ export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("line-clamp-1 font-bold")}>{name}</Text>
+        <Text className={cn("line-clamp-1 font-bold", textClassName)}>
+          {name}
+        </Text>
         {mc && mc > 0 && (
           <Text className="text-xs text-secondary">
             {new Intl.NumberFormat("en-US", {

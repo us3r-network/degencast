@@ -35,19 +35,23 @@ function Item({ item, index }: { item: TokenWithTradeInfo; index: number }) {
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
         <Text className="w-6 text-center text-xs font-bold">{index}</Text>
-        <Link
-          className="flex-1"
-          href={`/communities/${item.channelId}/tokens`}
-          asChild
-        >
-          <Pressable>
-            <TokenInfo
-              name={item.name}
-              logo={item.logoURI}
-              mc={Number(item.tradeInfo?.stats?.fdv_usd)}
-            />
-          </Pressable>
-        </Link>
+        {item.tradeInfo?.channel ? (
+          <Link href={`/communities/${item.tradeInfo?.channel}/tokens`} asChild>
+            <Pressable>
+              <TokenInfo
+                name={item.name}
+                logo={item.logoURI}
+                mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+              />
+            </Pressable>
+          </Link>
+        ) : (
+          <TokenInfo
+            name={item.name}
+            logo={item.logoURI}
+            mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+          />
+        )}
       </View>
       <View className="flex-row items-center gap-2">
         <Text
@@ -56,7 +60,7 @@ function Item({ item, index }: { item: TokenWithTradeInfo; index: number }) {
           {change > 0 ? "+" : ""}
           {change}%
         </Text>
-        <TradeButton toToken={item} />
+        <TradeButton token2={item} />
       </View>
     </View>
   );

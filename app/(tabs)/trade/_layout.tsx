@@ -12,7 +12,7 @@ import { cn } from "~/lib/utils";
 
 const TABS = [
   { label: "Tokens", value: "tokens" },
-  { label: "Shares", value: "shares" },
+  // { label: "Shares", value: "shares" },
   { label: "Rank", value: "rank" },
 ];
 

@@ -19,7 +19,7 @@ export default function useUserTokens(
   address: `0x${string}` | undefined,
   chainId: number = base.id,
 ) {
-  if (!address) return { userTokens: new Map<TOKENS, TokenWithTradeInfo>() };
+  if (!address || !chainId) return { userTokens: new Map<TOKENS, TokenWithTradeInfo>() };
   const { data: nativeToken } = useBalance({
     address,
     chainId,
@@ -91,7 +91,7 @@ export function useUserNativeToken(
   address: `0x${string}` | undefined,
   chainId: number = base.id,
 ) {
-  if (!address) return undefined;
+  if (!address || !chainId) return undefined;
   const { data } = useBalance({
     address,
     chainId,
@@ -105,7 +105,7 @@ export function useUserNativeToken(
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: data.value,
         balance: formatUnits(data.value, data.decimals),
-        logo: NATIVE_TOKEN_METADATA.logo,
+        logo: NATIVE_TOKEN_METADATA.logoURI,
       },
     [data],
   );
@@ -117,7 +117,7 @@ export function useUserToken(
   contractAddress: `0x${string}`,
   chainId: number = base.id,
 ) {
-  if (!address) return undefined;
+  if (!address || !chainId || !contractAddress) return undefined;
   const { data } = useReadContracts({
     allowFailure: false,
     contracts: [
