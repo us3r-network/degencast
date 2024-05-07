@@ -30,6 +30,23 @@ export default function PointsRulesModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className=" box-border max-sm:w-screen">
+        <DialogHeader>
+          <Text className=" text-base font-medium">Point</Text>
+        </DialogHeader>
+        <PointsRules onOpenChange={onOpenChange} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function PointsRules({
+  onOpenChange,
+}: {
+  onOpenChange?: (open: boolean) => void;
+}) {
   const { login } = usePrivy();
   const { authenticated } = useAuth();
   const { signerPublicKey, currFid } = useFarcasterAccount();
@@ -53,108 +70,104 @@ export default function PointsRulesModal({
 
   const [openShare, setOpenShare] = useState(false);
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className=" box-border max-sm:w-screen">
-        <DialogHeader>
-          <Text className=" text-base font-medium">Point</Text>
-        </DialogHeader>
-        <View className="flex-row items-center gap-2">
-          <Atom color="#FFFFFF" className=" h-7 w-7" />
-          <Text className=" text-2xl text-white">{totalPoints}</Text>
+    <>
+      <View className="flex-row items-center gap-2">
+        <Atom className="h-7 w-7 text-secondary" />
+        <Text className=" text-2xl">{totalPoints}</Text>
+      </View>
+      <Separator className="my-2 bg-secondary/10" />
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        className="max-h-[50vh]"
+      >
+        <View className="max-w-s flex-col gap-4">
+          <RuleItem
+            text="Connect Farcaster"
+            pointsText={getPointsText(connectFarcasterUnit)}
+            btnText={signerPublicKey ? "Connected" : "Connect"}
+            btnDisabled={!!signerPublicKey}
+            onBtnPress={() => {
+              onOpenChange?.(false);
+              if (!authenticated) {
+                login();
+                return;
+              }
+              connectFarcaster();
+            }}
+          />
+          <RuleItem
+            text="Buy channel shares"
+            pointsText={`${getPointsText(buyChannelShareUnit)} per purchase`}
+            btnText="Coming Soon"
+            onBtnPress={() => {
+              // onOpenChange(false);
+              // router.navigate("trade/shares");
+            }}
+          />
+          <RuleItem
+            text="Swap Tokens"
+            pointsText={`One-time swap of token worth 30 USD, earn ${getPointsText(swapTokenUnit)}`}
+            btnText="Trade"
+            onBtnPress={() => {
+              onOpenChange?.(false);
+              router.navigate("trade/tokens" as never);
+            }}
+          />
+          <RuleItem
+            text="Invite"
+            pointsText={`${getPointsText(inviteUnit)} each new user`}
+            btnText="Share"
+            onBtnPress={() => {
+              // onOpenChange(false);
+              setOpenShare(true);
+            }}
+          />
+          <RuleItem
+            text="Tips"
+            pointsText={`${getPointsText(tipsUnit)} for each`}
+            btnText="Explore"
+            onBtnPress={() => {
+              onOpenChange?.(false);
+              router.navigate("/");
+            }}
+          />
+          <RuleItem
+            text="View casts"
+            pointsText={`${getPointsText(viewUnit)} for each`}
+            btnText="Explore"
+            onBtnPress={() => {
+              onOpenChange?.(false);
+              router.navigate("/");
+            }}
+          />
+          <RuleItem
+            text="Like"
+            pointsText={`${getPointsText(likeUnit)} for each`}
+            btnText="Explore"
+            onBtnPress={() => {
+              onOpenChange?.(false);
+              router.navigate("/");
+            }}
+          />
         </View>
-        <Separator className=" bg-secondary/10" />
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          className="max-w-s max-sm:max-h-[50vh] "
-        >
-          <View className="flex-col gap-5">
-            <RuleItem
-              text="Connect Farcaster"
-              pointsText={getPointsText(connectFarcasterUnit)}
-              btnText={signerPublicKey ? "Connected" : "Connect"}
-              btnDisabled={!!signerPublicKey}
-              onBtnPress={() => {
-                onOpenChange(false);
-                if (!authenticated) {
-                  login();
-                  return;
-                }
-                connectFarcaster();
-              }}
-            />
-            <RuleItem
-              text="Buy channel shares"
-              pointsText={`${getPointsText(buyChannelShareUnit)} per purchase`}
-              btnText="Coming Soon"
-              onBtnPress={() => {
-                // onOpenChange(false);
-                // router.navigate("trade/shares");
-              }}
-            />
-            <RuleItem
-              text="Swap Tokens"
-              pointsText={`One-time swap of token worth 30 USD, earn ${getPointsText(swapTokenUnit)}`}
-              btnText="Trade"
-              onBtnPress={() => {
-                onOpenChange(false);
-                router.navigate("trade/tokens" as never);
-              }}
-            />
-            <RuleItem
-              text="Invite"
-              pointsText={`${getPointsText(inviteUnit)} each new user`}
-              btnText="Share"
-              onBtnPress={() => {
-                // onOpenChange(false);
-                setOpenShare(true);
-              }}
-            />
-            <RuleItem
-              text="Tips"
-              pointsText={`${getPointsText(tipsUnit)} for each`}
-              btnText="Explore"
-              onBtnPress={() => {
-                onOpenChange(false);
-                router.navigate("/");
-              }}
-            />
-            <RuleItem
-              text="View casts"
-              pointsText={`${getPointsText(viewUnit)} for each`}
-              btnText="Explore"
-              onBtnPress={() => {
-                onOpenChange(false);
-                router.navigate("/");
-              }}
-            />
-            <RuleItem
-              text="Like"
-              pointsText={`${getPointsText(likeUnit)} for each`}
-              btnText="Explore"
-              onBtnPress={() => {
-                onOpenChange(false);
-                router.navigate("/");
-              }}
-            />
-          </View>
-        </ScrollView>
-        <PlatformSharingModal
-          open={openShare}
-          onOpenChange={(open) => setOpenShare(open)}
-          twitterText={getAppShareTextWithTwitter()}
-          warpcastText={getAppShareTextWithWarpcast()}
-          websiteLink={getAppWebsiteLink({
-            fid: currFid,
-          })}
-          frameLink={getAppFrameLink({
-            fid: currFid,
-          })}
-          navigateToCreatePageAfter={() => {
-            onOpenChange(false);
-          }}
-        />
-      </DialogContent>
-    </Dialog>
+      </ScrollView>
+
+      <PlatformSharingModal
+        open={openShare}
+        onOpenChange={(open) => setOpenShare(open)}
+        twitterText={getAppShareTextWithTwitter()}
+        warpcastText={getAppShareTextWithWarpcast()}
+        websiteLink={getAppWebsiteLink({
+          fid: currFid,
+        })}
+        frameLink={getAppFrameLink({
+          fid: currFid,
+        })}
+        navigateToCreatePageAfter={() => {
+          onOpenChange?.(false);
+        }}
+      />
+    </>
   );
 }
 
@@ -175,13 +188,11 @@ function RuleItem({
 }) {
   return (
     <View
-      className={cn(" flex-row items-center justify-between", className)}
+      className={cn("flex-row items-center justify-between", className)}
       {...props}
     >
-      <View className=" flex-1 flex-col gap-3">
-        <Text className=" text-base font-bold leading-normal text-primary-foreground">
-          {text}
-        </Text>
+      <View className="flex-1 flex-col">
+        <Text className=" text-base font-bold leading-normal">{text}</Text>
         <Text className=" text-base leading-normal text-secondary">
           {pointsText}
         </Text>

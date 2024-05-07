@@ -2,7 +2,6 @@ import { MoonpayConfig, useWallets } from "@privy-io/react-auth";
 import { round } from "lodash";
 import { View } from "react-native";
 import { useAccount } from "wagmi";
-import { Info } from "~/components/common/Icons";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
