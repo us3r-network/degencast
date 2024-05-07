@@ -282,6 +282,7 @@ function SwapToken({
       <View className="flex-row items-center">
         <Separator className="flex-1 bg-secondary" />
         <Button
+          disabled
           className="size-10 rounded-full border-2 border-secondary text-secondary"
           onPress={() => {
             console.log("swap", fromToken, toToken, token1, token2);
@@ -336,11 +337,15 @@ function Token({
   return (
     <View className="flex gap-2">
       <View className="flex-row items-start justify-between">
-        <TokenInfo name={token.name} logo={token.logoURI} />
+        <TokenInfo
+          name={token.name}
+          logo={token.logoURI}
+          textClassName="text-2xl "
+        />
         <Input
           editable={!!setAmount}
           className={cn(
-            "max-w-40 rounded-full border-none bg-white/40 text-end text-xl font-bold text-white",
+            "max-w-40 rounded-full border-none bg-white/40 text-end text-4xl  text-white",
           )}
           inputMode="numeric"
           defaultValue="0"
