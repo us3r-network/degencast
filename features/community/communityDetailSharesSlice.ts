@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 import {
-  CommunityTipsRankData,
-  fetchCommunityTipsRank,
-} from "~/services/community/api/tips";
+  CommunitySharesData,
+  fetchCommunityShares,
+} from "~/services/community/api/share";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 import { cloneDeep } from "lodash";
 
-type CommunityDetailTipsRankState = {
+type CommunityDetailSharesState = {
   [channelId: string]: {
-    items: CommunityTipsRankData;
+    items: CommunitySharesData;
     pageInfo: {
       hasNextPage: boolean;
       nextPageNumber: number;
@@ -28,22 +28,22 @@ export const groupDataDefault = {
   status: AsyncRequestStatus.IDLE,
   errorMsg: "",
 };
-const communityDetailTipsRankState: CommunityDetailTipsRankState = {};
-const PAGE_SIZE = 20;
+const communityDetailSharesState: CommunityDetailSharesState = {};
 
+const PAGE_SIZE = 20;
 export const fetchItems = createAsyncThunk<
-  CommunityTipsRankData,
+  CommunitySharesData,
   {
     channelId: string;
   }
 >(
-  "communityDetailTipsRank/fetchItems",
+  "communityDetailShares/fetchItems",
   async ({ channelId }, { rejectWithValue, getState }) => {
     const state = getState() as RootState;
-    const { communityDetailTipsRank } = state;
-    const data = communityDetailTipsRank[channelId];
+    const { communityDetailShares } = state;
+    const data = communityDetailShares[channelId];
     const nextPageNumber = data?.pageInfo?.nextPageNumber || 1;
-    const resp = await fetchCommunityTipsRank({
+    const resp = await fetchCommunityShares({
       pageSize: PAGE_SIZE,
       pageNumber: nextPageNumber,
       channelId,
@@ -56,8 +56,8 @@ export const fetchItems = createAsyncThunk<
   {
     condition: ({ channelId }, { getState }) => {
       const state = getState() as RootState;
-      const { communityDetailTipsRank } = state;
-      const data = communityDetailTipsRank[channelId];
+      const { communityDetailShares } = state;
+      const data = communityDetailShares[channelId];
       if (!data) {
         return true;
       }
@@ -73,11 +73,11 @@ export const fetchItems = createAsyncThunk<
   },
 );
 
-export const communityDetailTipsRankSlice = createSlice({
-  name: "communityDetailTipsRank",
-  initialState: communityDetailTipsRankState,
+export const communityDetailSharesSlice = createSlice({
+  name: "communityDetailShares",
+  initialState: communityDetailSharesState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder
       .addCase(fetchItems.pending, (state, action) => {
         const { channelId } = action.meta.arg;
@@ -106,7 +106,7 @@ export const communityDetailTipsRankSlice = createSlice({
   },
 });
 
-const { actions, reducer } = communityDetailTipsRankSlice;
-export const selectCommunityDetailTipsRank = (state: RootState) =>
-  state.communityDetailTipsRank;
+const { actions, reducer } = communityDetailSharesSlice;
+export const selectCommunityDetailShares = (state: RootState) =>
+  state.communityDetailShares;
 export default reducer;

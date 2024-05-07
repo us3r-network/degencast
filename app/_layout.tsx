@@ -27,7 +27,7 @@ global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+  ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
@@ -47,6 +47,21 @@ const toastConfig = {
       <Link href={`/casts/${props.hash}?fid=${props.fid}` as Href<string>}>
         <Text className="font-bold text-primary">View</Text>
       </Link>
+    </View>
+  ),
+  success: ({ text1 }: ToastConfigParams<{}>) => (
+    <View className=" z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="font-bold text-white">{text1}</Text>
+    </View>
+  ),
+  error: ({ text1 }: ToastConfigParams<{}>) => (
+    <View className="z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="font-bold text-white">{text1}</Text>
+    </View>
+  ),
+  info: ({ text1 }: ToastConfigParams<{}>) => (
+    <View className="z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),
 };

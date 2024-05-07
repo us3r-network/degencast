@@ -15,6 +15,7 @@ import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/trade/useCommunityRank";
 import useCommunityShares from "~/hooks/trade/useCommunityShares";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import { Text } from "~/components/ui/text";
 
 export default function TabLayout() {
   // preload trade data
@@ -46,13 +47,14 @@ export default function TabLayout() {
             headerRight: () => (
               <View className="mr-4 flex-row items-center gap-4">
                 <Link href="/search" asChild>
-                  <Button size={"icon"} className="rounded-full bg-white">
-                    <Search />
+                  <Button className="w-32 flex-row items-center justify-start gap-1 rounded-full bg-white/40">
+                    <Search className=" h-4 w-4 stroke-white" />
+                    <Text className=" text-base font-medium">Search</Text>
                   </Button>
                 </Link>
                 <Link href="/create" asChild>
-                  <Button size={"icon"} className="rounded-full bg-white">
-                    <Edit />
+                  <Button variant={"secondary"} size={"sm"}>
+                    <Text className=" text-base font-medium">Cast</Text>
                   </Button>
                 </Link>
               </View>

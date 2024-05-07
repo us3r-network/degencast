@@ -98,6 +98,12 @@ export type ChannelCastData = {
   data: any;
   platform: SocialPlatform;
 };
+export type ChannelTrendingCastData = {
+  casts: Array<ChannelCastData>;
+  farcasterUserData: Array<FarcasterUserData>;
+  pageInfo: FarcasterPageInfo;
+  likeActions: Array<UserActionData>;
+};
 export function getFarcasterTrendingWithChannelId({
   start,
   end,
@@ -108,14 +114,7 @@ export function getFarcasterTrendingWithChannelId({
   end: number;
   least?: number;
   channelId: string;
-}): RequestPromise<
-  ApiResp<{
-    casts: Array<ChannelCastData>;
-    farcasterUserData: Array<FarcasterUserData>;
-    pageInfo: FarcasterPageInfo;
-    likeActions: Array<UserActionData>;
-  }>
-> {
+}): RequestPromise<ApiResp<ChannelTrendingCastData>> {
   return request({
     url: `/3r-farcaster/trending`,
     method: "get",
@@ -175,6 +174,25 @@ export function getFarcasterCastInfo(
       pageSize,
       ...(withReplies === false ? { withReplies } : {}),
     },
+  });
+}
+
+export function getFarcasterCastComments(
+  hash: string,
+  params: {
+    pageSize?: number;
+    pageNumber?: number;
+  },
+): AxiosPromise<
+  ApiResp<{
+    casts: { data: FarCast; platform: "farcaster" }[];
+    farcasterUserData: FarcasterUserData[];
+  }>
+> {
+  return request({
+    url: `/3r-farcaster/casts/${hash}/replies`,
+    method: "get",
+    params,
   });
 }
 

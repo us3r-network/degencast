@@ -15,7 +15,9 @@ import PlatformSharingButton from "~/components/platform-sharing/PlatformSharing
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import useLoadCommunityMembersShare from "~/hooks/community/useLoadCommunityMembersShare";
 import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
@@ -80,11 +82,26 @@ export default function CommunityDetail() {
   }, [communityDetail, loadCommunityDetail]);
 
   const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(id);
+  const { membersShare, loadMembersShare } = useLoadCommunityMembersShare(id);
+  const { casts, loadCasts } = useLoadCommunityCasts(id);
+
   useEffect(() => {
     if (tipsRank.length === 0) {
       loadTipsRank();
     }
   }, [tipsRank]);
+
+  useEffect(() => {
+    if (membersShare.length === 0) {
+      loadMembersShare();
+    }
+  }, [membersShare]);
+
+  useEffect(() => {
+    if (casts.length === 0) {
+      loadCasts();
+    }
+  }, [casts]);
 
   return (
     <SafeAreaView
@@ -134,7 +151,7 @@ export default function CommunityDetail() {
           ),
         }}
       />
-      <View className=" m-auto  w-full flex-1 flex-col gap-7 p-5 sm:w-full sm:max-w-screen-sm">
+      <View className=" m-auto  w-full flex-1 flex-col gap-7 p-5 pb-0 sm:w-full sm:max-w-screen-sm">
         {community && (
           <>
             <CommunityDetailMetaInfo communityInfo={community} />
@@ -167,7 +184,7 @@ export default function CommunityDetail() {
                   ))}
                 </TabsList>
               </Tabs>
-              <Card className="box-border h-full w-full p-5">
+              <Card className="box-border h-full w-full rounded-b-none p-5 pb-0 ">
                 <CommunityContext.Provider value={{ community, loading }}>
                   <Stack
                     initialRouteName={initialRouteName}

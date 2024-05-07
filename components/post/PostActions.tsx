@@ -3,7 +3,7 @@ import { Button, ButtonProps } from "../ui/button";
 import { Heart, Share2 } from "../common/Icons";
 import { Text } from "../ui/text";
 import { TextProps, View, ViewProps } from "react-native";
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import { CommentIcon2 } from "../common/SvgIcons";
 
 export function ActionButton({ className, ...props }: ButtonProps) {
@@ -64,6 +64,7 @@ export const GiftButton = ({
     <ActionButton {...props}>
       <Image
         source={require("~/assets/images/degen-icon.png")}
+        resizeMode="contain"
         style={{ width: iconSize, height: iconSize }}
       />
       {/* <ActionText>{giftCount || 0}</ActionText> */}

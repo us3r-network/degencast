@@ -10,6 +10,7 @@ import * as Clipboard from "expo-clipboard";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { openWarpcastCreateCast } from "~/utils/platform-sharing/warpcast";
 import useUserAction from "~/hooks/user/useUserAction";
+import Toast from "react-native-toast-message";
 
 export default function PlatformSharingModal({
   text,
@@ -55,7 +56,10 @@ export default function PlatformSharingModal({
 
   const onCopy = async () => {
     await Clipboard.setStringAsync(websiteLink);
-    alert("Link copied to clipboard!");
+    Toast.show({
+      type: "success",
+      text1: "Link copied to clipboard!",
+    });
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

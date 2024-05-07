@@ -8,13 +8,22 @@ import { Text } from "~/components/ui/text";
 import useLoadCommunityTokenInfo from "~/hooks/community/useLoadCommunityTokenInfo";
 import { useCommunityCtx } from "./_layout";
 import { Image } from "react-native";
+import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import { Loading } from "~/components/common/Loading";
 
 export default function TokensScreen() {
-  const params = useLocalSearchParams();
-  const { id } = params;
   const { community } = useCommunityCtx();
   const communityToken = community?.tokens?.[0];
+  const id = community?.channelId || "";
+  const { communityDetail, loading } = useLoadCommunityDetail(id);
 
+  if (!communityDetail && loading) {
+    return (
+      <View className="flex-1 flex-col items-center justify-center">
+        <Loading />
+      </View>
+    );
+  }
   return (
     <View className="flex-1">
       {communityToken ? (
@@ -41,7 +50,9 @@ export default function TokensScreen() {
             Coming Soon
           </Text>
           <Text className="text-center text-base leading-8 text-secondary">
-            The channel token launch progress hasn’t started yet.
+            Stay informed about the latest developments in Channel token
+            launches, where shares can transform into tradable ERC20 tokens once
+            a channel community gains enough momentum.
           </Text>
         </ScrollView>
         // <ShareActivities id={id as string} />

@@ -16,14 +16,10 @@ export default function CastsScreen() {
   const { community } = useCommunityCtx();
   const { navigateToCastDetail } = useCastPage();
   const { navigateToChannelExplore } = useChannelExplorePage();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
   const { casts, farcasterUserDataObj, loading, loadCasts } =
-    useLoadCommunityCasts();
-  useEffect(() => {
-    loadCasts(id as string);
-  }, [id]);
-
+    useLoadCommunityCasts(id);
   return (
     <View className="flex-1">
       {casts.length > 0 && (
@@ -65,10 +61,10 @@ export default function CastsScreen() {
               </Pressable>
             );
           }}
-          keyExtractor={({ data, platform }) => data.id}
+          keyExtractor={({ data, platform }, index) => index.toString()}
           onEndReached={() => {
             if (loading) return;
-            loadCasts(id as string);
+            loadCasts();
           }}
           onEndReachedThreshold={1}
           ListFooterComponent={() => {

@@ -14,6 +14,7 @@ import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import Toast from "react-native-toast-message";
 
 export default function FCastShareModal({
   cast,
@@ -42,10 +43,17 @@ export default function FCastShareModal({
     if (recasted) {
       // removeRecast();
       // alert("recast removed");
-      alert("Already recasted!");
+      Toast.show({
+        type: "info",
+        text1: "Already recasted!",
+      });
     } else {
       recast();
-      alert("Recast successfully!");
+      onOpenChange(false);
+      Toast.show({
+        type: "success",
+        text1: "Recast successfully!",
+      });
     }
   };
 
@@ -62,7 +70,11 @@ export default function FCastShareModal({
 
   const onCopy = async () => {
     await Clipboard.setStringAsync(castWebLink);
-    alert("Link copied to clipboard!");
+    onOpenChange(false);
+    Toast.show({
+      type: "info",
+      text1: "Link copied to clipboard!",
+    });
   };
 
   return (

@@ -72,11 +72,14 @@ export function PointsRules({
   return (
     <>
       <View className="flex-row items-center gap-2">
-        <Atom className="text-secondary h-7 w-7" />
+        <Atom className="h-7 w-7 text-secondary" />
         <Text className=" text-2xl">{totalPoints}</Text>
       </View>
       <Separator className="my-2 bg-secondary/10" />
-      <ScrollView showsHorizontalScrollIndicator={false} className="max-h-[50vh]">
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        className="max-h-[50vh]"
+      >
         <View className="max-w-s flex-col gap-4">
           <RuleItem
             text="Connect Farcaster"
@@ -92,15 +95,15 @@ export function PointsRules({
               connectFarcaster();
             }}
           />
-          {/* <RuleItem
+          <RuleItem
             text="Buy channel shares"
             pointsText={`${getPointsText(buyChannelShareUnit)} per purchase`}
-            btnText="Trade"
+            btnText="Coming Soon"
             onBtnPress={() => {
-              onOpenChange?.(false);
-              router.navigate("trade/shares");
+              // onOpenChange(false);
+              // router.navigate("trade/shares");
             }}
-          /> */}
+          />
           <RuleItem
             text="Swap Tokens"
             pointsText={`One-time swap of token worth 30 USD, earn ${getPointsText(swapTokenUnit)}`}

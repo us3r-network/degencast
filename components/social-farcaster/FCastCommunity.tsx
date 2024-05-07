@@ -55,12 +55,12 @@ export default function FCastCommunity({
       <Text className="line-clamp-2 flex-1 text-base text-white">
         {communityInfo.name}
       </Text>
-      {communityInfo?.shares?.[0]?.subjectAddress && (
+      {/* {communityInfo?.shares?.[0]?.subjectAddress && (
         <CommunityBuyShareButton
           className="bg-secondary font-bold"
           communityInfo={communityInfo}
         />
-      )}
+      )} */}
     </Pressable>
   );
 }

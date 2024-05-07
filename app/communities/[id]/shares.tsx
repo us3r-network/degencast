@@ -6,7 +6,7 @@ import { Text } from "~/components/ui/text";
 import useLoadCommunityMembersShare from "~/hooks/community/useLoadCommunityMembersShare";
 import { useCommunityCtx } from "./_layout";
 import CommunityBuyShareButton from "~/components/community/CommunityBuyShareButton";
-import useLoadCommunityShareInfos from "~/hooks/community/useLoadCommunityShareInfos";
+import useLoadCommunityShareStatistics from "~/hooks/community/useLoadCommunityShareStatistics";
 import { Image } from "react-native";
 
 export default function SharesScreen() {
@@ -20,16 +20,18 @@ export default function SharesScreen() {
 }
 
 function HasSubjectAddress() {
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
   const { membersShare, loading, loadMembersShare } =
-    useLoadCommunityMembersShare();
-  const { shareInfos, loadShareInfos } = useLoadCommunityShareInfos();
+    useLoadCommunityMembersShare(id);
+  const { idle, shareStatistics, loadShareStatistics } =
+    useLoadCommunityShareStatistics(id);
 
   useEffect(() => {
-    loadShareInfos(id as string);
-    loadMembersShare(id as string);
-  }, [id]);
+    if (idle) {
+      loadShareStatistics();
+    }
+  }, [idle]);
 
   const { community } = useCommunityCtx();
   if (!community) return null;
@@ -42,10 +44,10 @@ function HasSubjectAddress() {
             return (
               <View className="mb-5 flex-row justify-between">
                 <Text className=" text-base font-medium">
-                  Holders ({shareInfos?.holders || 0})
+                  Holders ({shareStatistics?.holders || 0})
                 </Text>
                 <Text className=" text-base font-medium">
-                  Shares ({shareInfos.supply || 0})
+                  Shares ({shareStatistics.supply || 0})
                 </Text>
               </View>
             );
@@ -57,12 +59,12 @@ function HasSubjectAddress() {
               <CommunityMemberShareItem className="flex-1" memberShare={item} />
             );
           }}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => index.toString()}
           onEndReached={() => {
             if (membersShare.length === 0 || loading) return;
-            loadMembersShare(id as string);
+            loadMembersShare();
           }}
-          onEndReachedThreshold={1}
+          onEndReachedThreshold={0.5}
           ListFooterComponent={() => {
             return loading ? (
               <View className="flex items-center justify-center p-5">
@@ -89,7 +91,7 @@ function HasSubjectAddress() {
           }}
         />
       </View>
-      <View className=" pt-5">
+      <View className=" py-5">
         <CommunityBuyShareButton communityInfo={community} />
       </View>
     </View>
@@ -103,8 +105,12 @@ function NoSubjectAddress() {
         source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
       />
-      <Text className=" text-xl font-bold text-primary">
-        No subject address
+      <Text className=" text-center text-xl font-bold text-primary">
+        Coming Soon
+      </Text>
+      <Text className="text-center text-base leading-8 text-secondary">
+        Channel NFT & Channel fan tokens Voting rights in channel casts Every
+        trade incurs a 4% fee to encourage creators
       </Text>
     </View>
   );

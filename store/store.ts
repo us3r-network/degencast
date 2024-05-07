@@ -22,6 +22,10 @@ import castPage from "~/features/cast/castPageSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
 import communityDetail from "~/features/community/communityDetailSlice";
 import communityDetailTipsRank from "~/features/community/communityDetailTipsRankSlice";
+import communityDetailShares from "~/features/community/communityDetailSharesSlice";
+import communityDetailCasts from "~/features/community/communityDetailCastsSlice";
+import communityShareStatistics from "~/features/community/communityShareStatisticsSlice";
+import communityTrending from "~/features/community/communityTrendingSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -42,6 +46,10 @@ export const store = configureStore({
     channelExplorePage,
     communityDetail,
     communityDetailTipsRank,
+    communityDetailShares,
+    communityDetailCasts,
+    communityShareStatistics,
+    communityTrending,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>

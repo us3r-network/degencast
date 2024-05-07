@@ -8,6 +8,7 @@ import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
+import Toast from "react-native-toast-message";
 
 export default function FCastCommentActions({
   cast,
@@ -57,7 +58,10 @@ export default function FCastCommentActions({
     }
     if (recasted) {
       // removeRecast();
-      alert("already recasted");
+      Toast.show({
+        type: "info",
+        text1: "already recasted",
+      });
     } else {
       recast();
     }
