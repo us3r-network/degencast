@@ -55,7 +55,7 @@ export default function CommunityTokens({
 }
 
 function Item(item: TokenWithTradeInfo) {
-  console.log("item", item);
+  // console.log("item", item);
   return (
     <View className="flex-row items-center justify-between">
       {item.tradeInfo?.channel ? (

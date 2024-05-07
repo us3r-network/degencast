@@ -1,6 +1,6 @@
 // import { useSwitchChain } from "wagmi";
 import { debounce, throttle } from "lodash";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
@@ -30,6 +30,7 @@ import {
   TransactionSuccessInfo,
   TransationData,
 } from "./TranasactionResult";
+import { setBalance } from "viem/actions";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -40,69 +41,6 @@ export default function TradeButton({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-
-  const account = useAccount();
-  const token1Info = useUserToken(
-    account.address,
-    token1.address,
-    token1.chainId,
-  );
-  const token2Info = useUserToken(
-    account.address,
-    token2.address,
-    token2.chainId,
-  );
-  const nativeTokenInfo = useUserNativeToken(
-    account.address,
-    NATIVE_TOKEN_METADATA.chainId,
-  );
-
-  useEffect(() => {
-    if (
-      !token1Info ||
-      !token1Info.balance ||
-      !token1Info ||
-      token1Info.address === NATIVE_TOKEN_METADATA.address
-    )
-      return;
-    token1 = {
-      ...token1,
-      balance: token1Info.balance,
-      symbol: token1Info.symbol,
-    };
-  }, [token1Info]);
-
-  useEffect(() => {
-    if (
-      !token2Info ||
-      !token2Info.balance ||
-      !token2Info ||
-      token2Info.address === NATIVE_TOKEN_METADATA.address
-    )
-      return;
-
-    token2 = {
-      ...token2,
-      balance: token2Info.balance,
-      symbol: token2Info.symbol,
-    };
-  }, [token2Info]);
-
-  useEffect(() => {
-    if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
-    if (token1.address === NATIVE_TOKEN_METADATA.address)
-      token1 = {
-        ...token1,
-        balance: nativeTokenInfo.balance,
-        symbol: nativeTokenInfo.symbol,
-      };
-    if (token2.address === NATIVE_TOKEN_METADATA.address)
-      token2 = {
-        ...token2,
-        balance: nativeTokenInfo.balance,
-        symbol: nativeTokenInfo.symbol,
-      };
-  }, [nativeTokenInfo]);
 
   return (
     <Dialog
@@ -272,12 +210,14 @@ function SwapToken({
     }
   }, [error]);
 
+  const [fromTokenBalance, setFromTokenBalance] = useState(0);
   return (
     <View className="flex w-full gap-2">
       <Token
         token={fromToken}
         amount={fromAmount}
         setAmount={(amount) => setFromAmount(amount)}
+        setBalance={(balance) => setFromTokenBalance(balance)}
       />
       <View className="flex-row items-center">
         <Separator className="flex-1 bg-secondary" />
@@ -306,8 +246,8 @@ function SwapToken({
         variant="secondary"
         className="mt-6"
         disabled={
-          !fromToken?.balance ||
-          Number(fromToken?.balance) < Number(fromAmount) ||
+          !fromTokenBalance ||
+          fromTokenBalance < Number(fromAmount) ||
           fetchingPrice ||
           Number(fromAmount) === 0 ||
           Number(toAmount) === 0 ||
@@ -327,12 +267,32 @@ function Token({
   token,
   amount,
   setAmount,
+  setBalance,
 }: {
   token: TokenWithTradeInfo;
   amount?: string;
   setAmount?: (amount: string) => void;
+  setBalance?: (balance: number) => void;
 }) {
+  const account = useAccount();
   // console.log("Token", token, amount);
+
+  const tokenInfo = useUserToken(account.address, token.address, token.chainId);
+  const nativeTokenInfo = useUserNativeToken(
+    account.address,
+    NATIVE_TOKEN_METADATA.chainId,
+  );
+  const balance = useMemo(() => {
+    let b;
+    if (token.address === NATIVE_TOKEN_METADATA.address) {
+      b = nativeTokenInfo?.balance || "0";
+    } else {
+      b = tokenInfo?.balance || "0";
+    }
+    setBalance?.(Number(b));
+    return b;
+  }, [tokenInfo, nativeTokenInfo]);
+
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
     <View className="flex gap-2">
@@ -345,10 +305,9 @@ function Token({
         <Input
           editable={!!setAmount}
           className={cn(
-            "max-w-40 rounded-full border-none bg-white/40 text-end text-4xl  text-white",
+            "max-w-40 rounded-full border-none bg-white/40 text-end text-3xl  text-white",
           )}
           inputMode="numeric"
-          defaultValue="0"
           value={amount}
           onChangeText={setAmount}
         />
@@ -360,7 +319,7 @@ function Token({
             {new Intl.NumberFormat("en-US", {
               maximumFractionDigits: 4,
               notation: "compact",
-            }).format(Number(token.balance) || 0)}{" "}
+            }).format(Number(balance) || 0)}{" "}
             {token?.symbol}
           </Text>
         </View>
