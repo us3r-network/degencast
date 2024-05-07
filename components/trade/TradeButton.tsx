@@ -336,11 +336,11 @@ function Token({
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
     <View className="flex gap-2">
-      <View className="flex-row items-start justify-between">
+      <View className="flex-row items-center justify-between">
         <TokenInfo
           name={token.name}
           logo={token.logoURI}
-          textClassName="text-2xl "
+          textClassName="text-2xl font-normal"
         />
         <Input
           editable={!!setAmount}
