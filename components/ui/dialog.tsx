@@ -42,7 +42,7 @@ const DialogOverlayNative = React.forwardRef<
   return (
     <DialogPrimitive.Overlay
       style={StyleSheet.absoluteFill}
-      className={cn('z-50 flex bg-black/80 justify-center max-sm:justify-end items-center p-2', className)}
+      className={cn('z-50 flex bg-black/80 justify-center max-sm:justify-end items-center p-2 max-sm:p-0', className)}
       {...props}
       ref={ref}
     >
@@ -76,7 +76,7 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
           ref={ref}
           className={cn(
-            'z-50 max-w-lg gap-4 border border-none web:cursor-default bg-background p-6 shadow-lg web:duration-200 rounded-lg',
+            'z-50 max-w-lg gap-4 web:cursor-default bg-background p-6 shadow-lg web:duration-200 rounded-lg',
             open
               ? 'web:animate-in web:fade-in-0 web:zoom-in-95'
               : 'web:animate-out web:fade-out-0 web:zoom-out-95',
