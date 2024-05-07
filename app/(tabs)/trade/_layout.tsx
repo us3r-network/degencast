@@ -1,7 +1,7 @@
 import { id } from "@lifi/widget/_esm/i18n";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Stack, useRouter, useSegments } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Card, CardContent } from "~/components/ui/card";
@@ -21,6 +21,11 @@ export default function TradeScreen() {
   const segments = useSegments();
   const [value, setValue] = useState(segments[2] || TABS[0].value);
   const router = useRouter();
+  useEffect(() => {
+    if (segments?.[2]) {
+      setValue(segments[2]);
+    }
+  }, [segments]);
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}
