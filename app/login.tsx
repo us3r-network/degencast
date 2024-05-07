@@ -1,27 +1,23 @@
+import {
+  ConnectedWallet,
+  User,
+  useCreateWallet,
+  useLinkAccount,
+  useLogin,
+  usePrivy,
+  useWallets
+} from "@privy-io/react-auth";
+import { Image } from "expo-image";
 import { Stack, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { SafeAreaView, View } from "react-native";
 import { ChevronLeft } from "~/components/common/Icons";
-import { Image } from "expo-image";
-import { cn } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { Button, ButtonProps } from "~/components/ui/button";
-import {
-  usePrivy,
-  useCreateWallet,
-  useWallets,
-  useLinkAccount,
-  useLogin,
-  User,
-  CallbackError,
-  useConnectWallet,
-  ConnectedWallet,
-} from "@privy-io/react-auth";
-import { on } from "events";
-import { shortPubKey } from "~/utils/shortPubKey";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import isInstalledPwa from "~/utils/pwa";
-import InstallPWAButton from "~/components/common/InstallPwaButton";
+import { shortPubKey } from "~/utils/shortPubKey";
+// import isInstalledPwa from "~/utils/pwa";
+// import InstallPWAButton from "~/components/common/InstallPwaButton";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -85,10 +81,10 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
       setStep(2);
     } else if (!u?.farcaster?.signerPublicKey) {
       setStep(3);
-    } else if (!isInstalledPwa) {
-      setStep(4);
+    // } else if (!isInstalledPwa) {
+    //   setStep(4);
     } else {
-      setStep(4);
+      onComplete();
     }
   };
 
@@ -117,17 +113,6 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
     },
   };
   const { linkFarcaster, linkWallet } = useLinkAccount(linkAccountHanler);
-
-  // const connectWalletHanler = {
-  //   onSuccess: (wallet: unknown) => {
-  //     console.log("connect wallet", wallet);
-  //     nextStep();
-  //   },
-  //   onError: (error: unknown) => {
-  //     console.error("Failed to link farcaster account", error);
-  //   },
-  // };
-  // const { connectWallet } = useConnectWallet(connectWalletHanler);
 
   const injectedWallet = useMemo(
     () =>
@@ -185,7 +170,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             <Button
               variant="ghost"
               className="absolute right-0 top-0"
-              onPress={() => setStep(4)}
+              onPress={() => onComplete()}
             >
               <Text>Skip</Text>
             </Button>
@@ -256,13 +241,13 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             <Button
               variant="ghost"
               className="absolute right-0 top-0"
-              onPress={() => setStep(4)}
+              onPress={() => onComplete()}
             >
               <Text>Skip</Text>
             </Button>
           </View>
         ))}
-      {step === 4 && (
+      {/* {step === 4 && (
         <View className=" relative h-full w-full">
           <Step4 />
           <InstallPWAButton
@@ -279,7 +264,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             <Text>Skip</Text>
           </Button>
         </View>
-      )}
+      )} */}
     </>
   );
 }
@@ -369,19 +354,19 @@ function Step3() {
   );
 }
 
-function Step4() {
-  return (
-    <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
-      <Image
-        source={require("~/assets/images/signup/4.png")}
-        contentFit="contain"
-        style={{ width: 360, height: 320 }}
-      />
-      <Image
-        source={require("~/assets/images/signup/4b.png")}
-        contentFit="contain"
-        style={{ width: 320, height: 240 }}
-      />
-    </View>
-  );
-}
+// function Step4() {
+//   return (
+//     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
+//       <Image
+//         source={require("~/assets/images/signup/4.png")}
+//         contentFit="contain"
+//         style={{ width: 360, height: 320 }}
+//       />
+//       <Image
+//         source={require("~/assets/images/signup/4b.png")}
+//         contentFit="contain"
+//         style={{ width: 320, height: 240 }}
+//       />
+//     </View>
+//   );
+// }
