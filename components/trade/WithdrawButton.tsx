@@ -1,7 +1,12 @@
 import { forwardRef, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Chain, parseEther } from "viem";
-import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useChainId,
+  useSendTransaction,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -17,8 +22,13 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import ActiveWallet from "./ActiveWallet";
-import { ErrorInfo, TransactionSuccessInfo, TransationData } from "./TranasactionResult";
+import {
+  ErrorInfo,
+  TransactionSuccessInfo,
+  TransationData,
+} from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
+import { base } from "viem/chains";
 
 export default function WithdrawButton({
   defaultChain = DEFAULT_CHAIN,
@@ -89,6 +99,9 @@ const SendToken = forwardRef<
     onError?: (error: string) => void;
   }
 >(({ className, chain, onSuccess, onError, ...props }, ref) => {
+  const chainId = useChainId();
+  const { switchChain, status: switchChainStatus } = useSwitchChain();
+
   const [address, setAddress] = useState<`0x${string}`>();
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
@@ -161,28 +174,45 @@ const SendToken = forwardRef<
         <Text>Token</Text>
       </View>
       <ToeknSelect selectToken={setToken} chain={chain} />
-      <View className="flex-row items-center justify-between">
-        <Text>Amount</Text>
-      </View>
-      <Input
-        className="border-secondary text-secondary"
-        placeholder="Enter amount"
-        value={String(amount)}
-        onChangeText={(newText) => setAmount(newText)}
-      />
-      <Button
-        variant={"secondary"}
-        disabled={
-          !address ||
-          Number(amount) > Number(token?.balance || 0) ||
-          isPending ||
-          transationLoading
-        }
-        className="w-full"
-        onPress={send}
-      >
-        <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
-      </Button>
+      {token && (
+        <>
+          <View className="flex-row items-center justify-between">
+            <Text>Amount</Text>
+          </View>
+          <Input
+            className="border-secondary text-secondary"
+            placeholder="Enter amount"
+            value={String(amount)}
+            onChangeText={(newText) => setAmount(newText)}
+          />
+          {chainId === token?.chainId ? (
+            <Button
+              variant={"secondary"}
+              disabled={
+                !address ||
+                Number(amount) > Number(token?.balance || 0) ||
+                isPending ||
+                transationLoading
+              }
+              className="w-full"
+              onPress={send}
+            >
+              <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="w-full"
+              disabled={switchChainStatus === "pending"}
+              onPress={async () => {
+                await switchChain({ chainId: token.chainId });
+              }}
+            >
+              <Text>Switch to {base.name}</Text>
+            </Button>
+          )}
+        </>
+      )}
     </View>
   );
 });

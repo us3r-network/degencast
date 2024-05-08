@@ -53,6 +53,14 @@ type TokenWithValueProps = React.ComponentPropsWithoutRef<typeof View> & {
 };
 
 export function TokenWithValue({ token, value }: TokenWithValueProps) {
+  if (typeof value === "bigint") {
+    value = formatUnits(value, token.decimals || 18);
+  }
+  const displayValue = new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 6,
+    notation: "compact",
+  }).format(Number(value));
+
   return (
     <View className="flex-1 flex-row items-center gap-2">
       <Avatar
@@ -68,9 +76,7 @@ export function TokenWithValue({ token, value }: TokenWithValueProps) {
       </Avatar>
       <View>
         <Text className={cn("line-clamp-1 font-bold")}>
-          {typeof value === "number" || typeof value === "string"
-            ? `${value}  ${token.symbol}`
-            : `${formatUnits(value, token.decimals || 18)} ${token.symbol}`}
+          {`${displayValue} ${token.symbol}`}
         </Text>
       </View>
     </View>
