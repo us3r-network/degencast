@@ -9,7 +9,7 @@ import {
 } from "@privy-io/react-auth";
 import { Stack, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Image, SafeAreaView, View } from "react-native";
+import { Dimensions, Image, SafeAreaView, View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
@@ -25,7 +25,6 @@ export default function LoginScreen() {
           title: "Login",
           headerShown: false,
           contentStyle: { backgroundColor: "white" },
-
         }}
       />
       <View className="mx-auto h-full w-full max-w-screen-sm p-4">
@@ -274,12 +273,18 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
   );
 }
 
+const dimensions = Dimensions.get("window");
+console.log("dimensions", dimensions);
 function Step0() {
   return (
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/1.png")}
-        style={{ width: 320, height: 400 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Welcome to{" "}
@@ -295,7 +300,11 @@ function Step1() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/2.png")}
-        style={{ width: 400, height: 320 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Connect Your{" "}
@@ -317,7 +326,11 @@ function Step2() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/2.png")}
-        style={{ width: 400, height: 340 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Connect Your{" "}
@@ -338,7 +351,11 @@ function Step3() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/3.png")}
-        style={{ width: 400, height: 360 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Add a <Text className="text-3xl font-bold text-primary">Signer</Text> to
@@ -359,11 +376,19 @@ function Step4() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/4.png")}
-        style={{ width: 360, height: 320 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2.5,
+          resizeMode: "contain",
+        }}
       />
       <Image
         source={require("~/assets/images/signup/4b.png")}
-        style={{ width: 320, height: 240 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 3,
+          resizeMode: "contain",
+        }}
       />
     </View>
   );
