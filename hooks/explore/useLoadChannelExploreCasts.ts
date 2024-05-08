@@ -120,10 +120,8 @@ export default function useLoadChannelExploreCasts(params: {
     if (castsLen < FIRST_PAGE_SIZE) {
       return;
     }
-    const remainingLen = castsLen - currentCastIndex;
+    const remainingLen = castsLen - (currentCastIndex + 1);
     if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
-      console.log("currentCastIndex", currentCastIndex);
-      console.log("remainingLen", remainingLen);
       loadNextPageCasts();
     }
   }, [currentCastIndex, casts, loading]);
