@@ -1,6 +1,6 @@
 // import { useSwitchChain } from "wagmi";
 import { debounce, throttle } from "lodash";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
@@ -30,16 +30,18 @@ import {
   TransactionSuccessInfo,
   TransationData,
 } from "./TranasactionResult";
+import { setBalance } from "viem/actions";
 
 export default function TradeButton({
-  fromToken = NATIVE_TOKEN_METADATA,
-  toToken = NATIVE_TOKEN_METADATA,
+  token1 = NATIVE_TOKEN_METADATA,
+  token2 = NATIVE_TOKEN_METADATA,
 }: {
-  fromToken?: TokenWithTradeInfo;
-  toToken?: TokenWithTradeInfo;
+  token1?: TokenWithTradeInfo;
+  token2?: TokenWithTradeInfo;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
+
   return (
     <Dialog
       onOpenChange={() => {
@@ -53,9 +55,9 @@ export default function TradeButton({
           size="sm"
           variant={"secondary"}
           disabled={
-            (!fromToken && !toToken) ||
-            fromToken.chainId !== base.id ||
-            toToken.chainId !== base.id
+            (!token1 && !token2) ||
+            token1.chainId !== base.id ||
+            token2.chainId !== base.id
           }
         >
           <Text>Trade</Text>
@@ -68,8 +70,8 @@ export default function TradeButton({
             <ActiveWallet />
           </DialogHeader>
           <SwapToken
-            token1={fromToken}
-            token2={toToken}
+            token1={token1}
+            token2={token2}
             onSuccess={setTransationData}
             onError={setError}
           />
@@ -122,71 +124,11 @@ function SwapToken({
   onSuccess?: (data: TransationData) => void;
   onError?: (error: string) => void;
 }) {
-  // console.log("Trade", fromChain, fromToken, toChain, toToken)
   const account = useAccount();
   const [fromToken, setFromToken] = useState(token1);
   const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
   const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
-
-  const fromTokenInfo = useUserToken(
-    account.address,
-    fromToken.address,
-    fromToken.chainId,
-  );
-  const toTokenInfo = useUserToken(
-    account.address,
-    toToken.address,
-    toToken.chainId,
-  );
-  const nativeTokenInfo = useUserNativeToken(account.address, toToken.chainId);
-
-  useEffect(() => {
-    if (
-      !fromTokenInfo ||
-      !fromTokenInfo.balance ||
-      !fromToken ||
-      fromToken.address === NATIVE_TOKEN_METADATA.address
-    )
-      return;
-    setFromToken({
-      ...fromToken,
-      balance: fromTokenInfo.balance,
-      symbol: fromTokenInfo.symbol,
-    });
-  }, [fromTokenInfo]);
-
-  useEffect(() => {
-    if (
-      !toTokenInfo ||
-      !toTokenInfo.balance ||
-      !toToken ||
-      toToken.address === NATIVE_TOKEN_METADATA.address
-    )
-      return;
-
-    setToToken({
-      ...toToken,
-      balance: toTokenInfo.balance,
-      symbol: toTokenInfo.symbol,
-    });
-  }, [toTokenInfo]);
-
-  useEffect(() => {
-    if (!nativeTokenInfo || !nativeTokenInfo.balance) return;
-    if (fromToken.address === NATIVE_TOKEN_METADATA.address)
-      setFromToken({
-        ...fromToken,
-        balance: nativeTokenInfo.balance,
-        symbol: nativeTokenInfo.symbol,
-      });
-    if (toToken.address === NATIVE_TOKEN_METADATA.address)
-      setToToken({
-        ...toToken,
-        balance: nativeTokenInfo.balance,
-        symbol: nativeTokenInfo.symbol,
-      });
-  }, [nativeTokenInfo]);
 
   const {
     fetchingPrice,
@@ -200,12 +142,13 @@ function SwapToken({
   } = useSwapToken(account.address);
 
   const fetchPriceInfo = async (amount: string) => {
-    console.log("fetchPriceInfo", amount);
+    // console.log("fetchPriceInfo", fromToken, toToken, amount);
     const priceInfo = await fetchPrice({
       sellToken: fromToken,
       buyToken: toToken,
       sellAmount: amount,
     });
+    console.log("fetchPriceInfo", priceInfo, fromToken, toToken, amount);
     if (!priceInfo) return;
     const { buyAmount } = priceInfo;
     setToAmount(buyAmount);
@@ -267,20 +210,29 @@ function SwapToken({
     }
   }, [error]);
 
+  const [fromTokenBalance, setFromTokenBalance] = useState(0);
   return (
     <View className="flex w-full gap-2">
       <Token
         token={fromToken}
         amount={fromAmount}
         setAmount={(amount) => setFromAmount(amount)}
+        setBalance={(balance) => setFromTokenBalance(balance)}
       />
       <View className="flex-row items-center">
         <Separator className="flex-1 bg-secondary" />
         <Button
+          disabled
           className="size-10 rounded-full border-2 border-secondary text-secondary"
           onPress={() => {
-            setFromToken(toToken);
-            setToToken(fromToken);
+            console.log("swap", fromToken, toToken, token1, token2);
+            if (fromToken.address === token1.address) {
+              setFromToken(token2);
+              setToToken(token1);
+            } else {
+              setFromToken(token1);
+              setToToken(token2);
+            }
             setFromAmount(DEFAULT_AMOUNT);
             setToAmount(DEFAULT_AMOUNT);
           }}
@@ -294,8 +246,8 @@ function SwapToken({
         variant="secondary"
         className="mt-6"
         disabled={
-          !fromToken?.balance ||
-          Number(fromToken?.balance) < Number(fromAmount) ||
+          !fromTokenBalance ||
+          fromTokenBalance < Number(fromAmount) ||
           fetchingPrice ||
           Number(fromAmount) === 0 ||
           Number(toAmount) === 0 ||
@@ -315,24 +267,47 @@ function Token({
   token,
   amount,
   setAmount,
+  setBalance,
 }: {
   token: TokenWithTradeInfo;
   amount?: string;
   setAmount?: (amount: string) => void;
+  setBalance?: (balance: number) => void;
 }) {
+  const account = useAccount();
   // console.log("Token", token, amount);
+
+  const tokenInfo = useUserToken(account.address, token.address, token.chainId);
+  const nativeTokenInfo = useUserNativeToken(
+    account.address,
+    NATIVE_TOKEN_METADATA.chainId,
+  );
+  const balance = useMemo(() => {
+    let b;
+    if (token.address === NATIVE_TOKEN_METADATA.address) {
+      b = nativeTokenInfo?.balance || "0";
+    } else {
+      b = tokenInfo?.balance || "0";
+    }
+    setBalance?.(Number(b));
+    return b;
+  }, [tokenInfo, nativeTokenInfo]);
+
   const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
   return (
     <View className="flex gap-2">
-      <View className="flex-row items-start justify-between">
-        <TokenInfo name={token.name} logo={token.logoURI} />
+      <View className="flex-row items-center justify-between">
+        <TokenInfo
+          name={token.name}
+          logo={token.logoURI}
+          textClassName="text-2xl font-normal"
+        />
         <Input
           editable={!!setAmount}
           className={cn(
-            "max-w-40 rounded-full border-none bg-white/40 text-end text-xl font-bold text-white",
+            "max-w-40 rounded-full border-none bg-white/40 text-end text-3xl  text-white",
           )}
           inputMode="numeric"
-          defaultValue="0"
           value={amount}
           onChangeText={setAmount}
         />
@@ -344,7 +319,7 @@ function Token({
             {new Intl.NumberFormat("en-US", {
               maximumFractionDigits: 4,
               notation: "compact",
-            }).format(Number(token.balance) || 0)}{" "}
+            }).format(Number(balance) || 0)}{" "}
             {token?.symbol}
           </Text>
         </View>

@@ -37,7 +37,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     sellAmount,
     buyAmount,
   }: SwapParams) => {
-    console.log("fetchPrice", sellToken, buyToken, sellAmount, buyAmount);
+    // console.log("fetchPrice", sellToken, buyToken, sellAmount, buyAmount);
     if (!sellToken || !buyToken) {
       console.log("no sellToken or buyToken");
       return;
@@ -50,7 +50,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
       console.log("no sellAmount or buyAmount");
       return;
     }
-    console.log("start fetch price from 0x");
+    // console.log("start fetch price from 0x");
     setFetchingPrice(true);
     const price = await getPrice({
       sellToken: sellToken.address,
@@ -63,7 +63,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
       takerAddress,
     });
-    console.log("price", price);
+    // console.log("price", price);
     setFetchingPrice(false);
     if (!price) return;
     return {

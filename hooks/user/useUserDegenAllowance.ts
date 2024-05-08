@@ -1,9 +1,12 @@
+import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 import { getUserDegenTipAllowance } from "~/services/farcaster/api";
 
-export default function useUserDegenAllowance() {
-  const { address } = useAccount();
+export default function useUserDegenAllowance(ownerAddress?: string) {
+  const { user } = usePrivy();
+  const { address:connectedAddress } = useAccount();
+  const address = ownerAddress || user?.farcaster?.ownerAddress || connectedAddress;
   const [totalDegenAllowance, setTotalDegenAllowance] = useState<number>(0);
   const [remainingDegenAllowance, setRemainingDegenAllowance] =
     useState<number>(0);

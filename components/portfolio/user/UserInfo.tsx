@@ -12,6 +12,7 @@ import {
   getUserName,
 } from "~/utils/privy";
 import FarcasterStats from "./FarcasterStats";
+import DegenTipsStats from "./DegenTipsStats";
 
 export default function UserInfo() {
   const { ready, authenticated, user, logout } = usePrivy();
@@ -21,7 +22,6 @@ export default function UserInfo() {
   const userHandle = user ? getUserHandle(user) : "";
   const farcasterAccount = getUserFarcasterAccount(user);
   // console.log("privy user info", user);
-
   if (!ready || !user || !authenticated) {
     return <Text>Loading...</Text>;
   }
@@ -45,7 +45,8 @@ export default function UserInfo() {
         {farcasterAccount?.fid && (
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
         )}
-        <UserGlobalPoints />
+        {farcasterAccount?.ownerAddress && <DegenTipsStats address={farcasterAccount?.ownerAddress as `0x${string}`} />}
+        {/* <UserGlobalPoints /> */}
       </View>
     </View>
   );

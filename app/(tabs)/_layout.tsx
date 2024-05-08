@@ -20,7 +20,7 @@ import { Text } from "~/components/ui/text";
 export default function TabLayout() {
   // preload trade data
   useCommunityTokens();
-  useCommunityShares();
+  // useCommunityShares();
   useCommunityRank();
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
