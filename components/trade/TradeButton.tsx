@@ -3,7 +3,7 @@ import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -125,6 +125,8 @@ function SwapToken({
   onError?: (error: string) => void;
 }) {
   const account = useAccount();
+  const chainId = useChainId();
+  const { switchChain, status: switchChainStatus } = useSwitchChain();
   const [fromToken, setFromToken] = useState(token1);
   const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
@@ -132,6 +134,7 @@ function SwapToken({
 
   const {
     fetchingPrice,
+    swapingToken,
     fetchPrice,
     swapToken,
     transactionReceipt,
@@ -161,6 +164,7 @@ function SwapToken({
 
   const swap = async () => {
     // console.log("swap", fromAmount);
+    if (chainId !== fromToken.chainId) return;
     swapToken({
       sellToken: fromToken,
       buyToken: toToken,
@@ -242,23 +246,37 @@ function SwapToken({
         <Separator className="flex-1 bg-secondary" />
       </View>
       <Token token={toToken || NATIVE_TOKEN_METADATA} amount={toAmount} />
-      <Button
-        variant="secondary"
-        className="mt-6"
-        disabled={
-          !fromTokenBalance ||
-          fromTokenBalance < Number(fromAmount) ||
-          fetchingPrice ||
-          Number(fromAmount) === 0 ||
-          Number(toAmount) === 0 ||
-          transationLoading
-        }
-        onPress={() => {
-          swap();
-        }}
-      >
-        <Text>Swap</Text>
-      </Button>
+      {chainId === fromToken.chainId ? (
+        <Button
+          variant="secondary"
+          className="mt-6"
+          disabled={
+            !fromTokenBalance ||
+            fromTokenBalance < Number(fromAmount) ||
+            fetchingPrice ||
+            swapingToken ||
+            Number(fromAmount) === 0 ||
+            Number(toAmount) === 0 ||
+            transationLoading
+          }
+          onPress={() => {
+            swap();
+          }}
+        >
+          <Text>Swap</Text>
+        </Button>
+      ) : (
+        <Button
+          variant="secondary"
+          className="mt-6"
+          disabled={switchChainStatus === "pending"}
+          onPress={async () => {
+            await switchChain({ chainId: fromToken.chainId });
+          }}
+        >
+          <Text>Switch to {base.name}</Text>
+        </Button>
+      )}
     </View>
   );
 }

@@ -81,6 +81,7 @@ export default function Wallets() {
         );
         // console.log("selected", item, connectedWallets, newActiveWallet);
         if (newActiveWallet) await setActiveWallet(newActiveWallet);
+        await Clipboard.setStringAsync(newActiveWallet?.address || "");
       }}
     >
       <SelectTrigger className={cn("w-full rounded-full bg-white/50")}>

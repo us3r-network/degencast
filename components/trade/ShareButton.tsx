@@ -1,7 +1,7 @@
 import React, { ReactNode, forwardRef, useEffect, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import NumberField from "~/components/common/NumberField";
 import { COMING_SOON_TAG } from "~/components/common/TextWithTag";
@@ -35,6 +35,7 @@ import {
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
 import { TokenWithValue } from "../common/TokenInfo";
+import { base } from "viem/chains";
 
 export function SellButton({
   logo,
@@ -117,6 +118,8 @@ const SellShare = forwardRef<
     ref,
   ) => {
     const account = useAccount();
+    const chainId = useChainId();
+    const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
     const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
@@ -198,14 +201,27 @@ const SellShare = forwardRef<
             <Text className="text-md">fetching price...</Text>
           )}
         </View>
-        <Button
-          variant={"secondary"}
-          className="w-full"
-          disabled={!account || waiting || writing || balance <= 0}
-          onPress={() => sell(amount)}
-        >
-          <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
-        </Button>
+        {chainId === token?.chainId ? (
+          <Button
+            variant={"secondary"}
+            className="w-full"
+            disabled={!account || waiting || writing || balance <= 0}
+            onPress={() => sell(amount)}
+          >
+            <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={switchChainStatus === "pending"}
+            onPress={async () => {
+              await switchChain({ chainId: SHARE_CONTRACT_CHAIN.id });
+            }}
+          >
+            <Text>Switch to {SHARE_CONTRACT_CHAIN.name}</Text>
+          </Button>
+        )}
       </View>
     );
   },
@@ -302,6 +318,8 @@ const BuyShare = forwardRef<
     ref,
   ) => {
     const account = useAccount();
+    const chainId = useChainId();
+    const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
     const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
@@ -385,19 +403,32 @@ const BuyShare = forwardRef<
             <Text>fetching price...</Text>
           )}
         </View>
-        <Button
-          variant={"secondary"}
-          className="w-full"
-          disabled={
-            !account ||
-            waiting ||
-            writing ||
-            Number(token?.rawBalance) < Number(price)
-          }
-          onPress={() => buy(amount, price)}
-        >
-          <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
-        </Button>
+        {chainId === token?.chainId ? (
+          <Button
+            variant={"secondary"}
+            className="w-full"
+            disabled={
+              !account ||
+              waiting ||
+              writing ||
+              Number(token?.rawBalance) < Number(price)
+            }
+            onPress={() => buy(amount, price)}
+          >
+            <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={switchChainStatus === "pending"}
+            onPress={async () => {
+              await switchChain({ chainId: SHARE_CONTRACT_CHAIN.id });
+            }}
+          >
+            <Text>Switch to {SHARE_CONTRACT_CHAIN.name}</Text>
+          </Button>
+        )}
       </View>
     );
   },
@@ -465,10 +496,7 @@ export const BuyButtonWithPrice = ({
   const symbol = token?.symbol || "";
 
   return (
-    <Button
-      variant={"secondary"}
-      className={cn(" flex-col items-center ")}
-    >
+    <Button variant={"secondary"} className={cn(" flex-col items-center ")}>
       {fetchedPrice ? (
         <>
           <Text>Buy with </Text>

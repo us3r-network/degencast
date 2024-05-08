@@ -15,10 +15,11 @@ type SwapParams = {
 
 export default function useSwapToken(takerAddress?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [swapingToken, setSwapingToken] = useState(false);
   const [error, setError] = useState<Error | null>();
   const {
     data: hash,
-    sendTransaction,
+    sendTransactionAsync,
     error: sendTransactionError,
   } = useSendTransaction();
   const {
@@ -92,8 +93,9 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
       return;
     }
     console.log("start fetch quote from 0x");
-    setFetchingPrice(true);
+
     try {
+      setFetchingPrice(true);
       const quote = await getQuote({
         sellToken: sellToken.address,
         buyToken: buyToken.address,
@@ -108,16 +110,25 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         takerAddress,
       });
       console.log("quote", quote);
-      sendTransaction({ to: quote.to, data: quote.data, value: quote.value });
+      setFetchingPrice(false);
+      setSwapingToken(true);
+      await sendTransactionAsync({
+        to: quote.to,
+        data: quote.data,
+        value: quote.value,
+      });
+      setSwapingToken(false);
     } catch (e) {
       console.error("swapToken error", e);
+      setFetchingPrice(false);
+      setSwapingToken(false);
       // setError(e as Error)
     }
-    setFetchingPrice(false);
   };
 
   return {
     fetchingPrice,
+    swapingToken,
     fetchPrice,
     swapToken,
     transactionReceipt,
