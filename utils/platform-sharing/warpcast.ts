@@ -2,6 +2,7 @@ import { Linking, Platform } from "react-native";
 
 export const WARPCAST_WEB_HOST = "https://warpcast.com";
 export const WARPCAST_APP_HOST = "warpcast://";
+export const WARPCAST_CHANNEL_NAME = "degencast";
 
 export const checkInstalledWarpcastApp = async () => {
   const supported = await Linking.canOpenURL(WARPCAST_APP_HOST);

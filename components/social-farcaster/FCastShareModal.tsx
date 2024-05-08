@@ -15,6 +15,7 @@ import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import Toast from "react-native-toast-message";
+import { getCastShareTextWithTwitter } from "~/utils/platform-sharing/text";
 
 export default function FCastShareModal({
   cast,
@@ -62,10 +63,7 @@ export default function FCastShareModal({
   });
 
   const onTwitterShare = () => {
-    openTwitterCreateTweet(
-      "Trade & explore news in @realdegencast",
-      castWebLink,
-    );
+    openTwitterCreateTweet(getCastShareTextWithTwitter(), castWebLink);
   };
 
   const onCopy = async () => {
