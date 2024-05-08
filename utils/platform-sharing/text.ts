@@ -1,15 +1,22 @@
+import { TWITTER_SCREEN_NAME } from "./twitter";
+import { WARPCAST_CHANNEL_NAME } from "./warpcast";
+
 export const getCommunityShareTextWithWarpcast = (communityName: string) => {
-  return `${communityName} token launch progress has reached XX%. Buy early, win early. /degencast.`;
+  return `Check your stats by /${WARPCAST_CHANNEL_NAME}. Buy early, win early.`;
 };
 
 export const getCommunityShareTextWithTwitter = (communityName: string) => {
-  return `${communityName} token launch progress has reached XX%. Buy early, win early. @realdegencast.`;
+  return `Hot channel in @${TWITTER_SCREEN_NAME}. Buy early, win early.`;
 };
 
 export const getAppShareTextWithWarpcast = () => {
-  return `Trade & explore news in /degencast.`;
+  return `Trade & explore news in /${WARPCAST_CHANNEL_NAME}.`;
 };
 
 export const getAppShareTextWithTwitter = () => {
-  return `Trade & explore news in @realdegencast.`;
+  return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
+};
+
+export const getCastShareTextWithTwitter = () => {
+  return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
 };
