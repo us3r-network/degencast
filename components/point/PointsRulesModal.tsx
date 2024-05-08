@@ -56,7 +56,7 @@ export default function PointsRulesModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <DialogHeader>
-          <Text className=" text-base font-medium">Point</Text>
+          <Text className=" text-base font-medium">Degencast Point</Text>
         </DialogHeader>
         <View className="flex-row items-center gap-2">
           <Atom color="#FFFFFF" className=" h-7 w-7" />

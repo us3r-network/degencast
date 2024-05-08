@@ -36,12 +36,13 @@ export default function FcastMiniCard({
       key={cast.id}
       className={cn(
         "relative flex min-h-36 flex-col gap-5 overflow-hidden",
+        " sm:min-h-64",
         className,
       )}
       {...props}
     >
       {/* user info */}
-      <View className=" absolute bottom-0 left-0 w-full flex-row items-center gap-1 p-2">
+      <View className=" absolute bottom-0 left-0 z-20 w-full flex-row items-center gap-1 p-2">
         <Avatar alt={"Avatar"} className=" h-4 w-4 rounded-full object-cover">
           <AvatarImage source={{ uri: userData?.pfp }} />
           <AvatarFallback>
@@ -56,18 +57,25 @@ export default function FcastMiniCard({
       {!!cast.text && (
         <View className="p-2 pb-6">
           {/* <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} /> */}
-          <Text className=" line-clamp-4 text-xs leading-6">{cast.text}</Text>
+          <Text
+            className={cn(
+              " line-clamp-4 text-xs leading-6",
+              embedImgs.length === 0 && " sm:line-clamp-6",
+            )}
+          >
+            {cast.text}
+          </Text>
         </View>
       )}
       {embedImgs.length > 0 && (
         <Image
-          className="h-full w-full object-cover"
+          className="z-10 h-full w-full object-cover"
           source={{ uri: embedImgs[0].url }}
         />
       )}
 
       {!cast.text && (
-        <View className="flex flex-col gap-5 overflow-hidden">
+        <View className="z-10 flex flex-col gap-5 overflow-hidden">
           {/* {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />} */}
 
           {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}

@@ -122,14 +122,17 @@ export const ExplorePostActions = ({
   return (
     <View className={cn(" flex w-fit flex-col gap-3", className)} {...props}>
       <LikeButton
-        className=" shadow-md"
+        className=" shadow-md shadow-primary"
         liked={liked}
         likeCount={likeCount}
         onPress={onLike}
       />
-      <GiftButton className=" shadow-md" onPress={onGift} />
-      <CommentButton className=" shadow-md" onPress={onComment} />
-      <ShareButton className=" shadow-md" onPress={onShare} />
+      <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
+      <CommentButton
+        className=" shadow-md shadow-primary"
+        onPress={onComment}
+      />
+      <ShareButton className=" shadow-md shadow-primary" onPress={onShare} />
     </View>
   );
 };
