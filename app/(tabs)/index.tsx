@@ -1,7 +1,13 @@
 import { useRouter } from "expo-router";
-import { Dimensions, FlatList, Pressable, View } from "react-native";
-import { GestureHandlerRootView, State } from "react-native-gesture-handler";
-import Animated, { useSharedValue } from "react-native-reanimated";
+import {
+  Dimensions,
+  Pressable,
+  View,
+  ScrollView,
+  Platform,
+} from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSharedValue } from "react-native-reanimated";
 import CardSwipe from "~/components/common/CardSwipe";
 import FCast from "~/components/social-farcaster/FCast";
 import FCastActions from "~/components/social-farcaster/FCastActions";
@@ -20,61 +26,66 @@ import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
-// import useLoadScrollingExploreCasts from "~/hooks/explore/useLoadScrollingExploreCasts";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 export default function ExploreScreenScroll() {
+  const { navigateToChannelExplore } = useChannelExplorePage();
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
     useLoadExploreCastsWithNaynar();
-  // const navigation = useNavigation();
-  const { navigateToCastDetail } = useCastPage();
-  const { navigateToChannelExplore } = useChannelExplorePage();
-  const viewabilityConfigCallbackPairs = useRef([
-    {
-      viewabilityConfig: {
-        viewAreaCoveragePercentThreshold: 80,
-      },
-      onViewableItemsChanged: ({ viewableItems, changed }: any) => {
-        if (viewableItems.length === 1) {
-          setCurrentCastIndex(viewableItems?.[0]?.index || 0);
-        }
-      },
-    },
-  ]);
+  const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
+  // 只渲染三个
+  const renderCasts = indexedCasts.slice(
+    Math.max(0, currentCastIndex - 1),
+    Math.min(indexedCasts.length, currentCastIndex + 2),
+  );
+
   const itemHeight = Dimensions.get("window").height - 64 - 98;
-
-  const flatListRef = useRef<FlatList<any>>(null);
-
+  const offsetRemainderPrev = useRef(-1);
+  const timer = useRef<NodeJS.Timeout | null>(null);
   return (
     <View className={cn("flex-1 bg-background pt-16")}>
-      <View className={cn("h-full w-full")}>
-        <FlatList
-          ref={flatListRef}
+      <View className={cn("h-full w-full")} style={{ height: itemHeight }}>
+        <ScrollView
           style={{ flex: 1 }}
           className="h-full w-full items-center"
-          data={casts}
           horizontal={false}
           showsHorizontalScrollIndicator={false}
-          initialNumToRender={2}
-          disableIntervalMomentum={true}
           pagingEnabled={true}
-          decelerationRate={0}
-          viewabilityConfigCallbackPairs={
-            viewabilityConfigCallbackPairs.current
-          }
-          getItemLayout={(item, index) => {
-            return {
-              length: itemHeight,
-              offset: itemHeight * index,
-              index,
-            };
+          bounces={false}
+          scrollsToTop={false}
+          scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
+          onScroll={(event) => {
+            if (Platform.OS === "web") {
+              const offsetY = event.nativeEvent.contentOffset.y;
+              const index = Math.round(offsetY / itemHeight);
+              const offsetRemainder = offsetY % itemHeight;
+              offsetRemainderPrev.current = offsetRemainder;
+              if (timer.current) clearTimeout(timer.current);
+              timer.current = setTimeout(() => {
+                if (offsetRemainderPrev.current === 0) {
+                  const castIndex = renderCasts[index].index;
+                  setCurrentCastIndex(castIndex);
+                }
+              }, 50);
+            }
           }}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            const { data, platform, community } = item as any;
-
+          onMomentumScrollEnd={(event) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            const index = Math.round(offsetY / itemHeight);
+            const castIndex = renderCasts[index].index;
+            setCurrentCastIndex(castIndex);
+          }}
+          onScrollEndDrag={(event) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            const index = Math.round(offsetY / itemHeight);
+            const castIndex = renderCasts[index].index;
+            setCurrentCastIndex(castIndex);
+          }}
+        >
+          {renderCasts.map(({ data, platform, community, index }) => {
             return (
               <View
+                key={index.toString()}
                 className={cn("h-full w-fit py-2 ")}
                 style={{
                   height: itemHeight,
@@ -97,22 +108,6 @@ export default function ExploreScreenScroll() {
                         farcasterUserDataObj: farcasterUserDataObj,
                         community,
                       });
-                      // if (community?.channelId) {
-                      //   navigateToChannelExplore(community.channelId, {
-                      //     origin: ChannelExploreDataOrigin.Explore,
-                      //     cast: data,
-                      //     farcasterUserDataObj: farcasterUserDataObj,
-                      //     community,
-                      //   });
-                      // } else {
-                      //   const castHex = getCastHex(data);
-                      //   navigateToCastDetail(castHex, {
-                      //     origin: CastDetailDataOrigin.Explore,
-                      //     cast: data,
-                      //     farcasterUserDataObj: farcasterUserDataObj,
-                      //     community,
-                      //   });
-                      // }
                     }}
                   >
                     <FCast
@@ -137,8 +132,8 @@ export default function ExploreScreenScroll() {
                 </Card>
               </View>
             );
-          }}
-        />
+          })}
+        </ScrollView>
       </View>
     </View>
   );

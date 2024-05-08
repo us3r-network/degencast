@@ -100,7 +100,7 @@ export default function useLoadExploreCastsWithNaynar() {
     if (castsLen < FIRST_PAGE_SIZE) {
       return;
     }
-    const remainingLen = castsLen - currentCastIndex;
+    const remainingLen = castsLen - (currentCastIndex + 1);
     if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
       loadNextPageCasts();
     }
