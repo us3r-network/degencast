@@ -5,7 +5,7 @@ import {
   useLinkAccount,
   useLogin,
   usePrivy,
-  useWallets
+  useWallets,
 } from "@privy-io/react-auth";
 import { Image } from "expo-image";
 import { Stack, useRouter } from "expo-router";
@@ -16,8 +16,7 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import { shortPubKey } from "~/utils/shortPubKey";
-// import isInstalledPwa from "~/utils/pwa";
-// import InstallPWAButton from "~/components/common/InstallPwaButton";
+import { getInstallPrompter } from "~/utils/pwa";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -56,7 +55,8 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-
+const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
+console.log("pwa stats: ",isSupported, isInstalled, showPrompt);
 function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
@@ -81,8 +81,8 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
       setStep(2);
     } else if (!u?.farcaster?.signerPublicKey) {
       setStep(3);
-    // } else if (!isInstalledPwa) {
-    //   setStep(4);
+    } else if (!isInstalled && isSupported) {
+      setStep(4);
     } else {
       onComplete();
     }
@@ -247,15 +247,17 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             </Button>
           </View>
         ))}
-      {/* {step === 4 && (
+      {step === 4 && (
         <View className=" relative h-full w-full">
           <Step4 />
-          <InstallPWAButton
+          <Button
             variant="default"
             className="absolute bottom-0 w-full"
+            disabled={!isSupported}
+            onPress={showPrompt}
           >
             <Text>Install Degencast</Text>
-          </InstallPWAButton>
+          </Button>
           <Button
             variant="ghost"
             className="absolute right-0 top-0"
@@ -264,7 +266,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             <Text>Skip</Text>
           </Button>
         </View>
-      )} */}
+      )}
     </>
   );
 }
@@ -340,9 +342,8 @@ function Step3() {
         style={{ width: 400, height: 360 }}
       />
       <Text className="text-3xl font-bold">
-        Add a{" "}
-        <Text className="text-3xl font-bold text-primary">Signer</Text> to Your
-        Farcaster Account to
+        Add a <Text className="text-3xl font-bold text-primary">Signer</Text> to
+        Your Farcaster Account to
       </Text>
       <View className="flex-row gap-4">
         <Text className="text-lg">√ Cast</Text>
@@ -354,19 +355,19 @@ function Step3() {
   );
 }
 
-// function Step4() {
-//   return (
-//     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
-//       <Image
-//         source={require("~/assets/images/signup/4.png")}
-//         contentFit="contain"
-//         style={{ width: 360, height: 320 }}
-//       />
-//       <Image
-//         source={require("~/assets/images/signup/4b.png")}
-//         contentFit="contain"
-//         style={{ width: 320, height: 240 }}
-//       />
-//     </View>
-//   );
-// }
+function Step4() {
+  return (
+    <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
+      <Image
+        source={require("~/assets/images/signup/4.png")}
+        contentFit="contain"
+        style={{ width: 360, height: 320 }}
+      />
+      <Image
+        source={require("~/assets/images/signup/4b.png")}
+        contentFit="contain"
+        style={{ width: 320, height: 240 }}
+      />
+    </View>
+  );
+}

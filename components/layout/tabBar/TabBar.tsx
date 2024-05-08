@@ -1,9 +1,5 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import {
-  Platform,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, Pressable, TouchableOpacity, View } from "react-native";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
@@ -45,7 +41,8 @@ function MobileTabBar(props: BottomTabBarProps) {
           };
 
           return (
-            <TouchableOpacity
+            <Pressable
+              key={route.key}
               className="flex h-12 items-center justify-center gap-2"
               accessibilityRole={Platform.OS === "web" ? "link" : "button"}
               accessibilityState={isFocused ? { selected: true } : {}}
@@ -68,7 +65,7 @@ function MobileTabBar(props: BottomTabBarProps) {
               >
                 {label as string}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </Card>
