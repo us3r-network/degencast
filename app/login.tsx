@@ -15,7 +15,10 @@ import { Text } from "~/components/ui/text";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Chrome, Globe } from "lucide-react-native";
 
+export const SKIP_ONBOARDING_KEY = "skipOnboarding";
 export default function LoginScreen() {
   const router = useRouter();
   return (
@@ -30,6 +33,7 @@ export default function LoginScreen() {
       <View className="mx-auto h-full w-full max-w-screen-sm p-4">
         <SignUp
           onComplete={() => {
+            AsyncStorage.setItem(SKIP_ONBOARDING_KEY, new Date().toISOString());
             router.back();
           }}
         />
@@ -139,6 +143,13 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
           >
             <Text>Sign in</Text>
           </Button>
+          <Button
+            variant="ghost"
+            className="absolute right-0 top-0"
+            onPress={() => onComplete()}
+          >
+            <Text>Skip</Text>
+          </Button>
         </View>
       )}
       {step === 1 &&
@@ -218,7 +229,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
         (user?.farcaster?.signerPublicKey ? (
           <View className=" relative h-full w-full">
             <Step1 />
-            <Text className="text-lg">
+            <Text className="text-base font-medium">
               Your linked farcaster signer pubkey is:{" "}
               {shortPubKey(user?.farcaster?.signerPublicKey)}
             </Text>
@@ -281,7 +292,7 @@ function Step0() {
       <Image
         source={require("~/assets/images/signup/1.png")}
         style={{
-          width: dimensions.width / 1.2,
+          width: dimensions.width / 1.1,
           height: dimensions.height / 2,
           resizeMode: "contain",
         }}
@@ -290,7 +301,19 @@ function Step0() {
         Welcome to{" "}
         <Text className="text-3xl font-bold text-primary">Degencast</Text>
       </Text>
-      <Text className="text-lg">Let’s set up in a few quick steps!</Text>
+      <View className="flex gap-2">
+        <Text className="text-base font-medium">
+          √ TikTok-style Farcaster Exploration
+        </Text>
+        <Text className="text-base font-medium">
+          √ Trade Channel shares & NFTs & Fan Tokens
+        </Text>
+        <Text className="text-base font-medium">√ Claim Channel Airdrops</Text>
+        <Text className="text-base font-medium">√ Swap Channel Tokens</Text>
+      </View>
+      <Text className="text-base text-primary">
+        Let’s set up in a few quick steps!
+      </Text>
     </View>
   );
 }
@@ -311,8 +334,10 @@ function Step1() {
         <Text className="text-3xl font-bold text-primary">Farcaster</Text> to
       </Text>
       <View className="flex gap-2">
-        <Text className="text-lg">√ Get your public profile</Text>
-        <Text className="text-lg">√ Login with Farcaster next time</Text>
+        <Text className="text-base font-medium">√ Get your public profile</Text>
+        <Text className="text-base font-medium">
+          √ Login with Farcaster next time
+        </Text>
       </View>
       <Text className="text-grey">
         We will not be able to post on your behalf or edit your information.
@@ -337,10 +362,10 @@ function Step2() {
         <Text className="text-3xl font-bold text-primary">Wallet</Text> to
       </Text>
       <View className="flex gap-2">
-        <Text className="text-lg">√ Trade Shares</Text>
-        <Text className="text-lg">√ Receive Tips</Text>
-        <Text className="text-lg">√ Swap Tokens</Text>
-        <Text className="text-lg">√ Claim Airdrop</Text>
+        <Text className="text-base font-medium">√ Trade Shares</Text>
+        <Text className="text-base font-medium">√ Receive Tips</Text>
+        <Text className="text-base font-medium">√ Swap Tokens</Text>
+        <Text className="text-base font-medium">√ Claim Airdrop</Text>
       </View>
     </View>
   );
@@ -362,10 +387,10 @@ function Step3() {
         Your Farcaster Account to
       </Text>
       <View className="flex-row gap-4">
-        <Text className="text-lg">√ Cast</Text>
-        <Text className="text-lg">√ Like</Text>
-        <Text className="text-lg">√ Tip</Text>
-        <Text className="text-lg">√ Share Frame</Text>
+        <Text className="text-base font-medium">√ Cast</Text>
+        <Text className="text-base font-medium">√ Like</Text>
+        <Text className="text-base font-medium">√ Tip</Text>
+        <Text className="text-base font-medium">√ Share Frame</Text>
       </View>
     </View>
   );
@@ -377,19 +402,49 @@ function Step4() {
       <Image
         source={require("~/assets/images/signup/4.png")}
         style={{
-          width: dimensions.width / 1.2,
+          width: dimensions.width / 1.1,
           height: dimensions.height / 2.5,
           resizeMode: "contain",
         }}
       />
-      <Image
+      {/* <Image
         source={require("~/assets/images/signup/4b.png")}
         style={{
           width: dimensions.width / 1.2,
           height: dimensions.height / 3,
           resizeMode: "contain",
         }}
-      />
+      /> */}
+      <View className="flex gap-4">
+        <View className="flex gap-2">
+          <View className="flex-row items-center gap-2">
+            <Chrome className="font-bold text-secondary" />
+            <Text className="text-2xl font-bold">Chrome</Text>
+          </View>
+          <Text className="text-base font-medium">
+            Tap browser menu, and choose{"\n"}
+            <Text className="font-bold text-secondary">
+              Add to Home Screen
+            </Text>{" "}
+            option.
+          </Text>
+        </View>
+        <View className="flex gap-2">
+          <View className="flex-row items-center gap-2">
+            <Globe className="font-bold text-secondary" />
+            <Text className="text-2xl font-bold">Other browser</Text>
+          </View>
+          <Text className="text-base font-medium">
+            Tap browser menu, and choose{" "}
+            <Text className="font-bold text-secondary">Share</Text> option.
+          </Text>
+          <Text className="text-base font-medium">
+            Then, choose{" "}
+            <Text className="font-bold text-secondary">Add to Home Screen</Text>
+            .
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
