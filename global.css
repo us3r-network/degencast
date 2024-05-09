@@ -3,6 +3,10 @@
 @tailwind utilities;
 /* Colors will be defined in the HLS color channels. This allows us to use the opacity modifiers such as bg-background/80 */
 @layer base {
+  * {
+    @apply font-interMediumFamily font-medium;
+  }
+
   .font-interNormal {
     @apply font-interRegularFamily font-normal;
   }
@@ -17,11 +21,6 @@
 
   .font-interBold {
     @apply font-interBoldFamily font-bold;
-  }
-
-  html,
-  body {
-    @apply font-interMedium;
   }
 
   :root {
