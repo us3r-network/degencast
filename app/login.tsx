@@ -7,16 +7,14 @@ import {
   usePrivy,
   useWallets,
 } from "@privy-io/react-auth";
-import { Image } from "expo-image";
 import { Stack, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { SafeAreaView, View } from "react-native";
-import { ChevronLeft } from "~/components/common/Icons";
+import { Dimensions, Image, SafeAreaView, View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import { shortPubKey } from "~/utils/shortPubKey";
 import { getInstallPrompter } from "~/utils/pwa";
+import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -25,24 +23,8 @@ export default function LoginScreen() {
       <Stack.Screen
         options={{
           title: "Login",
-          headerShadowVisible: false,
+          headerShown: false,
           contentStyle: { backgroundColor: "white" },
-          headerLeft: () => {
-            return (
-              <View className="w-fit p-3 ">
-                <Button
-                  className="rounded-full bg-[#a36efe1a]"
-                  size={"icon"}
-                  variant={"ghost"}
-                  onPress={() => {
-                    router.back();
-                  }}
-                >
-                  <ChevronLeft />
-                </Button>
-              </View>
-            );
-          },
         }}
       />
       <View className="mx-auto h-full w-full max-w-screen-sm p-4">
@@ -56,7 +38,7 @@ export default function LoginScreen() {
   );
 }
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
-console.log("pwa stats: ",isSupported, isInstalled, showPrompt);
+console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
 function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
@@ -75,13 +57,33 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
     } else if (
       !u?.linkedAccounts.find(
         (account) =>
-          account.type === "wallet" && account.connectorType === "injected",
+          account.type === "wallet" && account.connectorType !== "embedded",
       )
     ) {
       setStep(2);
     } else if (!u?.farcaster?.signerPublicKey) {
       setStep(3);
     } else if (!isInstalled && isSupported) {
+      setStep(4);
+    } else {
+      onComplete();
+    }
+  };
+
+  const toStep = (step: number = 0) => {
+    if (!user?.farcaster?.fid && step <= 1) {
+      setStep(1);
+    } else if (
+      !user?.linkedAccounts.find(
+        (account) =>
+          account.type === "wallet" && account.connectorType !== "embedded",
+      ) &&
+      step <= 2
+    ) {
+      setStep(2);
+    } else if (!user?.farcaster?.signerPublicKey && step <= 3) {
+      setStep(3);
+    } else if (!isInstalled && isSupported && step <= 4) {
       setStep(4);
     } else {
       onComplete();
@@ -206,7 +208,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             <Button
               variant="ghost"
               className="absolute right-0 top-0"
-              onPress={() => setStep(3)}
+              onPress={() => toStep(3)}
             >
               <Text>Skip</Text>
             </Button>
@@ -241,7 +243,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
             <Button
               variant="ghost"
               className="absolute right-0 top-0"
-              onPress={() => onComplete()}
+              onPress={() => toStep(4)}
             >
               <Text>Skip</Text>
             </Button>
@@ -271,13 +273,18 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
   );
 }
 
+const dimensions = Dimensions.get("window");
+console.log("dimensions", dimensions);
 function Step0() {
   return (
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/1.png")}
-        contentFit="contain"
-        style={{ width: 400, height: 400 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Welcome to{" "}
@@ -293,8 +300,11 @@ function Step1() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/2.png")}
-        contentFit="contain"
-        style={{ width: 400, height: 340 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Connect Your{" "}
@@ -316,8 +326,11 @@ function Step2() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/2.png")}
-        contentFit="contain"
-        style={{ width: 400, height: 340 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Connect Your{" "}
@@ -338,8 +351,11 @@ function Step3() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/3.png")}
-        contentFit="contain"
-        style={{ width: 400, height: 360 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2,
+          resizeMode: "contain",
+        }}
       />
       <Text className="text-3xl font-bold">
         Add a <Text className="text-3xl font-bold text-primary">Signer</Text> to
@@ -360,13 +376,19 @@ function Step4() {
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">
       <Image
         source={require("~/assets/images/signup/4.png")}
-        contentFit="contain"
-        style={{ width: 360, height: 320 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 2.5,
+          resizeMode: "contain",
+        }}
       />
       <Image
         source={require("~/assets/images/signup/4b.png")}
-        contentFit="contain"
-        style={{ width: 320, height: 240 }}
+        style={{
+          width: dimensions.width / 1.2,
+          height: dimensions.height / 3,
+          resizeMode: "contain",
+        }}
       />
     </View>
   );
