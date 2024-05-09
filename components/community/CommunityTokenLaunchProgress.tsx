@@ -11,9 +11,9 @@ export default function CommunityTokenLaunchProgress({
   return (
     <View {...props}>
       <View>
-        <Text className="text-base font-medium">
+        <Text className="font-interMedium text-base">
           Token Launch Progress:{" "}
-          <Text className=" text-base font-bold">99.99%</Text>
+          <Text className=" font-interBold text-base">99.99%</Text>
         </Text>
         <View className=" mt-5 w-full">
           <StaticProgressBar progress={0.9999} />
@@ -24,8 +24,9 @@ export default function CommunityTokenLaunchProgress({
         </Text>
       </View>
       <View>
-        <Text className="text-base font-medium">
-          Capital Pool: <Text className=" text-base font-bold">$99,999</Text>
+        <Text className="font-interMedium text-base">
+          Capital Pool:{" "}
+          <Text className=" font-interBold text-base">$99,999</Text>
         </Text>
         <Text className="mt-3 text-center text-xs leading-none text-[#A36EFE]">
           The channel token launch progress hasn’t started yet.

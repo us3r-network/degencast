@@ -20,13 +20,14 @@ import { store } from "~/store/store";
 import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
 import "../global.css";
+import { useFonts } from "expo-font";
 
 dayjs.extend(relativeTime);
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+  ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
@@ -42,25 +43,27 @@ const toastConfig = {
     fid: string;
   }>) => (
     <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">Cast created successfully!</Text>
+      <Text className="font-interBold text-white">
+        Cast created successfully!
+      </Text>
       <Link href={`/casts/${props.hash}?fid=${props.fid}` as Href<string>}>
-        <Text className="font-bold text-primary">View</Text>
+        <Text className="font-interBold text-primary">View</Text>
       </Link>
     </View>
   ),
   success: ({ text1 }: ToastConfigParams<{}>) => (
     <View className=" z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">{text1}</Text>
+      <Text className="font-interBold text-white">{text1}</Text>
     </View>
   ),
   error: ({ text1 }: ToastConfigParams<{}>) => (
     <View className="z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">{text1}</Text>
+      <Text className="font-interBold text-white">{text1}</Text>
     </View>
   ),
   info: ({ text1 }: ToastConfigParams<{}>) => (
     <View className="z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">{text1}</Text>
+      <Text className="font-interBold text-white">{text1}</Text>
     </View>
   ),
 };
@@ -81,6 +84,16 @@ export default function RootLayout() {
     });
   }, []);
   const queryClient = new QueryClient();
+
+  const [fontsLoaded, fontError] = useFonts({
+    "Inter-Regular": require("~/assets/fonts/inter/Inter-Regular.ttf"),
+    "Inter-Medium": require("~/assets/fonts/inter/Inter-Medium.ttf"),
+    "Inter-Bold": require("~/assets/fonts/inter/Inter-Bold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <ReduxProvider store={store}>
       <PrivyProvider

@@ -144,7 +144,7 @@ export default function ChannelExploreScreen() {
               <View className="flex flex-row items-center gap-3 pr-3">
                 <Link href={`/create?channelId=${channelId}` as any} asChild>
                   <Button variant={"secondary"} size={"sm"}>
-                    <Text className=" text-base font-medium">Cast</Text>
+                    <Text className=" font-interMedium text-base">Cast</Text>
                   </Button>
                 </Link>
               </View>

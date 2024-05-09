@@ -21,7 +21,7 @@ const AlertDialogOverlayWeb = React.forwardRef<
     <AlertDialogPrimitive.Overlay
       style={StyleSheet.absoluteFill}
       className={cn(
-        "z-50 flex items-center justify-center max-sm:justify-end bg-black/80 p-2 max-sm:p-0",
+        "z-50 flex items-center justify-center bg-black/80 p-2 max-sm:justify-end max-sm:p-0",
         open
           ? "web:animate-in web:fade-in-0"
           : "web:animate-out web:fade-out-0",
@@ -43,7 +43,7 @@ const AlertDialogOverlayNative = React.forwardRef<
     <AlertDialogPrimitive.Overlay
       style={StyleSheet.absoluteFill}
       className={cn(
-        "z-50 flex items-center justify-center max-sm:justify-end bg-black/80 p-2 max-sm:p-0",
+        "z-50 flex items-center justify-center bg-black/80 p-2 max-sm:justify-end max-sm:p-0",
         className,
       )}
       {...props}
@@ -122,7 +122,7 @@ const AlertDialogTitle = React.forwardRef<
   <AlertDialogPrimitive.Title
     ref={ref}
     className={cn(
-      "native:text-xl text-lg font-semibold text-foreground",
+      "native:text-xl font-interSemiBold text-lg text-foreground",
       className,
     )}
     {...props}

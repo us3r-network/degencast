@@ -56,7 +56,7 @@ export default function LoginScreen() {
   );
 }
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
-console.log("pwa stats: ",isSupported, isInstalled, showPrompt);
+console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
 function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
@@ -279,9 +279,9 @@ function Step0() {
         contentFit="contain"
         style={{ width: 400, height: 400 }}
       />
-      <Text className="text-3xl font-bold">
+      <Text className="font-interBold text-3xl">
         Welcome to{" "}
-        <Text className="text-3xl font-bold text-primary">Degencast</Text>
+        <Text className="font-interBold text-3xl text-primary">Degencast</Text>
       </Text>
       <Text className="text-lg">Let’s set up in a few quick steps!</Text>
     </View>
@@ -296,9 +296,10 @@ function Step1() {
         contentFit="contain"
         style={{ width: 400, height: 340 }}
       />
-      <Text className="text-3xl font-bold">
+      <Text className="font-interBold text-3xl">
         Connect Your{" "}
-        <Text className="text-3xl font-bold text-primary">Farcaster</Text> to
+        <Text className="font-interBold text-3xl text-primary">Farcaster</Text>{" "}
+        to
       </Text>
       <View className="flex gap-2">
         <Text className="text-lg">√ Get your public profile</Text>
@@ -319,9 +320,9 @@ function Step2() {
         contentFit="contain"
         style={{ width: 400, height: 340 }}
       />
-      <Text className="text-3xl font-bold">
+      <Text className="font-interBold text-3xl">
         Connect Your{" "}
-        <Text className="text-3xl font-bold text-primary">Wallet</Text> to
+        <Text className="font-interBold text-3xl text-primary">Wallet</Text> to
       </Text>
       <View className="flex gap-2">
         <Text className="text-lg">√ Trade Shares</Text>
@@ -341,8 +342,9 @@ function Step3() {
         contentFit="contain"
         style={{ width: 400, height: 360 }}
       />
-      <Text className="text-3xl font-bold">
-        Add a <Text className="text-3xl font-bold text-primary">Signer</Text> to
+      <Text className="font-interBold text-3xl">
+        Add a{" "}
+        <Text className="font-interBold text-3xl text-primary">Signer</Text> to
         Your Farcaster Account to
       </Text>
       <View className="flex-row gap-4">

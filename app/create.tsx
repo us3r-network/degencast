@@ -132,7 +132,7 @@ export default function CreateScreen() {
                 </Avatar>
               )}
               <Text
-                className="text-sm font-bold text-foreground"
+                className="font-interBold text-sm text-foreground"
                 id="textareaLabel"
               >
                 {user?.farcaster?.displayName}

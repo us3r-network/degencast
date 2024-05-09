@@ -86,7 +86,7 @@ export default function CastsScreen() {
             contentFit="fill"
             style={{ width: 280, height: 280 }}
           />
-          <Text className="text-lg font-bold text-primary">
+          <Text className="font-interBold text-lg text-primary">
             Login with Farcaster Only
           </Text>
           <Text className="text-md text-secondary">

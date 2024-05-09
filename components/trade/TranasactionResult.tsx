@@ -29,7 +29,7 @@ export function TransactionSuccessInfo({
       <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
         <Check className="size-8 text-[green]" />
       </View>
-      <Text className="font-bold">Transaction Completed!</Text>
+      <Text className="font-interBold">Transaction Completed!</Text>
       {data.description}
       <View className="w-full flex-row justify-items-stretch gap-4">
         <Link
@@ -66,7 +66,7 @@ export function ErrorInfo({ error, buttonText, buttonAction }: ErrorInfoProps) {
       <View className="size-16 items-center justify-center rounded-full bg-[red]/40">
         <X className="size-8 text-[red]" />
       </View>
-      <Text className="font-bold">{error}</Text>
+      <Text className="font-interBold">{error}</Text>
       <View className="w-full flex-row justify-items-stretch gap-4">
         <Button
           variant="secondary"

@@ -43,10 +43,10 @@ function HasSubjectAddress() {
           ListHeaderComponent={() => {
             return (
               <View className="mb-5 flex-row justify-between">
-                <Text className=" text-base font-medium">
+                <Text className=" font-interMedium text-base">
                   Holders ({shareStatistics?.holders || 0})
                 </Text>
-                <Text className=" text-base font-medium">
+                <Text className=" font-interMedium text-base">
                   Shares ({shareStatistics.supply || 0})
                 </Text>
               </View>
@@ -80,7 +80,7 @@ function HasSubjectAddress() {
                   source={require("~/assets/images/no-shares.png")}
                   style={{ width: 280, height: 280 }}
                 />
-                <Text className=" text-center text-xl font-bold text-primary">
+                <Text className=" font-interBold text-center text-xl text-primary">
                   Congratulations!
                 </Text>
                 <Text className="text-center text-base leading-8 text-secondary">
@@ -105,7 +105,7 @@ function NoSubjectAddress() {
         source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
       />
-      <Text className=" text-center text-xl font-bold text-primary">
+      <Text className=" font-interBold text-center text-xl text-primary">
         Coming Soon
       </Text>
       <Text className="text-center text-base leading-8 text-secondary">

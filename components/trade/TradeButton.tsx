@@ -318,7 +318,7 @@ function Token({
         <TokenInfo
           name={token.name}
           logo={token.logoURI}
-          textClassName="text-2xl font-normal"
+          textClassName="text-2xl font-interNormal"
         />
         <Input
           editable={!!setAmount}
@@ -332,7 +332,9 @@ function Token({
       </View>
       <View className="flex-row items-start justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-xs font-bold text-secondary">Balance:</Text>
+          <Text className="font-interBold text-xs text-secondary">
+            Balance:
+          </Text>
           <Text className="text-xs">
             {new Intl.NumberFormat("en-US", {
               maximumFractionDigits: 4,

@@ -13,7 +13,7 @@ export default function TextWithTag({ children }: TextWithTagProps) {
     return (
       <Text>
         <Text>{children.replace(COMING_SOON_TAG, "")}</Text>
-        <Text className="rounded-md bg-secondary px-2 text-xs font-bold">
+        <Text className="font-interBold rounded-md bg-secondary px-2 text-xs">
           {COMING_SOON_TEXT}
         </Text>
       </Text>

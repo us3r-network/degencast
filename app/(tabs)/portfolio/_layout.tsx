@@ -23,7 +23,7 @@ export default function PortfolioScreen() {
   const { ready, authenticated: privyAuthenticated } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
-  const login = ()=>{
+  const login = () => {
     router.push("/login");
   };
   // useFocusEffect(
@@ -89,7 +89,7 @@ export default function PortfolioScreen() {
                       >
                         <Text
                           className={cn(
-                            "font-bold text-primary",
+                            "font-interBold text-primary",
                             value === tab.value && "text-primary-foreground",
                           )}
                         >

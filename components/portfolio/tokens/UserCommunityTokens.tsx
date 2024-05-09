@@ -31,7 +31,7 @@ export default function CommunityTokens({
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">
+          <Text className="font-interBold text-lg">
             Channel Tokens {loading ? "" : `(${items.length})`}
           </Text>
         </View>

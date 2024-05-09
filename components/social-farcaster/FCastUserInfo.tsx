@@ -22,7 +22,7 @@ export default function FCastUserInfo({
           <Text>{userData?.display.slice(0, 1)}</Text>
         </AvatarFallback>
       </Avatar>
-      <Text className="line-clamp-1 text-base font-medium">
+      <Text className="font-interMedium line-clamp-1 text-base">
         {userData?.display}
       </Text>
       <Text className="text-sm text-[#A36EFE]">@{userData?.userName}</Text>

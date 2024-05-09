@@ -26,12 +26,12 @@ export default function TradingViewChart({
         <Avatar alt={name || ""} className=" size-9">
           <AvatarImage source={{ uri: img || "" }} />
           <AvatarFallback className="border-primary bg-secondary">
-            <Text className="text-sm font-bold leading-none">
+            <Text className="font-interBold text-sm leading-none">
               {name.slice(0, 2)}
             </Text>
           </AvatarFallback>
         </Avatar>
-        <Text className=" text-base font-medium">{name}</Text>
+        <Text className=" font-interMedium text-base">{name}</Text>
       </View>
       <View className="h-32 w-full">
         {Platform.OS === "web" ? (
@@ -44,7 +44,9 @@ export default function TradingViewChart({
       <View className="mt-4 flex-row items-center justify-between">
         <View className=" flex-1 flex-row items-center gap-1">
           <Text className=" text-sm leading-none text-[#A36EFE]">Price</Text>
-          <Text className=" text-2xl font-semibold">${price.toFixed(6)}</Text>
+          <Text className=" font-interSemiBold text-2xl">
+            ${price.toFixed(6)}
+          </Text>
         </View>
 
         <View

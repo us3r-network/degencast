@@ -59,7 +59,7 @@ function MobileTabBar(props: BottomTabBarProps) {
                 })}
               <Text
                 className={cn(
-                  "text-xs font-bold",
+                  "font-interBold text-xs",
                   isFocused ? "text-secondary" : "text-primary",
                 )}
               >

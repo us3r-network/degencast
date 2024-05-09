@@ -61,10 +61,10 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
             <Text>{userData.username?.slice(0, 1)}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className="flex-shrink-0 text-sm font-medium">
+        <Text className="font-interMedium flex-shrink-0 text-sm">
           {userData.username}
         </Text>
-        <Text className="line-clamp-1 text-xs font-normal text-secondary">
+        <Text className="font-interNormal line-clamp-1 text-xs text-secondary">
           @{userData.uname}
         </Text>
       </View>

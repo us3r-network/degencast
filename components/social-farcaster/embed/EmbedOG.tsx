@@ -19,17 +19,19 @@ export default function EmbedOG({ data, url }: { data: OGData; url: string }) {
         )}
 
         <View className="flex flex-col gap-1 p-2">
-          <Text className=" line-clamp-1 text-xs font-bold">
+          <Text className=" font-interBold line-clamp-1 text-xs">
             {data.ogTitle}
           </Text>
           {data.ogDescription && (
             <Text
-              className={" line-clamp-2 text-xs font-normal text-secondary"}
+              className={
+                " font-interNormal line-clamp-2 text-xs text-secondary"
+              }
             >
               {data.ogDescription}
             </Text>
           )}
-          <Text className="text-xs font-normal text-secondary">
+          <Text className="font-interNormal text-xs text-secondary">
             {new URL(url).host}
           </Text>
         </View>

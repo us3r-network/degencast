@@ -49,7 +49,7 @@ function Item({ item, index }: { item: CommunityInfoType; index: number }) {
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
-        <Text className="w-6 text-center text-xs font-bold">{index}</Text>{" "}
+        <Text className="font-interBold w-6 text-center text-xs">{index}</Text>{" "}
         <Link
           className="flex-1"
           href={`/communities/${item.channelId}/casts`}

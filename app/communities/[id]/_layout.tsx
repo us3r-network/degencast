@@ -126,7 +126,7 @@ export default function CommunityDetail() {
                     <BackArrowIcon />
                   </Button>
                 </View>
-                <Text className=" ml-2 text-xl font-bold  leading-none text-primary-foreground">
+                <Text className=" font-interBold ml-2 text-xl  leading-none text-primary-foreground">
                   {community?.name}
                 </Text>
               </View>

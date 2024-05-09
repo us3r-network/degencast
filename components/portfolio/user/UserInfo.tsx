@@ -30,13 +30,15 @@ export default function UserInfo() {
       <Avatar alt={userHandle} className="size-20">
         <AvatarImage source={{ uri: userAvatar }} />
         <AvatarFallback className="bg-white">
-          <User className="size-12 fill-primary/80 font-bold text-primary" />
+          <User className="font-interBold size-12 fill-primary/80 text-primary" />
         </AvatarFallback>
       </Avatar>
       <View className="flex w-full gap-2">
         <View className="inline-block w-full space-x-2">
           {userName && (
-            <Text className="text-lg font-bold text-white">{userName}</Text>
+            <Text className="font-interBold text-lg text-white">
+              {userName}
+            </Text>
           )}
           {userHandle && (
             <Text className="text-sm text-white">@{userHandle}</Text>
@@ -45,7 +47,11 @@ export default function UserInfo() {
         {farcasterAccount?.fid && (
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
         )}
-        {farcasterAccount?.ownerAddress && <DegenTipsStats address={farcasterAccount?.ownerAddress as `0x${string}`} />}
+        {farcasterAccount?.ownerAddress && (
+          <DegenTipsStats
+            address={farcasterAccount?.ownerAddress as `0x${string}`}
+          />
+        )}
         {/* <UserGlobalPoints /> */}
       </View>
     </View>

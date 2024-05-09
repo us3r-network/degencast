@@ -57,7 +57,7 @@ export default function FCastCommunity({
       </Text>
       {/* {communityInfo?.shares?.[0]?.subjectAddress && (
         <CommunityBuyShareButton
-          className="bg-secondary font-bold"
+          className="bg-secondary font-interBold"
           communityInfo={communityInfo}
         />
       )} */}

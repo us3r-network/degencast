@@ -51,7 +51,7 @@ export default function FCastGiftModal({
                 resizeMode="contain"
                 style={{ width: 20, height: 20 }}
               />
-              <Text className=" text-base font-medium">DEGEN</Text>
+              <Text className=" font-interMedium text-base">DEGEN</Text>
             </View>
           </View>
           <View className="flex flex-row items-center justify-between gap-1">
@@ -85,7 +85,7 @@ export default function FCastGiftModal({
             })}
           </View>
           <View className="flex flex-row items-center gap-5">
-            <Text className="text-base font-medium text-white">or</Text>
+            <Text className="font-interMedium text-base text-white">or</Text>
             <View className="box-border flex h-10 flex-1 flex-grow flex-row items-center gap-3 rounded-full bg-[#a36efe1a] px-4 py-3 text-xs color-white">
               <Input
                 className={cn(
@@ -101,11 +101,13 @@ export default function FCastGiftModal({
                   setAllowanceValue(text);
                 }}
               />
-              <Text className=" text-base font-medium text-white">DEGEN</Text>
+              <Text className=" font-interMedium text-base text-white">
+                DEGEN
+              </Text>
             </View>
           </View>
           <Button
-            className="font-bold text-white"
+            className="font-interBold text-white"
             variant={"secondary"}
             disabled={loading}
             onPress={() => {
@@ -130,10 +132,10 @@ export default function FCastGiftModal({
             <Text>Tip</Text>
           </Button>
           <View className="flex flex-row items-center justify-between">
-            <Text className=" text-base font-medium text-white">
+            <Text className=" font-interMedium text-base text-white">
               Daily Allowance:
             </Text>
-            <Text className=" text-base font-medium text-white">
+            <Text className=" font-interMedium text-base text-white">
               {remainingAllowance} / {totalAllowance} DEGEN
             </Text>
           </View>

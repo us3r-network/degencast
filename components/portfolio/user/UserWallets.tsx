@@ -87,7 +87,7 @@ export default function Wallets() {
       <SelectTrigger className={cn("w-full rounded-full bg-white/50")}>
         <View className="mr-2 flex-row items-center gap-2">
           <WalletIcon type={activeWallet?.walletClientType || ""} />
-          <Text className="font-bold text-primary">
+          <Text className="font-interBold text-primary">
             {shortPubKey(activeWallet?.address || "")}
           </Text>
         </View>
@@ -110,7 +110,7 @@ export default function Wallets() {
                       <Text
                         className={cn(
                           wallet.address === activeWallet?.address &&
-                            "font-bold text-primary",
+                            "font-interBold text-primary",
                         )}
                       >
                         {shortPubKey(wallet.address)}
@@ -154,7 +154,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
     <View className="flex w-full cursor-default gap-2">
       <View className="flex-row items-center gap-2">
         {icon}
-        <Text className="font-bold">{title}</Text>
+        <Text className="font-interBold">{title}</Text>
       </View>
       <View className="flex gap-2 pl-4">{children}</View>
     </View>
@@ -313,7 +313,7 @@ function FarcasterAccount() {
           <Avatar alt={farcasterAccount.username || ""} className="size-6">
             <AvatarImage source={{ uri: farcasterAccount.pfp || "" }} />
             <AvatarFallback className="bg-white">
-              <User className="size-12 fill-primary/80 font-bold text-primary" />
+              <User className="font-interBold size-12 fill-primary/80 text-primary" />
             </AvatarFallback>
           </Avatar>
           <Text className={cn("line-clamp-1 flex-1")}>
@@ -437,7 +437,7 @@ function LogoutButton() {
           onPress={() => setOpen(true)}
         >
           <LogOut className="size-6" />
-          <Text className="font-bold">Logout</Text>
+          <Text className="font-interBold">Logout</Text>
         </Pressable>
       </AlertDialogTrigger>
       <AlertDialogContent className="w-screen bg-primary">

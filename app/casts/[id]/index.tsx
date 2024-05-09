@@ -292,7 +292,7 @@ function CastDetailWithData({
                   />
                   <Separator className=" my-5" />
                   <View className="mb-5 w-full">
-                    <Text className=" text-base font-medium">
+                    <Text className=" font-interMedium text-base">
                       Comments (
                       {Number(cast?.comment_count || cast?.repliesCount || 0)})
                     </Text>

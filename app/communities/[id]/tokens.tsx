@@ -46,7 +46,7 @@ export default function TokensScreen() {
             source={require("~/assets/images/no-token.png")}
             style={{ width: 280, height: 280 }}
           />
-          <Text className=" text-center text-xl font-bold text-primary">
+          <Text className=" font-interBold text-center text-xl text-primary">
             Coming Soon
           </Text>
           <Text className="text-center text-base leading-8 text-secondary">
@@ -74,7 +74,7 @@ function ShareActivities({ id }: { id: string }) {
           <View>
             <CommunityTokenLaunchProgress data={null} />
             <View className=" my-5">
-              <Text className=" text-base font-medium">Activities</Text>
+              <Text className=" font-interMedium text-base">Activities</Text>
             </View>
           </View>
         );

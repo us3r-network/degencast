@@ -26,8 +26,8 @@ function HasSubjectAddress() {
         ListHeaderComponent={() => {
           return (
             <View className="mb-5 flex-row justify-between">
-              <Text className=" text-base font-medium">Rank</Text>
-              <Text className=" text-base font-medium">Tips Received</Text>
+              <Text className=" font-interMedium text-base">Rank</Text>
+              <Text className=" font-interMedium text-base">Tips Received</Text>
             </View>
           );
         }}
@@ -64,7 +64,7 @@ function NoSubjectAddress() {
         source={require("~/assets/images/no-token.png")}
         style={{ width: 280, height: 280 }}
       />
-      <Text className=" text-center text-xl font-bold text-primary">
+      <Text className=" font-interBold text-center text-xl text-primary">
         Coming Soon
       </Text>
       <Text className="text-center text-base leading-8 text-secondary">

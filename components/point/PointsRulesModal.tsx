@@ -34,7 +34,7 @@ export default function PointsRulesModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <DialogHeader>
-          <Text className=" text-base font-medium">Degencast Point</Text>
+          <Text className=" font-interMedium text-base">Degencast Point</Text>
         </DialogHeader>
         <PointsRules onOpenChange={onOpenChange} />
       </DialogContent>
@@ -192,7 +192,7 @@ function RuleItem({
       {...props}
     >
       <View className="flex-1 flex-col">
-        <Text className=" text-base font-bold leading-normal">{text}</Text>
+        <Text className=" font-interBold text-base leading-normal">{text}</Text>
         <Text className=" text-base leading-normal text-secondary">
           {pointsText}
         </Text>

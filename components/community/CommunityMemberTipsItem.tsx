@@ -23,11 +23,11 @@ export default function CommunityMemberTipsItem({
       <Avatar alt={name || ""} className=" size-10">
         <AvatarImage source={{ uri: avatar || "" }} />
         <AvatarFallback className="border-primary bg-secondary">
-          <Text className="text-sm font-bold">{name}</Text>
+          <Text className="font-interBold text-sm">{name}</Text>
         </AvatarFallback>
       </Avatar>
       <View className="flex-1 flex-col gap-1">
-        <Text className=" line-clamp-1 text-base font-medium leading-none">
+        <Text className=" font-interMedium line-clamp-1 text-base leading-none">
           {name}
         </Text>
         <Text className=" line-clamp-1 text-xs leading-none text-[#A36EFE]">

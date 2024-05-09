@@ -27,7 +27,7 @@ export default function Tips() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">
+          <Text className="font-interBold text-lg">
             Channel Tips {loading ? "" : `(${items.length})`}
           </Text>
           <InfoButton title={TIPS_TITLE} info={TIPS_INFO} />

@@ -49,7 +49,7 @@ export default function FcastMiniCard({
             <Text>{userData?.userName}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className="line-clamp-1 text-xs font-medium">
+        <Text className="font-interMedium line-clamp-1 text-xs">
           {userData?.display}
         </Text>
       </View>

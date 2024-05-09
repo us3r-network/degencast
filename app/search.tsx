@@ -392,7 +392,7 @@ function DefaultSearchIcon() {
           style={{ width: 280, height: 280 }}
         />
 
-        <Text className="text-lg font-bold color-[#4C2896]">
+        <Text className="font-interBold text-lg color-[#4C2896]">
           Channel Not Found
         </Text>
         <Text className="text-center text-base leading-8 color-[#A36EFE]">

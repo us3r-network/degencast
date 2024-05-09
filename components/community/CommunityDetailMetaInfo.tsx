@@ -19,11 +19,11 @@ export default function CommunityDetailMetaInfo({
       <Avatar alt={name || ""} className=" size-20 border border-secondary">
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="border-primary bg-secondary">
-          <Text className="text-sm font-bold">{name}</Text>
+          <Text className="font-interBold text-sm">{name}</Text>
         </AvatarFallback>
       </Avatar>
       <View className="flex-1 flex-col gap-3">
-        <Text className=" text-base font-bold leading-none  text-primary-foreground">
+        <Text className=" font-interBold text-base leading-none  text-primary-foreground">
           {name}
         </Text>
         <Text className=" line-clamp-1 text-base leading-none text-[#A36EFE]">

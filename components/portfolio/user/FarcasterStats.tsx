@@ -16,8 +16,8 @@ export default function FarcasterStats({
   return (
     <View className="w-full flex-row gap-4">
       <ExternalLink href={`${WARRPCAST}/${fname}/following`} target="_blank">
-        <Button variant="link" className="flex-row items-center gap-1 p-0 h-6">
-          <Text className="text-sm font-bold text-white">
+        <Button variant="link" className="h-6 flex-row items-center gap-1 p-0">
+          <Text className="font-interBold text-sm text-white">
             {new Intl.NumberFormat("en-US", {
               notation: "compact",
             }).format(farcasterUserStats.followingCount)}
@@ -25,9 +25,13 @@ export default function FarcasterStats({
           <Text className="text-sm  text-secondary">Following</Text>
         </Button>
       </ExternalLink>
-      <ExternalLink href={`${WARRPCAST}/${fname}/followers`} target="_blank" asChild>
-        <Button variant="link" className="flex-row items-center gap-1 p-0 h-6">
-          <Text className="text-sm font-bold text-white">
+      <ExternalLink
+        href={`${WARRPCAST}/${fname}/followers`}
+        target="_blank"
+        asChild
+      >
+        <Button variant="link" className="h-6 flex-row items-center gap-1 p-0">
+          <Text className="font-interBold text-sm text-white">
             {new Intl.NumberFormat("en-US", {
               notation: "compact",
             }).format(farcasterUserStats.followerCount)}
@@ -36,8 +40,8 @@ export default function FarcasterStats({
         </Button>
       </ExternalLink>
       <ExternalLink href={`${WARRPCAST}/${fname}`} target="_blank" asChild>
-        <Button variant="link" className="flex-row items-center gap-1 p-0 h-6">
-          <Text className="text-sm font-bold text-white">
+        <Button variant="link" className="h-6 flex-row items-center gap-1 p-0">
+          <Text className="font-interBold text-sm text-white">
             {new Intl.NumberFormat("en-US", {
               notation: "compact",
             }).format(farcasterUserStats.postCount)}

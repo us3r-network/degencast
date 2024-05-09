@@ -69,7 +69,7 @@ export default function TradeScreen() {
               >
                 <Text
                   className={cn(
-                    "font-bold text-primary",
+                    "font-interBold text-primary",
                     value === tab.value && "text-primary-foreground",
                   )}
                 >

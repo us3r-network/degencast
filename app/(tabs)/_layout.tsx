@@ -43,18 +43,20 @@ export default function TabLayout() {
             headerTransparent: true,
             headerTitleStyle: {
               color: "white",
+              fontWeight: "bold",
+              fontFamily: "Inter-Bold",
             },
             headerRight: () => (
               <View className="mr-4 flex-row items-center gap-4">
                 <Link href="/search" asChild>
                   <Button className="w-32 flex-row items-center justify-start gap-1 rounded-full bg-white/40">
                     <Search className=" h-4 w-4 stroke-white" />
-                    <Text className=" text-base font-medium">Search</Text>
+                    <Text className=" font-interMedium text-base">Search</Text>
                   </Button>
                 </Link>
                 <Link href="/create" asChild>
                   <Button variant={"secondary"} size={"sm"}>
-                    <Text className=" text-base font-medium">Cast</Text>
+                    <Text className=" font-interMedium text-base">Cast</Text>
                   </Button>
                 </Link>
               </View>
@@ -70,6 +72,8 @@ export default function TabLayout() {
             headerTransparent: true,
             headerTitleStyle: {
               color: "white",
+              fontWeight: "bold",
+              fontFamily: "Inter-Bold",
             },
           }}
         />
@@ -82,6 +86,8 @@ export default function TabLayout() {
             headerTransparent: true,
             headerTitleStyle: {
               color: "white",
+              fontWeight: "bold",
+              fontFamily: "Inter-Bold",
             },
             headerRight: () => (
               <View className="flex-row items-center gap-4 p-4">

@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -35,6 +33,16 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/inter/Inter-Regular.ttf",
+            "./assets/fonts/inter/Inter-Medium.ttf",
+            "./assets/fonts/inter/Inter-Bold.ttf"
+          ]
         }
       ]
     ],
