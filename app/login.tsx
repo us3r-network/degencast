@@ -218,7 +218,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
         (user?.farcaster?.signerPublicKey ? (
           <View className=" relative h-full w-full">
             <Step1 />
-            <Text className="text-lg">
+            <Text className="text-base">
               Your linked farcaster signer pubkey is:{" "}
               {shortPubKey(user?.farcaster?.signerPublicKey)}
             </Text>
@@ -290,7 +290,13 @@ function Step0() {
         Welcome to{" "}
         <Text className="text-3xl font-bold text-primary">Degencast</Text>
       </Text>
-      <Text className="text-lg">Let’s set up in a few quick steps!</Text>
+      <View className="flex gap-2">
+        <Text className="text-base">√ TikTok-style Farcaster Exploration</Text>
+        <Text className="text-base">√ Trade Channel shares & NFTs & Fan Tokens</Text>
+        <Text className="text-base">√ Claim Channel Airdrops</Text>
+        <Text className="text-base">√ Swap Channel Tokens</Text>
+      </View>
+      <Text className="text-base">Let’s set up in a few quick steps!</Text>
     </View>
   );
 }
@@ -311,8 +317,8 @@ function Step1() {
         <Text className="text-3xl font-bold text-primary">Farcaster</Text> to
       </Text>
       <View className="flex gap-2">
-        <Text className="text-lg">√ Get your public profile</Text>
-        <Text className="text-lg">√ Login with Farcaster next time</Text>
+        <Text className="text-base">√ Get your public profile</Text>
+        <Text className="text-base">√ Login with Farcaster next time</Text>
       </View>
       <Text className="text-grey">
         We will not be able to post on your behalf or edit your information.
@@ -337,10 +343,10 @@ function Step2() {
         <Text className="text-3xl font-bold text-primary">Wallet</Text> to
       </Text>
       <View className="flex gap-2">
-        <Text className="text-lg">√ Trade Shares</Text>
-        <Text className="text-lg">√ Receive Tips</Text>
-        <Text className="text-lg">√ Swap Tokens</Text>
-        <Text className="text-lg">√ Claim Airdrop</Text>
+        <Text className="text-base">√ Trade Shares</Text>
+        <Text className="text-base">√ Receive Tips</Text>
+        <Text className="text-base">√ Swap Tokens</Text>
+        <Text className="text-base">√ Claim Airdrop</Text>
       </View>
     </View>
   );
@@ -362,10 +368,10 @@ function Step3() {
         Your Farcaster Account to
       </Text>
       <View className="flex-row gap-4">
-        <Text className="text-lg">√ Cast</Text>
-        <Text className="text-lg">√ Like</Text>
-        <Text className="text-lg">√ Tip</Text>
-        <Text className="text-lg">√ Share Frame</Text>
+        <Text className="text-base">√ Cast</Text>
+        <Text className="text-base">√ Like</Text>
+        <Text className="text-base">√ Tip</Text>
+        <Text className="text-base">√ Share Frame</Text>
       </View>
     </View>
   );
