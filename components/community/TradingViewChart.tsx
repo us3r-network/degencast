@@ -44,7 +44,7 @@ export default function TradingViewChart({
       <View className="mt-4 flex-row items-center justify-between">
         <View className=" flex-1 flex-row items-center gap-1">
           <Text className=" text-sm leading-none text-[#A36EFE]">Price</Text>
-          <Text className=" font-interSemiBold text-2xl">
+          <Text className=" font-interSemibold text-2xl">
             ${price.toFixed(6)}
           </Text>
         </View>

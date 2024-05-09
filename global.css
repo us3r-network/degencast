@@ -15,8 +15,8 @@
     @apply font-interMediumFamily font-medium;
   }
 
-  .font-interSemiBold {
-    @apply font-interSemiBoldFamily font-semibold;
+  .font-interSemibold {
+    @apply font-interSemiboldFamily font-semibold;
   }
 
   .font-interBold {
