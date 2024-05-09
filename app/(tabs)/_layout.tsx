@@ -1,8 +1,8 @@
-import { Link, Tabs } from "expo-router";
-import React from "react";
+import { Link, Tabs, useRouter } from "expo-router";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Edit, Search } from "~/components/common/Icons";
+import { Search } from "~/components/common/Icons";
 import {
   ExploreIcon,
   PortfolioIcon,
@@ -13,15 +13,33 @@ import UserWallets from "~/components/portfolio/user/UserWallets";
 import { Button } from "~/components/ui/button";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/trade/useCommunityRank";
-import useCommunityShares from "~/hooks/trade/useCommunityShares";
+// import useCommunityShares from "~/hooks/trade/useCommunityShares";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { Text } from "~/components/ui/text";
+import { usePrivy } from "@privy-io/react-auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SKIP_ONBOARDING_KEY } from "../login";
 
 export default function TabLayout() {
   // preload trade data
   useCommunityTokens();
   // useCommunityShares();
   useCommunityRank();
+  const { ready, authenticated: privyAuthenticated } = usePrivy();
+  const router = useRouter();
+  useEffect(() => {
+    const goOnboarding = async () => {
+      const skipOnboardingDate =
+        await AsyncStorage.getItem(SKIP_ONBOARDING_KEY);
+      if (
+        ready &&
+        !privyAuthenticated &&
+        (!skipOnboardingDate || new Date(skipOnboardingDate) < new Date())
+      )
+        router.push("/login");
+    };
+    goOnboarding();
+  }, [ready, privyAuthenticated]);
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
