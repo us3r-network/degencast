@@ -6,7 +6,6 @@ import React, { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { useAccount } from "wagmi";
 import {
-  Cable,
   Copy,
   Edit,
   LogOut,
@@ -16,6 +15,7 @@ import {
   User,
   Wallet,
 } from "~/components/common/Icons";
+import { HasSignerIcon } from "~/components/common/SvgIcons";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -71,76 +71,81 @@ export default function Wallets() {
   }
   return (
     <TextClassContext.Provider value="text-sm font-medium">
-    <Select
-      defaultValue={{
-        value: activeWallet?.address || "",
-        label: activeWallet?.address || "",
-      }}
-      onValueChange={async (item) => {
-        const newActiveWallet = connectedWallets.find(
-          (wallet) => wallet.address === item?.value,
-        );
-        // console.log("selected", item, connectedWallets, newActiveWallet);
-        if (newActiveWallet) await setActiveWallet(newActiveWallet);
-        await Clipboard.setStringAsync(newActiveWallet?.address || "");
-      }}
-    >
-      <SelectTrigger className={cn("w-full rounded-full bg-white/40 border-none")}>
-        <View className="mr-2 flex-row items-center gap-2">
-          <WalletIcon type={activeWallet?.walletClientType || ""} />
-          <Text className="text-white">
-            {shortPubKey(activeWallet?.address || "")}
-          </Text>
-        </View>
-      </SelectTrigger>
-      <SelectContent>
-        <View className="flex w-60 items-start gap-4 divide-solid">
-          <Catalog title="Active Wallets" icon={<Wallet className="size-4" />}>
-            <SelectGroup className={cn("flex gap-2")}>
-              {connectedWallets.map((wallet) => (
-                <SelectItem
-                  asChild
-                  className={cn("p-0")}
-                  key={wallet.address}
-                  label={shortPubKey(wallet.address)}
-                  value={wallet.address}
-                >
-                  <View className="w-full flex-row items-center justify-between gap-2">
-                    <View className="flex-row items-center gap-2">
-                      <WalletIcon type={wallet.walletClientType} />
-                      <Text
-                        className={cn(
-                          wallet.address === activeWallet?.address &&
-                            "text-primary",
-                        )}
-                      >
-                        {shortPubKey(wallet.address)}
-                      </Text>
+      <Select
+        defaultValue={{
+          value: activeWallet?.address || "",
+          label: activeWallet?.address || "",
+        }}
+        onValueChange={async (item) => {
+          const newActiveWallet = connectedWallets.find(
+            (wallet) => wallet.address === item?.value,
+          );
+          // console.log("selected", item, connectedWallets, newActiveWallet);
+          if (newActiveWallet) await setActiveWallet(newActiveWallet);
+          await Clipboard.setStringAsync(newActiveWallet?.address || "");
+        }}
+      >
+        <SelectTrigger
+          className={cn("w-full rounded-full border-none bg-white/40")}
+        >
+          <View className="mr-2 flex-row items-center gap-2">
+            <WalletIcon type={activeWallet?.walletClientType || ""} />
+            <Text className="text-white">
+              {shortPubKey(activeWallet?.address || "")}
+            </Text>
+          </View>
+        </SelectTrigger>
+        <SelectContent>
+          <View className="flex w-60 items-start gap-4 divide-solid">
+            <Catalog
+              title="Active Wallets"
+              icon={<Wallet className="size-4" />}
+            >
+              <SelectGroup className={cn("flex gap-2")}>
+                {connectedWallets.map((wallet) => (
+                  <SelectItem
+                    asChild
+                    className={cn("p-0")}
+                    key={wallet.address}
+                    label={shortPubKey(wallet.address)}
+                    value={wallet.address}
+                  >
+                    <View className="w-full flex-row items-center justify-between gap-2">
+                      <View className="flex-row items-center gap-2">
+                        <WalletIcon type={wallet.walletClientType} />
+                        <Text
+                          className={cn(
+                            wallet.address === activeWallet?.address &&
+                              "text-primary",
+                          )}
+                        >
+                          {shortPubKey(wallet.address)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </SelectItem>
-              ))}
-            </SelectGroup>
-            <LinkWallets />
-          </Catalog>
-          {/* <Catalog title="Linked Wallets" icon={<Wallet className="size-4" />}>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+              <LinkWallets />
+            </Catalog>
+            {/* <Catalog title="Linked Wallets" icon={<Wallet className="size-4" />}>
             <LinkWallets />
           </Catalog> */}
-          <Catalog
-            title="Farcaster Account"
-            icon={
-              <Image
-                source={require("~/assets/images/farcaster.png")}
-                style={{ width: 16, height: 16 }}
-              />
-            }
-          >
-            <FarcasterAccount />
-          </Catalog>
-          <LogoutButton />
-        </View>
-      </SelectContent>
-    </Select>
+            <Catalog
+              title="Farcaster Account"
+              icon={
+                <Image
+                  source={require("~/assets/images/farcaster.png")}
+                  style={{ width: 16, height: 16 }}
+                />
+              }
+            >
+              <FarcasterAccount />
+            </Catalog>
+            <LogoutButton />
+          </View>
+        </SelectContent>
+      </Select>
     </TextClassContext.Provider>
   );
 }
@@ -327,7 +332,7 @@ function FarcasterAccount() {
             <Tooltip delayDuration={150}>
               <TooltipTrigger asChild>
                 <Pressable disabled>
-                  <Edit className="size-4 fill-secondary/50" />
+                  <HasSignerIcon />
                 </Pressable>
               </TooltipTrigger>
               <TooltipContent>
@@ -340,7 +345,7 @@ function FarcasterAccount() {
             <Tooltip delayDuration={150}>
               <TooltipTrigger asChild>
                 <Pressable onPress={prepareWrite}>
-                  <Cable className="size-4" />
+                  <Edit className="size-4" />
                 </Pressable>
               </TooltipTrigger>
               <TooltipContent>
