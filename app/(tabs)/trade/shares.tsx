@@ -34,10 +34,10 @@ function Item({ item, index }: { item: ShareInfo; index: number }) {
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
-        <Text className="w-6 text-center text-xs font-bold">{index}</Text>
+        <Text className="w-6 text-center text-xs font-medium">{index}</Text>
         {/* {item.trend === 1 && <ArrowUp className="size-4 text-[green]" />}
         {item.trend === 0 && (
-          <Text className="w-4 text-center font-bold">-</Text>
+          <Text className="w-4 text-center font-medium">-</Text>
         )}
         {item.trend === -1 && <ArrowDown className="size-4 text-[red]" />} */}
         <Link

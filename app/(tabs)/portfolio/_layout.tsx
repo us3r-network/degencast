@@ -15,7 +15,7 @@ import { cn } from "~/lib/utils";
 
 const TABS = [
   { label: "Tokens", value: "tokens" },
-  { label: "Points", value: "points" },
+  // { label: "Points", value: "points" },
   { label: "Casts", value: "casts" },
 ];
 export default function PortfolioScreen() {

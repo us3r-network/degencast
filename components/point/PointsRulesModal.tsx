@@ -192,7 +192,7 @@ function RuleItem({
       {...props}
     >
       <View className="flex-1 flex-col">
-        <Text className=" text-base font-bold leading-normal">{text}</Text>
+        <Text className=" text-base font-medium leading-normal">{text}</Text>
         <Text className=" text-base leading-normal text-secondary">
           {pointsText}
         </Text>

@@ -174,7 +174,7 @@ const SellShare = forwardRef<
         />
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-lg font-bold">Quantity</Text>
+            <Text className="text-lg font-medium">Quantity</Text>
             {price && amount && token && token.decimals ? (
               <Text className="text-xs">
                 {formatUnits(price / BigInt(amount), token.decimals)}
@@ -192,7 +192,7 @@ const SellShare = forwardRef<
           />
         </View>
         <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-bold">Receive:</Text>
+          <Text className="text-lg font-medium">Receive:</Text>
           {price && amount && token && token.decimals ? (
             <Text className="text-md">
               {formatUnits(price, token.decimals)} {token.symbol}
@@ -379,7 +379,7 @@ const BuyShare = forwardRef<
         />
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-lg font-bold">Quantity</Text>
+            <Text className="text-lg font-medium">Quantity</Text>
             {fetchedPrice ? (
               <Text className="text-xs">
                 {perSharePrice}
@@ -394,7 +394,7 @@ const BuyShare = forwardRef<
           <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
         </View>
         <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-bold">Total Cost</Text>
+          <Text className="text-lg font-medium">Total Cost</Text>
           {fetchedPrice ? (
             <Text>
               {formatUnits(price, token.decimals!)} {token.symbol}
