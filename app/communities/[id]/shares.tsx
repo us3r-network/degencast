@@ -80,7 +80,7 @@ function HasSubjectAddress() {
                   source={require("~/assets/images/no-shares.png")}
                   style={{ width: 280, height: 280 }}
                 />
-                <Text className=" text-center text-xl font-medium text-primary">
+                <Text className=" text-center text-xl font-bold text-primary">
                   Congratulations!
                 </Text>
                 <Text className="text-center text-base leading-8 text-secondary">
