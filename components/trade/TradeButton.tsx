@@ -31,6 +31,8 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import { setBalance } from "viem/actions";
+import useUserAction from "~/hooks/user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -144,6 +146,8 @@ function SwapToken({
     error,
   } = useSwapToken(account.address);
 
+  const { submitUserAction } = useUserAction();
+
   const fetchPriceInfo = async (amount: string) => {
     // console.log("fetchPriceInfo", fromToken, toToken, amount);
     const priceInfo = await fetchPrice({
@@ -151,7 +155,6 @@ function SwapToken({
       buyToken: toToken,
       sellAmount: amount,
     });
-    console.log("fetchPriceInfo", priceInfo, fromToken, toToken, amount);
     if (!priceInfo) return;
     const { buyAmount } = priceInfo;
     setToAmount(buyAmount);
@@ -161,7 +164,6 @@ function SwapToken({
     throttle(debounce(fetchPriceInfo, 500), 1000), // 0x api rate limit 1/second
     [],
   );
-
   const swap = async () => {
     // console.log("swap", fromAmount);
     if (chainId !== fromToken.chainId) return;
@@ -189,17 +191,25 @@ function SwapToken({
       toToken &&
       toAmount
     ) {
+      submitUserAction({
+        action: UserActionName.SwapToken,
+      });
       const transationData = {
+        chain: base,
         transactionReceipt,
         description: (
-          <View className="flex items-center gap-2">
-            <View className="flex-row items-center gap-2">
-              <Text className="text-white">Swap</Text>
+          <View className="flex w-full items-center gap-2">
+            <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">From</Text>
               <TokenWithValue token={fromToken} value={fromAmount} />
             </View>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-white">to</Text>
+            <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">To</Text>
               <TokenWithValue token={toToken} value={toAmount} />
+            </View>
+            <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">$SPELL</Text>
+              <Text className="font-medium text-white">+1000</Text>
             </View>
           </View>
         ),

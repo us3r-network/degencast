@@ -62,7 +62,7 @@ export function TokenWithValue({ token, value }: TokenWithValueProps) {
   }).format(Number(value));
 
   return (
-    <View className="flex-1 flex-row items-center gap-2">
+    <View className="flex-row items-center gap-2">
       <Avatar
         alt={token.name || ""}
         className={cn("size-8 border-2 border-secondary/10")}

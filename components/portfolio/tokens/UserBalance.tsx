@@ -13,13 +13,18 @@ import WithdrawButton from "../../trade/WithdrawButton";
 
 export default function Balance({ address }: { address: `0x${string}` }) {
   const { userTokens } = useUserTokens(address);
+  const { address: activeWalletAddress } = useAccount();
+  const { wallets: connectedWallets } = useWallets();
+  const activeWallet = connectedWallets.find(
+    (wallet) => wallet.address === activeWalletAddress,
+  );
   return (
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-sm font-medium text-secondary">Balance</Text>
         </View>
-        <WithdrawButton />
+        {activeWallet?.connectorType === "embedded" && <WithdrawButton />}
       </View>
       {userTokens.has(TOKENS.NATIVE) && (
         <MyToken

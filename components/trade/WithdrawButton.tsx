@@ -29,6 +29,7 @@ import {
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
 import { base } from "viem/chains";
+import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function WithdrawButton({
   defaultChain = DEFAULT_CHAIN,
@@ -47,7 +48,7 @@ export default function WithdrawButton({
     >
       <DialogTrigger asChild>
         <Button size="sm" className={cn("p-0")} variant={"link"}>
-          <Text>Withdraw</Text>
+          <Text className="text-xs text-secondary">Withdraw</Text>
         </Button>
       </DialogTrigger>
       {!transationData && !error && (
@@ -137,14 +138,26 @@ const SendToken = forwardRef<
   useEffect(() => {
     if (isSuccess && transactionReceipt && address && token && amount) {
       const transationData = {
+        chain: base,
         transactionReceipt,
         description: (
-          <View className="flex items-center gap-2">
-            <View className="flex-row items-center gap-2">
-              <Text>Withdraw</Text>
+          <View className="flex w-full items-center gap-2">
+            <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">From</Text>
+              <Text className="font-medium text-secondary">
+                {shortPubKey(transactionReceipt.from)}
+              </Text>
+            </View>
+            <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">To</Text>
+              <Text className="font-medium text-secondary">
+                {shortPubKey(transactionReceipt.to || "0x ")}
+              </Text>
+            </View>
+            <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">Point</Text>
               <TokenWithValue token={token} value={amount} />
             </View>
-            <Text>from {address}</Text>
           </View>
         ),
       };
