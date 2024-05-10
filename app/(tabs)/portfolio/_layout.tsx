@@ -89,7 +89,7 @@ export default function PortfolioScreen() {
                       >
                         <Text
                           className={cn(
-                            "font-bold text-primary",
+                            "font-medium text-primary",
                             value === tab.value && "text-primary-foreground",
                           )}
                         >

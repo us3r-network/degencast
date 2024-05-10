@@ -24,13 +24,13 @@ export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
       >
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="bg-secondary">
-          <Text className="text-sm font-bold">
+          <Text className="text-sm font-medium">
             {upperFirst(name?.slice(0, 2))}
           </Text>
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("line-clamp-1 font-bold", textClassName)}>
+        <Text className={cn("line-clamp-1 text-sm font-medium", textClassName)}>
           {name}
         </Text>
         {mc && mc > 0 && (
@@ -75,7 +75,7 @@ export function TokenWithValue({ token, value }: TokenWithValueProps) {
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("line-clamp-1 font-bold")}>
+        <Text className={cn("line-clamp-1 font-medium")}>
           {`${displayValue} ${token.symbol}`}
         </Text>
       </View>

@@ -1,4 +1,3 @@
-import { id } from "@lifi/widget/_esm/i18n";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
@@ -11,9 +10,9 @@ import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import { cn } from "~/lib/utils";
 
 const TABS = [
-  { label: "Tokens", value: "tokens" },
+  { label: "Tokens(USD)", value: "tokens" },
   // { label: "Shares", value: "shares" },
-  { label: "Rank", value: "rank" },
+  { label: "Rank(Casts)", value: "rank" },
 ];
 
 export default function TradeScreen() {
@@ -69,7 +68,7 @@ export default function TradeScreen() {
               >
                 <Text
                   className={cn(
-                    "font-bold text-primary",
+                    "font-medium text-primary",
                     value === tab.value && "text-primary-foreground",
                   )}
                 >

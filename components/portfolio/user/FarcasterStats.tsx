@@ -17,7 +17,7 @@ export default function FarcasterStats({
     <View className="w-full flex-row gap-4">
       <ExternalLink href={`${WARRPCAST}/${fname}/following`} target="_blank">
         <Button variant="link" className="flex-row items-center gap-1 p-0 h-6">
-          <Text className="text-sm font-bold text-white">
+          <Text className="text-sm font-medium text-white">
             {new Intl.NumberFormat("en-US", {
               notation: "compact",
             }).format(farcasterUserStats.followingCount)}
@@ -27,7 +27,7 @@ export default function FarcasterStats({
       </ExternalLink>
       <ExternalLink href={`${WARRPCAST}/${fname}/followers`} target="_blank" asChild>
         <Button variant="link" className="flex-row items-center gap-1 p-0 h-6">
-          <Text className="text-sm font-bold text-white">
+          <Text className="text-sm font-medium text-white">
             {new Intl.NumberFormat("en-US", {
               notation: "compact",
             }).format(farcasterUserStats.followerCount)}
@@ -35,16 +35,16 @@ export default function FarcasterStats({
           <Text className="text-sm  text-secondary">Followers</Text>
         </Button>
       </ExternalLink>
-      <ExternalLink href={`${WARRPCAST}/${fname}`} target="_blank" asChild>
+      {/* <ExternalLink href={`${WARRPCAST}/${fname}`} target="_blank" asChild>
         <Button variant="link" className="flex-row items-center gap-1 p-0 h-6">
-          <Text className="text-sm font-bold text-white">
+          <Text className="text-sm font-medium text-white">
             {new Intl.NumberFormat("en-US", {
               notation: "compact",
             }).format(farcasterUserStats.postCount)}
           </Text>
           <Text className="text-sm  text-secondary">Casts</Text>
         </Button>
-      </ExternalLink>
+      </ExternalLink> */}
     </View>
   );
 }

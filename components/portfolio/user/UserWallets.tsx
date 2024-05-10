@@ -33,7 +33,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "~/components/ui/select";
-import { Text } from "~/components/ui/text";
+import { Text, TextClassContext } from "~/components/ui/text";
 import {
   Tooltip,
   TooltipContent,
@@ -70,6 +70,7 @@ export default function Wallets() {
     return null;
   }
   return (
+    <TextClassContext.Provider value="text-sm font-medium">
     <Select
       defaultValue={{
         value: activeWallet?.address || "",
@@ -84,17 +85,17 @@ export default function Wallets() {
         await Clipboard.setStringAsync(newActiveWallet?.address || "");
       }}
     >
-      <SelectTrigger className={cn("w-full rounded-full bg-white/50")}>
+      <SelectTrigger className={cn("w-full rounded-full bg-white/40 border-none")}>
         <View className="mr-2 flex-row items-center gap-2">
           <WalletIcon type={activeWallet?.walletClientType || ""} />
-          <Text className="font-bold text-primary">
+          <Text className="text-white">
             {shortPubKey(activeWallet?.address || "")}
           </Text>
         </View>
       </SelectTrigger>
       <SelectContent>
         <View className="flex w-60 items-start gap-4 divide-solid">
-          <Catalog title="Active Wallets" icon={<Wallet className="size-6" />}>
+          <Catalog title="Active Wallets" icon={<Wallet className="size-4" />}>
             <SelectGroup className={cn("flex gap-2")}>
               {connectedWallets.map((wallet) => (
                 <SelectItem
@@ -110,7 +111,7 @@ export default function Wallets() {
                       <Text
                         className={cn(
                           wallet.address === activeWallet?.address &&
-                            "font-bold text-primary",
+                            "text-primary",
                         )}
                       >
                         {shortPubKey(wallet.address)}
@@ -122,7 +123,7 @@ export default function Wallets() {
             </SelectGroup>
             <LinkWallets />
           </Catalog>
-          {/* <Catalog title="Linked Wallets" icon={<Wallet className="size-6" />}>
+          {/* <Catalog title="Linked Wallets" icon={<Wallet className="size-4" />}>
             <LinkWallets />
           </Catalog> */}
           <Catalog
@@ -140,6 +141,7 @@ export default function Wallets() {
         </View>
       </SelectContent>
     </Select>
+    </TextClassContext.Provider>
   );
 }
 
@@ -154,7 +156,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
     <View className="flex w-full cursor-default gap-2">
       <View className="flex-row items-center gap-2">
         {icon}
-        <Text className="font-bold">{title}</Text>
+        <Text>{title}</Text>
       </View>
       <View className="flex gap-2 pl-4">{children}</View>
     </View>
@@ -166,19 +168,19 @@ function WalletIcon({ type }: { type: string | undefined }) {
     case "privy":
       return (
         <Image
-          style={{ width: 24, height: 24 }}
+          style={{ width: 16, height: 16 }}
           source={require("~/assets/images/privy-icon.webp")}
         />
       );
     case "metamask":
       return (
         <Image
-          style={{ width: 24, height: 24 }}
+          style={{ width: 16, height: 16 }}
           source={require("~/assets/images/metamask-icon.svg")}
         />
       );
     default:
-      return <Wallet className="size-6" />;
+      return <Wallet className="size-4" />;
   }
 }
 
@@ -292,7 +294,7 @@ function LinkWallets() {
         onPress={linkWallet}
       >
         <View className="flex-row items-center gap-2">
-          <PlusCircle className="size-6" />
+          <PlusCircle className="size-4" />
           <Text>Link a wallet</Text>
         </View>
       </Pressable>
@@ -310,10 +312,10 @@ function FarcasterAccount() {
     return (
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Avatar alt={farcasterAccount.username || ""} className="size-6">
+          <Avatar alt={farcasterAccount.username || ""} className="size-4">
             <AvatarImage source={{ uri: farcasterAccount.pfp || "" }} />
             <AvatarFallback className="bg-white">
-              <User className="size-12 fill-primary/80 font-bold text-primary" />
+              <User className="size-12 fill-primary/80 text-primary" />
             </AvatarFallback>
           </Avatar>
           <Text className={cn("line-clamp-1 flex-1")}>
@@ -362,7 +364,7 @@ function FarcasterAccount() {
         onPress={linkFarcaster}
       >
         <View className="flex-row items-center gap-2">
-          <PlusCircle className="size-6" />
+          <PlusCircle className="size-4" />
           <Text>Link a Farcaster</Text>
         </View>
       </Pressable>
@@ -436,8 +438,8 @@ function LogoutButton() {
           className="w-full flex-row items-center gap-2"
           onPress={() => setOpen(true)}
         >
-          <LogOut className="size-6" />
-          <Text className="font-bold">Logout</Text>
+          <LogOut className="size-4" />
+          <Text>Logout</Text>
         </Pressable>
       </AlertDialogTrigger>
       <AlertDialogContent className="w-screen bg-primary">
