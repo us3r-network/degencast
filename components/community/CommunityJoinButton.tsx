@@ -18,7 +18,11 @@ export default function CommunityJoinButton({
     useJoinCommunityAction(communityInfo);
   return (
     <Button
-      className={cn("w-14 bg-secondary", className)}
+      variant={joined ? "outline" : "secondary"}
+      className={cn(
+        "min-w-14 rounded-[0.625rem] px-0 text-xs font-medium",
+        className,
+      )}
       size="sm"
       onPress={(e) => {
         e.stopPropagation();

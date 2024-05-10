@@ -43,6 +43,7 @@ export default function Editor({
     <View className="flex flex-grow border-secondary">
       <View className="flex-grow items-center px-4">
         <Textarea
+          autoFocus={true}
           className={cn(
             "h-full",
             "border-0 bg-[#fff] text-[12px] text-sm ",
