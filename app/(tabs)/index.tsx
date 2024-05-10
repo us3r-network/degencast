@@ -93,7 +93,7 @@ export default function ExploreScreenScroll() {
               >
                 <Card
                   className={cn(
-                    "box-border h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:max-w-[600px]",
+                    "box-border h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:max-w-screen-sm",
                   )}
                   style={{
                     height: itemHeight - 60,
