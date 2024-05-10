@@ -7,13 +7,13 @@ import {
   useNavigation,
 } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
-import { View, Text, SafeAreaView } from "react-native";
-import { Share2 } from "~/components/common/Icons";
+import { View, SafeAreaView } from "react-native";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import PlatformSharingButton from "~/components/platform-sharing/PlatformSharingButton";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { Text } from "~/components/ui/text";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
