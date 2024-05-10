@@ -155,7 +155,6 @@ function SwapToken({
       buyToken: toToken,
       sellAmount: amount,
     });
-    console.log("fetchPriceInfo", priceInfo, fromToken, toToken, amount);
     if (!priceInfo) return;
     const { buyAmount } = priceInfo;
     setToAmount(buyAmount);
@@ -209,7 +208,7 @@ function SwapToken({
               <TokenWithValue token={toToken} value={toAmount} />
             </View>
             <View className="w-full flex-row items-center justify-between gap-2">
-              <Text className="font-medium text-secondary">Point</Text>
+              <Text className="font-medium text-secondary">$SPELL</Text>
               <Text className="font-medium text-white">+1000</Text>
             </View>
           </View>
