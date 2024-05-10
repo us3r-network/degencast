@@ -31,7 +31,7 @@ export default function CommunityTokens({
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">
+          <Text className="text-sm font-medium text-secondary">
             Channel Tokens {loading ? "" : `(${items.length})`}
           </Text>
         </View>
@@ -64,7 +64,7 @@ function Item(item: TokenWithTradeInfo) {
             <TokenInfo
               name={item.name}
               logo={item.logoURI}
-              mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+              // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
             />
           </Pressable>
         </Link>
@@ -72,11 +72,11 @@ function Item(item: TokenWithTradeInfo) {
         <TokenInfo
           name={item.name}
           logo={item.logoURI}
-          mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+          // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
         />
       )}
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm">{round(Number(item.balance), 2)}</Text>
+        <Text className="text-lg font-medium">{round(Number(item.balance), 2)}</Text>
         <TradeButton token1={item} />
       </View>
     </View>

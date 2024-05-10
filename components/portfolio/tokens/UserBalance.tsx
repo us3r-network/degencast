@@ -17,7 +17,7 @@ export default function Balance({ address }: { address: `0x${string}` }) {
     <View className="flex w-full gap-2">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">Balance</Text>
+          <Text className="text-sm font-medium text-secondary">Balance</Text>
         </View>
         <WithdrawButton />
       </View>
@@ -65,7 +65,7 @@ function MyToken({
     <View className="flex-row items-center justify-between">
       <TokenInfo name={token.name} logo={token.logoURI} />
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm">
+        <Text className="text-lg font-medium">
           {Number(token.balance) && Number(token.balance) > 1
             ? round(Number(token.balance), 2)
             : round(Number(token.balance), 6)}

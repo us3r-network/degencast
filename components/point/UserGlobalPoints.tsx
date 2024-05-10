@@ -19,9 +19,9 @@ export default function UserGlobalPoints() {
           setOpen(true);
         }}
       >
-        <Badge className="flex h-6 w-fit flex-row items-center gap-1 bg-[#F41F4C] px-2 py-0 shadow shadow-black/25">
-          <Atom color="#FFFFFF" className="h-4 w-4" />
-          <Text className=" text-base text-white">{totalPoints}</Text>
+        <Badge className="flex w-fit flex-row items-center gap-1 bg-[#F41F4C] px-2 py-0 shadow shadow-black/25">
+          <Atom className="size-4 text-white" />
+          <Text className="text-sm text-white">{totalPoints}</Text>
           {ready && !authenticated && totalPoints > 0 && (
             <Button
               className=" ml-1 box-border h-4 rounded-full bg-secondary px-1 py-0 text-xs text-white"

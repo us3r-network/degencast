@@ -27,26 +27,26 @@ export default function UserInfo() {
   }
   return (
     <View className="mx-8 w-full flex-row items-center gap-4">
-      <Avatar alt={userHandle} className="size-20">
+      <Avatar alt={userHandle} className="size-24">
         <AvatarImage source={{ uri: userAvatar }} />
         <AvatarFallback className="bg-white">
-          <User className="size-12 fill-primary/80 font-bold text-primary" />
+          <User className="size-16 fill-primary/80 font-medium text-primary" />
         </AvatarFallback>
       </Avatar>
-      <View className="flex w-full gap-2">
+      <View className="flex w-full gap-1">
         <View className="inline-block w-full space-x-2">
           {userName && (
-            <Text className="text-lg font-bold text-white">{userName}</Text>
+            <Text className="font-bold text-white">{userName}</Text>
           )}
           {userHandle && (
-            <Text className="text-sm text-white">@{userHandle}</Text>
+            <Text className="text-secondary">@{userHandle}</Text>
           )}
         </View>
         {farcasterAccount?.fid && (
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
         )}
         {farcasterAccount?.ownerAddress && <DegenTipsStats address={farcasterAccount?.ownerAddress as `0x${string}`} />}
-        {/* <UserGlobalPoints /> */}
+        <UserGlobalPoints />
       </View>
     </View>
   );
