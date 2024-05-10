@@ -332,8 +332,8 @@ function Token({
       </View>
       <View className="flex-row items-start justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-xs font-bold text-secondary">Balance:</Text>
-          <Text className="text-xs">
+          <Text className="text-xs font-medium text-secondary">Balance:</Text>
+          <Text className="text-xs font-medium">
             {new Intl.NumberFormat("en-US", {
               maximumFractionDigits: 4,
               notation: "compact",

@@ -28,7 +28,7 @@ export default function About({
         className={cn("w-full")}
       >
         <View className="w-full flex-row items-center justify-between">
-        <Text className="font-bold">{title}</Text>
+        <Text className="font-medium">{title}</Text>
         <View>
           {open ? (
             <ChevronUp color={"white"} />

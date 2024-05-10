@@ -48,7 +48,7 @@ export default function NumberField({
       <Input
         inputMode="numeric"
         editable={true}
-        className={cn("max-w-16 text-center font-bold text-white")}
+        className={cn("max-w-16 text-center font-medium text-white")}
         value={value}
         onChangeText={(text) => setValue(text)}
       />

@@ -69,7 +69,7 @@ export function TokenWithValue({ token, value }: TokenWithValueProps) {
       >
         <AvatarImage source={{ uri: token.logoURI || "" }} />
         <AvatarFallback className="bg-secondary">
-          <Text className="text-sm font-bold">
+          <Text className="text-sm font-medium">
             {upperFirst(token.name?.slice(0, 2))}
           </Text>
         </AvatarFallback>
