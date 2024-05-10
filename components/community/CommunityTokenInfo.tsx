@@ -5,6 +5,7 @@ import axios from "axios";
 import { Text } from "../ui/text";
 import TradingViewNotice from "./TradingViewNotice";
 import { TradeInfo } from "~/services/community/types/trade";
+import { shortAddress } from "~/utils/shortAddress";
 
 export default function CommunityTokenInfo({
   tokenInfo,
@@ -55,6 +56,10 @@ export default function CommunityTokenInfo({
   );
 }
 
+const numberToMillion = (num: number) => {
+  const n = num / 1000000;
+  return n.toFixed(2);
+};
 function TokenInfo({
   tokenInfo,
   tradeInfo,
@@ -69,19 +74,19 @@ function TokenInfo({
   const data = [
     {
       label: "Market Cap",
-      value: `$${tradeInfo.stats.market_cap_usd || 0}`,
+      value: `$${numberToMillion(Number(tradeInfo.stats.market_cap_usd) || 0)}M`,
     },
     {
       label: "Volume (24H)",
-      value: `$${tradeInfo.stats.volume_usd.h24 || 0}`,
+      value: `$${numberToMillion(Number(tradeInfo.stats.volume_usd.h24) || 0)}M`,
     },
     {
       label: "Buys (24H)",
-      value: `$${tradeInfo.stats.transactions.h24.buys || 0}`,
+      value: `${tradeInfo.stats.transactions.h24.buys || 0}`,
     },
     {
       label: "Sells (24H)",
-      value: `$${tradeInfo.stats.transactions.h24.sells || 0}`,
+      value: `${tradeInfo.stats.transactions.h24.sells || 0}`,
     },
     {
       label: "Holders",
@@ -93,7 +98,7 @@ function TokenInfo({
     },
     {
       label: "Token Contract",
-      value: tokenInfo.contract,
+      value: shortAddress(tokenInfo.contract),
     },
     {
       label: "Chain",
@@ -101,11 +106,11 @@ function TokenInfo({
     },
   ];
   return (
-    <View className=" mt-5 flex-col gap-5">
+    <View className="mt-5 flex-col gap-5">
       {data.map((item, index) => (
-        <View className=" flex-row items-center justify-between" key={index}>
-          <Text className=" text-base">{item.label}</Text>
-          <Text className=" text-base">{item.value}</Text>
+        <View className="flex-row items-center justify-between" key={index}>
+          <Text className="text-base">{item.label}</Text>
+          <Text className="text-base">{item.value}</Text>
         </View>
       ))}
     </View>
