@@ -138,6 +138,7 @@ const SellShare = forwardRef<
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && price) {
         const transationData = {
+          chain: SHARE_CONTRACT_CHAIN,
           transactionReceipt,
           description: (
             <View className="flex-row items-center gap-2">
@@ -347,6 +348,7 @@ const BuyShare = forwardRef<
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && price) {
         const transationData = {
+          chain: SHARE_CONTRACT_CHAIN,
           transactionReceipt,
           description: (
             <View className="flex-row items-center gap-2">

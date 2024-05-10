@@ -4,10 +4,13 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
 import { Check, X } from "../common/Icons";
-import { TransactionReceipt } from "viem";
+import { Chain, TransactionReceipt } from "viem";
 import { ReactNode } from "react";
+import { base } from "viem/chains";
+import { ExternalLink } from "../common/ExternalLink";
 
 export type TransationData = {
+  chain: Chain;
   transactionReceipt: TransactionReceipt;
   description: ReactNode;
 };
@@ -25,22 +28,24 @@ export function TransactionSuccessInfo({
 }: TransactionInfoProps) {
   console.log("TransactionSuccessInfo", data);
   return (
-    <View className="flex items-center gap-6">
+    <View className="flex w-full items-center gap-6">
       <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
         <Check className="size-8 text-[green]" />
       </View>
       <Text className="font-medium">Transaction Completed!</Text>
       {data.description}
       <View className="w-full flex-row justify-items-stretch gap-4">
-        <Link
-          className="flex-1/2 text-primary-foreground/80"
-          href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
-          target="_blank"
-        >
-          <Button variant="outline" className="w-full border-secondary">
-            <Text className="text-secondary">See Details</Text>
-          </Button>
-        </Link>
+        {data.chain?.blockExplorers && (
+          <ExternalLink
+            className="flex-1/2 text-primary-foreground/80"
+            href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
+            target="_blank"
+          >
+            <Button variant="outline" className="bg-white border-secondary">
+              <Text className="text-secondary">See Details</Text>
+            </Button>
+          </ExternalLink>
+        )}
         <Button
           variant="secondary"
           className="flex-1"
