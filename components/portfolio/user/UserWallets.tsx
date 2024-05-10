@@ -100,7 +100,7 @@ export default function Wallets() {
               {connectedWallets.map((wallet) => (
                 <SelectItem
                   asChild
-                  className="p-0"
+                  className={cn("p-0")}
                   key={wallet.address}
                   label={shortPubKey(wallet.address)}
                   value={wallet.address}

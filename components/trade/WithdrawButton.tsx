@@ -47,7 +47,7 @@ export default function WithdrawButton({
     >
       <DialogTrigger asChild>
         <Button size="sm" className={cn("p-0")} variant={"link"}>
-          <Text>Withdraw</Text>
+          <Text className="text-xs text-secondary">Withdraw</Text>
         </Button>
       </DialogTrigger>
       {!transationData && !error && (
