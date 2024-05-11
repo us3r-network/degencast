@@ -1,5 +1,5 @@
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useFocusEffect, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,11 +20,13 @@ export default function TradeScreen() {
   const segments = useSegments();
   const [value, setValue] = useState(segments[2] || TABS[0].value);
   const router = useRouter();
-  useEffect(() => {
+  useFocusEffect(() => {
     if (segments?.[2]) {
       setValue(segments[2]);
+    } else if (!value) {
+      setValue(TABS[0].value);
     }
-  }, [segments]);
+  });
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}

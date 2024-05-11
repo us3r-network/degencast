@@ -26,6 +26,13 @@ export default function PortfolioScreen() {
   const login = ()=>{
     router.push("/login");
   };
+  useFocusEffect(() => {
+    if (segments?.[2]) {
+      setValue(segments[2]);
+    } else if (!value) {
+      setValue(TABS[0].value);
+    }
+  });
   // useFocusEffect(
   //   useCallback(() => {
   //     if (ready && !privyAuthenticated) {
