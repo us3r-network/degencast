@@ -128,6 +128,7 @@ export default function TabLayout() {
             },
             headerRight: () => (
               <View className="flex-row items-center gap-4 p-4">
+                <UserGlobalPoints />
                 <UserWallets />
               </View>
             ),
