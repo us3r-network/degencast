@@ -1,6 +1,7 @@
 // import { useSwitchChain } from "wagmi";
+import { useConnectWallet } from "@privy-io/react-auth";
 import { debounce, throttle } from "lodash";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
@@ -16,9 +17,11 @@ import {
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
+import useUserAction from "~/hooks/user/useUserAction";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+import { UserActionName } from "~/services/user/types";
 import About from "../common/About";
 import { ArrowUpDown } from "../common/Icons";
 import { TokenInfo, TokenWithValue } from "../common/TokenInfo";
@@ -30,9 +33,6 @@ import {
   TransactionSuccessInfo,
   TransationData,
 } from "./TranasactionResult";
-import { setBalance } from "viem/actions";
-import useUserAction from "~/hooks/user/useUserAction";
-import { UserActionName } from "~/services/user/types";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -43,71 +43,84 @@ export default function TradeButton({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button
-          className={cn("w-14")}
-          size="sm"
-          variant={"secondary"}
-          disabled={
-            (!token1 && !token2) ||
-            token1.chainId !== base.id ||
-            token2.chainId !== base.id
-          }
-        >
-          <Text>Trade</Text>
-        </Button>
-      </DialogTrigger>
-      {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Trade</DialogTitle>
-            <ActiveWallet />
-          </DialogHeader>
-          <SwapToken
-            token1={token1}
-            token2={token2}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-          <DialogFooter>
-            <About title="Swap & Earn" info={TRADE_INFO} />
-          </DialogFooter>
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Trade more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Trade</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setTransationData(undefined);
+          setError("");
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button
+            className={cn("w-14")}
+            size="sm"
+            variant={"secondary"}
+            disabled={
+              (!token1 && !token2) ||
+              token1.chainId !== base.id ||
+              token2.chainId !== base.id
+            }
+          >
+            <Text>Trade</Text>
+          </Button>
+        </DialogTrigger>
+        {!transationData && !error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Trade</DialogTitle>
+              <ActiveWallet />
+            </DialogHeader>
+            <SwapToken
+              token1={token1}
+              token2={token2}
+              onSuccess={setTransationData}
+              onError={setError}
+            />
+            <DialogFooter>
+              <About title="Swap & Earn" info={TRADE_INFO} />
+            </DialogFooter>
+          </DialogContent>
+        )}
+        {transationData && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Transaction</DialogTitle>
+            </DialogHeader>
+            <TransactionSuccessInfo
+              data={transationData}
+              buttonText="Trade more"
+              buttonAction={() => setTransationData(undefined)}
+            />
+          </DialogContent>
+        )}
+        {error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Error</DialogTitle>
+            </DialogHeader>
+            <ErrorInfo
+              error={error}
+              buttonText="Try Again"
+              buttonAction={() => setError("")}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
+    );
 }
 
 const TRADE_INFO = [

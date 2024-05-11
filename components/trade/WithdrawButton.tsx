@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Chain, parseEther } from "viem";
 import {
+  useAccount,
   useChainId,
   useSendTransaction,
   useSwitchChain,
@@ -30,6 +31,7 @@ import {
 import ToeknSelect from "./UserTokenSelect";
 import { base } from "viem/chains";
 import { shortPubKey } from "~/utils/shortPubKey";
+import { useConnectWallet } from "@privy-io/react-auth";
 
 export default function WithdrawButton({
   defaultChain = DEFAULT_CHAIN,
@@ -39,57 +41,71 @@ export default function WithdrawButton({
   // console.log("SendButton tokens", availableTokens);
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button size="sm" className={cn("p-0")} variant={"link"}>
-          <Text className="text-xs text-secondary">Withdraw</Text>
-        </Button>
-      </DialogTrigger>
-      {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Withdraw</DialogTitle>
-            <ActiveWallet />
-          </DialogHeader>
-          <SendToken
-            chain={defaultChain}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Withdraw more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Trade</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setTransationData(undefined);
+          setError("");
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button size="sm" className={cn("p-0")} variant={"link"}>
+            <Text className="text-xs text-secondary">Withdraw</Text>
+          </Button>
+        </DialogTrigger>
+        {!transationData && !error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Withdraw</DialogTitle>
+              <ActiveWallet />
+            </DialogHeader>
+            <SendToken
+              chain={defaultChain}
+              onSuccess={setTransationData}
+              onError={setError}
+            />
+          </DialogContent>
+        )}
+        {transationData && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Transaction</DialogTitle>
+            </DialogHeader>
+            <TransactionSuccessInfo
+              data={transationData}
+              buttonText="Withdraw more"
+              buttonAction={() => setTransationData(undefined)}
+            />
+          </DialogContent>
+        )}
+        {error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Error</DialogTitle>
+            </DialogHeader>
+            <ErrorInfo
+              error={error}
+              buttonText="Try Again"
+              buttonAction={() => setError("")}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
+    );
 }
 
 const SendToken = forwardRef<

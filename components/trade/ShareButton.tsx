@@ -36,6 +36,7 @@ import {
 import ToeknSelect from "./UserTokenSelect";
 import { TokenWithValue } from "../common/TokenInfo";
 import { base } from "viem/chains";
+import { useConnectWallet } from "@privy-io/react-auth";
 
 export function SellButton({
   logo,
@@ -48,59 +49,73 @@ export function SellButton({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className={cn("w-14")} size="sm" variant={"secondary"}>
-          <Text>Sell</Text>
-        </Button>
-      </DialogTrigger>
-      {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Sell</DialogTitle>
-            <ActiveWallet />
-          </DialogHeader>
-          <SellShare
-            logo={logo}
-            name={name}
-            sharesSubject={sharesSubject}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Sell more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Sell</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setTransationData(undefined);
+          setError("");
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button className={cn("w-14")} size="sm" variant={"secondary"}>
+            <Text>Sell</Text>
+          </Button>
+        </DialogTrigger>
+        {!transationData && !error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Sell</DialogTitle>
+              <ActiveWallet />
+            </DialogHeader>
+            <SellShare
+              logo={logo}
+              name={name}
+              sharesSubject={sharesSubject}
+              onSuccess={setTransationData}
+              onError={setError}
+            />
+          </DialogContent>
+        )}
+        {transationData && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Transaction</DialogTitle>
+            </DialogHeader>
+            <TransactionSuccessInfo
+              data={transationData}
+              buttonText="Sell more"
+              buttonAction={() => setTransationData(undefined)}
+            />
+          </DialogContent>
+        )}
+        {error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Error</DialogTitle>
+            </DialogHeader>
+            <ErrorInfo
+              error={error}
+              buttonText="Try Again"
+              buttonAction={() => setError("")}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
+    );
 }
 
 const SellShare = forwardRef<
@@ -241,67 +256,80 @@ export function BuyButton({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        {renderButton ? (
-          renderButton()
-        ) : (
-          <Button className={cn("w-14")} size="sm" variant={"secondary"}>
-            <Text>Buy</Text>
-          </Button>
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Buy</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setTransationData(undefined);
+          setError("");
+        }}
+      >
+        <DialogTrigger asChild>
+          {renderButton ? (
+            renderButton()
+          ) : (
+            <Button className={cn("w-14")} size="sm" variant={"secondary"}>
+              <Text>Buy</Text>
+            </Button>
+          )}
+        </DialogTrigger>
+        {!transationData && !error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Buy Shares & get allowance</DialogTitle>
+              <ActiveWallet />
+            </DialogHeader>
+            <BuyShare
+              logo={logo}
+              name={name}
+              sharesSubject={sharesSubject}
+              onSuccess={setTransationData}
+              onError={setError}
+            />
+            <DialogFooter>
+              <About title={SHARE_TITLE} info={SHARE_INFO} />
+            </DialogFooter>
+          </DialogContent>
         )}
-      </DialogTrigger>
-      {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Buy Shares & get allowance</DialogTitle>
-            <ActiveWallet />
-          </DialogHeader>
-          <BuyShare
-            logo={logo}
-            name={name}
-            sharesSubject={sharesSubject}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-          <DialogFooter>
-            <About title={SHARE_TITLE} info={SHARE_INFO} />
-          </DialogFooter>
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Buy more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+        {transationData && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Transaction</DialogTitle>
+            </DialogHeader>
+            <TransactionSuccessInfo
+              data={transationData}
+              buttonText="Buy more"
+              buttonAction={() => setTransationData(undefined)}
+            />
+          </DialogContent>
+        )}
+        {error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Error</DialogTitle>
+            </DialogHeader>
+            <ErrorInfo
+              error={error}
+              buttonText="Try Again"
+              buttonAction={() => setError("")}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
+    );
 }
 
 const BuyShare = forwardRef<
