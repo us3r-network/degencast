@@ -2,7 +2,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import React from "react";
 import { View } from "react-native";
 import { User } from "~/components/common/Icons";
-import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+// import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import {
@@ -46,7 +46,7 @@ export default function UserInfo() {
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
         )}
         {farcasterAccount?.ownerAddress && <DegenTipsStats address={farcasterAccount?.ownerAddress as `0x${string}`} />}
-        <UserGlobalPoints />
+        {/* <UserGlobalPoints /> */}
       </View>
     </View>
   );

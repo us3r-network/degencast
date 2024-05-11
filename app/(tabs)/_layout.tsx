@@ -19,6 +19,7 @@ import { Text } from "~/components/ui/text";
 import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SKIP_ONBOARDING_KEY } from "../login";
+import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 
 export default function TabLayout() {
   // preload trade data
@@ -103,6 +104,7 @@ export default function TabLayout() {
             },
             headerRight: () => (
               <View className="flex-row items-center gap-4 p-4">
+                <UserGlobalPoints />
                 <UserWallets />
               </View>
             ),
