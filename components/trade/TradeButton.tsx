@@ -2,7 +2,7 @@
 import { useConnectWallet } from "@privy-io/react-auth";
 import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { base } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
@@ -292,9 +292,15 @@ function SwapToken({
             }}
           >
             {fetchingPrice ? (
-              <Text>Fetching Price...</Text>
+              <View className="flex-row items-center gap-2">
+                <ActivityIndicator color={"white"} />
+                <Text>Fetching Price...</Text>
+              </View>
             ) : fetchingQuote ? (
-              <Text>Fetching Quote...</Text>
+              <View className="flex-row items-center gap-2">
+                <ActivityIndicator color={"white"} />
+                <Text>Fetching Quote...</Text>
+              </View>
             ) : waitingUserSign ? (
               <Text>Please sign the transaction!</Text>
             ) : transationLoading ? (

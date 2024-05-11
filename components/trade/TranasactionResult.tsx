@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { Chain, TransactionReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -33,6 +33,7 @@ export function TransactionInfo({
       ) : (
         <View className="size-16 items-center justify-center rounded-full bg-[white]/40">
           <Info className="size-8 text-[white]" />
+          {/* <ActivityIndicator className="text-secondary"/> */}
         </View>
       )}
       <Text className="font-medium">
