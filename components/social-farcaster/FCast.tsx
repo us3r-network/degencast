@@ -11,7 +11,7 @@ export default function FCast({
   cast,
   farcasterUserDataObj,
   className,
-  hidePoints,
+  hidePoints = true,
   ...props
 }: ViewProps & {
   cast: FarCast;

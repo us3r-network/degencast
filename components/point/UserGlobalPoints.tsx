@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { usePrivy } from "@privy-io/react-auth";
 import PointsRulesModal from "./PointsRulesModal";
 import { useState } from "react";
-import { Pressable } from "react-native";
+import { Pressable, Image, View } from "react-native";
 
 export default function UserGlobalPoints() {
   const { totalPoints } = useUserTotalPoints();
@@ -19,18 +19,28 @@ export default function UserGlobalPoints() {
           setOpen(true);
         }}
       >
-        <Badge className="flex w-fit flex-row items-center gap-1 bg-[#F41F4C] px-2 py-0 shadow shadow-black/25">
-          <Atom className="size-4 text-white" />
-          <Text className="text-sm text-white">{totalPoints}</Text>
+        <Badge className="flex h-6 w-fit flex-row items-center overflow-hidden border-0 bg-[#F2B949] p-0 shadow shadow-black/25 transition-all">
+          {/* <Atom className="size-4 text-white" /> */}
+          <View className="flex h-full flex-row items-center gap-1 px-2 py-0">
+            <Image
+              source={require("~/assets/images/wand-sparkles.png")}
+              style={{
+                width: 16,
+                height: 16,
+                resizeMode: "contain",
+              }}
+            />
+            <Text className="text-sm text-primary">{totalPoints}</Text>
+          </View>
           {ready && !authenticated && totalPoints > 0 && (
             <Button
-              className=" ml-1 box-border h-4 rounded-full bg-secondary px-1 py-0 text-xs text-white"
+              className="box-border h-full rounded-none bg-secondary px-2 py-0 text-xs"
               onPress={(e) => {
                 e.stopPropagation();
                 login();
               }}
             >
-              <Text className="text-xs text-white">Claim</Text>
+              <Text className=" text-base font-normal text-white">Claim</Text>
             </Button>
           )}
         </Badge>

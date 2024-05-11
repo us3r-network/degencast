@@ -55,13 +55,35 @@ export const CommentIcon2 = (props: SvgProps) => {
   );
 };
 
+export const EditIcon = (props: SvgProps) => {
+  const width = props.width || 24;
+  const height = props.height || 24;
+  const stroke = props.stroke || "white";
+  return (
+    <Svg
+      width={width}
+      height={height}
+      fill={props.fill || "none"}
+      stroke={stroke}
+      {...props}
+    >
+      <Path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 3H5C4.46957 3 3.96086 3.21071 3.58579 3.58579C3.21071 3.96086 3 4.46957 3 5V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V12"
+        strokeWidth="1.5"
+      />
+      <Path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M18.375 2.62523C18.7728 2.2274 19.3124 2.00391 19.875 2.00391C20.4376 2.00391 20.9772 2.2274 21.375 2.62523C21.7728 3.02305 21.9963 3.56262 21.9963 4.12523C21.9963 4.68784 21.7728 5.2274 21.375 5.62523L12 15.0002L8 16.0002L9 12.0002L18.375 2.62523Z"
+        strokeWidth="1.5"
+      />
+    </Svg>
+  );
+};
 export const HasSignerIcon = (props: SvgProps) => (
-  <Svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-  >
+  <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
     <Path
       d="M8 2H3.33333C2.97971 2 2.64057 2.14048 2.39052 2.39052C2.14048 2.64057 2 2.97971 2 3.33333V12.6667C2 13.0203 2.14048 13.3594 2.39052 13.6095C2.64057 13.8595 2.97971 14 3.33333 14H12.6667C13.0203 14 13.3594 13.8595 13.6095 13.6095C13.8595 13.3594 14 13.0203 14 12.6667V8"
       stroke="#1E293B"

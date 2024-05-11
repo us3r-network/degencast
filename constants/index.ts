@@ -32,4 +32,5 @@ export const DEGEN_METADATA: TokenWithTradeInfo = {
     "https://assets.coingecko.com/coins/images/34515/standard/android-chrome-512x512.png",
 };
 
-export const DEFAULT_HEADER_HEIGHT = 64;
+export const DEFAULT_HEADER_HEIGHT = 54;
+export const DEFAULT_TABBAR_HEIGHT = 90;

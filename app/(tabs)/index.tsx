@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   Platform,
+  SafeAreaView,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
@@ -27,6 +28,7 @@ import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
 import { useRef } from "react";
+import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
@@ -39,15 +41,26 @@ export default function ExploreScreenScroll() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
-  const itemHeight = Dimensions.get("window").height - 64 - 98;
+  const headerHeight = DEFAULT_HEADER_HEIGHT;
+  const footerHeight = DEFAULT_TABBAR_HEIGHT;
+  const itemPaddingTop = 15;
+  const itemHeight =
+    Dimensions.get("window").height -
+    headerHeight -
+    footerHeight +
+    itemPaddingTop;
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
+
   return (
-    <View className={cn("flex-1 bg-background pt-16")}>
-      <View className={cn("h-full w-full")} style={{ height: itemHeight }}>
+    <SafeAreaView
+      style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
+      className="bg-background"
+    >
+      <View className={cn("w-full")} style={{ height: itemHeight }}>
         <ScrollView
-          style={{ flex: 1 }}
-          className="h-full w-full items-center"
+          style={{ flex: 1, height: itemHeight }}
+          className="w-full items-center"
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           pagingEnabled={true}
@@ -86,17 +99,18 @@ export default function ExploreScreenScroll() {
             return (
               <View
                 key={index.toString()}
-                className={cn("h-full w-fit py-2 ")}
+                className={cn("flex w-full")}
                 style={{
                   height: itemHeight,
+                  paddingTop: itemPaddingTop,
                 }}
               >
                 <Card
                   className={cn(
-                    "box-border h-full w-[calc(100vw-40px)] rounded-2xl border-none sm:max-w-screen-sm",
+                    "mx-auto box-border h-full w-[calc(100%-30px)] rounded-2xl border-none sm:max-w-screen-sm",
                   )}
                   style={{
-                    height: itemHeight - 60,
+                    height: itemHeight - 35 - itemPaddingTop,
                   }}
                 >
                   <Pressable
@@ -124,10 +138,10 @@ export default function ExploreScreenScroll() {
                   {community?.channelId ? (
                     <FCastCommunity
                       communityInfo={community}
-                      className="absolute -bottom-11 right-1/2 translate-x-1/2"
+                      className="absolute -bottom-[35px] right-1/2 translate-x-1/2"
                     />
                   ) : (
-                    <FCastCommunityDefault className="absolute -bottom-11 right-1/2 translate-x-1/2" />
+                    <FCastCommunityDefault className="absolute -bottom-[35px] right-1/2 translate-x-1/2" />
                   )}
                 </Card>
               </View>
@@ -135,7 +149,7 @@ export default function ExploreScreenScroll() {
           })}
         </ScrollView>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
