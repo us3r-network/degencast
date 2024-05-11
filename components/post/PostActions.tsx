@@ -1,16 +1,17 @@
 import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
-import { Heart, Share2 } from "../common/Icons";
+import { Heart, Plus, Share2, X } from "../common/Icons";
 import { Text } from "../ui/text";
-import { TextProps, View, ViewProps } from "react-native";
+import { Animated, Easing, TextProps, View, ViewProps } from "react-native";
 import { Image } from "react-native";
 import { CommentIcon2 } from "../common/SvgIcons";
+import { useCallback, useEffect, useState } from "react";
 
 export function ActionButton({ className, ...props }: ButtonProps) {
   return (
     <Button
       className={cn(
-        " h-[60px] w-[60px] flex-col rounded-full bg-white p-0",
+        " h-[50px] w-[50px] flex-col rounded-full bg-white p-0 active:bg-transparent",
         className,
       )}
       {...props}
@@ -35,7 +36,7 @@ export const LikeButton = ({
 }) => {
   return (
     <ActionButton
-      className={cn("", liked && " bg-[#F41F4C]", className)}
+      className={cn("", liked ? " bg-[#F41F4C]" : " bg-transparent", className)}
       {...props}
     >
       <Heart
@@ -105,6 +106,8 @@ export const ShareButton = ({
 export const ExplorePostActions = ({
   liked,
   likeCount,
+  showActions,
+  showActionsChange,
   onLike,
   onGift,
   onShare,
@@ -114,25 +117,63 @@ export const ExplorePostActions = ({
 }: ViewProps & {
   liked: boolean;
   likeCount?: number;
+  showActions: boolean;
+  showActionsChange: (showActions: boolean) => void;
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
   onComment?: () => void;
 }) => {
+  const fadeAnimation = useState(new Animated.Value(showActions ? 1 : 0))[0];
+  const toggleActions = useCallback(() => {
+    showActionsChange(!showActions);
+  }, [showActions, showActionsChange]);
+  useEffect(() => {
+    Animated.timing(fadeAnimation, {
+      toValue: showActions ? 1 : 0,
+      duration: 150,
+      easing: Easing.ease,
+      useNativeDriver: true,
+    }).start();
+  }, [showActions]);
+
   return (
-    <View className={cn(" flex w-fit flex-col gap-3", className)} {...props}>
-      <LikeButton
+    <View className={cn(" flex w-fit flex-col gap-5", className)} {...props}>
+      <Animated.View
+        style={[
+          {
+            opacity: fadeAnimation,
+          },
+        ]}
+      >
+        <View className={cn(" flex w-fit flex-col gap-5")}>
+          <LikeButton
+            className=" shadow-md shadow-primary"
+            liked={liked}
+            likeCount={likeCount}
+            onPress={onLike}
+          />
+          <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
+          <CommentButton
+            className=" shadow-md shadow-primary"
+            onPress={onComment}
+          />
+          <ShareButton
+            className=" shadow-md shadow-primary"
+            onPress={onShare}
+          />
+        </View>
+      </Animated.View>
+      <ActionButton
         className=" shadow-md shadow-primary"
-        liked={liked}
-        likeCount={likeCount}
-        onPress={onLike}
-      />
-      <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
-      <CommentButton
-        className=" shadow-md shadow-primary"
-        onPress={onComment}
-      />
-      <ShareButton className=" shadow-md shadow-primary" onPress={onShare} />
+        onPress={toggleActions}
+      >
+        {showActions ? (
+          <X size={24} className={cn(" fill-primary stroke-primary")} />
+        ) : (
+          <Plus size={24} className={cn(" fill-primary stroke-primary")} />
+        )}
+      </ActionButton>
     </View>
   );
 };
@@ -167,7 +208,7 @@ export const PostDetailActions = ({
       {!hideLike && (
         <LikeButton
           className={cn(" h-10 w-10", liked && " border-none")}
-          variant={"outline"}
+          variant={liked ? "default" : "outline"}
           iconSize={15}
           liked={liked}
           likeCount={likeCount}

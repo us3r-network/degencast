@@ -1,20 +1,11 @@
-import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-  useNavigation,
-} from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
-import { Home } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
-import { PostDetailActions } from "~/components/post/PostActions";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions, {
-  CreatedFCastActions,
-} from "~/components/social-farcaster/FCastActions";
+import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
@@ -22,7 +13,6 @@ import FCastCommunity, {
 import FCastUserInfo from "~/components/social-farcaster/FCastUserInfo";
 import NeynarEmbeds from "~/components/social-farcaster/NeynarEmbeds";
 import NeynarText from "~/components/social-farcaster/NeynarText";
-import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
@@ -230,9 +220,8 @@ function CastDetailWithData({
               </View>
               <View className="flex flex-row items-center gap-3">
                 {cast && (
-                  <FCastActions
+                  <FCastDetailActions
                     cast={cast!}
-                    isDetail={true}
                     farcasterUserDataObj={farcasterUserDataObj}
                     communityInfo={community}
                   />

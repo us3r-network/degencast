@@ -6,7 +6,6 @@ import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAct
 import FCastGiftModal from "./FCastGiftModal";
 import { useState } from "react";
 import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
-import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserData } from "~/utils/farcaster/user-data";
@@ -16,11 +15,10 @@ import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import FCastShareModal from "./FCastShareModal";
 
-export default function FCastActions({
+export function FCastDetailActions({
   cast,
   farcasterUserDataObj,
   communityInfo,
-  isDetail,
   ...props
 }: ViewProps & {
   cast: FarCast;
@@ -28,7 +26,6 @@ export default function FCastActions({
   communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
-  const navigation = useNavigation();
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
@@ -83,26 +80,110 @@ export default function FCastActions({
   };
   return (
     <>
-      {isDetail ? (
-        <PostDetailActions
-          liked={liked}
-          onLike={onLike}
-          onGift={onGift}
-          onShare={onShare}
-          onComment={onComment}
-          {...props}
-        />
-      ) : (
-        <ExplorePostActions
-          liked={liked}
-          likeCount={likeCount}
-          onLike={onLike}
-          onGift={onGift}
-          onShare={onShare}
-          onComment={onComment}
-          {...props}
-        />
-      )}
+      <PostDetailActions
+        liked={liked}
+        onLike={onLike}
+        onGift={onGift}
+        onShare={onShare}
+        onComment={onComment}
+        {...props}
+      />
+
+      <FCastGiftModal
+        totalAllowance={totalDegenAllowance}
+        remainingAllowance={remainingDegenAllowance}
+        cast={cast}
+        open={openGiftModal}
+        onOpenChange={setOpenGiftModal}
+      />
+      <FCastShareModal
+        cast={cast}
+        open={openShareModal}
+        onOpenChange={setOpenShareModal}
+      />
+    </>
+  );
+}
+
+export function FCastExploreActions({
+  cast,
+  farcasterUserDataObj,
+  communityInfo,
+  showActions,
+  showActionsChange,
+  ...props
+}: ViewProps & {
+  cast: FarCast;
+  farcasterUserDataObj: { [key: string]: UserData };
+  communityInfo: CommunityInfo;
+  showActions: boolean;
+  showActionsChange: (showActions: boolean) => void;
+}) {
+  const { navigateToCastReply } = useCastPage();
+  const { authenticated, login } = usePrivy();
+  const { currFid } = useFarcasterAccount();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
+    { cast },
+  );
+  const { recast, removeRecast, recasted, recastCount } =
+    useFarcasterRecastAction({ cast });
+  const [openGiftModal, setOpenGiftModal] = useState(false);
+  const [openShareModal, setOpenShareModal] = useState(false);
+  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
+    useUserDegenAllowance();
+  const onLike = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+
+    if (liked) {
+      removeLikeCast();
+    } else {
+      likeCast();
+    }
+  };
+  const onGift = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
+  };
+  const onComment = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (!currFid) {
+      farcasterPrepareWrite();
+      return;
+    }
+    const castHex = getCastHex(cast);
+    navigateToCastReply(castHex, {
+      cast,
+      farcasterUserDataObj,
+      community: communityInfo,
+    });
+  };
+  const onShare = () => {
+    setOpenShareModal(true);
+  };
+  return (
+    <>
+      <ExplorePostActions
+        liked={liked}
+        likeCount={likeCount}
+        onLike={onLike}
+        onGift={onGift}
+        onShare={onShare}
+        onComment={onComment}
+        showActions={showActions}
+        showActionsChange={showActionsChange}
+        {...props}
+      />
 
       <FCastGiftModal
         totalAllowance={totalDegenAllowance}

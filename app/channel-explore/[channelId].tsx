@@ -1,5 +1,4 @@
 import {
-  Link,
   Stack,
   useGlobalSearchParams,
   useLocalSearchParams,
@@ -12,7 +11,6 @@ import {
   View,
 } from "react-native";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions from "~/components/social-farcaster/FCastActions";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
@@ -21,8 +19,6 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
-import { Button } from "~/components/ui/button";
-import { Text } from "~/components/ui/text";
 import useLoadChannelExploreCasts from "~/hooks/explore/useLoadChannelExploreCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import { useEffect, useMemo, useRef } from "react";
@@ -30,9 +26,10 @@ import { ScrollView } from "react-native-gesture-handler";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { SocialPlatform } from "~/services/farcaster/types";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
-import { Home } from "~/components/common/Icons";
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
+import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
+import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
@@ -91,6 +88,8 @@ export default function ChannelExploreScreen() {
     initCast,
   });
 
+  const currItem = casts[currentCastIndex];
+
   const farcasterUserDataObj = {
     ...(channelPageCastUserDataObj || {}),
     ...exploreFarcasterUserDataObj,
@@ -103,7 +102,10 @@ export default function ChannelExploreScreen() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
-  const itemHeight = Dimensions.get("window").height - 64 - 90;
+  const headerHeight = DEFAULT_HEADER_HEIGHT;
+  const footerHeight = 70;
+  const itemHeight =
+    Dimensions.get("window").height - headerHeight - footerHeight;
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
   return (
@@ -112,39 +114,46 @@ export default function ChannelExploreScreen() {
         options={{
           contentStyle: { backgroundColor: "white" },
           header: () => (
-            <View className="flex flex-row items-center justify-between  bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit flex-row items-center gap-3 p-3 ">
-                  <GoBackButton
+            <View
+              className="flex w-full flex-row items-center justify-between  bg-white"
+              style={{
+                height: 54,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View className="flex-row items-center gap-3">
+                <GoBackButton
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
+                {showGoHomeBtn && (
+                  <GoHomeButton
                     onPress={() => {
-                      navigation.goBack();
+                      navigation.navigate("index" as never);
                     }}
                   />
-                  {showGoHomeBtn && (
-                    <GoHomeButton
-                      onPress={() => {
-                        navigation.navigate("index" as never);
-                      }}
-                    />
-                  )}
-                </View>
+                )}
               </View>
-              <View className="flex flex-row items-center gap-3 pr-3">
-                <Link href={`/create?channelId=${channelId}` as any} asChild>
-                  <Button variant={"secondary"} size={"sm"}>
-                    <Text className=" text-base font-medium">Cast</Text>
-                  </Button>
-                </Link>
+              <View>
+                {currItem?.data && (
+                  <FCastDetailActions
+                    cast={currItem.data!}
+                    farcasterUserDataObj={farcasterUserDataObj}
+                    communityInfo={community}
+                  />
+                )}
               </View>
             </View>
           ),
         }}
       />
-      <View className={cn("h-full w-full flex-col")}>
-        <View className="w-full flex-1">
+      <View className={cn("w-full flex-col")}>
+        <View className="w-full" style={{ height: itemHeight }}>
           <ScrollView
-            style={{ flex: 1 }}
-            className="h-full w-full"
+            style={{ flex: 1, height: itemHeight }}
+            className="w-full"
             horizontal={false}
             showsHorizontalScrollIndicator={false}
             pagingEnabled={true}
@@ -190,7 +199,7 @@ export default function ChannelExploreScreen() {
                 >
                   <Pressable
                     className={cn(
-                      "box-border h-full w-full overflow-hidden p-5 pb-1",
+                      "box-border h-full w-full overflow-hidden p-4",
                     )}
                     onPress={() => {
                       const castHex = getCastHex(data);
@@ -209,12 +218,6 @@ export default function ChannelExploreScreen() {
                       farcasterUserDataObj={farcasterUserDataObj}
                     />
                   </Pressable>
-                  <FCastActions
-                    className=" absolute bottom-[10px] right-5"
-                    cast={data}
-                    farcasterUserDataObj={farcasterUserDataObj}
-                    communityInfo={community}
-                  />
                 </View>
               );
             })}
