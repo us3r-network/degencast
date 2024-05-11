@@ -30,7 +30,7 @@ import About from "../common/About";
 import ActiveWallet from "./ActiveWallet";
 import {
   ErrorInfo,
-  TransactionSuccessInfo,
+  TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
@@ -95,7 +95,7 @@ export function SellButton({
             <DialogHeader className={cn("flex gap-2")}>
               <DialogTitle>Transaction</DialogTitle>
             </DialogHeader>
-            <TransactionSuccessInfo
+            <TransactionInfo
               data={transationData}
               buttonText="Sell more"
               buttonAction={() => setTransationData(undefined)}
@@ -309,7 +309,7 @@ export function BuyButton({
             <DialogHeader className={cn("flex gap-2")}>
               <DialogTitle>Transaction</DialogTitle>
             </DialogHeader>
-            <TransactionSuccessInfo
+            <TransactionInfo
               data={transationData}
               buttonText="Buy more"
               buttonAction={() => setTransationData(undefined)}
