@@ -1,6 +1,7 @@
 // import { useSwitchChain } from "wagmi";
+import { useConnectWallet } from "@privy-io/react-auth";
 import { debounce, throttle } from "lodash";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { base } from "viem/chains";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
@@ -16,9 +17,11 @@ import {
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
+import useUserAction from "~/hooks/user/useUserAction";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+import { UserActionName } from "~/services/user/types";
 import About from "../common/About";
 import { ArrowUpDown } from "../common/Icons";
 import { TokenInfo, TokenWithValue } from "../common/TokenInfo";
@@ -27,12 +30,9 @@ import { Separator } from "../ui/separator";
 import ActiveWallet from "./ActiveWallet";
 import {
   ErrorInfo,
-  TransactionSuccessInfo,
+  TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import { setBalance } from "viem/actions";
-import useUserAction from "~/hooks/user/useUserAction";
-import { UserActionName } from "~/services/user/types";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -41,73 +41,55 @@ export default function TradeButton({
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
 }) {
-  const [transationData, setTransationData] = useState<TransationData>();
-  const [error, setError] = useState("");
-
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button
-          className={cn("w-14")}
-          size="sm"
-          variant={"secondary"}
-          disabled={
-            (!token1 && !token2) ||
-            token1.chainId !== base.id ||
-            token2.chainId !== base.id
-          }
-        >
-          <Text>Trade</Text>
-        </Button>
-      </DialogTrigger>
-      {!transationData && !error && (
+  const [swaping, setSwaping] = useState(false);
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Trade</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setSwaping(false);
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button
+            className={cn("w-14")}
+            size="sm"
+            variant={"secondary"}
+            disabled={
+              (!token1 && !token2) ||
+              token1.chainId !== base.id ||
+              token2.chainId !== base.id
+            }
+          >
+            <Text>Trade</Text>
+          </Button>
+        </DialogTrigger>
         <DialogContent className="w-screen">
           <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Trade</DialogTitle>
-            <ActiveWallet />
+            <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
+            {!swaping && <ActiveWallet />}
           </DialogHeader>
-          <SwapToken
-            token1={token1}
-            token2={token2}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-          <DialogFooter>
-            <About title="Swap & Earn" info={TRADE_INFO} />
-          </DialogFooter>
+          <SwapToken token1={token1} token2={token2} setSwaping={setSwaping} />
+          {!swaping && (
+            <DialogFooter>
+              <About title="Swap & Earn" info={TRADE_INFO} />
+            </DialogFooter>
+          )}
         </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Trade more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+      </Dialog>
+    );
 }
 
 const TRADE_INFO = [
@@ -118,13 +100,11 @@ const DEFAULT_AMOUNT = "0";
 function SwapToken({
   token1,
   token2,
-  onSuccess,
-  onError,
+  setSwaping,
 }: {
   token1: TokenWithTradeInfo;
   token2: TokenWithTradeInfo;
-  onSuccess?: (data: TransationData) => void;
-  onError?: (error: string) => void;
+  setSwaping?: (swaping: boolean) => void;
 }) {
   const account = useAccount();
   const chainId = useChainId();
@@ -133,10 +113,14 @@ function SwapToken({
   const [toToken, setToToken] = useState(token2);
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
   const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
+  const [transationData, setTransationData] = useState<TransationData>();
+  const [transationError, setTransationError] = useState<string>();
 
   const {
+    swaping,
     fetchingPrice,
-    swapingToken,
+    fetchingQuote,
+    waitingUserSign,
     fetchPrice,
     swapToken,
     transactionReceipt,
@@ -144,6 +128,7 @@ function SwapToken({
     transationLoading,
     isSuccess,
     error,
+    reset,
   } = useSwapToken(account.address);
 
   const { submitUserAction } = useUserAction();
@@ -184,16 +169,14 @@ function SwapToken({
 
   useEffect(() => {
     if (
-      isSuccess &&
-      transactionReceipt &&
       fromToken &&
       fromAmount &&
       toToken &&
-      toAmount
+      toAmount &&
+      (waitingUserSign ||
+        transationLoading ||
+        (isSuccess && transactionReceipt))
     ) {
-      submitUserAction({
-        action: UserActionName.SwapToken,
-      });
       const transationData = {
         chain: base,
         transactionReceipt,
@@ -214,81 +197,126 @@ function SwapToken({
           </View>
         ),
       };
-      onSuccess?.(transationData);
+      setTransationData(transationData);
+      setSwaping?.(swaping);
     }
+  }, [isSuccess, waitingUserSign, transactionReceipt, transationLoading]);
+
+  useEffect(() => {
+    if (isSuccess)
+      submitUserAction({
+        action: UserActionName.SwapToken,
+      });
   }, [isSuccess]);
 
   useEffect(() => {
     if (error) {
-      onError?.("Something Wrong!");
+      setTransationData(undefined);
+      setTransationError((error as any)?.details || "Transaction failed!");
     }
   }, [error]);
 
+  const tryAgain = () => {
+    setTransationData(undefined);
+    setTransationError(undefined);
+    setSwaping?.(false);
+    reset();
+  };
+
   const [fromTokenBalance, setFromTokenBalance] = useState(0);
-  return (
-    <View className="flex w-full gap-2">
-      <Token
-        token={fromToken}
-        amount={fromAmount}
-        setAmount={(amount) => setFromAmount(amount)}
-        setBalance={(balance) => setFromTokenBalance(balance)}
+
+  if (transationData)
+    return (
+      <TransactionInfo
+        data={transationData}
+        buttonText="Trade more"
+        buttonAction={tryAgain}
       />
-      <View className="flex-row items-center">
-        <Separator className="flex-1 bg-secondary" />
-        <Button
-          disabled
-          className="size-10 rounded-full border-2 border-secondary text-secondary"
-          onPress={() => {
-            console.log("swap", fromToken, toToken, token1, token2);
-            if (fromToken.address === token1.address) {
-              setFromToken(token2);
-              setToToken(token1);
-            } else {
-              setFromToken(token1);
-              setToToken(token2);
+    );
+  else if (transationError)
+    return (
+      <ErrorInfo
+        error={transationError}
+        buttonText="Try Again"
+        buttonAction={tryAgain}
+      />
+    );
+  else
+    return (
+      <View className="flex w-full gap-2">
+        <Token
+          token={fromToken}
+          amount={fromAmount}
+          setAmount={(amount) => setFromAmount(amount)}
+          setBalance={(balance) => setFromTokenBalance(balance)}
+        />
+        <View className="flex-row items-center">
+          <Separator className="flex-1 bg-secondary" />
+          <Button
+            disabled
+            className="size-10 rounded-full border-2 border-secondary text-secondary"
+            onPress={() => {
+              // console.log("swap", fromToken, toToken, token1, token2);
+              if (fromToken.address === token1.address) {
+                setFromToken(token2);
+                setToToken(token1);
+              } else {
+                setFromToken(token1);
+                setToToken(token2);
+              }
+              setFromAmount(DEFAULT_AMOUNT);
+              setToAmount(DEFAULT_AMOUNT);
+            }}
+          >
+            <ArrowUpDown />
+          </Button>
+          <Separator className="flex-1 bg-secondary" />
+        </View>
+        <Token token={toToken || NATIVE_TOKEN_METADATA} amount={toAmount} />
+        {chainId === fromToken.chainId ? (
+          <Button
+            variant="secondary"
+            className="mt-6"
+            disabled={
+              !fromTokenBalance ||
+              fromTokenBalance < Number(fromAmount) ||
+              fetchingPrice ||
+              fetchingQuote ||
+              fetchingQuote ||
+              Number(fromAmount) === 0 ||
+              Number(toAmount) === 0 ||
+              transationLoading
             }
-            setFromAmount(DEFAULT_AMOUNT);
-            setToAmount(DEFAULT_AMOUNT);
-          }}
-        >
-          <ArrowUpDown />
-        </Button>
-        <Separator className="flex-1 bg-secondary" />
+            onPress={() => {
+              swap();
+            }}
+          >
+            {fetchingPrice ? (
+              <Text>Fetching Price...</Text>
+            ) : fetchingQuote ? (
+              <Text>Fetching Quote...</Text>
+            ) : waitingUserSign ? (
+              <Text>Please sign the transaction!</Text>
+            ) : transationLoading ? (
+              <Text>Comfirming the transaction...</Text>
+            ) : (
+              <Text>Swap</Text>
+            )}
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="mt-6"
+            disabled={switchChainStatus === "pending"}
+            onPress={async () => {
+              await switchChain({ chainId: fromToken.chainId });
+            }}
+          >
+            <Text>Switch to {base.name}</Text>
+          </Button>
+        )}
       </View>
-      <Token token={toToken || NATIVE_TOKEN_METADATA} amount={toAmount} />
-      {chainId === fromToken.chainId ? (
-        <Button
-          variant="secondary"
-          className="mt-6"
-          disabled={
-            !fromTokenBalance ||
-            fromTokenBalance < Number(fromAmount) ||
-            fetchingPrice ||
-            swapingToken ||
-            Number(fromAmount) === 0 ||
-            Number(toAmount) === 0 ||
-            transationLoading
-          }
-          onPress={() => {
-            swap();
-          }}
-        >
-          <Text>Swap</Text>
-        </Button>
-      ) : (
-        <Button
-          variant="secondary"
-          className="mt-6"
-          disabled={switchChainStatus === "pending"}
-          onPress={async () => {
-            await switchChain({ chainId: fromToken.chainId });
-          }}
-        >
-          <Text>Switch to {base.name}</Text>
-        </Button>
-      )}
-    </View>
-  );
+    );
 }
 
 function Token({
