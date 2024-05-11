@@ -1,4 +1,5 @@
 const { hairlineWidth } = require("nativewind/theme");
+const { fontFamily } = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -7,6 +8,9 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      fontFamily: {
+        inter: ["Inter"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
