@@ -199,7 +199,7 @@ export default function ChannelExploreScreen() {
                 >
                   <Pressable
                     className={cn(
-                      "box-border h-full w-full overflow-hidden p-4 pt-0",
+                      "box-border h-full w-full overflow-hidden p-4",
                     )}
                     onPress={() => {
                       const castHex = getCastHex(data);

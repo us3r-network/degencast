@@ -209,7 +209,7 @@ function CastDetailWithData({
             <View
               className="flex flex-row items-center justify-between bg-white"
               style={{
-                height: 54,
+                height: 70,
                 paddingLeft: 15,
                 paddingRight: 15,
               }}
@@ -242,7 +242,7 @@ function CastDetailWithData({
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 px-3">
+        <View className="w-full flex-1 px-4">
           <FlatList
             style={{
               flex: 1,
