@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FarCast } from "~/services/farcaster/types";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterWrite from "./useFarcasterWrite";
@@ -23,8 +23,8 @@ export default function useFarcasterLikeAction({
   const { submitUserAction } = useUserAction();
   const { likeCast: likeCastAction } = useFarcasterWrite();
 
-  const castHex = getCastHex(cast);
-  const castFid = cast.fid;
+  const castHex = useMemo(() => getCastHex(cast), [cast]);
+  const castFid = useMemo(() => cast.fid, [cast]);
   const currFid = user?.farcaster?.fid;
 
   const { validateLiked, validateLikeActionsPending, fetchCastLikeActions } =
@@ -121,8 +121,11 @@ export default function useFarcasterLikeAction({
   ]);
 
   // const liked = likes.includes(`${currFid}`);
-  const liked = validateLiked(castHex);
-  const fetchLikeActionsPending = validateLikeActionsPending(castHex);
+  const liked = useMemo(() => validateLiked(castHex), [validateLiked, castHex]);
+  const fetchLikeActionsPending = useMemo(
+    () => validateLikeActionsPending(castHex),
+    [validateLikeActionsPending, castHex],
+  );
 
   return {
     likes,

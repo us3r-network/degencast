@@ -40,8 +40,8 @@ export default function Editor({
   previewComponent?: React.ReactNode;
 }) {
   return (
-    <View className="flex flex-grow border-secondary">
-      <View className="flex-grow items-center px-4">
+    <View className="flex w-full flex-grow gap-5 border-secondary">
+      <View className="flex-grow items-center">
         <Textarea
           autoFocus={true}
           className={cn(
@@ -50,14 +50,14 @@ export default function Editor({
             "w-full rounded-md p-0  outline-none",
             "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
           )}
-          placeholder="Create a post..."
+          placeholder="Create a cast..."
           value={text}
           onChangeText={setText}
           aria-labelledby="textareaLabel"
         />
       </View>
 
-      <View className="flex flex-col gap-2 p-4 ">
+      <View className="flex flex-col gap-5">
         {images.map((url, i) => {
           return (
             <Image
@@ -73,9 +73,9 @@ export default function Editor({
         })}
       </View>
 
-      {previewComponent && <View className=" px-4">{previewComponent}</View>}
+      {previewComponent && <View>{previewComponent}</View>}
 
-      <View className="flex flex-row p-4">
+      <View className="flex flex-row">
         <WarpcastChannelPicker channel={channel} setChannel={setChannel} />
         <View className="flex-grow" />
         <ImageSelector

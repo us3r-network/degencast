@@ -1,20 +1,11 @@
-import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-  useNavigation,
-} from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
-import { Home } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
-import { PostDetailActions } from "~/components/post/PostActions";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions, {
-  CreatedFCastActions,
-} from "~/components/social-farcaster/FCastActions";
+import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
@@ -22,7 +13,6 @@ import FCastCommunity, {
 import FCastUserInfo from "~/components/social-farcaster/FCastUserInfo";
 import NeynarEmbeds from "~/components/social-farcaster/NeynarEmbeds";
 import NeynarText from "~/components/social-farcaster/NeynarText";
-import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
@@ -78,27 +68,32 @@ function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
       <Stack.Screen
         options={{
           header: () => (
-            <View className="flex flex-row items-center justify-between bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit flex-row items-center gap-3 p-3 ">
-                  <GoBackButton
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                  />
-                  <GoHomeButton
-                    onPress={() => {
-                      navigation.navigate("index" as never);
-                    }}
-                  />
-                </View>
+            <View
+              className="flex flex-row items-center justify-between bg-white"
+              style={{
+                height: 70,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View className="flex flex-row items-center gap-3">
+                <GoBackButton
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
+                <GoHomeButton
+                  onPress={() => {
+                    navigation.navigate("index" as never);
+                  }}
+                />
               </View>
             </View>
           ),
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 flex-col gap-7 px-5">
+        <View className="w-full flex-1 px-3">
           <FlatList
             ListHeaderComponent={() => {
               if (loading) {
@@ -211,28 +206,32 @@ function CastDetailWithData({
         options={{
           contentStyle: { backgroundColor: "white" },
           header: () => (
-            <View className="flex flex-row items-center justify-between bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit flex-row items-center gap-3 p-3 ">
-                  <GoBackButton
+            <View
+              className="flex flex-row items-center justify-between bg-white"
+              style={{
+                height: 70,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View className="flex flex-row items-center gap-3">
+                <GoBackButton
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
+                {showGoHomeBtn && (
+                  <GoHomeButton
                     onPress={() => {
-                      navigation.goBack();
+                      navigation.navigate("index" as never);
                     }}
                   />
-                  {showGoHomeBtn && (
-                    <GoHomeButton
-                      onPress={() => {
-                        navigation.navigate("index" as never);
-                      }}
-                    />
-                  )}
-                </View>
+                )}
               </View>
-              <View className="flex flex-row items-center gap-3">
+              <View>
                 {cast && (
-                  <FCastActions
+                  <FCastDetailActions
                     cast={cast!}
-                    isDetail={true}
                     farcasterUserDataObj={farcasterUserDataObj}
                     communityInfo={community}
                   />
@@ -243,8 +242,11 @@ function CastDetailWithData({
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 flex-col gap-7 px-5">
+        <View className="w-full flex-1 px-4">
           <FlatList
+            style={{
+              flex: 1,
+            }}
             showsHorizontalScrollIndicator={false}
             ListHeaderComponent={() => {
               if (castLoading) {

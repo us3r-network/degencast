@@ -53,7 +53,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   }, [data.cast]);
 
   return (
-    <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-3xl border-secondary p-5">
+    <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
       <View className="flex flex-row items-center gap-1">
         <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
           <AvatarImage source={{ uri: userData.img }} />
@@ -71,7 +71,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
       <Text className="line-clamp-6 text-base">{data.cast.text}</Text>
       {castImg && (
         <Image
-          className="w-full rounded-xl object-cover"
+          className="w-full rounded-[10px] object-cover"
           source={{ uri: castImg }}
         />
       )}

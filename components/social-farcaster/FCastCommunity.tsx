@@ -30,7 +30,7 @@ export default function FCastCommunity({
       }}
       {...props}
     >
-      <View className=" h-12 w-12 rounded-full bg-white">
+      <View className=" h-[50px] w-[50px] rounded-full bg-white">
         <Avatar
           alt={"logo"}
           className="h-full w-full rounded-full object-cover"
@@ -76,7 +76,7 @@ export function FCastCommunityDefault({ className, ...props }: ViewProps) {
     >
       <Avatar
         alt={"logo"}
-        className="flex h-12 w-12 items-center  justify-center rounded-full bg-white object-cover"
+        className="flex h-[50px] w-[50px] items-center  justify-center rounded-full bg-white object-cover"
       >
         <AvatarImage
           style={{ width: 20, height: 20 }}

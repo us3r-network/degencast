@@ -33,7 +33,7 @@ export default function FCastText({
       return (
         <Text
           key={index}
-          className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline"
+          className="inline-block text-secondary hover:cursor-pointer hover:underline"
         >{`@${mentionData.userName}`}</Text>
       );
       // TODO
@@ -41,7 +41,7 @@ export default function FCastText({
       //   <Link
       //     href={`/portfolio/${profileIdentity}`}
       //     key={index}
-      //     className="inline text-[#A36EFE] hover:cursor-pointer hover:underline"
+      //     className="inline text-secondary hover:cursor-pointer hover:underline"
       //   >
       //     {`@${mentionData.userName}`}
       //   </Link>
@@ -65,7 +65,7 @@ export default function FCastText({
                     Linking.openURL(link);
                   }}
                 >
-                  <Text className="inline-block break-all text-[#A36EFE] hover:cursor-pointer hover:underline">
+                  <Text className="inline-block break-all text-secondary hover:cursor-pointer hover:underline">
                     {part}
                   </Text>
                 </TouchableOpacity>
@@ -75,7 +75,7 @@ export default function FCastText({
               const channelId = part.slice(1);
               return (
                 <Link key={index_} href={`/communities/${channelId}`}>
-                  <Text className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline">
+                  <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
                     {part}
                   </Text>
                 </Link>

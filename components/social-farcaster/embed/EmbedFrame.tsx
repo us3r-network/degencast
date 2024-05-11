@@ -79,27 +79,27 @@ export default function EmbedFrame({
 
   // console.log("EmbedFrame", frameData, frameData.image);
   return (
-    <View className="w-full overflow-hidden rounded-xl border border-secondary ">
+    <View className="w-full overflow-hidden rounded-[10px] border border-secondary ">
       <AspectRatio ratio={ratio}>
         <Image
           source={{ uri: frameData.image }}
           style={{ width: "100%", height: "100%" }}
         />
       </AspectRatio>
-      <View className="p-2">
+      <View className="p-3">
         {(frameData.inputText && (
-          <div className="mt-2 px-3">
+          <View className="mt-2 px-3">
             <Input
               placeholder={frameData.inputText}
               value={text}
               onChangeText={(v) => setText(v)}
             />
-          </div>
+          </View>
         )) ||
           null}
         <View
           className={cn(
-            "grid w-full items-center gap-2 ",
+            "grid w-full items-center gap-3 ",
             (frameData.buttons || []).length % 2 === 0
               ? "grid-cols-2"
               : `grid-cols-${frameData.buttons?.length}`,
