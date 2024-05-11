@@ -286,7 +286,15 @@ function SwapToken({
             swap();
           }}
         >
-          <Text>Swap</Text>
+          {fetchingPrice ? (
+            <Text>Fetching Price...</Text>
+          ) : swapingToken ? (
+            <Text>Fetching Quote...</Text>
+          ) : transationLoading ? (
+            <Text>Please sign the transaction</Text>
+          ) : (
+            <Text>Swap</Text>
+          )}
         </Button>
       ) : (
         <Button
