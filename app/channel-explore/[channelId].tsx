@@ -102,7 +102,7 @@ export default function ChannelExploreScreen() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
-  const headerHeight = DEFAULT_HEADER_HEIGHT;
+  const headerHeight = 70;
   const footerHeight = 70;
   const itemHeight =
     Dimensions.get("window").height - headerHeight - footerHeight;
@@ -117,7 +117,7 @@ export default function ChannelExploreScreen() {
             <View
               className="flex w-full flex-row items-center justify-between  bg-white"
               style={{
-                height: 54,
+                height: headerHeight,
                 paddingLeft: 15,
                 paddingRight: 15,
               }}
@@ -199,7 +199,7 @@ export default function ChannelExploreScreen() {
                 >
                   <Pressable
                     className={cn(
-                      "box-border h-full w-full overflow-hidden p-4",
+                      "box-border h-full w-full overflow-hidden p-4 pt-0",
                     )}
                     onPress={() => {
                       const castHex = getCastHex(data);

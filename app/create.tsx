@@ -42,73 +42,73 @@ export default function CreateScreen() {
   const fid = user?.farcaster?.fid;
 
   return (
-    <SafeAreaView id="ss" className="h-full bg-white">
+    <SafeAreaView id="ss" style={{ flex: 1 }} className="h-full bg-white">
       <Stack.Screen
         options={{
-          title: "Post",
-          headerShadowVisible: false,
-          headerLeft: () => {
-            return (
-              <View className="w-fit p-3 ">
+          header: () => (
+            <View
+              className="flex flex-row items-center justify-between bg-white"
+              style={{
+                height: 70,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View className="flex flex-row items-center gap-3">
                 <GoBackButton
                   onPress={() => {
                     navigation.goBack();
                   }}
                 />
               </View>
-            );
-          },
-          headerRight: () => {
-            if (!fid) {
-              return null;
-            }
-            return (
-              <View className="w-fit p-3 ">
-                <Button
-                  className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
-                  size={"icon"}
-                  variant={"ghost"}
-                  onPress={async () => {
-                    const data = {
-                      text: value,
-                      embeds: [
-                        ...(embeds || []),
-                        ...images.map((item) => {
-                          return { url: item };
-                        }),
-                      ],
-                      channel: channel.url,
-                    };
-                    console.log("Submitting cast", data);
-                    const result = await submitCast(data);
+              <View>
+                {fid && (
+                  <Button
+                    className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onPress={async () => {
+                      const data = {
+                        text: value,
+                        embeds: [
+                          ...(embeds || []),
+                          ...images.map((item) => {
+                            return { url: item };
+                          }),
+                        ],
+                        channel: channel.url,
+                      };
+                      console.log("Submitting cast", data);
+                      const result = await submitCast(data);
 
-                    console.log("Cast submitted", result);
-                    if (result?.hash) {
-                      setValue("");
-                      setImages([]);
-                      setChannel(HomeChanel);
-                      Toast.show({
-                        type: "postToast",
-                        props: {
-                          hash: result?.hash,
-                          fid: fid,
-                        },
-                        // position: "bottom",
-                      });
+                      console.log("Cast submitted", result);
+                      if (result?.hash) {
+                        setValue("");
+                        setImages([]);
+                        setChannel(HomeChanel);
+                        Toast.show({
+                          type: "postToast",
+                          props: {
+                            hash: result?.hash,
+                            fid: fid,
+                          },
+                          // position: "bottom",
+                        });
 
-                      navigation.goBack();
-                    }
-                  }}
-                >
-                  <PostIcon />
-                </Button>
+                        navigation.goBack();
+                      }
+                    }}
+                  >
+                    <PostIcon />
+                  </Button>
+                )}
               </View>
-            );
-          },
+            </View>
+          ),
         }}
       />
       <View
-        className="m-auto h-full w-full space-y-2 bg-white md:w-[500px]"
+        className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
         id="create-view"
       >
         {(!fid && (
@@ -120,20 +120,17 @@ export default function CreateScreen() {
             </Button>
           </View>
         )) || (
-          <View className="h-full" id="ad">
-            <View className="flex flex-row items-center px-4 py-2">
+          <View className="h-full w-full" id="ad">
+            <View className="mb-5 flex flex-row items-center gap-1">
               {user?.farcaster?.pfp && (
-                <Avatar alt="" className="mr-2 h-6 w-6">
+                <Avatar alt="" className="h-5 w-5">
                   <AvatarImage source={{ uri: user?.farcaster?.pfp }} />
                 </Avatar>
               )}
-              <Text
-                className="text-sm font-bold text-foreground"
-                id="textareaLabel"
-              >
+              <Text className="text-sm font-medium" id="textareaLabel">
                 {user?.farcaster?.displayName}
               </Text>
-              <Text className="text-sm text-secondary" id="textareaLabel">
+              <Text className="text-xs text-secondary" id="textareaLabel">
                 @{user?.farcaster?.username}
               </Text>
             </View>
