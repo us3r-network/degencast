@@ -14,11 +14,11 @@ export default function EmbedWebpages({
   cast?: FarCast;
 }) {
   return (
-    <View>
+    <>
       {webpages.map((item, idx) => {
         return <EmbedWebpage url={item.url} cast={cast} key={idx} />;
       })}
-    </View>
+    </>
   );
 }
 
@@ -29,11 +29,11 @@ function EmbedWebpage({ url, cast }: { url: string; cast?: FarCast }) {
     loadEmbedWebpagesMetadata([url]);
   }, []);
   return (
-    <View>
+    <>
       {embedFrameMetadata && (
         <EmbedFrame url={url} data={embedFrameMetadata} cast={cast} />
       )}
       {embedOgMetadata && <EmbedOG url={url} data={embedOgMetadata} />}
-    </View>
+    </>
   );
 }

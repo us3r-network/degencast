@@ -4,10 +4,11 @@ import { Image } from "expo-image";
 
 export default function EmbedImgs({ imgs }: { imgs: Embeds["imgs"] }) {
   return (
-    <View className="h-fit w-full">
+    <>
       {imgs.map((img, idx) => (
         <View className="h-[300px]" key={img.url}>
           <Image
+            className=" rounded-[10px]"
             style={{
               width: "100%",
               height: "100%",
@@ -17,6 +18,6 @@ export default function EmbedImgs({ imgs }: { imgs: Embeds["imgs"] }) {
           />
         </View>
       ))}
-    </View>
+    </>
   );
 }

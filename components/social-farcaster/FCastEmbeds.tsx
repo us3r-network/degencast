@@ -22,7 +22,7 @@ export default function FCastEmbeds({
   const embedVideos = embeds.videos;
   const embedWebpages = embeds.webpages;
   return (
-    <View className={cn("flex flex-col gap-5", className)} {...props}>
+    <View className={cn("flex w-full flex-col gap-5", className)} {...props}>
       {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />}
       {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}
       {embedWebpages.length > 0 && (

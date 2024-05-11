@@ -23,14 +23,14 @@ export default function FCastComment({
   // const router = useRouter();
   const userData = farcasterUserDataObj?.[cast.fid];
   return (
-    <View className={cn("flex w-full flex-col gap-5", className)} {...props}>
+    <View className={cn("flex w-full flex-col gap-3", className)} {...props}>
       {/* header - user info */}
       <View className="flex flex-row items-center justify-between gap-6">
         <FCastUserInfo userData={userData!} />
       </View>
       {/* body - text & embed */}
       <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
-      <FCastEmbeds cast={cast} />
+      <FCastEmbeds className="gap-3" cast={cast} />
       <FCastCommentActions
         className=" ml-auto"
         cast={cast}

@@ -201,24 +201,29 @@ function CastDetailWithData({
         options={{
           contentStyle: { backgroundColor: "white" },
           header: () => (
-            <View className="flex flex-row items-center justify-between bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit flex-row items-center gap-3 p-3 ">
-                  <GoBackButton
+            <View
+              className="flex flex-row items-center justify-between bg-white"
+              style={{
+                height: 54,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View className="flex flex-row items-center gap-3">
+                <GoBackButton
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
+                {showGoHomeBtn && (
+                  <GoHomeButton
                     onPress={() => {
-                      navigation.goBack();
+                      navigation.navigate("index" as never);
                     }}
                   />
-                  {showGoHomeBtn && (
-                    <GoHomeButton
-                      onPress={() => {
-                        navigation.navigate("index" as never);
-                      }}
-                    />
-                  )}
-                </View>
+                )}
               </View>
-              <View className="flex flex-row items-center gap-3">
+              <View>
                 {cast && (
                   <FCastDetailActions
                     cast={cast!}
@@ -232,8 +237,11 @@ function CastDetailWithData({
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 flex-col gap-7 px-5">
+        <View className="w-full flex-1 px-3">
           <FlatList
+            style={{
+              flex: 1,
+            }}
             showsHorizontalScrollIndicator={false}
             ListHeaderComponent={() => {
               if (castLoading) {
