@@ -70,6 +70,8 @@ import {
   Edit,
   Home,
   Download,
+  CirclePlus,
+  CircleCheck,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -155,6 +157,8 @@ interopIcon(Edit);
 interopIcon(ArrowUpDown);
 interopIcon(Home);
 interopIcon(Download);
+interopIcon(CirclePlus);
+interopIcon(CircleCheck);
 export {
   Activity,
   Airplay,
@@ -226,4 +230,6 @@ export {
   Edit,
   Home,
   Download,
+  CirclePlus,
+  CircleCheck,
 };

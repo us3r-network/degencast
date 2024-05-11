@@ -44,7 +44,7 @@ export default function CommunityDetailMetaInfo({
             </Text>
           </View>
         </View>
-        <Text className="line-clamp-2 text-base font-medium leading-6 text-secondary">
+        <Text className="line-clamp-2 text-sm font-medium leading-6 text-secondary">
           {description}
         </Text>
       </View>
