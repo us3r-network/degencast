@@ -9,7 +9,7 @@ function MobileTabBar(props: BottomTabBarProps) {
 
   return (
     <View className="flex items-center justify-evenly border-t-0 bg-background p-4">
-      <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-evenly rounded-[20px] py-3">
+      <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-between rounded-[20px] px-10 py-3">
         {state.routes.map((route, index: number) => {
           const { options } = descriptors[route.key];
           const label =
@@ -43,13 +43,12 @@ function MobileTabBar(props: BottomTabBarProps) {
           return (
             <Pressable
               key={route.key}
-              className="flex h-fit items-center justify-center gap-1"
+              className=" flex h-fit w-fit min-w-[60px] items-center justify-center gap-1"
               accessibilityRole={Platform.OS === "web" ? "link" : "button"}
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={options.tabBarAccessibilityLabel}
               onPress={onPress}
               onLongPress={onLongPress}
-              style={{ flex: 1 }}
             >
               {options.tabBarIcon &&
                 options.tabBarIcon({
