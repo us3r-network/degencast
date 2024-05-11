@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { getPrice, getQuote } from "~/services/trade/api/0x";
@@ -15,15 +15,12 @@ type SwapParams = {
 
 export default function useSwapToken(takerAddress?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
-  const [swaping, setSwaping] = useState(false);
-  const [fetchingQuote, setFetchingQuote] = useState(false);
-  const [waitingUserSign, setWaitingUserSign] = useState(false);
+  const [swapingToken, setSwapingToken] = useState(false);
   const [error, setError] = useState<Error | null>();
   const {
     data: hash,
     sendTransactionAsync,
     error: sendTransactionError,
-    reset: resetSendTransaction,
   } = useSendTransaction();
   const {
     data: transactionReceipt,
@@ -34,12 +31,6 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
   } = useWaitForTransactionReceipt({
     hash,
   });
-
-  useEffect(() => {
-    if (transationStatus !== "pending") {
-      setSwaping(false);
-    }
-  }, [transationStatus]);
 
   const fetchPrice = async ({
     sellToken,
@@ -102,9 +93,9 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
       return;
     }
     console.log("start fetch quote from 0x");
-    setSwaping(true);
+
     try {
-      setFetchingQuote(true);
+      setFetchingPrice(true);
       const quote = await getQuote({
         sellToken: sellToken.address,
         buyToken: buyToken.address,
@@ -119,36 +110,25 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         takerAddress,
       });
       console.log("quote", quote);
-      setFetchingQuote(false);
-      setWaitingUserSign(true);
+      setFetchingPrice(false);
+      setSwapingToken(true);
       await sendTransactionAsync({
         to: quote.to,
         data: quote.data,
         value: quote.value,
       });
-      setWaitingUserSign(false);
+      setSwapingToken(false);
     } catch (e) {
       console.error("swapToken error", e);
-      setFetchingQuote(false);
-      setWaitingUserSign(false);
-      setSwaping(false);
+      setFetchingPrice(false);
+      setSwapingToken(false);
       // setError(e as Error)
     }
   };
 
-
-  const reset = () => {
-    setFetchingPrice(false);
-    setSwaping(false);
-    setFetchingQuote(false);
-    setWaitingUserSign(false);
-    resetSendTransaction();
-  }
   return {
     fetchingPrice,
-    fetchingQuote,
-    waitingUserSign,
-    swaping,
+    swapingToken,
     fetchPrice,
     swapToken,
     transactionReceipt,
@@ -156,6 +136,5 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     transationLoading,
     isSuccess,
     error: error || sendTransactionError || transationError,
-    reset,
   };
 }
