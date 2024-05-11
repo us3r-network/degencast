@@ -12,10 +12,14 @@ import GoBackButton, {
   GoBackButtonBgPrimary,
 } from "~/components/common/GoBackButton";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
-import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import CommunityJoinButton, {
+  CommunityJoinIconButton,
+} from "~/components/community/CommunityJoinButton";
 import PlatformSharingButton from "~/components/platform-sharing/PlatformSharingButton";
+import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import useLoadCommunityMembersShare from "~/hooks/community/useLoadCommunityMembersShare";
@@ -59,7 +63,7 @@ export function useCommunityCtx() {
 
 export default function CommunityDetail() {
   const { currFid } = useFarcasterAccount();
-  const headerHeight = useHeaderHeight();
+  const headerHeight = DEFAULT_HEADER_HEIGHT;
   const navigation = useNavigation();
   const params = useLocalSearchParams<{ id: string }>();
   const { id } = params;
@@ -113,41 +117,51 @@ export default function CommunityDetail() {
         options={{
           headerTransparent: true,
           header: () => (
-            <View className="flex flex-row items-center justify-between gap-5 bg-primary">
-              <View className="flex flex-1 flex-row items-center">
-                <View className="w-fit p-3 ">
-                  <GoBackButtonBgPrimary
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                  />
-                </View>
-                <Text className="ml-2 line-clamp-1 flex-1 text-xl  font-bold text-primary-foreground">
-                  {community?.name}
+            <View
+              style={{
+                height: headerHeight,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+              className="flex-row items-center justify-between bg-primary"
+            >
+              <View className="flex flex-row items-center gap-3">
+                <GoBackButtonBgPrimary
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
+                <Text className=" text-xl font-bold text-primary-foreground">
+                  Channel
                 </Text>
               </View>
-              <View className="mr-5 flex flex-row items-center gap-3">
-                {community && <CommunityJoinButton communityInfo={community} />}
-                <PlatformSharingButton
-                  twitterText={getCommunityShareTextWithTwitter(
-                    community?.name || "",
-                  )}
-                  warpcastText={getCommunityShareTextWithWarpcast(
-                    community?.name || "",
-                  )}
-                  websiteLink={getCommunityWebsiteLink(id, {
-                    fid: currFid,
-                  })}
-                  frameLink={getCommunityFrameLink(id, {
-                    fid: currFid,
-                  })}
-                />
+              <View className="flex flex-row items-center gap-4">
+                <UserGlobalPoints />
+                {community && (
+                  <CommunityJoinIconButton communityInfo={community} />
+                )}
+                <View>
+                  <PlatformSharingButton
+                    twitterText={getCommunityShareTextWithTwitter(
+                      community?.name || "",
+                    )}
+                    warpcastText={getCommunityShareTextWithWarpcast(
+                      community?.name || "",
+                    )}
+                    websiteLink={getCommunityWebsiteLink(id, {
+                      fid: currFid,
+                    })}
+                    frameLink={getCommunityFrameLink(id, {
+                      fid: currFid,
+                    })}
+                  />
+                </View>
               </View>
             </View>
           ),
         }}
       />
-      <View className=" m-auto  w-full flex-1 flex-col gap-7 p-5 pb-0 sm:w-full sm:max-w-screen-sm">
+      <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
         {community && (
           <>
             <CommunityDetailMetaInfo communityInfo={community} />

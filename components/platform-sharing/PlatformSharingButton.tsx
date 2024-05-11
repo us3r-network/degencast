@@ -23,15 +23,17 @@ export default function PlatformSharingButton({
   return (
     <>
       <Button
-        className={cn("size-10 rounded-full bg-white", className)}
+        className={cn("bg-transparent p-0", className)}
         onPress={() => {
-          console.log("websiteLink", websiteLink);
-
           setOpen(true);
         }}
         {...props}
       >
-        <Share2 className={cn(" fill-primary stroke-primary")} />
+        <Share2
+          className={cn(
+            " size-5 fill-primary-foreground stroke-primary-foreground",
+          )}
+        />
       </Button>
       <PlatformSharingModal
         open={open}

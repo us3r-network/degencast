@@ -4,6 +4,7 @@ import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { CommunityInfo } from "~/services/community/types/community";
 import { cn } from "~/lib/utils";
 import { TextProps } from "react-native";
+import { CircleCheck, CirclePlus } from "../common/Icons";
 
 export default function CommunityJoinButton({
   communityInfo,
@@ -44,6 +45,40 @@ export default function CommunityJoinButton({
           return "Join";
         })()}
       </Text>
+    </Button>
+  );
+}
+
+export function CommunityJoinIconButton({
+  communityInfo,
+  className,
+  textProps,
+  ...props
+}: ButtonProps & {
+  communityInfo: CommunityInfo;
+  textProps?: TextProps;
+}) {
+  const { joined, isPending, joinChangeAction } = useJoinCommunityAction(
+    communityInfo,
+    {
+      showToast: true,
+    },
+  );
+  return (
+    <Button
+      className={cn("bg-transparent p-0", className)}
+      disabled={isPending}
+      onPress={(e) => {
+        e.stopPropagation();
+        joinChangeAction();
+      }}
+      {...props}
+    >
+      {joined ? (
+        <CircleCheck className="size-5 stroke-secondary" />
+      ) : (
+        <CirclePlus className="size-5 stroke-primary-foreground" />
+      )}
     </Button>
   );
 }
