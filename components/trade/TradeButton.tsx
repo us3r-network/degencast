@@ -94,6 +94,7 @@ export default function TradeButton({
 
 const TRADE_INFO = [
   "For a one-time swap of token worth 30 USD, earn 500 points.",
+  "0.3% swap fee",
 ];
 
 const DEFAULT_AMOUNT = "0";
