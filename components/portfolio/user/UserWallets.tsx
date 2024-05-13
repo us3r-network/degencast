@@ -198,9 +198,11 @@ function LinkWallets() {
     [user],
   );
   const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets.filter(
-      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-    );
+    return linkedWallets
+      .filter(
+        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+      )
+      .filter((wallet) => wallet.connectorType !== "embedded");
   }, [linkedWallets, connectedWallets]);
 
   if (!user) return null;
