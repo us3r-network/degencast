@@ -104,8 +104,6 @@ export default function TabLayout() {
             },
             headerStyle: {
               height: 54,
-              paddingLeft: 15,
-              paddingRight: 15,
             },
             headerRight: () => (
               <View className="flex-row items-center gap-4 p-4">
@@ -129,8 +127,6 @@ export default function TabLayout() {
             },
             headerStyle: {
               height: 54,
-              paddingLeft: 15,
-              paddingRight: 15,
             },
             headerRight: () => (
               <View className="flex-row items-center gap-4 p-4">
