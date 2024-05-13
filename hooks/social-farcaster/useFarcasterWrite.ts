@@ -7,9 +7,22 @@ import {
   usePrivy,
   useWallets,
 } from "@privy-io/react-auth";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useUserAction from "../user/useUserAction";
 import { UserActionName } from "~/services/user/types";
+import {
+  ExternalEd25519Signer,
+  HubRestAPIClient,
+} from "@standard-crypto/farcaster-js-hub-rest";
+import axios from "axios";
+import { FARCASTER_HUB_URL, NEYNAR_API_KEY } from "~/constants/farcaster";
+
+const hubClient = new HubRestAPIClient({
+  hubUrl: FARCASTER_HUB_URL,
+  axiosInstance: axios.create({
+    headers: { api_key: NEYNAR_API_KEY },
+  }),
+});
 
 export type SubmitCastBody = {
   mentions?: number[] | undefined;
@@ -74,14 +87,20 @@ export default function useFarcasterWrite() {
   const { linkFarcaster } = useLinkAccount(linkHanler);
 
   const {
-    submitCast,
-    removeCast,
-    likeCast,
-    recastCast,
-    followUser,
-    unfollowUser,
-    requestFarcasterSigner,
+    requestFarcasterSignerFromWarpcast,
+    getFarcasterSignerPublicKey,
+    signFarcasterMessage,
   } = useExperimentalFarcasterSigner();
+
+  const privySigner = useMemo(
+    () =>
+      new ExternalEd25519Signer(
+        signFarcasterMessage,
+        getFarcasterSignerPublicKey,
+      ),
+    [getFarcasterSignerPublicKey, signFarcasterMessage],
+  );
+
   const farcasterAccount = user?.linkedAccounts.find(
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
@@ -101,7 +120,7 @@ export default function useFarcasterWrite() {
     } else {
       if (!farcasterAccount?.signerPublicKey) {
         console.log("Requesting farcaster signer");
-        await requestFarcasterSigner(); // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
+        await requestFarcasterSignerFromWarpcast(); // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
         submitUserAction({
           action: UserActionName.ConnectFarcaster,
         });
@@ -111,108 +130,147 @@ export default function useFarcasterWrite() {
     setPrepareing(false);
     return true;
   };
+
+  const submitCast = useCallback(
+    async (data: SubmitCastBody) => {
+      const ready = await prepareWrite();
+      if (!ready) return;
+      try {
+        setWriting(true);
+        const result = await hubClient.submitCast(
+          {
+            text: data.text,
+            embeds: data.embeds?.map((embed) => ({
+              url: embed.url,
+            })),
+            parentUrl: data.parentUrl,
+            parentCastId: data.parentCastId,
+          },
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setWriting(false);
+      }
+    },
+    [privySigner, farcasterAccount, prepareWrite],
+  );
+
+  const removeCast = useCallback(
+    async (castHash: string) => {
+      const ready = await prepareWrite();
+      if (!ready) return;
+      try {
+        const result = await hubClient.removeCast(
+          castHash,
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [privySigner, farcasterAccount, prepareWrite],
+  );
+
+  const reactionCast = useCallback(
+    async (
+      type: "like" | "recast",
+      castHash: string,
+      castAuthorFid: number,
+    ) => {
+      const ready = await prepareWrite();
+      if (!ready) return;
+      try {
+        const result = await hubClient.submitReaction(
+          {
+            type,
+            target: {
+              fid: castAuthorFid,
+              hash: castHash,
+            },
+          },
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [privySigner, farcasterAccount, prepareWrite],
+  );
+
+  const likeCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return reactionCast("like", castHash, castAuthorFid);
+    },
+    [reactionCast],
+  );
+  const recastCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return reactionCast("recast", castHash, castAuthorFid);
+    },
+    [reactionCast],
+  );
+
+  const followUser = useCallback(
+    async (fid: number) => {
+      const ready = await prepareWrite();
+      if (!ready) return;
+      try {
+        const result = await hubClient.followUser(
+          fid,
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [privySigner, farcasterAccount, prepareWrite],
+  );
+
+  const unfollowUser = useCallback(
+    async (fid: number) => {
+      const ready = await prepareWrite();
+      if (!ready) return;
+      try {
+        const result = await hubClient.unfollowUser(
+          fid,
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [privySigner, farcasterAccount, prepareWrite],
+  );
+
+  const getPrivySigner = useCallback(async () => {
+    const ready = await prepareWrite();
+    if (!ready) return;
+    return privySigner;
+  }, [privySigner, prepareWrite]);
+
   return {
     prepareWrite,
     writing: writing && prepareing,
-    // todo: add more post support!
-    submitCast: async ({
-      text,
-      embeds,
-      channel,
-    }: {
-      text: string;
-      embeds: {
-        url?: string | undefined;
-        castId?:
-          | {
-              fid: number;
-              hash: string;
-            }
-          | undefined;
-      }[];
-      channel: string;
-    }) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) {
-        setWriting(true);
-        const data = {
-          text,
-          embeds: embeds.length
-            ? embeds.map((embed) => ({
-                url: embed.url,
-              }))
-            : undefined,
-          parentUrl: channel || undefined,
-        };
-        const result = await submitCast(data);
-        setWriting(false);
-        return result;
-      }
-    },
-    replayCast: async ({
-      text,
-      embeds,
-      parentCastId,
-    }: {
-      text: string;
-      embeds: {
-        url?: string | undefined;
-        castId?:
-          | {
-              fid: number;
-              hash: string;
-            }
-          | undefined;
-      }[];
-      parentCastId?:
-        | {
-            fid: number;
-            hash: string;
-          }
-        | undefined;
-    }): ReplyCastRes => {
-      const canWrite = await prepareWrite();
-      if (canWrite) {
-        setWriting(true);
-        const data = {
-          text,
-          embeds: embeds.map((embed) => ({
-            url: embed.url,
-          })),
-          parentCastId,
-        };
-        const res = await submitCast(data);
-        setWriting(false);
-        return { ...res, ...data };
-      }
-    },
-    submitCastWithOpts: async (opts: SubmitCastBody) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) {
-        setWriting(true);
-        await submitCast(opts);
-        setWriting(false);
-      }
-    },
-    removeCast: async (castHash: string) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await removeCast({ castHash });
-    },
-    likeCast: async (castHash: string, castAuthorFid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await likeCast({ castHash, castAuthorFid });
-    },
-    recastCast: async (castHash: string, castAuthorFid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await recastCast({ castHash, castAuthorFid });
-    },
-    followUser: async (fid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await followUser({ fid });
-    },
-    unfollowUser: async (fid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await unfollowUser({ fid });
-    },
+    submitCast,
+    replayCast: submitCast,
+    submitCastWithOpts: submitCast,
+    removeCast: removeCast,
+    likeCast: likeCast,
+    recastCast: recastCast,
+    followUser: followUser,
+    unfollowUser: unfollowUser,
+    getPrivySigner,
   };
 }
