@@ -84,6 +84,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-template-literals": "^7.20.0",
     "@types/react": "~18.2.45",
     "@types/validator": "^13.11.9",
     "source-map-explorer": "^2.5.3",

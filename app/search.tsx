@@ -1,5 +1,5 @@
 import { Text, TextInput, View, ScrollView } from "react-native";
-import { Stack, useNavigation, Link, Href } from "expo-router";
+import { Stack, useNavigation, Link } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
@@ -120,7 +120,7 @@ export default function SearchScreen() {
               return (
                 <Link
                   key={i}
-                  href={`/communities/${item.channelId}` as Href<string>}
+                  href={`/communities/${item.channelId}`}
                   onPress={() => {
                     saveHistory(item);
                     setRecommend([]);
@@ -146,7 +146,7 @@ export default function SearchScreen() {
               return (
                 <Link
                   key={i}
-                  href={`/communities/${item.channelId}` as Href<string>}
+                  href={`/communities/${item.channelId}`}
                 >
                   <SearchItem icon={item.logo} name={item.name} />
                 </Link>
@@ -209,7 +209,7 @@ function CommunityGroup({
           return (
             <Link
               key={i}
-              href={`/communities/${item.channelId}` as Href<string>}
+              href={`/communities/${item.channelId}`}
             >
               <SearchItem icon={item.logo} name={item.name} />
             </Link>

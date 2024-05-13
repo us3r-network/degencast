@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Href, Link, Stack } from "expo-router";
+import { Link, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
@@ -43,7 +43,7 @@ const toastConfig = {
   }>) => (
     <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">Cast created successfully!</Text>
-      <Link href={`/casts/${props.hash}?fid=${props.fid}` as Href<string>}>
+      <Link href={`/casts/${props.hash}?fid=${props.fid}`}>
         <Text className="font-bold text-primary">View</Text>
       </Link>
     </View>
