@@ -107,6 +107,12 @@ export default function TabLayout() {
               paddingLeft: 15,
               paddingRight: 15,
             },
+            headerRight: () => (
+              <View className="flex-row items-center gap-4 p-4">
+                <UserGlobalPoints />
+                <UserWallets />
+              </View>
+            ),
           }}
         />
         <Tabs.Screen

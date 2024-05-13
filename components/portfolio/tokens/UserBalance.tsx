@@ -74,7 +74,7 @@ function MyToken({
           {Number(token.balance) && Number(token.balance) > 1
             ? round(Number(token.balance), 2)
             : round(Number(token.balance), 6)}
-          {token.symbol}
+          {/* {token.symbol} */}
         </Text>
         {wallet &&
           (action === ACTION_TYPES.BUY ? (

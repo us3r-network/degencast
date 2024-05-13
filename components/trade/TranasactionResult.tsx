@@ -32,8 +32,8 @@ export function TransactionInfo({
         </View>
       ) : (
         <View className="size-16 items-center justify-center rounded-full bg-[white]/40">
-          <Info className="size-8 text-[white]" />
-          {/* <ActivityIndicator className="text-secondary"/> */}
+          {/* <Info className="size-8 text-[white]" /> */}
+          <ActivityIndicator size="large" color="white"/>
         </View>
       )}
       <Text className="font-medium">
