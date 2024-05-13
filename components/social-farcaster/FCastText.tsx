@@ -4,6 +4,8 @@ import { View, TouchableOpacity, Linking } from "react-native";
 import { Text } from "../ui/text";
 import { Link } from "expo-router";
 import isURL from "validator/lib/isURL";
+import { useMemo } from "react";
+import { getEmbeds } from "~/utils/farcaster/getEmbeds";
 
 const BIOLINK_FARCASTER_SUFFIX = "fcast";
 const farcasterHandleToBioLinkHandle = (handle: string) => {
@@ -20,6 +22,8 @@ export default function FCastText({
   farcasterUserDataObj: { [key: string]: UserData } | undefined;
 }) {
   const { text, mentions, mentionsPositions: indices } = cast;
+  const embeds = useMemo(() => getEmbeds(cast), [cast]);
+  const embedWebpages = embeds.webpages;
   const segments = splitAndInsert(
     text,
     indices || [],
@@ -58,6 +62,11 @@ export default function FCastText({
               )
                 ? `https://${part}`
                 : part;
+              const findWebpage = embedWebpages.find((item) => {
+                return item.url.includes(part);
+              });
+              if (findWebpage) return null;
+
               return (
                 <TouchableOpacity
                   key={index_}

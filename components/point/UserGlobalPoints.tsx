@@ -66,15 +66,17 @@ export default function UserGlobalPoints() {
               </Animated.View>
             </View>
             {ready && !authenticated && totalPoints > 0 && (
-              <Button
-                className="box-border h-full rounded-none bg-secondary px-2 py-0 text-xs"
-                onPress={(e) => {
-                  e.stopPropagation();
-                  login();
-                }}
-              >
-                <Text className=" text-base font-normal text-white">Claim</Text>
-              </Button>
+              <View className="h-full pr-2">
+                <Button
+                  className="my-auto box-border h-[18px] rounded-full bg-secondary"
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    login();
+                  }}
+                >
+                  <Text className=" text-xs font-normal text-white">Claim</Text>
+                </Button>
+              </View>
             )}
           </Badge>
         </Animated.View>

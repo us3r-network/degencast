@@ -12,7 +12,7 @@ import {
 } from "@privy-io/react-auth";
 
 import { FarCast } from "~/services/farcaster/types";
-import { View, Image, Platform, Linking } from "react-native";
+import { View, Image, Platform, Linking, Pressable } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
@@ -81,15 +81,25 @@ export default function EmbedFrame({
   return (
     <View className="w-full overflow-hidden rounded-[10px] border border-secondary ">
       <AspectRatio ratio={ratio}>
-        <Image
-          source={{ uri: frameData.image }}
-          style={{ width: "100%", height: "100%" }}
-        />
+        <Pressable
+          className="h-full w-full"
+          onPress={(e) => {
+            e.stopPropagation();
+            Linking.openURL(url);
+          }}
+        >
+          <Image
+            source={{ uri: frameData.image }}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Pressable>
       </AspectRatio>
       <View className="p-3">
         {(frameData.inputText && (
-          <View className="mt-2 px-3">
+          <View className="py-3">
             <Input
+              className=" text-secondary-foreground"
+              placeholderClassName=" text-secondary-foreground"
               placeholder={frameData.inputText}
               value={text}
               onChangeText={(v) => setText(v)}

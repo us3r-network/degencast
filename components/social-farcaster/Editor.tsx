@@ -30,6 +30,7 @@ export default function Editor({
   channel,
   setChannel,
   previewComponent,
+  placeholder = "Create a cast...",
 }: {
   text: string;
   setText: (text: string) => void;
@@ -38,6 +39,7 @@ export default function Editor({
   channel: WarpcastChannel;
   setChannel: (channel: WarpcastChannel) => void;
   previewComponent?: React.ReactNode;
+  placeholder?: string;
 }) {
   return (
     <View className="flex w-full flex-grow gap-5 border-secondary">
@@ -50,7 +52,7 @@ export default function Editor({
             "w-full rounded-md p-0  outline-none",
             "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
           )}
-          placeholder="Create a cast..."
+          placeholder={placeholder}
           value={text}
           onChangeText={setText}
           aria-labelledby="textareaLabel"

@@ -189,6 +189,7 @@ function CastReplyWithData({
               </Text>
             </View>
             <Editor
+              placeholder="Reply to this cast..."
               text={value}
               setText={setValue}
               images={images}
