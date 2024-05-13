@@ -21,6 +21,15 @@ import { useRef, useState } from "react";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 
+const headerHeight = DEFAULT_HEADER_HEIGHT;
+const footerHeight = DEFAULT_TABBAR_HEIGHT;
+const itemPaddingTop = 15;
+const itemHeight =
+  Dimensions.get("window").height -
+  headerHeight -
+  footerHeight +
+  itemPaddingTop;
+
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
@@ -32,14 +41,6 @@ export default function ExploreScreenScroll() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
-  const headerHeight = DEFAULT_HEADER_HEIGHT;
-  const footerHeight = DEFAULT_TABBAR_HEIGHT;
-  const itemPaddingTop = 15;
-  const itemHeight =
-    Dimensions.get("window").height -
-    headerHeight -
-    footerHeight +
-    itemPaddingTop;
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
 

@@ -22,10 +22,12 @@ export default function FCastUserInfo({
           <Text>{userData?.display.slice(0, 1)}</Text>
         </AvatarFallback>
       </Avatar>
-      <Text className="line-clamp-1 text-sm font-medium">
+      <Text className="line-clamp-1 text-sm font-normal">
         {userData?.display}
       </Text>
-      <Text className=" text-xs text-secondary">@{userData?.userName}</Text>
+      <Text className=" text-xs font-normal text-secondary">
+        @{userData?.userName}
+      </Text>
     </View>
   );
 }

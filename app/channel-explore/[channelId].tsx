@@ -29,8 +29,12 @@ import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePag
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
-import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
+
+const headerHeight = 70;
+const footerHeight = 70;
+const itemHeight =
+  Dimensions.get("window").height - headerHeight - footerHeight;
 
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
@@ -103,10 +107,6 @@ export default function ChannelExploreScreen() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
-  const headerHeight = 70;
-  const footerHeight = 70;
-  const itemHeight =
-    Dimensions.get("window").height - headerHeight - footerHeight;
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
   return (
