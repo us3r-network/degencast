@@ -91,15 +91,16 @@ export default function ExploreScreenScroll() {
             return (
               <View
                 key={index.toString()}
-                className={cn("flex w-full")}
+                className={cn("flex w-full px-4 sm:px-0")}
                 style={{
+                  width: Dimensions.get("window").width,
                   height: itemHeight,
                   paddingTop: itemPaddingTop,
                 }}
               >
                 <Card
                   className={cn(
-                    "mx-auto box-border h-full w-[calc(100%-30px)] rounded-2xl border-none sm:max-w-screen-sm",
+                    "mx-auto box-border h-full w-full rounded-2xl border-none sm:max-w-screen-sm",
                   )}
                   style={{
                     height: itemHeight - 35 - itemPaddingTop,
