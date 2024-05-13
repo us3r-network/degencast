@@ -19,6 +19,7 @@ import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePag
 import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
 import { useRef, useState } from "react";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
+import { isDesktop } from "react-device-detect";
 
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
@@ -91,16 +92,21 @@ export default function ExploreScreenScroll() {
             return (
               <View
                 key={index.toString()}
-                className={cn("flex w-full px-4 sm:px-0")}
+                className={cn(
+                  "flex w-full px-4 sm:max-w-screen-sm sm:px-0",
+                  isDesktop && " w-screen",
+                )}
                 style={{
-                  width: Dimensions.get("window").width,
+                  ...(!isDesktop
+                    ? { width: Dimensions.get("window").width }
+                    : {}),
                   height: itemHeight,
                   paddingTop: itemPaddingTop,
                 }}
               >
                 <Card
                   className={cn(
-                    "mx-auto box-border h-full w-full rounded-2xl border-none sm:max-w-screen-sm",
+                    "box-border h-full w-full rounded-2xl border-none",
                   )}
                   style={{
                     height: itemHeight - 35 - itemPaddingTop,
