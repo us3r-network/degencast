@@ -109,6 +109,57 @@ export const ShareButton = ({
   );
 };
 
+function ActionMenuItem({
+  scaleAnimatedValue,
+  translateYAnimatedValue,
+  showMenu,
+  index,
+  children,
+}: {
+  children: React.ReactNode;
+  scaleAnimatedValue: Animated.Value;
+  translateYAnimatedValue: Animated.Value;
+  showMenu: boolean;
+  index: number;
+}) {
+  useEffect(() => {
+    Animated.timing(scaleAnimatedValue, {
+      toValue: showMenu ? 1 : 0,
+      duration: 200 * index,
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(translateYAnimatedValue, {
+      toValue: showMenu ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [showMenu]);
+  const actionStyle = {
+    position: "absolute" as "absolute",
+    zIndex: index,
+
+    opacity: scaleAnimatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    }),
+    transform: [
+      {
+        scale: scaleAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+      },
+      {
+        translateY: translateYAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -(70 * index)],
+        }),
+      },
+    ],
+  };
+  return <Animated.View style={[actionStyle]}>{children}</Animated.View>;
+}
+
 export const ExplorePostActions = ({
   liked,
   likeCount,
@@ -130,55 +181,89 @@ export const ExplorePostActions = ({
   onShare: () => void;
   onComment?: () => void;
 }) => {
-  const fadeAnimation = useState(new Animated.Value(showActions ? 1 : 0))[0];
+  const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
     showActionsChange(!showActions);
   }, [showActions, showActionsChange]);
   useEffect(() => {
-    Animated.timing(fadeAnimation, {
+    Animated.timing(toggleBtnAnimation, {
       toValue: showActions ? 1 : 0,
       duration: 150,
       easing: Easing.ease,
       useNativeDriver: true,
     }).start();
   }, [showActions]);
+  const scaleAnimatedValue = useState(new Animated.Value(0))[0];
+  const translateYAnimatedValue = useState(new Animated.Value(0))[0];
 
   return (
-    <View className={cn(" flex w-fit flex-col gap-5", className)} {...props}>
-      <Animated.View
-        style={[
-          {
-            opacity: fadeAnimation,
-          },
-        ]}
+    <View
+      className={cn(
+        " relative z-0 flex w-fit flex-col items-center",
+        className,
+      )}
+      {...props}
+    >
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={4}
       >
-        <View className={cn(" flex w-fit flex-col gap-5")}>
-          <LikeButton
-            className=" shadow-md shadow-primary"
-            liked={liked}
-            likeCount={likeCount}
-            onPress={onLike}
-          />
-          <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
-          <CommentButton
-            className=" shadow-md shadow-primary"
-            onPress={onComment}
-          />
-          <ShareButton
-            className=" shadow-md shadow-primary"
-            onPress={onShare}
-          />
-        </View>
-      </Animated.View>
+        <LikeButton
+          className=" shadow-md shadow-primary"
+          liked={liked}
+          likeCount={likeCount}
+          onPress={onLike}
+        />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={3}
+      >
+        <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={2}
+      >
+        <CommentButton
+          className=" shadow-md shadow-primary"
+          onPress={onComment}
+        />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={1}
+      >
+        <ShareButton className=" shadow-md shadow-primary" onPress={onShare} />
+      </ActionMenuItem>
       <ActionButton
-        className=" shadow-md shadow-primary"
+        className=" z-10 h-[60px] w-[60px] shadow-md shadow-primary"
         onPress={toggleActions}
       >
-        {showActions ? (
-          <X size={24} className={cn(" fill-primary stroke-primary")} />
-        ) : (
-          <Plus size={24} className={cn(" fill-primary stroke-primary")} />
-        )}
+        <Animated.View
+          style={[
+            {
+              transform: [
+                {
+                  rotate: toggleBtnAnimation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0deg", "45deg"],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <Plus size={30} className={cn(" fill-primary stroke-primary")} />
+        </Animated.View>
       </ActionButton>
     </View>
   );
