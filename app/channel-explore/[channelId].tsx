@@ -30,6 +30,7 @@ import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
+import { isDesktop } from "react-device-detect";
 
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
@@ -193,9 +194,15 @@ export default function ChannelExploreScreen() {
                 <View
                   key={index.toString()}
                   className={cn(
-                    "relative mx-auto h-full w-full border-none sm:max-w-screen-sm",
+                    "mx-auto h-full sm:max-w-screen-sm",
+                    isDesktop && " w-screen",
                   )}
-                  style={{ height: itemHeight }}
+                  style={{
+                    ...(!isDesktop
+                      ? { width: Dimensions.get("window").width }
+                      : {}),
+                    height: itemHeight,
+                  }}
                 >
                   <Pressable
                     className={cn(
