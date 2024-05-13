@@ -62,7 +62,7 @@ export async function getPrice({
         sellAmount,
         buyAmount,
         feeRecipient:INTEGRATOR_WALLET_ADDRESS,
-        buyTokenPercentageFee:0.015,
+        buyTokenPercentageFee:0.0015,
       },
       headers: {
         "0x-api-key": ZERO_X_API_KEY,
