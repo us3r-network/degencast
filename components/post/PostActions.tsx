@@ -11,7 +11,7 @@ export function ActionButton({ className, ...props }: ButtonProps) {
   return (
     <Button
       className={cn(
-        " h-[50px] w-[50px] flex-col rounded-full bg-white p-0 active:bg-transparent",
+        " h-[50px] w-[50px] flex-col rounded-full bg-white p-0 active:bg-white active:opacity-100 web:hover:opacity-100",
         className,
       )}
       {...props}
@@ -36,7 +36,13 @@ export const LikeButton = ({
 }) => {
   return (
     <ActionButton
-      className={cn("", liked ? " bg-[#F41F4C]" : " bg-transparent", className)}
+      className={cn(
+        "",
+        liked
+          ? " bg-[#F41F4C] active:bg-[#F41F4C] web:hover:bg-[#F41F4C]"
+          : " bg-white active:bg-white web:hover:bg-white",
+        className,
+      )}
       {...props}
     >
       <Heart
@@ -207,7 +213,7 @@ export const PostDetailActions = ({
     <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
       {!hideLike && (
         <LikeButton
-          className={cn(" h-10 w-10", liked && " border-none")}
+          className={cn(" h-10 w-10 ", liked && " border-none")}
           variant={liked ? "default" : "outline"}
           iconSize={15}
           liked={liked}
