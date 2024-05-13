@@ -29,7 +29,7 @@ export default function ActiveWallet() {
       <View className="flex-row items-center justify-between">
         <Text className="text-xs font-medium text-secondary">
           No Active Wallet
-        </Text>{" "}
+        </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
           onPress={connectWallet}

@@ -42,7 +42,7 @@ export default function LoginScreen() {
   );
 }
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
-console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
+// console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
 function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
@@ -285,7 +285,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
 }
 
 const dimensions = Dimensions.get("window");
-console.log("dimensions", dimensions);
+// console.log("dimensions", dimensions);
 function Step0() {
   return (
     <View className="relative flex h-full w-full items-center justify-center gap-6 pb-10">

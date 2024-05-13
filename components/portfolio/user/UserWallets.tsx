@@ -86,7 +86,7 @@ export default function Wallets() {
         }}
       >
         <SelectTrigger
-          className={cn("w-full rounded-full border-none bg-white/40")}
+          className={cn("w-full rounded-full border-none bg-white/40 px-2 h-6")}
         >
           <View className="mr-2 flex-row items-center gap-2">
             <WalletIcon type={activeWallet?.walletClientType || ""} />
@@ -198,9 +198,11 @@ function LinkWallets() {
     [user],
   );
   const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets.filter(
-      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-    );
+    return linkedWallets
+      .filter(
+        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+      )
+      .filter((wallet) => wallet.connectorType !== "embedded");
   }, [linkedWallets, connectedWallets]);
 
   if (!user) return null;
