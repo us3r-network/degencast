@@ -78,10 +78,9 @@ export default function CreateScreen() {
                         ],
                         channel: channel.url,
                       };
-                      console.log("Submitting cast", data);
+
                       const result = await submitCast(data);
 
-                      console.log("Cast submitted", result);
                       if (result?.hash) {
                         setValue("");
                         setImages([]);
