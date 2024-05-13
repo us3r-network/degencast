@@ -22,6 +22,7 @@ export default function useLoadExploreCastsWithNaynar() {
   const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
   const [currentCastIndex, setCurrentCastIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [firstLoading, setFirstLoading] = useState(true);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const pageInfoRef = useRef({
     hasNextPage: true,
@@ -69,6 +70,7 @@ export default function useLoadExploreCastsWithNaynar() {
       console.error(err);
     } finally {
       setLoading(false);
+      setFirstLoading(false);
     }
   };
 
@@ -95,16 +97,16 @@ export default function useLoadExploreCastsWithNaynar() {
 
   // load more casts
   useEffect(() => {
-    if (loading) return;
+    if (firstLoading || loading) return;
     const castsLen = casts.length;
-    if (castsLen < FIRST_PAGE_SIZE) {
-      return;
-    }
+    // if (castsLen < FIRST_PAGE_SIZE) {
+    //   return;
+    // }
     const remainingLen = castsLen - (currentCastIndex + 1);
     if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
       loadNextPageCasts();
     }
-  }, [currentCastIndex, casts, loading]);
+  }, [currentCastIndex, casts, loading, firstLoading]);
 
   const watchedCastsRef = useRef<string[]>([]);
   useEffect(() => {

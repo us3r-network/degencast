@@ -34,11 +34,11 @@ import {
   SelectTrigger,
 } from "~/components/ui/select";
 import { Text, TextClassContext } from "~/components/ui/text";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipTrigger,
+// } from "~/components/ui/tooltip";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useAuth from "~/hooks/user/useAuth";
 import { cn } from "~/lib/utils";
@@ -86,7 +86,7 @@ export default function Wallets() {
         }}
       >
         <SelectTrigger
-          className={cn("w-full rounded-full border-none bg-white/40")}
+          className={cn("w-full rounded-full border-none bg-white/40 px-2 h-6")}
         >
           <View className="mr-2 flex-row items-center gap-2">
             <WalletIcon type={activeWallet?.walletClientType || ""} />
@@ -198,9 +198,11 @@ function LinkWallets() {
     [user],
   );
   const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets.filter(
-      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-    );
+    return linkedWallets
+      .filter(
+        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+      )
+      .filter((wallet) => wallet.connectorType !== "embedded");
   }, [linkedWallets, connectedWallets]);
 
   if (!user) return null;
@@ -211,76 +213,81 @@ function LinkWallets() {
           className="w-full flex-row items-center justify-between"
           key={wallet.address}
         >
-          <View className="flex-row items-center gap-2">
+          <Pressable
+            className="flex-row items-center gap-2"
+            onPress={async (event) => {
+              await connectWallet();
+            }}
+          >
             <WalletIcon type={wallet.walletClientType} />
             <Text>{shortPubKey(wallet.address)}</Text>
-          </View>
+          </Pressable>
           {wallet.connectorType === "embedded" ? (
             <View className="flex-row gap-2">
-              <Tooltip delayDuration={150}>
-                <TooltipTrigger asChild>
-                  <Pressable
-                    className="flex-row items-center gap-2"
-                    onPress={async (event) => {
-                      await Clipboard.setStringAsync(wallet.address);
-                    }}
-                  >
-                    <Copy className="size-4" />
-                  </Pressable>
-                </TooltipTrigger>
+              {/* <Tooltip delayDuration={150}>
+                <TooltipTrigger asChild> */}
+              <Pressable
+                className="flex-row items-center gap-2"
+                onPress={async (event) => {
+                  await Clipboard.setStringAsync(wallet.address);
+                }}
+              >
+                <Copy className="size-4" />
+              </Pressable>
+              {/* </TooltipTrigger>
                 <TooltipContent>
                   <Text>
                     Copy the embeded wallet address and paste it into your
                     crypto wallet to transfer.{" "}
                   </Text>
                 </TooltipContent>
-              </Tooltip>
-              <Tooltip delayDuration={150}>
-                <TooltipTrigger asChild>
-                  <Pressable disabled>
-                    <MinusCircle className="size-4" />
-                  </Pressable>
-                </TooltipTrigger>
+              </Tooltip> */}
+              {/* <Tooltip delayDuration={150}>
+                <TooltipTrigger asChild> */}
+              <Pressable disabled>
+                <MinusCircle className="size-4" />
+              </Pressable>
+              {/* </TooltipTrigger>
                 <TooltipContent>
                   <Text>Privy Embeded Wallet Could NOT Be Remove</Text>
                 </TooltipContent>
-              </Tooltip>
+              </Tooltip> */}
             </View>
           ) : (
             <View className="flex-row gap-2">
               {connectedWallets.find((w) => w.address === wallet.address) ? (
-                <Tooltip delayDuration={150}>
-                  <TooltipTrigger asChild>
-                    <Pressable
-                      disabled
-                      className="flex-row items-center gap-2"
-                      onPress={async (event) => {
-                        await connectWallet();
-                      }}
-                    >
-                      <Plug className="size-4 fill-secondary/50" />
-                    </Pressable>
-                  </TooltipTrigger>
+                /* <Tooltip delayDuration={150}>
+                   <TooltipTrigger asChild> */
+                <Pressable
+                  disabled
+                  className="flex-row items-center gap-2"
+                  onPress={async (event) => {
+                    await connectWallet();
+                  }}
+                >
+                  <Plug className="size-4 fill-secondary/50" />
+                </Pressable>
+              ) : (
+                /* </TooltipTrigger>
                   <TooltipContent>
                     <Text>Connected Wallet</Text>
                   </TooltipContent>
-                </Tooltip>
-              ) : (
-                <Tooltip delayDuration={150}>
-                  <TooltipTrigger asChild>
-                    <Pressable
-                      className="flex-row items-center gap-2"
-                      onPress={async (event) => {
-                        await connectWallet();
-                      }}
-                    >
-                      <Plug className="size-4" />
-                    </Pressable>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <Text>Connect This Linked Wallet</Text>
-                  </TooltipContent>
-                </Tooltip>
+                </Tooltip> */
+                /*<Tooltip delayDuration={150}>
+                  <TooltipTrigger asChild>*/
+                <Pressable
+                  className="flex-row items-center gap-2"
+                  onPress={async (event) => {
+                    await connectWallet();
+                  }}
+                >
+                  <Plug className="size-4" />
+                </Pressable>
+                /*    </TooltipTrigger>
+                   <TooltipContent>
+                     <Text>Connect This Linked Wallet</Text>
+                   </TooltipContent>
+                 </Tooltip> */
               )}
 
               <UnlinkButton
@@ -296,7 +303,9 @@ function LinkWallets() {
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={linkWallet}
+        onPress={(event) => {
+          linkWallet;
+        }}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
@@ -329,29 +338,33 @@ function FarcasterAccount() {
         </View>
         <View className="flex-row items-center gap-2">
           {farcasterAccount.signerPublicKey ? (
-            <Tooltip delayDuration={150}>
-              <TooltipTrigger asChild>
-                <Pressable disabled>
-                  <HasSignerIcon />
-                </Pressable>
-              </TooltipTrigger>
-              <TooltipContent>
-                <Text>
-                  Farcaster Signer: {farcasterAccount.signerPublicKey}
-                </Text>
-              </TooltipContent>
-            </Tooltip>
+            // <Tooltip delayDuration={150}>
+            //   <TooltipTrigger asChild>
+            <Pressable disabled>
+              <HasSignerIcon />
+            </Pressable>
           ) : (
-            <Tooltip delayDuration={150}>
-              <TooltipTrigger asChild>
-                <Pressable onPress={prepareWrite}>
-                  <Edit className="size-4" />
-                </Pressable>
-              </TooltipTrigger>
-              <TooltipContent>
-                <Text>Request Farcaster Signer to Write</Text>
-              </TooltipContent>
-            </Tooltip>
+            //   </TooltipTrigger>
+            //   <TooltipContent>
+            //     <Text>
+            //       Farcaster Signer: {farcasterAccount.signerPublicKey}
+            //     </Text>
+            //   </TooltipContent>
+            // </Tooltip>
+            // <Tooltip delayDuration={150}>
+            //   <TooltipTrigger asChild>
+            <Pressable
+              onPress={(event) => {
+                prepareWrite;
+              }}
+            >
+              <Edit className="size-4" />
+            </Pressable>
+            //   </TooltipTrigger>
+            //   <TooltipContent>
+            //     <Text>Request Farcaster Signer to Write</Text>
+            //   </TooltipContent>
+            // </Tooltip>
           )}
           <UnlinkButton
             action={() => {
@@ -366,7 +379,9 @@ function FarcasterAccount() {
     return (
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={linkFarcaster}
+        onPress={(event) => {
+          linkFarcaster;
+        }}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
@@ -388,15 +403,17 @@ function UnlinkButton({ action }: { action: () => void }) {
   return (
     <AlertDialog open={open}>
       <AlertDialogTrigger>
-        <Tooltip delayDuration={150}>
-          <TooltipTrigger asChild>
-            <Pressable
-              onPress={() => setOpen(true)}
-              disabled={linkAccountNum <= 1}
-            >
-              <MinusCircle className="size-4" />
-            </Pressable>
-          </TooltipTrigger>
+        {/* <Tooltip delayDuration={150}>
+          <TooltipTrigger asChild> */}
+        <Pressable
+          onPress={(event) => {
+            setOpen(true);
+          }}
+          disabled={linkAccountNum <= 1}
+        >
+          <MinusCircle className="size-4" />
+        </Pressable>
+        {/* </TooltipTrigger>
           <TooltipContent>
             <Text>
               {linkAccountNum <= 1
@@ -404,7 +421,7 @@ function UnlinkButton({ action }: { action: () => void }) {
                 : "Unlink"}
             </Text>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </AlertDialogTrigger>
       <AlertDialogContent className="w-screen">
         <AlertDialogHeader>
@@ -441,7 +458,9 @@ function LogoutButton() {
       <AlertDialogTrigger>
         <Pressable
           className="w-full flex-row items-center gap-2"
-          onPress={() => setOpen(true)}
+          onPress={(event) => {
+            setOpen(true);
+          }}
         >
           <LogOut className="size-4" />
           <Text>Logout</Text>
