@@ -8,6 +8,7 @@ import { useCommunityCtx } from "./_layout";
 import CommunityBuyShareButton from "~/components/community/CommunityBuyShareButton";
 import useLoadCommunityShareStatistics from "~/hooks/community/useLoadCommunityShareStatistics";
 import { Image } from "react-native";
+import { Loading } from "~/components/common/Loading";
 
 export default function SharesScreen() {
   const { community } = useCommunityCtx();
@@ -68,7 +69,7 @@ function HasSubjectAddress() {
           ListFooterComponent={() => {
             return loading ? (
               <View className="flex items-center justify-center p-5">
-                <Text>Loading ...</Text>
+                <Loading />
               </View>
             ) : null;
           }}

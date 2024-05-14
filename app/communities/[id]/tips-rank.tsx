@@ -5,6 +5,7 @@ import { Text } from "~/components/ui/text";
 import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
 import { useCommunityCtx } from "./_layout";
 import { Image } from "react-native";
+import { Loading } from "~/components/common/Loading";
 
 export default function TipsRankScreen() {
   const { community } = useCommunityCtx();
@@ -48,7 +49,7 @@ function HasSubjectAddress() {
         ListFooterComponent={() => {
           return loading ? (
             <View className="flex items-center justify-center p-5">
-              <Text>Loading ...</Text>
+              <Loading />
             </View>
           ) : null;
         }}

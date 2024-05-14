@@ -10,6 +10,7 @@ import { useCommunityCtx } from "./_layout";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import { cn } from "~/lib/utils";
+import { Loading } from "~/components/common/Loading";
 
 export default function CastsScreen() {
   const { community } = useCommunityCtx();
@@ -75,7 +76,7 @@ export default function CastsScreen() {
           ListFooterComponent={() => {
             return loading ? (
               <View className="flex items-center justify-center p-5">
-                <Text>Loading ...</Text>
+                <Loading />
               </View>
             ) : null;
           }}
