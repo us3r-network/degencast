@@ -63,7 +63,7 @@ export default function ExploreScreenScroll() {
           scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
           onScroll={(event) => {
             if (Platform.OS === "web") {
-              const offsetY = event.nativeEvent.contentOffset.y;
+              const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
               const index = Math.round(offsetY / itemHeight);
               const offsetRemainder = offsetY % itemHeight;
               offsetRemainderPrev.current = offsetRemainder;

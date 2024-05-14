@@ -141,7 +141,7 @@ export default function useLoadChannelExploreCasts(params: {
     }
   }, [currentCastIndex, casts, submitSeenCast]);
 
-  // 停留两秒再上报用户行为加积分
+  // 停留1秒再上报用户行为加积分
   const submitedViewActionCastsRef = useRef<string[]>([]);
   const currentCastIndexRef = useRef(currentCastIndex);
   useEffect(() => {
@@ -156,7 +156,7 @@ export default function useLoadChannelExploreCasts(params: {
         });
         submitedViewActionCastsRef.current.push(castHex);
       }
-    }, 2000);
+    }, 1000);
 
     // 如果已经上报过了，就不再上报
     if (!castHex || submitedViewActionCastsRef.current.includes(castHex)) {
