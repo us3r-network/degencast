@@ -4,6 +4,7 @@ import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import React, { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { useAccount } from "wagmi";
 import {
   Copy,
@@ -83,10 +84,14 @@ export default function Wallets() {
           // console.log("selected", item, connectedWallets, newActiveWallet);
           if (newActiveWallet) await setActiveWallet(newActiveWallet);
           await Clipboard.setStringAsync(newActiveWallet?.address || "");
+          Toast.show({
+            type: "info",
+            text1: "Wallet Address Copied!",
+          });
         }}
       >
         <SelectTrigger
-          className={cn("w-full rounded-full border-none bg-white/40 px-2 h-6")}
+          className={cn("h-6 w-full rounded-full border-none bg-white/40 px-2")}
         >
           <View className="mr-2 flex-row items-center gap-2">
             <WalletIcon type={activeWallet?.walletClientType || ""} />
@@ -96,7 +101,7 @@ export default function Wallets() {
           </View>
         </SelectTrigger>
         <SelectContent>
-          <View className="flex w-60 items-start gap-4 divide-solid">
+          <View className="flex items-start gap-4 divide-solid">
             <Catalog
               title="Active Wallets"
               icon={<Wallet className="size-4" />}
@@ -110,7 +115,7 @@ export default function Wallets() {
                     label={shortPubKey(wallet.address)}
                     value={wallet.address}
                   >
-                    <View className="w-full flex-row items-center justify-between gap-2">
+                    <View className="w-full flex-row items-center justify-between gap-6">
                       <View className="flex-row items-center gap-2">
                         <WalletIcon type={wallet.walletClientType} />
                         <Text
@@ -122,6 +127,21 @@ export default function Wallets() {
                           {shortPubKey(wallet.address)}
                         </Text>
                       </View>
+                      <Pressable 
+                        className="flex-row items-center gap-2"
+                        onPress={async (event) => {
+                          console.log(event);
+                          event.preventDefault();
+                          event.stopPropagation();
+                          await Clipboard.setStringAsync(wallet.address);
+                          Toast.show({
+                            type: "info",
+                            text1: "Wallet Address Copied!",
+                          });
+                        }}
+                      >
+                        <Copy className="size-4" />
+                      </Pressable>
                     </View>
                   </SelectItem>
                 ))}
