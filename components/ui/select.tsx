@@ -27,11 +27,7 @@ const SelectTrigger = React.forwardRef<
     {...props}
   >
     <>{children}</>
-    <ChevronDown
-      size={16}
-      aria-hidden={true}
-      className="text-white"
-    />
+    <ChevronDown size={16} aria-hidden={true} className="text-white" />
   </SelectPrimitive.Trigger>
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
@@ -84,12 +80,14 @@ const SelectScrollDownButton = ({
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
+    portalHost?: string;
+  }
+>(({ className, children, position = "popper", portalHost, ...props }, ref) => {
   const { open } = SelectPrimitive.useRootContext();
 
   return (
-    <SelectPrimitive.Portal>
+    // <SelectPrimitive.Portal hostName={portalHost}>
       <SelectPrimitive.Overlay
         style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
       >
@@ -122,7 +120,7 @@ const SelectContent = React.forwardRef<
           </SelectPrimitive.Content>
         </Animated.View>
       </SelectPrimitive.Overlay>
-    </SelectPrimitive.Portal>
+    // </SelectPrimitive.Portal>
   );
 });
 SelectContent.displayName = SelectPrimitive.Content.displayName;
