@@ -74,7 +74,7 @@ export default function ExploreScreenScroll() {
                   setCurrentCastIndex(castIndex);
                   console.log("onscroll");
                 }
-              }, 32);
+              }, 50);
             }
           }}
           onMomentumScrollEnd={(event) => {

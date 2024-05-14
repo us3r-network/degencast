@@ -173,7 +173,7 @@ export default function ChannelExploreScreen() {
                     const castIndex = renderCasts[index].index;
                     setCurrentCastIndex(castIndex);
                   }
-                }, 32);
+                }, 50);
               }
             }}
             onMomentumScrollEnd={(event) => {
