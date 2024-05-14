@@ -21,6 +21,29 @@ import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 import Toast from "react-native-toast-message";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import { fromHex, toHex } from "viem";
+import { FarcasterNetwork, Message, makeFrameAction } from "@farcaster/hub-web";
+import {
+  postFrameActionApi,
+  postFrameActionRedirectApi,
+  postFrameActionTxApi,
+} from "~/services/farcaster/api/frame";
+import { FARCASTER_NETWORK } from "~/constants/farcaster";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
+import { X } from "~/components/common/Icons";
+import { useAccount, useConfig } from "wagmi";
+import {
+  sendTransaction,
+  switchChain,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
 
 export default function EmbedFrame({
   url,
@@ -31,25 +54,210 @@ export default function EmbedFrame({
   data: Frame;
   cast?: FarCast;
 }) {
-  const { requestFarcasterSigner } = useExperimentalFarcasterSigner();
-  const { user, login, ready, authenticated } = usePrivy();
+  const { getPrivySigner, prepareWrite } = useFarcasterWrite();
 
+  const { user, login, ready, authenticated } = usePrivy();
+  const { chain, address } = useAccount();
+  const config = useConfig();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [frameData, setFrameData] = useState<Frame>(data);
+  const [frameRedirect, setFrameRedirect] = useState("");
   const [text, setText] = useState("");
+  const [txData, setTxData] = useState<any>();
+  const [txBtnIdx, setTxBtnIdx] = useState(0);
 
   const farcasterAccount = user?.linkedAccounts.find(
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
 
-  // "link" | "post" | "post_redirect" | "mint" | "tx"
-  const frameBtnAction = useCallback(
-    async (index: number, btn: FrameButton) => {
-      if (btn.action === "link") {
-        Linking.openURL(btn.target);
+  const genFrameActionData = useCallback(
+    async (btnIdx: number, txId?: string) => {
+      if (!prepareWrite()) {
+        Toast.show({
+          type: "info",
+          text1: "Login farcaster first",
+        });
         return;
       }
-      if (btn.action === "mint") {
-        Linking.openURL(url);
+
+      const signer = await getPrivySigner();
+      if (!farcasterAccount.fid || !signer) {
+        Toast.show({
+          type: "info",
+          text1: "Login farcaster first",
+        });
+        return;
+      }
+      if (!cast) {
+        Toast.show({
+          type: "info",
+          text1: "No cast found",
+        });
+        return;
+      }
+
+      const addr = farcasterAccount.ownerAddress;
+      const trustedDataResult = await makeFrameAction(
+        {
+          url: Buffer.from(url),
+          buttonIndex: btnIdx,
+          inputText: Buffer.from(text),
+          castId: {
+            fid: Number(cast.fid),
+            hash: Buffer.from(cast.hash.data),
+          },
+          state: Buffer.from(frameData.state || ""),
+          transactionId: Buffer.from(txId || ""),
+          address:
+            addr && txId ? fromHex(addr as `0x`, "bytes") : Buffer.from(""),
+        },
+        {
+          fid: Number(farcasterAccount.fid),
+          network: FarcasterNetwork.MAINNET,
+        },
+        signer,
+      );
+      if (trustedDataResult.isErr()) {
+        throw new Error(trustedDataResult.error.message);
+      }
+      const trustedDataValue = trustedDataResult.value;
+      const untrustedData = {
+        fid: Number(farcasterAccount.fid),
+        url: url,
+        messageHash: toHex(trustedDataValue.hash),
+        network: FarcasterNetwork.MAINNET,
+        buttonIndex: trustedDataResult.value.data.frameActionBody.buttonIndex,
+        timestamp: trustedDataResult.value.data.timestamp,
+        inputText: text,
+        castId: {
+          fid: Number(cast.fid),
+          hash: toHex(cast.hash.data),
+        },
+        state: frameData.state || "",
+        transactionId: txId || "",
+        address: addr && txId ? addr : "",
+      };
+      const trustedData = {
+        messageBytes: Buffer.from(
+          Message.encode(trustedDataValue).finish(),
+        ).toString("hex"),
+      };
+      return {
+        untrustedData,
+        trustedData,
+      };
+    },
+    [frameData, farcasterAccount, cast, prepareWrite, text],
+  );
+  const reportTransaction = useCallback(
+    async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
+      const actionData = await genFrameActionData(btnIdx, txId);
+      if (!actionData) {
+        return;
+      }
+      const { untrustedData, trustedData } = actionData;
+      const postData = {
+        actionUrl: postUrl,
+        untrustedData,
+        trustedData,
+      };
+      const resp = await postFrameActionApi(postData);
+      if (resp.data.code !== 0) {
+        return;
+      }
+      const { frame } = resp.data.data;
+      setFrameData(frame);
+    },
+    [genFrameActionData],
+  );
+  const sendEthTransaction = useCallback(async () => {
+    if (!txData) {
+      return;
+    }
+    const chainId = txData.chainId.split(":")[1];
+
+    try {
+      const parsedChainId = parseInt(chainId, 10);
+
+      const hash = await sendTransaction(config, {
+        ...txData.params,
+        chainId: parsedChainId,
+      });
+
+      const { status } = await waitForTransactionReceipt(config, {
+        hash,
+        chainId: parsedChainId,
+      });
+      console.log("tx status", status);
+      if (status === "success") {
+        return hash;
+      }
+      console.error("transaction failed", hash, status);
+    } catch (e: any) {
+      console.error(e);
+    }
+  }, [txData, config]);
+
+  // "link" | "post" | "post_redirect" | "mint" | "tx"
+  const postFrameAction = useCallback(
+    async (index: number, action: string, target?: string) => {
+      setText("");
+      if (action === "link") {
+        setFrameRedirect(target || url);
+        return;
+      }
+      if (action === "mint") {
+        setFrameRedirect(url);
+        return;
+      }
+
+      const frameActionData = await genFrameActionData(index);
+      if (!frameActionData) {
+        return;
+      }
+      const { untrustedData, trustedData } = frameActionData;
+
+      const postData: any = {
+        actionUrl: target || frameData.postUrl,
+        untrustedData,
+        trustedData,
+      };
+      if (action === "post_redirect") {
+        const resp = await postFrameActionRedirectApi(postData);
+        if (resp.data.code !== 0) {
+          Toast.show({
+            type: "info",
+            text1: "Something went wrong",
+          });
+          return;
+        }
+        setFrameRedirect(resp.data.data?.redirectUrl || "");
+        return;
+      }
+      if (action === "post") {
+        const resp = await postFrameActionApi(postData);
+        if (resp.data.code !== 0) {
+          Toast.show({
+            type: "info",
+            text1: "Something went wrong",
+          });
+          return;
+        }
+        const { frame } = resp.data.data;
+        setFrameData(frame);
+        return;
+      }
+
+      if (action === "tx") {
+        const resp = await postFrameActionTxApi(postData);
+        if (resp.data.code !== 0) {
+          // toast.error(resp.data.msg);
+          return;
+        }
+        const { txData: transactionData, simulateResult } = resp.data.data;
+        setTxData(transactionData);
+        setTxBtnIdx(index);
         return;
       }
       if (Platform.OS === "web") {
@@ -58,9 +266,8 @@ export default function EmbedFrame({
           text1: "Not supported yet",
         });
       }
-      console.log("not support yet TODO", btn.action);
     },
-    [frameData],
+    [frameData, genFrameActionData],
   );
 
   const ratio = useMemo(() => {
@@ -75,12 +282,9 @@ export default function EmbedFrame({
     setFrameData(data);
   }, [data]);
 
-  // console.log("farcasterAccount", farcasterAccount);
-
-  // console.log("EmbedFrame", frameData, frameData.image);
   return (
     <View className="w-full overflow-hidden rounded-[10px] border border-secondary ">
-      <AspectRatio ratio={ratio}>
+      <AspectRatio ratio={ratio} className={isLoading ? "blur-sm" : ""}>
         <Pressable
           className="h-full w-full"
           onPress={(e) => {
@@ -96,15 +300,21 @@ export default function EmbedFrame({
       </AspectRatio>
       <View className="p-3">
         {(frameData.inputText && (
-          <View className="py-3">
-            <Input
-              className=" text-secondary-foreground"
-              placeholderClassName=" text-secondary-foreground"
-              placeholder={frameData.inputText}
-              value={text}
-              onChangeText={(v) => setText(v)}
-            />
-          </View>
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <View className="py-3">
+              <Input
+                className="bg-white web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0"
+                placeholderClassName=" "
+                placeholder={frameData.inputText}
+                value={text}
+                onChangeText={(v) => setText(v)}
+              />
+            </View>
+          </Pressable>
         )) ||
           null}
         <View
@@ -123,7 +333,9 @@ export default function EmbedFrame({
                 variant={"secondary"}
                 onPress={async (e) => {
                   e.stopPropagation();
-                  await frameBtnAction(idx, button);
+                  setIsLoading(true);
+                  await postFrameAction(idx + 1, button.action, button.target);
+                  setIsLoading(false);
                 }}
               >
                 <Text>{button.label}</Text>
@@ -132,6 +344,129 @@ export default function EmbedFrame({
           })}
         </View>
       </View>
+      <RedirectAlertDialog
+        url={frameRedirect}
+        resetUrl={() => setFrameRedirect("")}
+      />
+      <TxAlertDialog
+        txData={txData}
+        txAction={async () => {
+          try {
+            const txId = await sendEthTransaction();
+            if (txId) {
+              await reportTransaction(txId, txBtnIdx, frameData.postUrl);
+            }
+          } catch (e: any) {
+            console.error(e);
+          }
+        }}
+        close={() => {
+          setTxBtnIdx(0);
+        }}
+      />
     </View>
+  );
+}
+
+function TxAlertDialog({
+  txData,
+  txAction,
+  close,
+}: {
+  txData: any;
+  txAction: () => void;
+  close: () => void;
+}) {
+  return (
+    <AlertDialog open={!!txData}>
+      <AlertDialogContent className="w-full bg-white md:w-[600px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex flex-row items-center gap-2">
+            <View className="flex-grow">
+              <Text className="text-lg">⚠️ Transaction</Text>
+            </View>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              className="rounded-md bg-[#a36efe1a] web:hover:color-black web:active:color-black"
+              onPress={close}
+            >
+              <X />
+            </Button>
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription id="alert-dialog-desc">
+          {/* TODO: simulation */}
+          <View className="mt-2 grid grid-cols-2 items-end gap-5">
+            <Button
+              className={cn(" flex items-center justify-center font-bold")}
+              onPress={close}
+            >
+              <Text>Cancel</Text>
+            </Button>
+
+            <Button onPress={txAction}>
+              <Text>Confirm</Text>
+            </Button>
+          </View>
+        </AlertDialogDescription>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function RedirectAlertDialog({
+  url,
+  resetUrl,
+}: {
+  url: string;
+  resetUrl: () => void;
+}) {
+  return (
+    <AlertDialog open={!!url}>
+      <AlertDialogContent className="w-full bg-white md:w-[600px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex flex-row items-center gap-2">
+            <View className="flex-grow">
+              <Text className="text-lg">⚠️ Leaving Degencast</Text>
+            </View>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              className="rounded-md bg-[#a36efe1a] web:hover:color-black web:active:color-black"
+              onPress={() => {
+                resetUrl();
+              }}
+            >
+              <X />
+            </Button>
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription id="alert-dialog-desc">
+          <Text className="">
+            You are about to leave Degencast, please connect your wallet
+            carefully and take care of your funds.
+          </Text>
+          <View className="mt-2 grid grid-cols-3 items-end gap-5">
+            <Button
+              className={cn(
+                "col-span-2 flex items-center justify-center font-bold",
+              )}
+              onPress={resetUrl}
+            >
+              <Text>Back to Degencast</Text>
+            </Button>
+
+            <Button
+              onPress={() => {
+                Linking.openURL(url);
+              }}
+            >
+              <Text>Still leave</Text>
+            </Button>
+          </View>
+        </AlertDialogDescription>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
