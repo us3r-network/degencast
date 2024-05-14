@@ -247,9 +247,15 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   });
 }
 
-export function getUserDegenTipAllowance(addr: string) {
-  return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/degen-tip/allowance?address=${addr}`,
+export function getUserDegenTipAllowance({
+  fid,
+  address,
+}: {
+  fid?: string | number;
+  address: string;
+}) {
+  return request({
+    url: `/3r-farcaster/degen-tip/allowance?address=${address || ""}&fid=${fid || ""}`,
     method: "get",
   });
 }

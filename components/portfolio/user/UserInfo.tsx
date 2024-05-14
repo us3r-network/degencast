@@ -35,17 +35,13 @@ export default function UserInfo() {
       </Avatar>
       <View className="flex w-full gap-1">
         <View className="inline-block w-full space-x-2">
-          {userName && (
-            <Text className="font-bold text-white">{userName}</Text>
-          )}
-          {userHandle && (
-            <Text className="text-secondary">@{userHandle}</Text>
-          )}
+          {userName && <Text className="font-bold text-white">{userName}</Text>}
+          {userHandle && <Text className="text-secondary">@{userHandle}</Text>}
         </View>
         {farcasterAccount?.fid && (
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
         )}
-        {farcasterAccount?.ownerAddress && <DegenTipsStats address={farcasterAccount?.ownerAddress as `0x${string}`} />}
+        {farcasterAccount?.fid && <DegenTipsStats fid={farcasterAccount.fid} />}
         {/* <UserGlobalPoints /> */}
       </View>
     </View>
