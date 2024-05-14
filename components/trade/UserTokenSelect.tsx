@@ -60,7 +60,7 @@ export default function MyToeknSelect({
       className="gap-3"
     >
       {tokens?.map((token) => (
-        <View className="w-full flex-row items-center gap-4">
+        <View key={token.address} className="w-full flex-row items-center gap-4">
           <RadioGroupItem
             className={cn("bg-white")}
             aria-labelledby={`label-for-${token.address}`}
