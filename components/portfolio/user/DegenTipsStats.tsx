@@ -27,6 +27,7 @@ export default function DegenTipsStats({
     loadDegenAllowance,
     loading,
   } = useUserDegenAllowance({
+    fid: fid || "",
     address: address || "",
   });
   // } = useUserDegenAllowance("0xee3ca4dd4ceb3416915eddc6cdadb4a6060434d4");
