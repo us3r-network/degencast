@@ -163,7 +163,7 @@ export default function ChannelExploreScreen() {
             scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
             onScroll={(event) => {
               if (Platform.OS === "web") {
-                const offsetY = event.nativeEvent.contentOffset.y;
+                const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
                 const index = Math.round(offsetY / itemHeight);
                 const offsetRemainder = offsetY % itemHeight;
                 offsetRemainderPrev.current = offsetRemainder;
@@ -173,7 +173,7 @@ export default function ChannelExploreScreen() {
                     const castIndex = renderCasts[index].index;
                     setCurrentCastIndex(castIndex);
                   }
-                }, 50);
+                }, 32);
               }
             }}
             onMomentumScrollEnd={(event) => {
