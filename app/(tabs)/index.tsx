@@ -72,7 +72,6 @@ export default function ExploreScreenScroll() {
                 if (offsetRemainderPrev.current === 0) {
                   const castIndex = renderCasts[index].index;
                   setCurrentCastIndex(castIndex);
-                  console.log("onscroll");
                 }
               }, 50);
             }
