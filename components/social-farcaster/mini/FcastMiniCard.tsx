@@ -35,7 +35,7 @@ export default function FcastMiniCard({
     <Card
       key={cast.id}
       className={cn(
-        "relative flex min-h-36 flex-col gap-5 overflow-hidden",
+        "relative flex min-h-36 flex-col gap-5 overflow-hidden border-secondary/10",
         " sm:min-h-64",
         className,
       )}
@@ -54,7 +54,7 @@ export default function FcastMiniCard({
         </Text>
       </View>
       {/* body - text & embed */}
-      {!!cast.text && (
+      {embedImgs.length === 0 && !!cast.text && (
         <View className="p-2 pb-6">
           {/* <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} /> */}
           <Text
@@ -69,7 +69,7 @@ export default function FcastMiniCard({
       )}
       {embedImgs.length > 0 && (
         <Image
-          className="z-10 h-full w-full object-cover"
+          className="z-10 h-full w-full object-contain"
           source={{ uri: embedImgs[0].url }}
         />
       )}

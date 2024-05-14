@@ -95,7 +95,7 @@ function ShareActivities({ id }: { id: string }) {
       ListFooterComponent={() => {
         return loading ? (
           <View className="flex items-center justify-center p-5">
-            <Text>Loading ...</Text>
+            <Loading />
           </View>
         ) : null;
       }}

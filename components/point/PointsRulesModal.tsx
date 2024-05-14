@@ -1,9 +1,8 @@
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
-import { ScrollView, View, ViewProps } from "react-native";
+import { ScrollView, View, ViewProps, Image } from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "../ui/text";
 import { Button } from "../ui/button";
-import { Atom } from "../common/Icons";
 import useUserTotalPoints from "~/hooks/user/useUserTotalPoints";
 import { Separator } from "../ui/separator";
 import useUserAction from "~/hooks/user/useUserAction";
@@ -22,6 +21,7 @@ import {
   getAppFrameLink,
   getAppWebsiteLink,
 } from "~/utils/platform-sharing/link";
+import { Check } from "../common/Icons";
 
 export default function PointsRulesModal({
   open,
@@ -34,7 +34,7 @@ export default function PointsRulesModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <DialogHeader>
-          <Text className=" text-base font-medium">Degencast Point</Text>
+          <Text className=" text-base font-medium">$SPELL</Text>
         </DialogHeader>
         <PointsRules onOpenChange={onOpenChange} />
       </DialogContent>
@@ -65,14 +65,22 @@ export function PointsRules({
   const { totalPoints } = useUserTotalPoints();
 
   const getPointsText = (unit: number) => {
-    return unit > 1 ? `${unit} points` : `${unit} point`;
+    return `${unit} $SPELL`;
+    // return unit > 1 ? `${unit} points` : `${unit} point`;
   };
 
   const [openShare, setOpenShare] = useState(false);
   return (
     <>
       <View className="flex-row items-center gap-2">
-        <Atom className="h-7 w-7 text-secondary" />
+        <Image
+          source={require("~/assets/images/wand-sparkles-white.png")}
+          style={{
+            width: 28,
+            height: 28,
+            resizeMode: "contain",
+          }}
+        />
         <Text className=" text-2xl">{totalPoints}</Text>
       </View>
       <Separator className="my-2 bg-secondary/10" />
@@ -84,8 +92,8 @@ export function PointsRules({
           <RuleItem
             text="Connect Farcaster"
             pointsText={getPointsText(connectFarcasterUnit)}
-            btnText={signerPublicKey ? "Connected" : "Connect"}
-            btnDisabled={!!signerPublicKey}
+            btnText={"Connect"}
+            completed={!!signerPublicKey}
             onBtnPress={() => {
               onOpenChange?.(false);
               if (!authenticated) {
@@ -176,6 +184,7 @@ function RuleItem({
   pointsText,
   btnDisabled,
   btnText,
+  completed,
   onBtnPress,
   className,
   ...props
@@ -184,6 +193,7 @@ function RuleItem({
   pointsText: string;
   btnDisabled?: boolean;
   btnText: string;
+  completed?: boolean;
   onBtnPress: () => void;
 }) {
   return (
@@ -197,14 +207,18 @@ function RuleItem({
           {pointsText}
         </Text>
       </View>
-      <Button
-        variant={"secondary"}
-        className=" min-w-20"
-        onPress={onBtnPress}
-        disabled={btnDisabled}
-      >
-        <Text>{btnText}</Text>
-      </Button>
+      {completed ? (
+        <Check className=" size-5 stroke-[#00D1A7]" />
+      ) : (
+        <Button
+          variant={"secondary"}
+          className=" min-w-20"
+          onPress={onBtnPress}
+          disabled={btnDisabled}
+        >
+          <Text>{btnText}</Text>
+        </Button>
+      )}
     </View>
   );
 }
