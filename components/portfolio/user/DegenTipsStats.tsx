@@ -26,7 +26,9 @@ export default function DegenTipsStats({
     remainingDegenAllowance,
     loadDegenAllowance,
     loading,
-  } = useUserDegenAllowance(address || "0x");
+  } = useUserDegenAllowance({
+    address: address || "",
+  });
   // } = useUserDegenAllowance("0xee3ca4dd4ceb3416915eddc6cdadb4a6060434d4");
   useEffect(() => {
     loadDegenAllowance();
