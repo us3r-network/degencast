@@ -3,8 +3,8 @@ import { Button, ButtonProps } from "../ui/button";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { CommunityInfo } from "~/services/community/types/community";
 import { cn } from "~/lib/utils";
-import { TextProps } from "react-native";
-import { CircleCheck, CirclePlus } from "../common/Icons";
+import { TextProps, View } from "react-native";
+import { CircleCheck, CirclePlus, MinusCircle, Plus } from "../common/Icons";
 
 export default function CommunityJoinButton({
   communityInfo,
@@ -75,9 +75,11 @@ export function CommunityJoinIconButton({
       {...props}
     >
       {joined ? (
-        <CircleCheck className="size-5 stroke-secondary" />
+        <MinusCircle strokeWidth={1} className="size-10 stroke-secondary" />
       ) : (
-        <CirclePlus className="size-5 stroke-primary-foreground" />
+        <View className="flex size-10 items-center justify-center rounded-full bg-secondary">
+          <Plus className=" size-6 stroke-primary" />
+        </View>
       )}
     </Button>
   );

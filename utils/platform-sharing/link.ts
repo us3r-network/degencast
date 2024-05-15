@@ -82,3 +82,22 @@ export const getAppFrameLink = (opts?: { fid?: string | number }) => {
   }
   return link;
 };
+
+export const getTradePageWebsiteLink = (opts?: { fid?: string | number }) => {
+  let link = `${DEGENCAST_WEB_HOST}/trade/tokens`;
+  const { fid } = opts || {};
+  if (fid) {
+    link += `?inviteFid=${fid}`;
+  }
+  return link;
+};
+
+// TODO degencast app frame link ?
+export const getTradePageFrameLink = (opts?: { fid?: string | number }) => {
+  let link = `${DEGENCAST_WEB_HOST}/trade/tokens`;
+  const { fid } = opts || {};
+  if (fid) {
+    link += `?inviteFid=${fid}`;
+  }
+  return link;
+};

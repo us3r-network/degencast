@@ -4,6 +4,7 @@ import { CommunityData } from "~/services/community/api/community";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatNumberToUnitString } from "~/utils/number";
 import { cn } from "~/lib/utils";
+import { CommunityJoinIconButton } from "./CommunityJoinButton";
 
 export default function CommunityDetailMetaInfo({
   communityInfo,
@@ -47,6 +48,9 @@ export default function CommunityDetailMetaInfo({
         <Text className="line-clamp-2 text-sm font-medium leading-6 text-secondary">
           {description}
         </Text>
+      </View>
+      <View className=" flex h-20 flex-col justify-center">
+        <CommunityJoinIconButton communityInfo={communityInfo} />
       </View>
     </View>
   );

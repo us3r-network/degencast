@@ -21,8 +21,14 @@ import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SKIP_ONBOARDING_KEY } from "../login";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+import {
+  ExploreSharingButton,
+  TradeSharingButton,
+} from "~/components/platform-sharing/PlatformSharingButton";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 export default function TabLayout() {
+  const { currFid } = useFarcasterAccount();
   // preload trade data
   useCommunityTokens();
   // useCommunityShares();
@@ -85,6 +91,9 @@ export default function TabLayout() {
                       <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
                     </Button>
                   </Link>
+                  <View>
+                    <ExploreSharingButton fid={currFid} />
+                  </View>
                 </View>
               </View>
             ),
@@ -93,7 +102,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="trade"
           options={{
-            title: "Trade",
+            title: "Channels",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
             headerTransparent: true,
@@ -106,9 +115,22 @@ export default function TabLayout() {
               height: 54,
             },
             headerRight: () => (
-              <View className="flex-row items-center gap-4 p-4">
+              <View className="flex-row items-center gap-[10px] p-4">
                 <UserGlobalPoints />
-                <UserWallets />
+                {/* <UserWallets /> */}
+                <Link href="/search" asChild>
+                  <Button variant={"link"} className="m-0 p-0">
+                    <Search className=" h-6 w-6 cursor-pointer stroke-white" />
+                  </Button>
+                </Link>
+                <Link href="/create" asChild>
+                  <Button variant={"link"} className="m-0 p-0">
+                    <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
+                  </Button>
+                </Link>
+                <View>
+                  <TradeSharingButton fid={currFid} />
+                </View>
               </View>
             ),
           }}
@@ -129,9 +151,19 @@ export default function TabLayout() {
               height: 54,
             },
             headerRight: () => (
-              <View className="flex-row items-center gap-4 p-4">
+              <View className="flex-row items-center gap-[10px] p-4">
                 <UserGlobalPoints />
-                <UserWallets />
+                {/* <UserWallets /> */}
+                <Link href="/search" asChild>
+                  <Button variant={"link"} className="m-0 p-0">
+                    <Search className=" h-6 w-6 cursor-pointer stroke-white" />
+                  </Button>
+                </Link>
+                <Link href="/create" asChild>
+                  <Button variant={"link"} className="m-0 p-0">
+                    <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
+                  </Button>
+                </Link>
               </View>
             ),
           }}

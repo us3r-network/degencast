@@ -1,22 +1,20 @@
-import { useHeaderHeight } from "@react-navigation/elements";
 import {
   Stack,
   useRouter,
   useLocalSearchParams,
   useSegments,
   useNavigation,
+  Link,
 } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
 import { View, Text, SafeAreaView } from "react-native";
-import GoBackButton, {
-  GoBackButtonBgPrimary,
-} from "~/components/common/GoBackButton";
+import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
+import { Search } from "~/components/common/Icons";
+import { EditIcon } from "~/components/common/SvgIcons";
 import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
-import CommunityJoinButton, {
-  CommunityJoinIconButton,
-} from "~/components/community/CommunityJoinButton";
-import PlatformSharingButton from "~/components/platform-sharing/PlatformSharingButton";
+import { CommunitySharingButton } from "~/components/platform-sharing/PlatformSharingButton";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
@@ -27,14 +25,6 @@ import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
 import { CommunityData } from "~/services/community/api/community";
-import {
-  getCommunityFrameLink,
-  getCommunityWebsiteLink,
-} from "~/utils/platform-sharing/link";
-import {
-  getCommunityShareTextWithTwitter,
-  getCommunityShareTextWithWarpcast,
-} from "~/utils/platform-sharing/text";
 
 const initialRouteName = "tokens";
 
@@ -135,25 +125,23 @@ export default function CommunityDetail() {
                   Channel
                 </Text>
               </View>
-              <View className="flex flex-row items-center gap-4">
+              <View className="flex flex-row items-center gap-[10px]">
                 <UserGlobalPoints />
-                {community && (
-                  <CommunityJoinIconButton communityInfo={community} />
-                )}
+                <Link href="/search" asChild>
+                  <Button variant={"link"} className="m-0 p-0">
+                    <Search className=" h-6 w-6 cursor-pointer stroke-white" />
+                  </Button>
+                </Link>
+                <Link href="/create" asChild>
+                  <Button variant={"link"} className="m-0 p-0">
+                    <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
+                  </Button>
+                </Link>
                 <View>
-                  <PlatformSharingButton
-                    twitterText={getCommunityShareTextWithTwitter(
-                      community?.name || "",
-                    )}
-                    warpcastText={getCommunityShareTextWithWarpcast(
-                      community?.name || "",
-                    )}
-                    websiteLink={getCommunityWebsiteLink(id, {
-                      fid: currFid,
-                    })}
-                    frameLink={getCommunityFrameLink(id, {
-                      fid: currFid,
-                    })}
+                  <CommunitySharingButton
+                    name={community?.name || ""}
+                    channelId={id || ""}
+                    currFid={currFid}
                   />
                 </View>
               </View>
