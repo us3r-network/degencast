@@ -1,41 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
-import { Chain } from "viem";
-import { useAccount } from "wagmi";
+import { base } from "viem/chains";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN } from "~/constants";
-import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 
-export default function MyToeknSelect({
-  chain = DEFAULT_CHAIN,
-  supportTokenKeys,
+export default function CommunityToeknSelect({
+  defaultToken,
   selectToken,
-  hidden = false,
-  showBalance = true,
+  showBalance = false,
 }: {
-  chain?: Chain;
-  supportTokenKeys?: TOKENS[];
+  defaultToken?: TokenWithTradeInfo;
   selectToken?: (token: TokenWithTradeInfo) => void;
-  hidden?: boolean;
   showBalance?: boolean;
 }) {
-  const account = useAccount();
-  const { userTokens } = useUserTokens(account.address, chain.id);
+  const { items: communityTokens } = useCommunityTokens();
 
-  const tokens: TokenWithTradeInfo[] = useMemo(() => {
-    const items: TokenWithTradeInfo[] = [];
-    userTokens.forEach((value, key) => {
-      if (!supportTokenKeys || supportTokenKeys.includes(key as TOKENS)) {
-        items.push(value);
-      }
-    });
-    return items;
-  }, [userTokens, supportTokenKeys]);
+  const tokens: TokenWithTradeInfo[] = useMemo(
+    () => communityTokens.filter((token) => token.chainId === base.id),
+    [communityTokens],
+  );
 
   const [value, setValue] = useState<string>();
 
@@ -47,21 +35,18 @@ export default function MyToeknSelect({
     }
   };
   const DEFAULT_VALUE: Option = {
-    label: tokens?.[0]?.name || "",
-    value: tokens?.[0]?.address,
+    label: defaultToken?.name || tokens[0]?.name || "",
+    value: defaultToken?.address || tokens[0]?.address,
   };
   useEffect(() => {
     if (tokens && tokens.length > 0) {
       valueChangeHandler(DEFAULT_VALUE);
     }
-  }, [userTokens, tokens, supportTokenKeys]);
+  }, [tokens]);
 
   const selectedToken =
     tokens?.find((token) => token?.address === value) || tokens[0];
 
-  if (hidden || !tokens || tokens.length === 0 || !selectedToken) {
-    return null;
-  }
   return (
     <Select
       defaultValue={{

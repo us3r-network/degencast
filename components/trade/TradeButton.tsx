@@ -1,6 +1,6 @@
 // import { useSwitchChain } from "wagmi";
 import { useConnectWallet } from "@privy-io/react-auth";
-import { debounce, throttle } from "lodash";
+import { debounce, defaultTo, throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { base } from "viem/chains";
@@ -18,12 +18,16 @@ import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
 import useUserAction from "~/hooks/user/useUserAction";
-import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
+import {
+  TOKENS,
+  useUserNativeToken,
+  useUserToken,
+} from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { UserActionName } from "~/services/user/types";
 import About from "../common/About";
-import { ArrowUpDown } from "../common/Icons";
+import { ArrowUpDown, User } from "../common/Icons";
 import { TokenInfo, TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
@@ -33,6 +37,8 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import UserTokenSelect from "./UserTokenSelect";
+import CommunityToeknSelect from "./CommunityTokenSelect";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -110,12 +116,37 @@ function SwapToken({
   const account = useAccount();
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
-  const [fromToken, setFromToken] = useState(token1);
-  const [toToken, setToToken] = useState(token2);
+  const [fromTokenSet, setFromTokenSet] = useState<TokenSetInfo>();
+  const [toTokenSet, setToTokenSet] = useState<TokenSetInfo>();
+  const [fromToken, setFromToken] = useState<TokenWithTradeInfo>();
+  const [toToken, setToToken] = useState<TokenWithTradeInfo>();
   const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
   const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
   const [transationData, setTransationData] = useState<TransationData>();
   const [transationError, setTransationError] = useState<string>();
+  useEffect(() => {
+    if (!token1 || token1 === NATIVE_TOKEN_METADATA)
+      setFromTokenSet({
+        type: TokenType.USER_TOKENS,
+      });
+    else
+      setToTokenSet({
+        type: TokenType.COMMUNITY_TOKENS,
+        defaultToken: token1,
+      });
+  }, [token1]);
+
+  useEffect(() => {
+    if (!token2 || token2 === NATIVE_TOKEN_METADATA)
+      setFromTokenSet({
+        type: TokenType.USER_TOKENS,
+      });
+    else
+      setToTokenSet({
+        type: TokenType.COMMUNITY_TOKENS,
+        defaultToken: token2,
+      });
+  }, [token2]);
 
   const {
     swaping,
@@ -136,6 +167,7 @@ function SwapToken({
 
   const fetchPriceInfo = async (amount: string) => {
     // console.log("fetchPriceInfo", fromToken, toToken, amount);
+    if (!fromToken || !toToken || !amount) return;
     const priceInfo = await fetchPrice({
       sellToken: fromToken,
       buyToken: toToken,
@@ -148,10 +180,11 @@ function SwapToken({
 
   const debouncedFetchPriceInfo = useCallback(
     throttle(debounce(fetchPriceInfo, 500), 1000), // 0x api rate limit 1/second
-    [],
+    [fetchPriceInfo],
   );
   const swap = async () => {
     // console.log("swap", fromAmount);
+    if (!fromToken || !toToken || !fromAmount) return;
     if (chainId !== fromToken.chainId) return;
     swapToken({
       sellToken: fromToken,
@@ -159,12 +192,16 @@ function SwapToken({
       sellAmount: fromAmount,
     });
   };
+  useEffect(() => {
+    setFromAmount(DEFAULT_AMOUNT);
+    setToAmount(DEFAULT_AMOUNT);
+  }, [fromToken, toToken]);
 
   useEffect(() => {
+    setToAmount("");
     if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
       return;
     }
-    setToAmount("");
     debouncedFetchPriceInfo(fromAmount);
   }, [fromAmount]);
 
@@ -226,6 +263,20 @@ function SwapToken({
 
   const [fromTokenBalance, setFromTokenBalance] = useState(0);
 
+  const switchToken = () => {
+    // if (!fromToken || !toToken) return;
+    // // console.log("swap", fromToken, toToken, token1, token2);
+    // if (fromToken.address === token1.address) {
+    //   setFromToken(token2);
+    //   setToToken(token1);
+    // } else {
+    //   setFromToken(token1);
+    //   setToToken(token2);
+    // }
+    // setFromAmount(DEFAULT_AMOUNT);
+    // setToAmount(DEFAULT_AMOUNT);
+  };
+
   if (transationData)
     return (
       <TransactionInfo
@@ -244,127 +295,170 @@ function SwapToken({
     );
   else
     return (
-      <View className="flex w-full gap-2">
-        <Token
-          token={fromToken}
-          amount={fromAmount}
-          setAmount={(amount) => setFromAmount(amount)}
-          setBalance={(balance) => setFromTokenBalance(balance)}
-        />
+      <View className="z-50 flex w-full gap-2">
+        {fromTokenSet && (
+          <TokenWithAmount
+            tokenSet={fromTokenSet}
+            amount={fromAmount}
+            changeToken={setFromToken}
+            setAmount={(amount) => setFromAmount(amount)}
+            setBalance={(balance) => setFromTokenBalance(balance)}
+          />
+        )}
         <View className="flex-row items-center">
           <Separator className="flex-1 bg-secondary" />
           <Button
             disabled
             className="size-10 rounded-full border-2 border-secondary text-secondary"
-            onPress={() => {
-              // console.log("swap", fromToken, toToken, token1, token2);
-              if (fromToken.address === token1.address) {
-                setFromToken(token2);
-                setToToken(token1);
-              } else {
-                setFromToken(token1);
-                setToToken(token2);
-              }
-              setFromAmount(DEFAULT_AMOUNT);
-              setToAmount(DEFAULT_AMOUNT);
-            }}
+            onPress={switchToken}
           >
             <ArrowUpDown />
           </Button>
           <Separator className="flex-1 bg-secondary" />
         </View>
-        <Token token={toToken || NATIVE_TOKEN_METADATA} amount={toAmount} />
-        {chainId === fromToken.chainId ? (
-          <Button
-            variant="secondary"
-            className="mt-6"
-            disabled={
-              !fromTokenBalance ||
-              fromTokenBalance < Number(fromAmount) ||
-              fetchingPrice ||
-              fetchingQuote ||
-              fetchingQuote ||
-              Number(fromAmount) === 0 ||
-              Number(toAmount) === 0 ||
-              transationLoading
-            }
-            onPress={() => {
-              swap();
-            }}
-          >
-            {fetchingPrice ? (
-              <View className="flex-row items-center gap-2">
-                <ActivityIndicator color={"white"} />
-                <Text>Fetching Price...</Text>
-              </View>
-            ) : fetchingQuote ? (
-              <View className="flex-row items-center gap-2">
-                <ActivityIndicator color={"white"} />
-                <Text>Fetching Quote...</Text>
-              </View>
-            ) : waitingUserSign ? (
-              <Text>Please sign the transaction!</Text>
-            ) : transationLoading ? (
-              <Text>Comfirming the transaction...</Text>
-            ) : (
-              <Text>Swap</Text>
-            )}
-          </Button>
-        ) : (
-          <Button
-            variant="secondary"
-            className="mt-6"
-            disabled={switchChainStatus === "pending"}
-            onPress={async () => {
-              await switchChain({ chainId: fromToken.chainId });
-            }}
-          >
-            <Text>Switch to {base.name}</Text>
-          </Button>
+        {toTokenSet && (
+          <TokenWithAmount
+            tokenSet={toTokenSet}
+            changeToken={setToToken}
+            amount={toAmount}
+          />
         )}
+        {fromToken &&
+          toToken &&
+          (chainId === fromToken.chainId ? (
+            <Button
+              variant="secondary"
+              className="mt-6"
+              disabled={
+                !fromTokenBalance ||
+                fromTokenBalance < Number(fromAmount) ||
+                fetchingPrice ||
+                fetchingQuote ||
+                fetchingQuote ||
+                Number(fromAmount) === 0 ||
+                Number(toAmount) === 0 ||
+                transationLoading
+              }
+              onPress={() => {
+                swap();
+              }}
+            >
+              {fetchingPrice ? (
+                <View className="flex-row items-center gap-2">
+                  <ActivityIndicator color={"white"} />
+                  <Text>Fetching Price...</Text>
+                </View>
+              ) : fetchingQuote ? (
+                <View className="flex-row items-center gap-2">
+                  <ActivityIndicator color={"white"} />
+                  <Text>Fetching Quote...</Text>
+                </View>
+              ) : waitingUserSign ? (
+                <Text>Please sign the transaction!</Text>
+              ) : transationLoading ? (
+                <Text>Comfirming the transaction...</Text>
+              ) : (
+                <Text>Swap</Text>
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="mt-6"
+              disabled={switchChainStatus === "pending"}
+              onPress={async () => {
+                await switchChain({ chainId: fromToken.chainId });
+              }}
+            >
+              <Text>Switch to {base.name}</Text>
+            </Button>
+          ))}
       </View>
     );
 }
 
-function Token({
-  token,
+type TokenSetInfo = {
+  type: TokenType;
+  defaultToken?: TokenWithTradeInfo;
+};
+
+enum TokenType {
+  USER_TOKENS = "USER_TOKENS",
+  COMMUNITY_TOKENS = "COMMUNITY_TOKENS",
+}
+
+function TokenWithAmount({
+  tokenSet,
   amount,
+  changeToken,
   setAmount,
   setBalance,
 }: {
-  token: TokenWithTradeInfo;
+  tokenSet: TokenSetInfo;
   amount?: string;
+  changeToken?: (token: TokenWithTradeInfo) => void;
   setAmount?: (amount: string) => void;
   setBalance?: (balance: number) => void;
 }) {
   const account = useAccount();
   // console.log("Token", token, amount);
+  const [token, setToken] = useState(
+    tokenSet.defaultToken || NATIVE_TOKEN_METADATA,
+  );
 
-  const tokenInfo = useUserToken(account.address, token.address, token.chainId);
+  useEffect(() => {
+    if (token) {
+      changeToken?.(token);
+      setAmount?.(DEFAULT_AMOUNT);
+    }
+  }, [token]);
+
+  const tokenInfo = useUserToken(
+    account.address,
+    token?.address,
+    token?.chainId,
+  );
+
   const nativeTokenInfo = useUserNativeToken(
     account.address,
     NATIVE_TOKEN_METADATA.chainId,
   );
+
   const balance = useMemo(() => {
-    let b;
-    if (token.address === NATIVE_TOKEN_METADATA.address) {
-      b = nativeTokenInfo?.balance || "0";
-    } else {
-      b = tokenInfo?.balance || "0";
-    }
+    let b: string | number = 0;
+    if (token)
+      if (token.address === NATIVE_TOKEN_METADATA.address) {
+        b = nativeTokenInfo?.balance || "0";
+      } else {
+        b = tokenInfo?.balance || "0";
+      }
     setBalance?.(Number(b));
     return b;
   }, [tokenInfo, nativeTokenInfo]);
 
-  const price = Number(token.tradeInfo?.stats.token_price_usd) || 0;
+  const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
+
   return (
-    <View className="flex gap-2">
-      <View className="flex-row items-center justify-between">
-        <TokenInfo
-          name={token.name}
-          logo={token.logoURI}
+    <View className="z-50 flex gap-2">
+      <View className="z-50 flex-row items-center justify-between">
+        {/* <TokenInfo
+          name={token?.name}
+          logo={token?.logoURI}
           textClassName="text-2xl font-normal"
-        />
+        /> */}
+        {tokenSet.type === TokenType.USER_TOKENS && (
+          <UserTokenSelect
+            selectToken={setToken}
+            showBalance={false}
+            supportTokenKeys={[TOKENS.NATIVE]}
+          />
+        )}
+        {tokenSet.type === TokenType.COMMUNITY_TOKENS && (
+          <CommunityToeknSelect
+            defaultToken={tokenSet.defaultToken}
+            selectToken={setToken}
+          />
+        )}
         <Input
           editable={!!setAmount}
           className={cn(
