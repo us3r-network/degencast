@@ -9,6 +9,7 @@ import {
   useExperimentalFarcasterSigner,
   usePrivy,
   useLinkAccount,
+  useConnectWallet,
 } from "@privy-io/react-auth";
 
 import { FarCast } from "~/services/farcaster/types";
@@ -38,12 +39,13 @@ import {
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
 import { X } from "~/components/common/Icons";
-import { useAccount, useConfig } from "wagmi";
+import { useAccount, useChains, useConfig } from "wagmi";
 import {
   sendTransaction,
   switchChain,
   waitForTransactionReceipt,
 } from "@wagmi/core";
+import { shortAddress } from "~/utils/shortAddress";
 
 export default function EmbedFrame({
   url,
@@ -58,6 +60,7 @@ export default function EmbedFrame({
 
   const { user, login, ready, authenticated } = usePrivy();
   const { chain, address } = useAccount();
+  const { connectWallet } = useConnectWallet();
   const config = useConfig();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +69,7 @@ export default function EmbedFrame({
   const [text, setText] = useState("");
   const [txData, setTxData] = useState<any>();
   const [txBtnIdx, setTxBtnIdx] = useState(0);
+  const [txSimulate, setTxSimulate] = useState<any>([]);
 
   const farcasterAccount = user?.linkedAccounts.find(
     (account) => account.type === "farcaster",
@@ -97,7 +101,7 @@ export default function EmbedFrame({
         return;
       }
 
-      const addr = farcasterAccount.ownerAddress;
+      const addr = address;
       const trustedDataResult = await makeFrameAction(
         {
           url: Buffer.from(url),
@@ -148,7 +152,7 @@ export default function EmbedFrame({
         trustedData,
       };
     },
-    [frameData, farcasterAccount, cast, prepareWrite, text],
+    [frameData, farcasterAccount, cast, prepareWrite, text, address],
   );
   const reportTransaction = useCallback(
     async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
@@ -179,6 +183,8 @@ export default function EmbedFrame({
 
     try {
       const parsedChainId = parseInt(chainId, 10);
+      if (chain?.id !== parsedChainId)
+        await switchChain(config, { chainId: parsedChainId });
 
       const hash = await sendTransaction(config, {
         ...txData.params,
@@ -191,13 +197,14 @@ export default function EmbedFrame({
       });
       console.log("tx status", status);
       if (status === "success") {
+        setTxData(undefined);
         return hash;
       }
       console.error("transaction failed", hash, status);
     } catch (e: any) {
       console.error(e);
     }
-  }, [txData, config]);
+  }, [txData, config, chain]);
 
   // "link" | "post" | "post_redirect" | "mint" | "tx"
   const postFrameAction = useCallback(
@@ -257,6 +264,7 @@ export default function EmbedFrame({
         }
         const { txData: transactionData, simulateResult } = resp.data.data;
         setTxData(transactionData);
+        setTxSimulate(simulateResult);
         setTxBtnIdx(index);
         return;
       }
@@ -267,7 +275,7 @@ export default function EmbedFrame({
         });
       }
     },
-    [frameData, genFrameActionData],
+    [frameData, genFrameActionData, address, connectWallet],
   );
 
   const ratio = useMemo(() => {
@@ -348,35 +356,58 @@ export default function EmbedFrame({
         url={frameRedirect}
         resetUrl={() => setFrameRedirect("")}
       />
-      <TxAlertDialog
-        txData={txData}
-        txAction={async () => {
-          try {
-            const txId = await sendEthTransaction();
-            if (txId) {
-              await reportTransaction(txId, txBtnIdx, frameData.postUrl);
+      {address && txData && (
+        <TxAlertDialog
+          txData={txData}
+          txSimulate={txSimulate}
+          walletAddress={address}
+          txAction={async () => {
+            try {
+              const txId = await sendEthTransaction();
+              if (txId) {
+                await reportTransaction(txId, txBtnIdx, frameData.postUrl);
+              }
+            } catch (e: any) {
+              console.error(e);
             }
-          } catch (e: any) {
-            console.error(e);
-          }
-        }}
-        close={() => {
-          setTxBtnIdx(0);
-        }}
-      />
+          }}
+          close={() => {
+            setTxBtnIdx(0);
+            setTxData(undefined);
+          }}
+        />
+      )}
     </View>
   );
 }
 
 function TxAlertDialog({
   txData,
+  txSimulate,
+  walletAddress,
   txAction,
   close,
 }: {
   txData: any;
+  txSimulate: any[];
+  walletAddress: string;
   txAction: () => void;
   close: () => void;
 }) {
+  console.log(txSimulate);
+  const chains = useChains();
+  const from = useMemo(() => {
+    return txSimulate.find(
+      (item) => item.from?.toLowerCase() === walletAddress.toLowerCase(),
+    );
+  }, [txSimulate]);
+  const to = useMemo(() => {
+    return txSimulate.find(
+      (item) => item.to?.toLowerCase() === walletAddress.toLowerCase(),
+    );
+  }, [txSimulate]);
+  const chainId = txData?.chainId.split(":")[1];
+  const chain = chains.find((item) => item.id === parseInt(chainId, 10));
   return (
     <AlertDialog open={!!txData}>
       <AlertDialogContent className="w-full bg-white md:w-[600px]">
@@ -397,6 +428,17 @@ function TxAlertDialog({
         </AlertDialogHeader>
         <AlertDialogDescription id="alert-dialog-desc">
           {/* TODO: simulation */}
+          <View className="p-2">
+            <Text>
+              chain: <Text className="text-[#718096]">{chain?.name}</Text>
+            </Text>
+            <Text>
+              wallet address:{" "}
+              <Text className="text-[#718096]">
+                {shortAddress(walletAddress)}
+              </Text>
+            </Text>
+          </View>
           <View className="mt-2 grid grid-cols-2 items-end gap-5">
             <Button
               className={cn(" flex items-center justify-center font-bold")}
