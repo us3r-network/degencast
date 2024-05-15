@@ -39,6 +39,7 @@ import {
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
 import CommunityToeknSelect from "./CommunityTokenSelect";
+import { Loading } from "../common/Loading";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -130,7 +131,7 @@ function SwapToken({
         type: TokenType.USER_TOKENS,
       });
     else
-      setToTokenSet({
+      setFromTokenSet({
         type: TokenType.COMMUNITY_TOKENS,
         defaultToken: token1,
       });
@@ -138,7 +139,7 @@ function SwapToken({
 
   useEffect(() => {
     if (!token2 || token2 === NATIVE_TOKEN_METADATA)
-      setFromTokenSet({
+      setToTokenSet({
         type: TokenType.USER_TOKENS,
       });
     else
@@ -241,6 +242,8 @@ function SwapToken({
   }, [isSuccess, waitingUserSign, transactionReceipt, transationLoading]);
 
   useEffect(() => {
+    //todo: add condition of more than $30
+    console.log("isSuccess", isSuccess, transactionReceipt);
     if (isSuccess)
       submitUserAction({
         action: UserActionName.SwapToken,
@@ -264,17 +267,11 @@ function SwapToken({
   const [fromTokenBalance, setFromTokenBalance] = useState(0);
 
   const switchToken = () => {
-    // if (!fromToken || !toToken) return;
-    // // console.log("swap", fromToken, toToken, token1, token2);
-    // if (fromToken.address === token1.address) {
-    //   setFromToken(token2);
-    //   setToToken(token1);
-    // } else {
-    //   setFromToken(token1);
-    //   setToToken(token2);
-    // }
-    // setFromAmount(DEFAULT_AMOUNT);
-    // setToAmount(DEFAULT_AMOUNT);
+    const temp = fromTokenSet;
+    setFromTokenSet(toTokenSet);
+    setToTokenSet(temp);
+    setFromAmount(DEFAULT_AMOUNT);
+    setToAmount(DEFAULT_AMOUNT);
   };
 
   if (transationData)
@@ -297,18 +294,19 @@ function SwapToken({
     return (
       <View className="z-50 flex w-full gap-2">
         {fromTokenSet && (
-          <TokenWithAmount
-            tokenSet={fromTokenSet}
-            amount={fromAmount}
-            changeToken={setFromToken}
-            setAmount={(amount) => setFromAmount(amount)}
-            setBalance={(balance) => setFromTokenBalance(balance)}
-          />
+          <View className="z-[100]">
+            <TokenWithAmount
+              tokenSet={fromTokenSet}
+              amount={fromAmount}
+              changeToken={setFromToken}
+              setAmount={(amount) => setFromAmount(amount)}
+              setBalance={(balance) => setFromTokenBalance(balance)}
+            />
+          </View>
         )}
         <View className="flex-row items-center">
           <Separator className="flex-1 bg-secondary" />
-          <Button
-            disabled
+          <Button disabled
             className="size-10 rounded-full border-2 border-secondary text-secondary"
             onPress={switchToken}
           >
@@ -317,11 +315,13 @@ function SwapToken({
           <Separator className="flex-1 bg-secondary" />
         </View>
         {toTokenSet && (
-          <TokenWithAmount
-            tokenSet={toTokenSet}
-            changeToken={setToToken}
-            amount={toAmount}
-          />
+          <View className="z-50">
+            <TokenWithAmount
+              tokenSet={toTokenSet}
+              changeToken={setToToken}
+              amount={toAmount}
+            />
+          </View>
         )}
         {fromToken &&
           toToken &&
@@ -422,6 +422,7 @@ function TokenWithAmount({
   const nativeTokenInfo = useUserNativeToken(
     account.address,
     NATIVE_TOKEN_METADATA.chainId,
+    !token || token?.chainId !== NATIVE_TOKEN_METADATA.chainId,
   );
 
   const balance = useMemo(() => {
@@ -441,23 +442,19 @@ function TokenWithAmount({
   return (
     <View className="z-50 flex gap-2">
       <View className="z-50 flex-row items-center justify-between">
-        {/* <TokenInfo
-          name={token?.name}
-          logo={token?.logoURI}
-          textClassName="text-2xl font-normal"
-        /> */}
-        {tokenSet.type === TokenType.USER_TOKENS && (
+        {tokenSet.type === TokenType.USER_TOKENS ? (
           <UserTokenSelect
             selectToken={setToken}
             showBalance={false}
             supportTokenKeys={[TOKENS.NATIVE]}
           />
-        )}
-        {tokenSet.type === TokenType.COMMUNITY_TOKENS && (
+        ) : tokenSet.type === TokenType.COMMUNITY_TOKENS ? (
           <CommunityToeknSelect
             defaultToken={tokenSet.defaultToken}
             selectToken={setToken}
           />
+        ) : (
+          <Loading />
         )}
         <Input
           editable={!!setAmount}

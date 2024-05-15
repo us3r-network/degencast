@@ -91,9 +91,10 @@ export default function useUserTokens(
 export function useUserNativeToken(
   address: `0x${string}` | undefined,
   chainId: number = base.id,
+  disable: boolean = false,
 ) {
-  // console.log("useUserNativeToken", address, chainId);
-  if (!address || !chainId) return undefined;
+  if (!address || !chainId || disable) return undefined;
+  console.log("useUserNativeToken", address, chainId);
   const { data } = useBalance({
     address,
     chainId,
