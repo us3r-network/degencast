@@ -268,9 +268,15 @@ function SwapToken({
   const [fromTokenBalance, setFromTokenBalance] = useState(0);
 
   const switchToken = () => {
-    const temp = fromTokenSet;
-    setFromTokenSet(toTokenSet);
-    setToTokenSet(temp);
+    if (!fromTokenSet || !toTokenSet || !fromToken || !toToken) return;
+    setFromTokenSet({
+      type: toTokenSet.type,
+      defaultToken: toToken,
+    });
+    setToTokenSet({
+      type: fromTokenSet.type,
+      defaultToken: fromToken,
+    });
     setFromAmount(DEFAULT_AMOUNT);
     setToAmount(DEFAULT_AMOUNT);
   };
