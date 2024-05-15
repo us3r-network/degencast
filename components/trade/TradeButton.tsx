@@ -40,6 +40,7 @@ import {
 import UserTokenSelect from "./UserTokenSelect";
 import CommunityToeknSelect from "./CommunityTokenSelect";
 import { Loading } from "../common/Loading";
+import { Account } from "viem";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -306,7 +307,7 @@ function SwapToken({
         )}
         <View className="flex-row items-center">
           <Separator className="flex-1 bg-secondary" />
-          <Button disabled
+          <Button
             className="size-10 rounded-full border-2 border-secondary text-secondary"
             onPress={switchToken}
           >
@@ -413,30 +414,6 @@ function TokenWithAmount({
     }
   }, [token]);
 
-  const tokenInfo = useUserToken(
-    account.address,
-    token?.address,
-    token?.chainId,
-  );
-
-  const nativeTokenInfo = useUserNativeToken(
-    account.address,
-    NATIVE_TOKEN_METADATA.chainId,
-    !token || token?.chainId !== NATIVE_TOKEN_METADATA.chainId,
-  );
-
-  const balance = useMemo(() => {
-    let b: string | number = 0;
-    if (token)
-      if (token.address === NATIVE_TOKEN_METADATA.address) {
-        b = nativeTokenInfo?.balance || "0";
-      } else {
-        b = tokenInfo?.balance || "0";
-      }
-    setBalance?.(Number(b));
-    return b;
-  }, [tokenInfo, nativeTokenInfo]);
-
   const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
 
   return (
@@ -467,16 +444,21 @@ function TokenWithAmount({
         />
       </View>
       <View className="flex-row items-start justify-between">
-        <View className="flex-row items-center gap-2">
-          <Text className="text-xs font-medium text-secondary">Balance:</Text>
-          <Text className="text-xs font-medium">
-            {new Intl.NumberFormat("en-US", {
-              maximumFractionDigits: 4,
-              notation: "compact",
-            }).format(Number(balance) || 0)}{" "}
-            {token?.symbol}
-          </Text>
-        </View>
+        {account.address &&
+          token &&
+          (token.address === NATIVE_TOKEN_METADATA.address ? (
+            <NativeTokenBalance
+              chainId={token.chainId}
+              address={account.address}
+              setBalance={setBalance}
+            />
+          ) : (
+            <TokenBalance
+              token={token}
+              address={account.address}
+              setBalance={setBalance}
+            />
+          ))}
         {amount && price > 0 && (
           <Text className="text-xs">
             {new Intl.NumberFormat("en-US", {
@@ -487,6 +469,58 @@ function TokenWithAmount({
           </Text>
         )}
       </View>
+    </View>
+  );
+}
+
+function NativeTokenBalance({
+  chainId = NATIVE_TOKEN_METADATA.chainId,
+  address,
+  setBalance,
+}: {
+  chainId: number;
+  address: `0x${string}` | undefined;
+  setBalance?: (balance: number) => void;
+}) {
+  const nativeTokenInfo = useUserNativeToken(address, chainId);
+  const balance = nativeTokenInfo?.balance || "0";
+  setBalance?.(Number(balance));
+  return (
+    <View className="flex-row items-center gap-2">
+      <Text className="text-xs font-medium text-secondary">Balance:</Text>
+      <Text className="text-xs font-medium">
+        {new Intl.NumberFormat("en-US", {
+          maximumFractionDigits: 4,
+          notation: "compact",
+        }).format(Number(balance) || 0)}{" "}
+        {NATIVE_TOKEN_METADATA.symbol}
+      </Text>
+    </View>
+  );
+}
+
+function TokenBalance({
+  token,
+  address,
+  setBalance,
+}: {
+  token: TokenWithTradeInfo;
+  address: `0x${string}` | undefined;
+  setBalance?: (balance: number) => void;
+}) {
+  const tokenInfo = useUserToken(address, token.address, token.chainId);
+  const balance = tokenInfo?.balance || "0";
+  setBalance?.(Number(balance));
+  return (
+    <View className="flex-row items-center gap-2">
+      <Text className="text-xs font-medium text-secondary">Balance:</Text>
+      <Text className="text-xs font-medium">
+        {new Intl.NumberFormat("en-US", {
+          maximumFractionDigits: 4,
+          notation: "compact",
+        }).format(Number(balance) || 0)}{" "}
+        {token.symbol}
+      </Text>
     </View>
   );
 }
