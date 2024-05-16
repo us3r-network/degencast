@@ -7,6 +7,8 @@ import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { useRouter } from "expo-router";
 import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
 import useCommunityPage from "~/hooks/community/useCommunityPage";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import { ExploreTradeButton } from "../trade/TradeButton";
 
 export default function FCastCommunity({
   communityInfo,
@@ -18,6 +20,13 @@ export default function FCastCommunity({
   const router = useRouter();
   const { joined, joiningAction } = useJoinCommunityAction(communityInfo);
   const { navigateToCommunityDetail } = useCommunityPage();
+  const { loading: communityTokensLoading, items: communityTokens } =
+    useCommunityTokens();
+  const communityToken = communityTokens.find(
+    (item) =>
+      item.tradeInfo?.channel &&
+      item.tradeInfo.channel === communityInfo?.channelId,
+  );
   return (
     <Pressable
       className={cn(
@@ -55,6 +64,7 @@ export default function FCastCommunity({
       <Text className="line-clamp-2 flex-1 text-base text-white">
         {communityInfo.name}
       </Text>
+      {communityToken && <ExploreTradeButton token2={communityToken} />}
       {/* {communityInfo?.shares?.[0]?.subjectAddress && (
         <CommunityBuyShareButton
           className="bg-secondary font-bold"
