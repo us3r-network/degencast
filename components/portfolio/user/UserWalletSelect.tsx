@@ -49,7 +49,7 @@ import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
-export default function Wallets() {
+export default function UserWalletSelect() {
   const { ready } = usePrivy();
   const { authenticated } = useAuth();
 

@@ -23,6 +23,7 @@ const balanceVariants = cva(
         destructive:
           "border-transparent bg-destructive web:hover:opacity-80 active:opacity-80",
         outline: "text-foreground",
+        big: "",
       },
     },
     defaultVariants: {
@@ -38,6 +39,7 @@ const balanceTextVariants = cva("text-xs font-semibold ", {
       secondary: "text-secondary-foreground",
       destructive: "text-destructive-foreground",
       outline: "text-foreground",
+      big: "text-2xl",
     },
   },
   defaultVariants: {
@@ -73,7 +75,7 @@ function NativeTokenBalance({
       <Component
         className={cn(balanceVariants({ variant }), className)}
         balance={balance}
-        symbol={symbol}
+        symbol={variant === "big" ? "" : symbol}
         {...props}
       />
     </TextClassContext.Provider>
@@ -106,7 +108,7 @@ function ERC20TokenBalance({
       <Component
         className={cn(balanceVariants({ variant }), className)}
         balance={balance}
-        symbol={symbol}
+        symbol={variant === "big" ? "" : symbol}
         {...props}
       />
     </TextClassContext.Provider>
@@ -114,25 +116,28 @@ function ERC20TokenBalance({
 }
 
 function TokenBalance({
-    balance,
-    symbol,
-  }: {
-    balance: string | number;
-    symbol: string;
-  }) {
-    return (
-      <View className="flex-row items-center gap-1">
-        <Text>
-          {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 4,
-            notation: "compact",
-          }).format(Number(balance) || 0)}
-        </Text>
-        <Text>
-          {symbol}
-        </Text>
-      </View>
-    );
-  }
-  export { NativeTokenBalance, ERC20TokenBalance, balanceVariants, balanceTextVariants };
-  export type { NativeToeknBalanceProps, ERC20ToeknBalanceProps };
+  balance,
+  symbol,
+}: {
+  balance: string | number;
+  symbol: string;
+}) {
+  return (
+    <View className="flex-row items-center gap-1">
+      <Text>
+        {new Intl.NumberFormat("en-US", {
+          maximumFractionDigits: 4,
+          notation: "compact",
+        }).format(Number(balance) || 0)}
+      </Text>
+      <Text>{symbol}</Text>
+    </View>
+  );
+}
+export {
+  NativeTokenBalance,
+  ERC20TokenBalance,
+  balanceVariants,
+  balanceTextVariants,
+};
+export type { NativeToeknBalanceProps, ERC20ToeknBalanceProps };
