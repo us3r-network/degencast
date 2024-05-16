@@ -1,15 +1,10 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, Image } from "react-native";
+import { View, Text, SafeAreaView, ActivityIndicator } from "react-native";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import { cn } from "~/lib/utils";
-import { uploadImage } from "~/services/upload";
-import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
 import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
@@ -32,7 +27,8 @@ export default function CreateScreen() {
   };
   const embeds = searchEmbeds?.map((item) => ({ url: item }));
 
-  const { submitCast, writing } = useFarcasterWrite();
+  const [posting, setPosting] = useState(false);
+  const { submitCast } = useFarcasterWrite();
   const navigation = useNavigation();
   const [value, setValue] = useState(searchText || "");
   const [images, setImages] = useState<string[]>([]);
@@ -61,47 +57,55 @@ export default function CreateScreen() {
                   }}
                 />
               </View>
-              <View>
-                {fid && (
-                  <Button
-                    className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
-                    size={"icon"}
-                    variant={"ghost"}
-                    onPress={async () => {
-                      const data = {
-                        text: value,
-                        embeds: [
-                          ...(embeds || []),
-                          ...images.map((item) => {
-                            return { url: item };
-                          }),
-                        ],
-                        channel: channel.url,
-                      };
+              {(posting && (
+                <View>
+                  <ActivityIndicator className="text-secondary" />
+                </View>
+              )) || (
+                <View>
+                  {fid && (
+                    <Button
+                      className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
+                      size={"icon"}
+                      variant={"ghost"}
+                      onPress={async () => {
+                        if (posting) return;
+                        setPosting(true);
+                        const data = {
+                          text: value,
+                          embeds: [
+                            ...(embeds || []),
+                            ...images.map((item) => {
+                              return { url: item };
+                            }),
+                          ],
+                          channel: channel.url,
+                        };
 
-                      const result = await submitCast(data);
+                        const result = await submitCast(data);
 
-                      if (result?.hash) {
-                        setValue("");
-                        setImages([]);
-                        setChannel(HomeChanel);
-                        Toast.show({
-                          type: "postToast",
-                          props: {
-                            hash: result?.hash,
-                            fid: fid,
-                          },
-                          // position: "bottom",
-                        });
-
-                        navigation.goBack();
-                      }
-                    }}
-                  >
-                    <PostIcon />
-                  </Button>
-                )}
-              </View>
+                        if (result?.hash) {
+                          setValue("");
+                          setImages([]);
+                          setChannel(HomeChanel);
+                          Toast.show({
+                            type: "postToast",
+                            props: {
+                              hash: result?.hash,
+                              fid: fid,
+                            },
+                            // position: "bottom",
+                          });
+                          setPosting(false);
+                          navigation.goBack();
+                        }
+                      }}
+                    >
+                      <PostIcon />
+                    </Button>
+                  )}
+                </View>
+              )}
             </View>
           ),
         }}

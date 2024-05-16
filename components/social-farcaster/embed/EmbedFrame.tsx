@@ -203,6 +203,10 @@ export default function EmbedFrame({
       console.error("transaction failed", hash, status);
     } catch (e: any) {
       console.error(e);
+      Toast.show({
+        type: "info",
+        text1: "Something went wrong",
+      });
     }
   }, [txData, config, chain]);
 
