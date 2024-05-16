@@ -1,5 +1,5 @@
-import { useConnectWallet } from "@privy-io/react-auth";
-import { forwardRef, useEffect, useState } from "react";
+import { useConnectWallet, useWallets } from "@privy-io/react-auth";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Chain, parseEther } from "viem";
 import { base } from "viem/chains";
@@ -49,9 +49,22 @@ export default function SendTokenButton({
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
 
-  const account = useAccount();
   const { connectWallet } = useConnectWallet();
-  if (!account.address)
+
+  const { wallets: connectedWallets } = useWallets();
+  const { address: activeWalletAddress } = useAccount();
+
+  const activeWallet = useMemo(() => {
+    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    if (!connectedWallets?.length) return undefined;
+    const currentWallet = connectedWallets.find(
+      (wallet) => wallet.address === activeWalletAddress,
+    );
+    if (currentWallet) return currentWallet;
+
+  }, [connectedWallets, activeWalletAddress]);
+
+  if (!activeWalletAddress)
     return (
       <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
         <Text>
@@ -66,7 +79,7 @@ export default function SendTokenButton({
           setSending(false);
         }}
       >
-        <DialogTrigger asChild>
+        <DialogTrigger asChild disabled={activeWallet?.connectorType!=="embedded"}>
           <Button size={"icon"} className="rounded-full">
             <Text>
               {type === SEND_TOKEN_TYPE.DEPOSIT ? <ArrowDown /> : <ArrowUp />}
