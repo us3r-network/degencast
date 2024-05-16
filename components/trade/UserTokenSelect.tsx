@@ -10,16 +10,17 @@ import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
-import { setBalance } from "viem/actions";
-import { NativeTokenBalance, ERC20TokenBalance } from "./TokenBalance";
+import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 
 export default function MyToeknSelect({
+  defaultToken,
   chain = DEFAULT_CHAIN,
   supportTokenKeys,
   selectToken,
   hidden = false,
   showBalance = true,
 }: {
+  defaultToken?: TokenWithTradeInfo;
   chain?: Chain;
   supportTokenKeys?: TOKENS[];
   selectToken?: (token: TokenWithTradeInfo) => void;
@@ -49,8 +50,8 @@ export default function MyToeknSelect({
     }
   };
   const DEFAULT_VALUE: Option = {
-    label: tokens?.[0]?.name || "",
-    value: tokens?.[0]?.address,
+    label: defaultToken?.name || tokens[0]?.name || "",
+    value: defaultToken?.address || tokens[0]?.address,
   };
   useEffect(() => {
     if (tokens && tokens.length > 0) {
@@ -66,10 +67,11 @@ export default function MyToeknSelect({
   }
   return (
     <Select
-      defaultValue={{
-        value: selectedToken.address,
-        label: selectedToken.name || "",
-      }}
+    defaultValue={DEFAULT_VALUE}
+    value={{
+      value: selectedToken.address,
+      label: selectedToken.name || "",
+    }}
       onValueChange={valueChangeHandler}
     >
       <SelectTrigger className={cn("w-full gap-6 border-secondary px-2")}>

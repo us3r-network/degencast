@@ -1,10 +1,10 @@
 // import { useSwitchChain } from "wagmi";
 import { useConnectWallet } from "@privy-io/react-auth";
-import { debounce, defaultTo, throttle } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { debounce, throttle } from "lodash";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { base } from "viem/chains";
-import { useAccount, useChainId, useChains, useSwitchChain } from "wagmi";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -18,30 +18,24 @@ import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
 import useUserAction from "~/hooks/user/useUserAction";
-import {
-  TOKENS,
-  useUserNativeToken,
-  useUserToken,
-} from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { UserActionName } from "~/services/user/types";
 import About from "../common/About";
-import { ArrowUpDown, User } from "../common/Icons";
-import { TokenInfo, TokenWithValue } from "../common/TokenInfo";
+import { ArrowUpDown } from "../common/Icons";
+import { Loading } from "../common/Loading";
+import { TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import ActiveWallet from "./ActiveWallet";
+import CommunityToeknSelect from "./CommunityTokenSelect";
+import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import CommunityToeknSelect from "./CommunityTokenSelect";
-import { Loading } from "../common/Loading";
-import { Account } from "viem";
-import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -270,6 +264,7 @@ function SwapToken({
 
   const switchToken = () => {
     if (!fromTokenSet || !toTokenSet || !fromToken || !toToken) return;
+    console.log("switchToken", fromToken, toToken);
     setFromTokenSet({
       type: toTokenSet.type,
       defaultToken: toToken,
@@ -278,8 +273,6 @@ function SwapToken({
       type: fromTokenSet.type,
       defaultToken: fromToken,
     });
-    setFromAmount(DEFAULT_AMOUNT);
-    setToAmount(DEFAULT_AMOUNT);
   };
 
   if (transationData)
@@ -428,9 +421,9 @@ function TokenWithAmount({
       <View className="z-50 flex-row items-center justify-between">
         {tokenSet.type === TokenType.USER_TOKENS ? (
           <UserTokenSelect
+            defaultToken={tokenSet.defaultToken}
             selectToken={setToken}
             showBalance={false}
-            supportTokenKeys={[TOKENS.NATIVE]}
           />
         ) : tokenSet.type === TokenType.COMMUNITY_TOKENS ? (
           <CommunityToeknSelect

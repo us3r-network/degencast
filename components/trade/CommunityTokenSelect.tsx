@@ -49,13 +49,14 @@ export default function CommunityToeknSelect({
 
   return (
     <Select
-      defaultValue={{
+      defaultValue={DEFAULT_VALUE}
+      value={{
         value: selectedToken.address,
         label: selectedToken.name || "",
       }}
       onValueChange={valueChangeHandler}
     >
-      <SelectTrigger className={cn("w-full border-secondary px-2 gap-6")}>
+      <SelectTrigger className={cn("w-full gap-6 border-secondary px-2")}>
         <View className="flex-row items-center gap-6">
           <TokenInfo name={selectedToken.name} logo={selectedToken.logoURI} />
           {showBalance && (
