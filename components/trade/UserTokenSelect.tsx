@@ -4,12 +4,14 @@ import { Chain } from "viem";
 import { useAccount } from "wagmi";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN } from "~/constants";
+import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
 import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
+import { setBalance } from "viem/actions";
+import { NativeTokenBalance, ERC20TokenBalance } from "./TokenBalance";
 
 export default function MyToeknSelect({
   chain = DEFAULT_CHAIN,
@@ -70,7 +72,7 @@ export default function MyToeknSelect({
       }}
       onValueChange={valueChangeHandler}
     >
-      <SelectTrigger className={cn("w-full border-secondary px-2 gap-6")}>
+      <SelectTrigger className={cn("w-full gap-6 border-secondary px-2")}>
         <View className="flex-row items-center gap-6">
           <TokenInfo name={selectedToken.name} logo={selectedToken.logoURI} />
           {showBalance && (
@@ -94,10 +96,20 @@ export default function MyToeknSelect({
               className="w-full flex-row items-center gap-4 p-1"
             >
               <TokenInfo name={token.name} logo={token.logoURI} />
-              {showBalance && (
-                <Text className="text-secondary">
-                  {Number(token.balance).toFixed(4)} {token.symbol}
-                </Text>
+              {showBalance && account.address && token && (
+                <View className="flex-row items-center gap-2">
+                  {token.address === NATIVE_TOKEN_METADATA.address ? (
+                    <NativeTokenBalance
+                      chainId={token.chainId}
+                      address={account.address}
+                    />
+                  ) : (
+                    <ERC20TokenBalance
+                      token={token}
+                      address={account.address}
+                    />
+                  )}
+                </View>
               )}
             </View>
           </SelectItem>

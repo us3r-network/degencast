@@ -4,7 +4,7 @@ import { debounce, defaultTo, throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { base } from "viem/chains";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount, useChainId, useChains, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -41,6 +41,7 @@ import UserTokenSelect from "./UserTokenSelect";
 import CommunityToeknSelect from "./CommunityTokenSelect";
 import { Loading } from "../common/Loading";
 import { Account } from "viem";
+import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -450,21 +451,24 @@ function TokenWithAmount({
         />
       </View>
       <View className="flex-row items-start justify-between">
-        {account.address &&
-          token &&
-          (token.address === NATIVE_TOKEN_METADATA.address ? (
-            <NativeTokenBalance
-              chainId={token.chainId}
-              address={account.address}
-              setBalance={setBalance}
-            />
-          ) : (
-            <TokenBalance
-              token={token}
-              address={account.address}
-              setBalance={setBalance}
-            />
-          ))}
+        {account.address && token && (
+          <View className="flex-row items-center gap-2">
+            <Text className="text-xs font-medium text-secondary">Balance:</Text>
+            {token.address === NATIVE_TOKEN_METADATA.address ? (
+              <NativeTokenBalance
+                chainId={token.chainId}
+                address={account.address}
+                setBalance={setBalance}
+              />
+            ) : (
+              <ERC20TokenBalance
+                token={token}
+                address={account.address}
+                setBalance={setBalance}
+              />
+            )}
+          </View>
+        )}
         {amount && price > 0 && (
           <Text className="text-xs">
             {new Intl.NumberFormat("en-US", {
@@ -475,58 +479,6 @@ function TokenWithAmount({
           </Text>
         )}
       </View>
-    </View>
-  );
-}
-
-function NativeTokenBalance({
-  chainId = NATIVE_TOKEN_METADATA.chainId,
-  address,
-  setBalance,
-}: {
-  chainId: number;
-  address: `0x${string}` | undefined;
-  setBalance?: (balance: number) => void;
-}) {
-  const nativeTokenInfo = useUserNativeToken(address, chainId);
-  const balance = nativeTokenInfo?.balance || "0";
-  setBalance?.(Number(balance));
-  return (
-    <View className="flex-row items-center gap-2">
-      <Text className="text-xs font-medium text-secondary">Balance:</Text>
-      <Text className="text-xs font-medium">
-        {new Intl.NumberFormat("en-US", {
-          maximumFractionDigits: 4,
-          notation: "compact",
-        }).format(Number(balance) || 0)}{" "}
-        {NATIVE_TOKEN_METADATA.symbol}
-      </Text>
-    </View>
-  );
-}
-
-function TokenBalance({
-  token,
-  address,
-  setBalance,
-}: {
-  token: TokenWithTradeInfo;
-  address: `0x${string}` | undefined;
-  setBalance?: (balance: number) => void;
-}) {
-  const tokenInfo = useUserToken(address, token.address, token.chainId);
-  const balance = tokenInfo?.balance || "0";
-  setBalance?.(Number(balance));
-  return (
-    <View className="flex-row items-center gap-2">
-      <Text className="text-xs font-medium text-secondary">Balance:</Text>
-      <Text className="text-xs font-medium">
-        {new Intl.NumberFormat("en-US", {
-          maximumFractionDigits: 4,
-          notation: "compact",
-        }).format(Number(balance) || 0)}{" "}
-        {token.symbol}
-      </Text>
     </View>
   );
 }
