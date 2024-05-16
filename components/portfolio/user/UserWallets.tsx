@@ -132,7 +132,6 @@ export default function Wallets() {
             >
               <FarcasterAccount />
             </Catalog>
-            <LogoutButton />
           </View>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -380,48 +379,6 @@ function UnlinkButton({ action }: { action: () => void }) {
             <Text>No</Text>
           </Button>
           <Button variant={"secondary"} className="flex-1" onPress={action}>
-            <Text>Yes</Text>
-          </Button>
-        </View>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-function LogoutButton() {
-  const { logout } = usePrivy();
-  const [open, setOpen] = useState(false);
-  return (
-    <AlertDialog open={open}>
-      <AlertDialogTrigger>
-        <Pressable
-          className="w-full flex-row items-center gap-2"
-          onPress={(event) => {
-            setOpen(true);
-          }}
-        >
-          <LogOut className="size-4" />
-          <Text>Logout</Text>
-        </Pressable>
-      </AlertDialogTrigger>
-      <AlertDialogContent className="w-screen bg-primary">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex flex-row gap-2 text-primary-foreground">
-            Notice
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-        <AlertDialogDescription id="alert-dialog-desc text-primary-foreground">
-          Are you sure you want to log out?
-        </AlertDialogDescription>
-        <View className="w-full flex-row items-center justify-stretch gap-2">
-          <Button
-            variant={"secondary"}
-            className="flex-1"
-            onPress={() => setOpen(false)}
-          >
-            <Text>No</Text>
-          </Button>
-          <Button variant={"secondary"} className="flex-1" onPress={logout}>
             <Text>Yes</Text>
           </Button>
         </View>

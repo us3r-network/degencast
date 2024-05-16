@@ -61,7 +61,7 @@ export default function TradeScreen() {
             </TabsContent>
           ))}
 
-          <TabsList className="absolute inset-x-8 top-2 flex-row rounded-full bg-white shadow-lg">
+          <TabsList className="absolute inset-x-2 top-2 flex-row rounded-full bg-white shadow-lg">
             {TABS.map((tab) => (
               <TabsTrigger
                 key={tab.value}
