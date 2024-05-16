@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import UserInfo from "~/components/portfolio/user/UserInfo";
+import UserLogout from "~/components/portfolio/user/UserLogout";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -23,7 +24,7 @@ export default function PortfolioScreen() {
   const { ready, authenticated: privyAuthenticated } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
-  const login = ()=>{
+  const login = () => {
     router.push("/login");
   };
   useFocusEffect(() => {
@@ -58,7 +59,10 @@ export default function PortfolioScreen() {
           ) : (
             authenticated && (
               <View className="mx-auto flex h-full w-full max-w-screen-sm items-center gap-4 ">
-                <UserInfo />
+                <View className="w-full flex-row items-center justify-between">
+                  <UserInfo />
+                  <UserLogout />
+                </View>
                 <Tabs
                   value={value}
                   onValueChange={(value) => {
@@ -87,7 +91,7 @@ export default function PortfolioScreen() {
                     </TabsContent>
                   ))}
 
-                  <TabsList className="absolute inset-x-8 top-2 flex-row rounded-full bg-white shadow-lg">
+                  <TabsList className="absolute inset-x-2 top-2 flex-row rounded-full bg-white shadow-lg">
                     {TABS.map((tab) => (
                       <TabsTrigger
                         key={tab.value}

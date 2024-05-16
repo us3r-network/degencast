@@ -3,14 +3,42 @@ import { base } from "viem/chains";
 import { useAccount } from "wagmi";
 import { Button, ButtonProps } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { NATIVE_TOKEN_METADATA } from "~/constants";
+import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import TradeModal from "./TradeModal";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { upperFirst } from "lodash";
+import { ArrowUpDown } from "../common/Icons";
 
-export default function TradeButton({
+export default function SwapButton() {
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+        <Text>
+          <ArrowUpDown />
+        </Text>
+      </Button>
+    );
+  else
+    return (
+      <TradeModal
+        token1={NATIVE_TOKEN_METADATA}
+        token2={DEGEN_METADATA}
+        triggerButton={
+          <Button size={"icon"} className="rounded-full">
+            <Text>
+              <ArrowUpDown />
+            </Text>
+          </Button>
+        }
+      />
+    );
+}
+
+export function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
 }: {

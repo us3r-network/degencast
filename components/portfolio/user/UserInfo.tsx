@@ -26,7 +26,7 @@ export default function UserInfo() {
     return <Text>Loading...</Text>;
   }
   return (
-    <View className="mx-8 w-full flex-row items-center gap-4">
+    <View className="flex-1 flex-row items-center gap-4">
       <Avatar alt={userHandle} className="size-24">
         <AvatarImage source={{ uri: userAvatar }} />
         <AvatarFallback className="bg-white">
@@ -34,9 +34,15 @@ export default function UserInfo() {
         </AvatarFallback>
       </Avatar>
       <View className="flex w-full gap-1">
-        <View className="inline-block w-full space-x-2">
-          {userName && <Text className="font-bold text-white">{userName}</Text>}
-          {userHandle && <Text className="text-secondary">@{userHandle}</Text>}
+        <View className="w-full">
+          {userName && (
+            <Text className="line-clamp-1 font-bold text-white">
+              {userName}
+            </Text>
+          )}
+          {userHandle && (
+            <Text className="line-clamp-1 text-secondary">@{userHandle}</Text>
+          )}
         </View>
         {farcasterAccount?.fid && (
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />

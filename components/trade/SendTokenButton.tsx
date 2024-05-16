@@ -1,6 +1,8 @@
-import { forwardRef, useEffect, useState } from "react";
+import { useConnectWallet, useWallets } from "@privy-io/react-auth";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Chain, parseEther } from "viem";
+import { base } from "viem/chains";
 import {
   useAccount,
   useChainId,
@@ -20,6 +22,7 @@ import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN } from "~/constants";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
 import ActiveWallet from "./ActiveWallet";
@@ -29,30 +32,44 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
-import { base } from "viem/chains";
-import { shortPubKey } from "~/utils/shortPubKey";
-import { useConnectWallet } from "@privy-io/react-auth";
-import { UserActionName } from "~/services/user/types";
+import { ArrowDown, ArrowUp } from "lucide-react-native";
 
-export default function WithdrawButton({
+export enum SEND_TOKEN_TYPE {
+  DEPOSIT = "deposit",
+  WITHDRAW = "withdraw",
+}
+
+export default function SendTokenButton({
+  type = SEND_TOKEN_TYPE.WITHDRAW,
   defaultChain = DEFAULT_CHAIN,
 }: {
+  type: SEND_TOKEN_TYPE;
   defaultChain?: Chain;
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
 
-  const account = useAccount();
   const { connectWallet } = useConnectWallet();
-  if (!account.address)
+
+  const { wallets: connectedWallets } = useWallets();
+  const { address: activeWalletAddress } = useAccount();
+
+  const activeWallet = useMemo(() => {
+    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
+    if (!connectedWallets?.length) return undefined;
+    const currentWallet = connectedWallets.find(
+      (wallet) => wallet.address === activeWalletAddress,
+    );
+    if (currentWallet) return currentWallet;
+
+  }, [connectedWallets, activeWalletAddress]);
+
+  if (!activeWalletAddress)
     return (
-      <Button
-        className={cn("w-14")}
-        size="sm"
-        variant={"secondary"}
-        onPress={connectWallet}
-      >
-        <Text>Trade</Text>
+      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+        <Text>
+          {type === SEND_TOKEN_TYPE.DEPOSIT ? <ArrowDown /> : <ArrowUp />}
+        </Text>
       </Button>
     );
   else
@@ -62,9 +79,11 @@ export default function WithdrawButton({
           setSending(false);
         }}
       >
-        <DialogTrigger asChild>
-          <Button size="sm" className={cn("p-0")} variant={"link"}>
-            <Text className="text-xs text-secondary">Withdraw</Text>
+        <DialogTrigger asChild disabled={activeWallet?.connectorType!=="embedded"}>
+          <Button size={"icon"} className="rounded-full">
+            <Text>
+              {type === SEND_TOKEN_TYPE.DEPOSIT ? <ArrowDown /> : <ArrowUp />}
+            </Text>
           </Button>
         </DialogTrigger>
         <DialogContent className="w-screen">
@@ -118,12 +137,6 @@ const SendToken = forwardRef<
       sendTransaction({ to: address, value: parseEther(amount) });
     }
   };
-
-  // useEffect(() => {
-  //   if (token) {
-  //     setAmount(String(token?.balance) || "0");
-  //   }
-  // }, [token]);
 
   useEffect(() => {
     if (
