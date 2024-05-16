@@ -1,13 +1,10 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useMemo } from "react";
 import {
+  fetchTotalPoints,
   selectUserAction,
-  setTotalPoints,
-  setTotalPointsRequestStatus,
 } from "~/features/user/userActionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
-import { getUserPoints } from "~/services/user/api";
-import { UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import getActionPoint from "~/utils/action/getActionPoint";
 
@@ -22,18 +19,9 @@ export default function useUserTotalPoints() {
     totalPointsRequestStatus,
   } = useAppSelector(selectUserAction);
 
-  const fetchTotalPoints = useCallback(async () => {
+  const getTotalPoints = useCallback(async () => {
     if (totalPointsRequestStatus !== AsyncRequestStatus.IDLE) return;
-    try {
-      dispatch(setTotalPointsRequestStatus(AsyncRequestStatus.PENDING));
-      const res = await getUserPoints();
-      const { data } = res.data;
-      dispatch(setTotalPoints(data?.value || 0));
-      dispatch(setTotalPointsRequestStatus(AsyncRequestStatus.FULFILLED));
-    } catch (error) {
-      console.error(`fetchTotalPoints error:`, error);
-      dispatch(setTotalPointsRequestStatus(AsyncRequestStatus.REJECTED));
-    }
+    dispatch(fetchTotalPoints());
   }, [totalPointsRequestStatus]);
 
   const totalPoints = useMemo(() => {
@@ -59,6 +47,6 @@ export default function useUserTotalPoints() {
   return {
     totalPointsRequestStatus,
     totalPoints,
-    fetchTotalPoints,
+    fetchTotalPoints: getTotalPoints,
   };
 }

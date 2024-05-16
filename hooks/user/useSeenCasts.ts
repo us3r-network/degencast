@@ -1,12 +1,11 @@
-import { postSeenCasts } from "~/services/farcaster/api";
 import { usePrivy } from "@privy-io/react-auth";
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   addOneToUnreportedViewCasts,
-  removeReportedViewCasts,
   selectUserAction,
-  setUnreportedViewCastsSubmitStatus,
+  submitSeenCast,
+  submitUnreportedViewCasts,
 } from "~/features/user/userActionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
@@ -16,34 +15,21 @@ export default function useSeenCasts() {
   const { unreportedViewCastsSubmitStatus, unreportedViewCasts } =
     useAppSelector(selectUserAction);
 
-  const submitSeenCast = async (castHex: string) => {
+  const postSeenCast = async (castHex: string) => {
     if (authenticated) {
-      await postSeenCasts([castHex]);
+      dispatch(submitSeenCast(castHex));
     } else {
       dispatch(addOneToUnreportedViewCasts(castHex));
     }
   };
 
-  const submitUnreportedViewCasts = useCallback(async () => {
+  const postUnreportedViewCasts = useCallback(async () => {
     if (unreportedViewCastsSubmitStatus !== AsyncRequestStatus.IDLE) return;
-    if (unreportedViewCasts.length > 0) {
-      try {
-        dispatch(
-          setUnreportedViewCastsSubmitStatus(AsyncRequestStatus.PENDING),
-        );
-        await postSeenCasts(unreportedViewCasts);
-        dispatch(removeReportedViewCasts(unreportedViewCasts));
-        dispatch(
-          setUnreportedViewCastsSubmitStatus(AsyncRequestStatus.FULFILLED),
-        );
-      } catch (error) {
-        console.error(`submitUnreportedViewCasts error:`, error);
-        dispatch(
-          setUnreportedViewCastsSubmitStatus(AsyncRequestStatus.REJECTED),
-        );
-      }
-    }
+    dispatch(submitUnreportedViewCasts());
   }, [unreportedViewCasts, unreportedViewCastsSubmitStatus]);
 
-  return { submitSeenCast, submitUnreportedViewCasts };
+  return {
+    submitSeenCast: postSeenCast,
+    submitUnreportedViewCasts: postUnreportedViewCasts,
+  };
 }
