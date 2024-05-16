@@ -3,7 +3,7 @@ import FundButton from "~/components/trade/FundButton";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import SendTokenButton, { SEND_TOKEN_TYPE } from "../../trade/SendTokenButton";
-import TradeButton from "../../trade/TradeButton";
+import SwapButton from "../../trade/TradeButton";
 import UserWalletSelect from "../user/UserWalletSelect";
 
 export default function UserWallet() {
@@ -22,7 +22,7 @@ export default function UserWallet() {
           <Text className="text-xs font-medium">Buy</Text>
         </View>
         <View className="flex items-center gap-1">
-          <TradeButton />
+          <SwapButton />
           <Text className="text-xs font-medium">Swap</Text>
         </View>
         <View className="flex items-center gap-1">
