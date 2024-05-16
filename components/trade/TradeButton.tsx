@@ -1,41 +1,14 @@
-// import { useSwitchChain } from "wagmi";
 import { useConnectWallet } from "@privy-io/react-auth";
-import { debounce, throttle } from "lodash";
-import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
 import { base } from "viem/chains";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
-import { Button } from "~/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import { useAccount } from "wagmi";
+import { Button, ButtonProps } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_METADATA } from "~/constants";
-import useSwapToken from "~/hooks/trade/useSwapToken";
-import useUserAction from "~/hooks/user/useUserAction";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { UserActionName } from "~/services/user/types";
-import About from "../common/About";
-import { ArrowUpDown } from "../common/Icons";
-import { Loading } from "../common/Loading";
-import { TokenWithValue } from "../common/TokenInfo";
-import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
-import ActiveWallet from "./ActiveWallet";
-import CommunityToeknSelect from "./CommunityTokenSelect";
-import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
-import {
-  ErrorInfo,
-  TransactionInfo,
-  TransationData,
-} from "./TranasactionResult";
-import UserTokenSelect from "./UserTokenSelect";
+import TradeModal from "./TradeModal";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { upperFirst } from "lodash";
 
 export default function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
@@ -44,7 +17,6 @@ export default function TradeButton({
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
 }) {
-  const [swaping, setSwaping] = useState(false);
   const account = useAccount();
   const { connectWallet } = useConnectWallet();
   if (!account.address)
@@ -60,12 +32,10 @@ export default function TradeButton({
     );
   else
     return (
-      <Dialog
-        onOpenChange={() => {
-          setSwaping(false);
-        }}
-      >
-        <DialogTrigger asChild>
+      <TradeModal
+        token1={token1}
+        token2={token2}
+        triggerButton={
           <Button
             className={cn("w-14")}
             size="sm"
@@ -78,400 +48,85 @@ export default function TradeButton({
           >
             <Text>Trade</Text>
           </Button>
-        </DialogTrigger>
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
-            {!swaping && <ActiveWallet />}
-          </DialogHeader>
-          <SwapToken token1={token1} token2={token2} setSwaping={setSwaping} />
-          {!swaping && (
-            <DialogFooter>
-              <About title="Swap & Earn" info={TRADE_INFO} />
-            </DialogFooter>
-          )}
-        </DialogContent>
-      </Dialog>
+        }
+      />
     );
 }
 
-const TRADE_INFO = [
-  "For a one-time swap of token worth 30 USD, earn 500 points.",
-  "0.3% swap fee",
-];
-
-const DEFAULT_AMOUNT = "0";
-function SwapToken({
-  token1,
-  token2,
-  setSwaping,
-}: {
-  token1: TokenWithTradeInfo;
-  token2: TokenWithTradeInfo;
-  setSwaping?: (swaping: boolean) => void;
+export function ExploreTradeButton({
+  token1 = NATIVE_TOKEN_METADATA,
+  token2 = NATIVE_TOKEN_METADATA,
+  ...props
+}: ButtonProps & {
+  token1?: TokenWithTradeInfo;
+  token2?: TokenWithTradeInfo;
 }) {
   const account = useAccount();
-  const chainId = useChainId();
-  const { switchChain, status: switchChainStatus } = useSwitchChain();
-  const [fromTokenSet, setFromTokenSet] = useState<TokenSetInfo>();
-  const [toTokenSet, setToTokenSet] = useState<TokenSetInfo>();
-  const [fromToken, setFromToken] = useState<TokenWithTradeInfo>();
-  const [toToken, setToToken] = useState<TokenWithTradeInfo>();
-  const [fromAmount, setFromAmount] = useState(DEFAULT_AMOUNT);
-  const [toAmount, setToAmount] = useState(DEFAULT_AMOUNT);
-  const [transationData, setTransationData] = useState<TransationData>();
-  const [transationError, setTransationError] = useState<string>();
-  useEffect(() => {
-    if (!token1 || token1 === NATIVE_TOKEN_METADATA)
-      setFromTokenSet({
-        type: TokenType.USER_TOKENS,
-      });
-    else
-      setFromTokenSet({
-        type: TokenType.COMMUNITY_TOKENS,
-        defaultToken: token1,
-      });
-  }, [token1]);
+  const { connectWallet } = useConnectWallet();
 
-  useEffect(() => {
-    if (!token2 || token2 === NATIVE_TOKEN_METADATA)
-      setToTokenSet({
-        type: TokenType.USER_TOKENS,
-      });
-    else
-      setToTokenSet({
-        type: TokenType.COMMUNITY_TOKENS,
-        defaultToken: token2,
-      });
-  }, [token2]);
-
-  const {
-    swaping,
-    fetchingPrice,
-    fetchingQuote,
-    waitingUserSign,
-    fetchPrice,
-    swapToken,
-    transactionReceipt,
-    transationStatus,
-    transationLoading,
-    isSuccess,
-    error,
-    reset,
-  } = useSwapToken(account.address);
-
-  const { submitUserAction } = useUserAction();
-
-  const fetchPriceInfo = async (amount: string) => {
-    // console.log("fetchPriceInfo", fromToken, toToken, amount);
-    if (!fromToken || !toToken || !amount) return;
-    const priceInfo = await fetchPrice({
-      sellToken: fromToken,
-      buyToken: toToken,
-      sellAmount: amount,
-    });
-    if (!priceInfo) return;
-    const { buyAmount } = priceInfo;
-    setToAmount(buyAmount);
-  };
-
-  const debouncedFetchPriceInfo = useCallback(
-    throttle(debounce(fetchPriceInfo, 500), 1000), // 0x api rate limit 1/second
-    [fetchPriceInfo],
-  );
-  const swap = async () => {
-    // console.log("swap", fromAmount);
-    if (!fromToken || !toToken || !fromAmount) return;
-    if (chainId !== fromToken.chainId) return;
-    swapToken({
-      sellToken: fromToken,
-      buyToken: toToken,
-      sellAmount: fromAmount,
-    });
-  };
-  useEffect(() => {
-    setFromAmount(DEFAULT_AMOUNT);
-    setToAmount(DEFAULT_AMOUNT);
-  }, [fromToken, toToken]);
-
-  useEffect(() => {
-    setToAmount("");
-    if (!fromAmount || fromAmount === DEFAULT_AMOUNT) {
-      return;
-    }
-    debouncedFetchPriceInfo(fromAmount);
-  }, [fromAmount]);
-
-  useEffect(() => {
-    if (
-      fromToken &&
-      fromAmount &&
-      toToken &&
-      toAmount &&
-      (waitingUserSign ||
-        transationLoading ||
-        (isSuccess && transactionReceipt))
-    ) {
-      const transationData = {
-        chain: base,
-        transactionReceipt,
-        description: (
-          <View className="flex w-full items-center gap-2">
-            <View className="w-full flex-row items-center justify-between gap-2">
-              <Text className="font-medium text-secondary">From</Text>
-              <TokenWithValue token={fromToken} value={fromAmount} />
-            </View>
-            <View className="w-full flex-row items-center justify-between gap-2">
-              <Text className="font-medium text-secondary">To</Text>
-              <TokenWithValue token={toToken} value={toAmount} />
-            </View>
-            <View className="w-full flex-row items-center justify-between gap-2">
-              <Text className="font-medium text-secondary">$SPELL</Text>
-              <Text className="font-medium text-white">+1000</Text>
-            </View>
-          </View>
-        ),
-      };
-      setTransationData(transationData);
-      setSwaping?.(swaping);
-    }
-  }, [isSuccess, waitingUserSign, transactionReceipt, transationLoading]);
-
-  useEffect(() => {
-    //todo: add condition of more than $30
-    console.log("isSuccess", isSuccess, transactionReceipt);
-    if (isSuccess)
-      submitUserAction({
-        action: UserActionName.SwapToken,
-      });
-  }, [isSuccess]);
-
-  useEffect(() => {
-    if (error) {
-      setTransationData(undefined);
-      setTransationError((error as any)?.details || "Transaction failed!");
-    }
-  }, [error]);
-
-  const tryAgain = () => {
-    setTransationData(undefined);
-    setTransationError(undefined);
-    setSwaping?.(false);
-    reset();
-  };
-
-  const [fromTokenBalance, setFromTokenBalance] = useState(0);
-
-  const switchToken = () => {
-    if (!fromTokenSet || !toTokenSet || !fromToken || !toToken) return;
-    console.log("switchToken", fromToken, toToken);
-    setFromTokenSet({
-      type: toTokenSet.type,
-      defaultToken: toToken,
-    });
-    setToTokenSet({
-      type: fromTokenSet.type,
-      defaultToken: fromToken,
-    });
-  };
-
-  if (transationData)
+  const name = token2?.name || "";
+  const logo = token2?.logoURI || "";
+  if (!account.address)
     return (
-      <TransactionInfo
-        data={transationData}
-        buttonText="Trade more"
-        buttonAction={tryAgain}
-      />
-    );
-  else if (transationError)
-    return (
-      <ErrorInfo
-        error={transationError}
-        buttonText="Try Again"
-        buttonAction={tryAgain}
+      <ExploreTradeStyledButton
+        name={name}
+        logo={logo}
+        onPress={connectWallet}
+        {...props}
       />
     );
   else
     return (
-      <View className="z-50 flex w-full gap-2">
-        {fromTokenSet && (
-          <View className="z-[100]">
-            <TokenWithAmount
-              tokenSet={fromTokenSet}
-              amount={fromAmount}
-              changeToken={setFromToken}
-              setAmount={(amount) => setFromAmount(amount)}
-              setBalance={(balance) => setFromTokenBalance(balance)}
-            />
-          </View>
-        )}
-        <View className="flex-row items-center">
-          <Separator className="flex-1 bg-secondary" />
-          <Button
-            className="size-10 rounded-full border-2 border-secondary text-secondary"
-            onPress={switchToken}
-          >
-            <ArrowUpDown />
-          </Button>
-          <Separator className="flex-1 bg-secondary" />
-        </View>
-        {toTokenSet && (
-          <View className="z-50">
-            <TokenWithAmount
-              tokenSet={toTokenSet}
-              changeToken={setToToken}
-              amount={toAmount}
-            />
-          </View>
-        )}
-        {fromToken &&
-          toToken &&
-          (chainId === fromToken.chainId ? (
-            <Button
-              variant="secondary"
-              className="mt-6"
-              disabled={
-                !fromTokenBalance ||
-                fromTokenBalance < Number(fromAmount) ||
-                fetchingPrice ||
-                fetchingQuote ||
-                fetchingQuote ||
-                Number(fromAmount) === 0 ||
-                Number(toAmount) === 0 ||
-                transationLoading
-              }
-              onPress={() => {
-                swap();
-              }}
-            >
-              {fetchingPrice ? (
-                <View className="flex-row items-center gap-2">
-                  <ActivityIndicator color={"white"} />
-                  <Text>Fetching Price...</Text>
-                </View>
-              ) : fetchingQuote ? (
-                <View className="flex-row items-center gap-2">
-                  <ActivityIndicator color={"white"} />
-                  <Text>Fetching Quote...</Text>
-                </View>
-              ) : waitingUserSign ? (
-                <Text>Please sign the transaction!</Text>
-              ) : transationLoading ? (
-                <Text>Comfirming the transaction...</Text>
-              ) : (
-                <Text>Swap</Text>
-              )}
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              className="mt-6"
-              disabled={switchChainStatus === "pending"}
-              onPress={async () => {
-                await switchChain({ chainId: fromToken.chainId });
-              }}
-            >
-              <Text>Switch to {base.name}</Text>
-            </Button>
-          ))}
-      </View>
+      <TradeModal
+        token1={token1}
+        token2={token2}
+        triggerButton={
+          <ExploreTradeStyledButton
+            name={name}
+            logo={logo}
+            disabled={
+              (!token1 && !token2) ||
+              token1.chainId !== base.id ||
+              token2.chainId !== base.id
+            }
+            {...props}
+          />
+        }
+      />
     );
 }
 
-type TokenSetInfo = {
-  type: TokenType;
-  defaultToken?: TokenWithTradeInfo;
-};
-
-enum TokenType {
-  USER_TOKENS = "USER_TOKENS",
-  COMMUNITY_TOKENS = "COMMUNITY_TOKENS",
-}
-
-function TokenWithAmount({
-  tokenSet,
-  amount,
-  changeToken,
-  setAmount,
-  setBalance,
-}: {
-  tokenSet: TokenSetInfo;
-  amount?: string;
-  changeToken?: (token: TokenWithTradeInfo) => void;
-  setAmount?: (amount: string) => void;
-  setBalance?: (balance: number) => void;
+function ExploreTradeStyledButton({
+  name,
+  logo,
+  className,
+  ...props
+}: ButtonProps & {
+  name: string;
+  logo: string;
 }) {
-  const account = useAccount();
-  // console.log("Token", token, amount);
-  const [token, setToken] = useState(
-    tokenSet.defaultToken || NATIVE_TOKEN_METADATA,
-  );
-
-  useEffect(() => {
-    if (token) {
-      changeToken?.(token);
-      setAmount?.(DEFAULT_AMOUNT);
-    }
-  }, [token]);
-
-  const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
-
   return (
-    <View className="z-50 flex gap-2">
-      <View className="z-50 flex-row items-center justify-between">
-        {tokenSet.type === TokenType.USER_TOKENS ? (
-          <UserTokenSelect
-            defaultToken={tokenSet.defaultToken}
-            selectToken={setToken}
-            showBalance={false}
-          />
-        ) : tokenSet.type === TokenType.COMMUNITY_TOKENS ? (
-          <CommunityToeknSelect
-            defaultToken={tokenSet.defaultToken}
-            selectToken={setToken}
-          />
-        ) : (
-          <Loading />
-        )}
-        <Input
-          editable={!!setAmount}
-          className={cn(
-            "max-w-40 rounded-full border-none bg-white/40 text-end text-3xl  text-white",
-          )}
-          inputMode="numeric"
-          value={amount}
-          onChangeText={setAmount}
-        />
-      </View>
-      <View className="flex-row items-start justify-between">
-        {account.address && token && (
-          <View className="flex-row items-center gap-2">
-            <Text className="text-xs font-medium text-secondary">Balance:</Text>
-            {token.address === NATIVE_TOKEN_METADATA.address ? (
-              <NativeTokenBalance
-                chainId={token.chainId}
-                address={account.address}
-                setBalance={setBalance}
-              />
-            ) : (
-              <ERC20TokenBalance
-                token={token}
-                address={account.address}
-                setBalance={setBalance}
-              />
-            )}
-          </View>
-        )}
-        {amount && price > 0 && (
-          <Text className="text-xs">
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "compact",
-            }).format(Number(amount) * price)}
-          </Text>
-        )}
-      </View>
-    </View>
+    <Button
+      className={cn(
+        "h-[50px] flex-row items-center gap-1 px-[12px] py-[6px]",
+        className,
+      )}
+      {...props}
+    >
+      <Text className=" text-base font-bold">Trade</Text>
+      {logo && (
+        <Avatar alt={name || ""} className={cn(" size-5")}>
+          <AvatarImage source={{ uri: logo || "" }} />
+          <AvatarFallback className="bg-secondary">
+            <Text className="text-sm font-medium">
+              {upperFirst(name?.slice(0, 2))}
+            </Text>
+          </AvatarFallback>
+        </Avatar>
+      )}
+      {name && (
+        <Text className={cn("line-clamp-1 text-base font-bold")}>{name}</Text>
+      )}
+    </Button>
   );
 }
