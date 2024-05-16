@@ -91,9 +91,10 @@ export default function useUserTokens(
 export function useUserNativeToken(
   address: `0x${string}` | undefined,
   chainId: number = base.id,
+  disable: boolean = false,
 ) {
-  // console.log("useUserNativeToken", address, chainId);
-  if (!address || !chainId) return undefined;
+  if (!address || !chainId || disable) return undefined;
+  console.log("useUserNativeToken", address, chainId);
   const { data } = useBalance({
     address,
     chainId,
@@ -115,12 +116,19 @@ export function useUserNativeToken(
 }
 
 export function useUserToken(
-  address: `0x${string}` | undefined,
-  contractAddress: `0x${string}`,
+  address?: `0x${string}` | undefined,
+  contractAddress?: `0x${string}` | undefined,
   chainId: number = base.id,
 ) {
   // console.log("useUserToken", address, contractAddress, chainId);
-  if (!address || !chainId || !contractAddress) return undefined;
+  if (
+    !address ||
+    !chainId ||
+    !contractAddress ||
+    contractAddress === NATIVE_TOKEN_METADATA.address
+  )
+    return undefined;
+  // console.log("useUserToken", address, contractAddress, chainId);
   const { data } = useReadContracts({
     allowFailure: false,
     contracts: [
@@ -153,15 +161,17 @@ export function useUserToken(
   });
   const token: TokenWithTradeInfo | undefined = useMemo(
     () =>
-      data && {
-        chainId,
-        address: contractAddress,
-        name: data[0],
-        rawBalance: data[1],
-        decimals: data[2],
-        balance: formatUnits(data[1], data[2]),
-        symbol: data[3],
-      },
+      data && data?.length >= 4
+        ? {
+            chainId,
+            address: contractAddress,
+            name: data[0],
+            rawBalance: data[1],
+            decimals: data[2],
+            balance: formatUnits(data[1], data[2]),
+            symbol: data[3],
+          }
+        : undefined,
     [data],
   );
   return token;

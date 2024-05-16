@@ -205,59 +205,56 @@ const SendToken = forwardRef<
   else
     return (
       <View className="flex gap-4">
-        <View className="flex-row items-center justify-between">
-          <Text>Wallet address</Text>
-          <Text className="text-sm">Only sending on Base</Text>
+        <View className="flex gap-2">
+          <View className="flex-row items-center justify-between">
+            <Text>Wallet address</Text>
+            <Text className="text-sm">Only sending on Base</Text>
+          </View>
+          <Input
+            className="border-secondary text-secondary"
+            placeholder="Enter wallet address"
+            value={address}
+            onChangeText={(newText) => setAddress(newText as `0x${string}`)}
+          />
         </View>
-        <Input
-          className="border-secondary text-secondary"
-          placeholder="Enter wallet address"
-          value={address}
-          onChangeText={(newText) => setAddress(newText as `0x${string}`)}
-        />
-        <View className="flex-row items-center justify-between">
+        <View className="z-50 flex gap-2">
           <Text>Token</Text>
+          <ToeknSelect selectToken={setToken} chain={chain} />
         </View>
-        <ToeknSelect selectToken={setToken} chain={chain} />
-        {token && (
-          <>
-            <View className="flex-row items-center justify-between">
-              <Text>Amount</Text>
-            </View>
-            <Input
-              className="border-secondary text-secondary"
-              placeholder="Enter amount"
-              value={String(amount)}
-              onChangeText={(newText) => setAmount(newText)}
-            />
-            {chainId === token?.chainId ? (
-              <Button
-                variant={"secondary"}
-                disabled={
-                  !address ||
-                  Number(amount) > Number(token?.balance || 0) ||
-                  isPending ||
-                  transationLoading
-                }
-                className="w-full"
-                onPress={send}
-              >
-                <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                className="w-full"
-                disabled={switchChainStatus === "pending"}
-                onPress={async () => {
-                  await switchChain({ chainId: token.chainId });
-                }}
-              >
-                <Text>Switch to {base.name}</Text>
-              </Button>
-            )}
-          </>
-        )}
+        <View className="flex gap-2">
+          <Text>Amount</Text>
+          <Input
+            className="border-secondary text-secondary"
+            placeholder="Enter amount"
+            value={String(amount)}
+            onChangeText={(newText) => setAmount(newText)}
+          />
+        </View>
+        {token &&
+          (chainId === token.chainId ? (
+            <Button
+              variant={"secondary"}
+              disabled={
+                !address ||
+                Number(amount) > Number(token?.balance || 0) ||
+                isPending ||
+                transationLoading
+              }
+              onPress={send}
+            >
+              <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              disabled={switchChainStatus === "pending"}
+              onPress={async () => {
+                await switchChain({ chainId: token.chainId });
+              }}
+            >
+              <Text>Switch to {base.name}</Text>
+            </Button>
+          ))}
       </View>
     );
 });
