@@ -9,7 +9,7 @@ export default function EmbedVideo({ uri }: { uri: string }) {
     <View className="w-full">
       <AspectRatio ratio={16 / 9}>
         {Platform.OS === "web" && isDesktop ? (
-          <WebVideoRender videoSrc={uri} />
+          <WebVideoRender src={uri} />
         ) : (
           <Video
             style={{

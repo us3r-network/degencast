@@ -1,92 +1,90 @@
-/* eslint-disable react/destructuring-assignment */
+import React, { useEffect, useRef } from "react";
 
-import React, { useMemo, useEffect } from "react";
-import videojs from "video.js";
+export default function WebVideoRender({ src }: { src: string }) {
+  const videoRef = useRef(null);
+  const playerRef = useRef<any>(null);
+  const [mounted, setMounted] = React.useState(false);
 
-import "video.js/dist/video-js.css";
-
-interface PlayerProps {
-  videoSrc: string;
-}
-
-const videoJSoptions: {
-  techOrder?: string[];
-  autoplay?: boolean;
-  fill?: boolean;
-  controls?: boolean;
-  responsive?: true;
-  fluid?: true;
-} = {
-  fluid: true,
-  controls: true,
-  fill: true,
-  responsive: true,
-};
-
-function handleClick(e: any) {
-  e.stopPropagation();
-  e.preventDefault();
-}
-
-export default function WebVideoRender(props: PlayerProps) {
-  const videoRef = React.useRef<HTMLDivElement>(null);
-  const playerRef = React.useRef<any>(null);
-
-  const options = useMemo(
-    () => ({
-      ...videoJSoptions,
-      // video is not necessarily rewritten yet
-      sources: [
-        {
-          src: props.videoSrc ?? "",
-          type: props.videoSrc?.endsWith(".m3u8")
-            ? "application/x-mpegURL"
-            : props.videoSrc?.endsWith(".mp4")
-              ? "video/mp4"
-              : "",
-        },
-      ],
-    }),
-    [props.videoSrc],
-  );
-
+  // TODO 引入videojs 包在编译时有bug(videojs内部bug, window is not defined), 先用cdn引入
   useEffect(() => {
-    // Make sure Video.js player is only initialized once
-    if (!playerRef.current) {
-      // The Video.js player needs to be _inside_ the component el for React 18 Strict Mode.
-      const videoElement = document.createElement("video-js");
-
-      videoElement.classList.add("vjs-big-play-centered");
-      videoRef.current?.appendChild(videoElement);
-
-      playerRef.current = videojs(videoElement, options);
-    } else {
-      const player = playerRef.current;
-
-      player.autoplay(options.autoplay);
-      player.src(options.sources);
+    if (
+      !document.querySelector(
+        'link[href="https://vjs.zencdn.net/8.10.0/video-js.css"]',
+      )
+    ) {
+      const link = document.createElement("link");
+      link.href = "https://vjs.zencdn.net/8.10.0/video-js.css";
+      link.rel = "stylesheet";
+      document.head.appendChild(link);
     }
-  }, [options, videoRef, props]);
+    if (
+      !document.querySelector(
+        'script[src="https://vjs.zencdn.net/8.10.0/video.min.js"]',
+      )
+    ) {
+      const script = document.createElement("script");
+      script.src = "https://vjs.zencdn.net/8.10.0/video.min.js";
+      document.body.appendChild(script);
+    }
+    setMounted(true);
+  }, []);
 
-  // Dispose the Video.js player when the functional component unmounts
   useEffect(() => {
-    const player = playerRef.current;
-
+    if (videoRef.current) {
+      const videojs = (window as any).videojs as any;
+      if (videojs) {
+        playerRef.current = videojs(videoRef.current, {
+          controls: true,
+          autoplay: false,
+          preload: "auto",
+          fluid: true,
+          fill: true,
+          responsive: true,
+        });
+      }
+    }
     return () => {
-      if (player && !player.isDisposed()) {
-        player.dispose();
-        playerRef.current = null;
+      if (playerRef.current && !playerRef.current.isDisposed()) {
+        playerRef.current.pause();
       }
     };
-  }, [playerRef]);
+  }, [mounted]);
+
+  const type = src?.endsWith(".m3u8")
+    ? "application/x-mpegURL"
+    : src?.endsWith(".mp4")
+      ? "video/mp4"
+      : "";
 
   return (
     <div
       data-vjs-player
-      onClick={handleClick}
-      className="overflow-hidden rounded-md"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
     >
-      <div ref={videoRef} />
+      <video
+        ref={videoRef}
+        className="video-js"
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <source src={src} type={type} />
+        <p className="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to
+          a web browser that
+          <a href="https://videojs.com/html5-video-support/" target="_blank">
+            supports HTML5 video
+          </a>
+        </p>
+      </video>
     </div>
   );
 }
