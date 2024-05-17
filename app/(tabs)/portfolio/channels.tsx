@@ -1,12 +1,24 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, Pressable, View, Image } from "react-native";
+import { FlatList, Image, View } from "react-native";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
+import { MyCommunityToken } from "~/components/portfolio/tokens/UserCommunityTokens";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import useUserChannels from "~/hooks/user/useUserChannels";
+import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
+import { cn } from "~/lib/utils";
 import { Channel } from "~/services/farcaster/types/neynar";
 import { getUserFarcasterAccount } from "~/utils/privy";
 
@@ -82,21 +94,59 @@ export default function ChannelsScreen() {
 
 function ChannelThumb({ channel }: { channel: Channel }) {
   return (
-    <Pressable
-      className="flex-1"
-      onPress={() => {
-        console.log("show channels assets");
-      }}
-    >
-      <View className="w-full">
-        <AspectRatio ratio={1}>
-          <Image
-            source={{ uri: channel.image_url }}
-            className="h-full w-full rounded-lg object-cover"
-          />
-        </AspectRatio>
-        <Text className="line-clamp-1">{channel.name}</Text>
+    <Dialog className="flex-1">
+      <DialogTrigger className="w-full" asChild>
+        <View className="w-full">
+          <AspectRatio ratio={1}>
+            <Image
+              source={{ uri: channel.image_url }}
+              className="h-full w-full rounded-lg object-cover"
+            />
+          </AspectRatio>
+          <Text className="line-clamp-1">{channel.name}</Text>
+        </View>
+      </DialogTrigger>
+      <DialogContent className="w-screen">
+        <DialogHeader className={cn("flex gap-2")}>
+          <DialogTitle>Channel Assets</DialogTitle>
+        </DialogHeader>
+        <ChannelAssets channel={channel} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChannelAssets({
+  channel,
+  address,
+}: {
+  channel: Channel;
+  address?: `0x${string}`;
+}) {
+  const totalBalance = 100;
+  return (
+    <View className="flex gap-6">
+      <View className="flex-row items-center justify-between gap-4">
+        <CommunityInfo name={channel.name} logo={channel.image_url} />
+        <Text>
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            notation: "compact",
+          }).format(totalBalance)}
+        </Text>
       </View>
-    </Pressable>
+      <Separator className="bg-secondary/10" />
+      {address && <MyChannelToken address={address} channelID={channel.id} />}
+    </View>
+  );
+}
+
+function MyChannelToken({ address, channelID }: { address: `0x${string}`, channelID:string }) {
+  const { items } = useUserCommunityTokens(address);
+  const channelToken = items.find((item) => item.tradeInfo?.channel === channelID);
+  if (!channelToken) return null;
+  return (
+    <MyCommunityToken  {...channelToken} />
   );
 }
