@@ -32,18 +32,11 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
-import { ArrowDown, ArrowUp } from "lucide-react-native";
-
-export enum SEND_TOKEN_TYPE {
-  DEPOSIT = "deposit",
-  WITHDRAW = "withdraw",
-}
+import { ArrowUp } from "lucide-react-native";
 
 export default function SendTokenButton({
-  type = SEND_TOKEN_TYPE.WITHDRAW,
   defaultChain = DEFAULT_CHAIN,
 }: {
-  type: SEND_TOKEN_TYPE;
   defaultChain?: Chain;
 }) {
   // console.log("SendButton tokens", availableTokens);
@@ -68,7 +61,7 @@ export default function SendTokenButton({
     return (
       <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
         <Text>
-          {type === SEND_TOKEN_TYPE.DEPOSIT ? <ArrowDown /> : <ArrowUp />}
+          <ArrowUp />
         </Text>
       </Button>
     );
@@ -82,7 +75,7 @@ export default function SendTokenButton({
         <DialogTrigger asChild disabled={activeWallet?.connectorType!=="embedded"}>
           <Button size={"icon"} className="rounded-full">
             <Text>
-              {type === SEND_TOKEN_TYPE.DEPOSIT ? <ArrowDown /> : <ArrowUp />}
+            <ArrowUp />
             </Text>
           </Button>
         </DialogTrigger>

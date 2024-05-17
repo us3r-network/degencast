@@ -1,10 +1,11 @@
 import { View } from "react-native";
+import DepositButton from "~/components/trade/DepositButton";
 import FundButton from "~/components/trade/FundButton";
+import SendTokenButton from "~/components/trade/SendTokenButton";
+import SwapButton from "~/components/trade/TradeButton";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
-import SendTokenButton, { SEND_TOKEN_TYPE } from "../../trade/SendTokenButton";
-import SwapButton from "../../trade/TradeButton";
-import UserWalletSelect from "../user/UserWalletSelect";
+import UserWalletSelect from "./UserWalletSelect";
 
 export default function UserWallet() {
   return (
@@ -18,7 +19,7 @@ export default function UserWallet() {
       <Text className="text-3xl font-bold text-white">$1000.00</Text>
       <View className="flex-row items-center justify-evenly">
         <View className="flex items-center gap-1">
-          <FundButton />
+          <FundButton variant="icon"/>
           <Text className="text-xs font-medium">Buy</Text>
         </View>
         <View className="flex items-center gap-1">
@@ -26,11 +27,11 @@ export default function UserWallet() {
           <Text className="text-xs font-medium">Swap</Text>
         </View>
         <View className="flex items-center gap-1">
-          <SendTokenButton type={SEND_TOKEN_TYPE.DEPOSIT} />
+          <DepositButton />
           <Text className="text-xs font-medium">Deposit</Text>
         </View>
         <View className="flex items-center gap-1">
-          <SendTokenButton type={SEND_TOKEN_TYPE.WITHDRAW} />
+          <SendTokenButton />
           <Text className="text-xs font-medium">Withdraw</Text>
         </View>
       </View>
