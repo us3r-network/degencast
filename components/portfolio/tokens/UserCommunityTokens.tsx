@@ -42,19 +42,19 @@ export default function CommunityTokens({
         {items?.length > 0 &&
           items
             .slice(0, DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.address} {...item} />)}
+            .map((item) => <MyCommunityToken key={item.address} {...item} />)}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
         {items?.length > DEFAULT_ITEMS_NUM &&
           items
             .slice(DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.address} {...item} />)}
+            .map((item) => <MyCommunityToken key={item.address} {...item} />)}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-function Item(item: TokenWithTradeInfo) {
+export function MyCommunityToken(item: TokenWithTradeInfo) {
   // console.log("item", item);
   return (
     <View className="flex-row items-center justify-between">

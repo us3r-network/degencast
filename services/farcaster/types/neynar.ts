@@ -57,3 +57,14 @@ export interface Reactions {
 export interface Replies {
   count: number;
 }
+
+export type Channel = {
+  id: string;
+  url: string;
+  name: string;
+  description: string;
+  follower_count: number;
+  image_url: string;
+  object: string;
+  parent_url: string;
+};

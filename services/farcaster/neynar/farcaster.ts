@@ -41,3 +41,23 @@ export async function fetchCastWithHashFid({
   console.log("fetchCastWithHashFid", resp.data);
   return resp.data;
 }
+
+export async function fetchUserChannels({
+  fid,
+  limit,
+  cursor,
+}: {
+  fid: number;
+  limit: number;
+  cursor?: string;
+}) {
+  const resp = await axios({
+    url: `${NEYNAR_API_HOST}/v2/farcaster/user/channels?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
+    method: "get",
+    headers: {
+      api_key: NEYNAR_API_KEY,
+    },
+  });
+  // console.log("Retrieve all channels that a given fid follows", resp.data);
+  return resp.data;
+}
