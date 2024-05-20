@@ -94,7 +94,7 @@ export function useUserNativeToken(
   disable: boolean = false,
 ) {
   if (!address || !chainId || disable) return undefined;
-  console.log("useUserNativeToken", address, chainId);
+  // console.log("useUserNativeToken", address, chainId);
   const { data } = useBalance({
     address,
     chainId,

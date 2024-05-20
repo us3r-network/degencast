@@ -47,7 +47,12 @@ export default function UserInfo() {
         {farcasterAccount?.fid && (
           <FarcasterStats fid={farcasterAccount.fid} fname={userHandle} />
         )}
-        {farcasterAccount?.fid && <DegenTipsStats fid={farcasterAccount.fid} />}
+        {farcasterAccount?.fid && (
+          <View className="flex-row gap-1 items-center">
+            <DegenTipsStats fid={farcasterAccount.fid} />
+            <Text className="text-sm text-secondary">Degen allowance</Text>
+          </View>
+        )}
         {/* <UserGlobalPoints /> */}
       </View>
     </View>
