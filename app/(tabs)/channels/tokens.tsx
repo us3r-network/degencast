@@ -25,9 +25,9 @@ export default function CommunityTokens() {
                   key={item.address}
                 >
                   <Text className="w-6 text-center text-xs font-medium">
-                    {index}
+                    {index + 1}
                   </Text>
-                  <CommunityToken token={item}/>
+                  <CommunityToken token={item} />
                 </View>
               ))}
           </View>
@@ -37,15 +37,11 @@ export default function CommunityTokens() {
   );
 }
 
-export function CommunityToken({
-  token,
-}: {
-  token: TokenWithTradeInfo;
-}) {
+export function CommunityToken({ token }: { token: TokenWithTradeInfo }) {
   const change =
     Number(token.tradeInfo?.stats.price_change_percentage.h24) || 0;
   return (
-    <View className="flex-row items-center justify-between gap-2">
+    <View className="flex-1 flex-row items-center justify-between gap-2">
       {token.tradeInfo?.channel ? (
         <Link href={`/communities/${token.tradeInfo?.channel}/tokens`} asChild>
           <Pressable>
