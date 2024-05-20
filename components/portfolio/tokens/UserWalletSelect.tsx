@@ -40,7 +40,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Text, TextClassContext } from "~/components/ui/text";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
@@ -49,7 +49,11 @@ import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
-export default function UserWalletSelect() {
+export default function UserWalletSelect({
+  showFarcasterAccount = true,
+}: {
+  showFarcasterAccount?: boolean;
+}) {
   const { ready } = usePrivy();
   const { authenticated } = useAuth();
 
@@ -112,8 +116,8 @@ export default function UserWalletSelect() {
                     <WalletItem
                       wallet={wallet}
                       action={() => {
-                        setActiveWallet(wallet)
-                        setOpen(false)
+                        setActiveWallet(wallet);
+                        setOpen(false);
                       }}
                     />
                   </DropdownMenuItem>
@@ -121,17 +125,19 @@ export default function UserWalletSelect() {
               </DropdownMenuGroup>
               <LinkWallets />
             </Catalog>
-            <Catalog
-              title="Farcaster Account"
-              icon={
-                <Image
-                  source={require("~/assets/images/farcaster.png")}
-                  style={{ width: 16, height: 16 }}
-                />
-              }
-            >
-              <FarcasterAccount />
-            </Catalog>
+            {showFarcasterAccount && (
+              <Catalog
+                title="Farcaster Account"
+                icon={
+                  <Image
+                    source={require("~/assets/images/farcaster.png")}
+                    style={{ width: 16, height: 16 }}
+                  />
+                }
+              >
+                <FarcasterAccount />
+              </Catalog>
+            )}
           </View>
         </DropdownMenuContent>
       </DropdownMenu>
