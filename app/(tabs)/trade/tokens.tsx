@@ -20,7 +20,15 @@ export default function CommunityTokens() {
           <View className="flex w-full gap-4">
             {items?.length > 0 &&
               items.map((item, index) => (
-                <Item key={item.address} item={item} index={index + 1} />
+                <View
+                  className="flex-1 flex-row items-center gap-2"
+                  key={item.address}
+                >
+                  <Text className="w-6 text-center text-xs font-medium">
+                    {index}
+                  </Text>
+                  <CommunityToken token={item}/>
+                </View>
               ))}
           </View>
         </ScrollView>
@@ -29,30 +37,33 @@ export default function CommunityTokens() {
   );
 }
 
-function Item({ item, index }: { item: TokenWithTradeInfo; index: number }) {
-  const change = Number(item.tradeInfo?.stats.price_change_percentage.h24) || 0;
+export function CommunityToken({
+  token,
+}: {
+  token: TokenWithTradeInfo;
+}) {
+  const change =
+    Number(token.tradeInfo?.stats.price_change_percentage.h24) || 0;
   return (
     <View className="flex-row items-center justify-between gap-2">
-      <View className="flex-1 flex-row items-center gap-2">
-        <Text className="w-6 text-center text-xs font-medium">{index}</Text>
-        {item.tradeInfo?.channel ? (
-          <Link href={`/communities/${item.tradeInfo?.channel}/tokens`} asChild>
-            <Pressable>
-              <TokenInfo
-                name={item.name}
-                logo={item.logoURI}
-                mc={Number(item.tradeInfo?.stats?.fdv_usd)}
-              />
-            </Pressable>
-          </Link>
-        ) : (
-          <TokenInfo
-            name={item.name}
-            logo={item.logoURI}
-            mc={Number(item.tradeInfo?.stats?.fdv_usd)}
-          />
-        )}
-      </View>
+      {token.tradeInfo?.channel ? (
+        <Link href={`/communities/${token.tradeInfo?.channel}/tokens`} asChild>
+          <Pressable>
+            <TokenInfo
+              name={token.name}
+              logo={token.logoURI}
+              mc={Number(token.tradeInfo?.stats?.fdv_usd)}
+            />
+          </Pressable>
+        </Link>
+      ) : (
+        <TokenInfo
+          name={token.name}
+          logo={token.logoURI}
+          mc={Number(token.tradeInfo?.stats?.fdv_usd)}
+        />
+      )}
+
       <View className="flex-row items-center gap-2">
         <Text
           className={cn("text-sm", change < 0 ? "text-[red]" : "text-[green]")}
@@ -60,7 +71,7 @@ function Item({ item, index }: { item: TokenWithTradeInfo; index: number }) {
           {change > 0 ? "+" : ""}
           {change}%
         </Text>
-        <TradeButton token2={item} />
+        <TradeButton token2={token} />
       </View>
     </View>
   );

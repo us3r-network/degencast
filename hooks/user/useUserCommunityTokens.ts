@@ -7,7 +7,7 @@ import {
 } from "~/features/user/communityTokensSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserCommunityTokens(address: `0x${string}`) {
+export default function useUserCommunityTokens(address?: `0x${string}`) {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector(selectUserCommunityTokens);
 
