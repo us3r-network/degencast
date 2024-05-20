@@ -18,8 +18,6 @@ export default function useUserChannels() {
         cursor: cursor.current,
       });
       const { channels, next } = res;
-
-      console.log("res and channels",res,channels)
       setItems((pre) => [...pre, ...channels]);
       cursor.current = next.cursor;
     } catch (err) {
