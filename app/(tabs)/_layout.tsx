@@ -83,7 +83,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="trade"
+          name="channels"
           options={{
             title: "Channels",
             tabBarLabelPosition: "below-icon",
