@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
 import { MyCommunityToken } from "~/components/portfolio/tokens/UserCommunityTokens";
+import DegenTipsStats from "~/components/portfolio/user/DegenTipsStats";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { Button } from "~/components/ui/button";
 import {
@@ -17,14 +18,11 @@ import {
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
-import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import useUserChannels from "~/hooks/user/useUserChannels";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { cn } from "~/lib/utils";
 import { Channel } from "~/services/farcaster/types/neynar";
 import { getUserFarcasterAccount } from "~/utils/privy";
-import { CommunityToken } from "../trade/tokens";
-import DegenTipsStats from "~/components/portfolio/user/DegenTipsStats";
 
 export default function ChannelsScreen() {
   const params = useLocalSearchParams();

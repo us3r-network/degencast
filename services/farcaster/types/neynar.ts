@@ -31,6 +31,10 @@ export type Author = {
   verified_addresses: VerifiedAddresses;
   active_status: string;
   power_badge: boolean;
+  viewer_context?: {
+    followed_by: boolean;
+    following: boolean;
+  };
 };
 
 export interface Profile {
