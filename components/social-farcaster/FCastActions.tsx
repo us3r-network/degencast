@@ -14,6 +14,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import FCastShareModal from "./FCastShareModal";
+import FCastMintNftModal from "./FCastMintNftModal";
 
 export function FCastDetailActions({
   cast,
@@ -130,6 +131,7 @@ export function FCastExploreActions({
     useFarcasterRecastAction({ cast });
   const [openGiftModal, setOpenGiftModal] = useState(false);
   const [openShareModal, setOpenShareModal] = useState(false);
+  const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
   const onLike = () => {
@@ -180,6 +182,7 @@ export function FCastExploreActions({
         onGift={onGift}
         onShare={onShare}
         onComment={onComment}
+        onMint={() => setOpenMintNftModal(true)}
         showActions={showActions}
         showActionsChange={showActionsChange}
         {...props}
@@ -196,6 +199,11 @@ export function FCastExploreActions({
         cast={cast}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
+      />
+      <FCastMintNftModal
+        cast={cast}
+        open={openMintNftModal}
+        onOpenChange={setOpenMintNftModal}
       />
     </>
   );

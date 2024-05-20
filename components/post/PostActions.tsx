@@ -6,6 +6,7 @@ import { Animated, Easing, TextProps, View, ViewProps } from "react-native";
 import { Image } from "react-native";
 import { CommentIcon2 } from "../common/SvgIcons";
 import { useCallback, useEffect, useState } from "react";
+import { Image as ImageIcon } from "~/components/common/Icons";
 
 export function ActionButton({ className, ...props }: ButtonProps) {
   return (
@@ -97,7 +98,7 @@ export const CommentButton = ({
 };
 
 export const ShareButton = ({
-  iconSize,
+  iconSize = 24,
   ...props
 }: ButtonProps & {
   iconSize?: number;
@@ -105,6 +106,19 @@ export const ShareButton = ({
   return (
     <ActionButton {...props}>
       <Share2 size={iconSize} className={cn(" fill-primary stroke-primary")} />
+    </ActionButton>
+  );
+};
+
+export const MintButton = ({
+  iconSize = 24,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionButton {...props}>
+      <ImageIcon size={iconSize} className={cn("stroke-primary")} />
     </ActionButton>
   );
 };
@@ -169,6 +183,7 @@ export const ExplorePostActions = ({
   onGift,
   onShare,
   onComment,
+  onMint,
   className,
   ...props
 }: ViewProps & {
@@ -180,6 +195,7 @@ export const ExplorePostActions = ({
   onGift: () => void;
   onShare: () => void;
   onComment?: () => void;
+  onMint?: () => void;
 }) => {
   const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
@@ -208,7 +224,7 @@ export const ExplorePostActions = ({
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
         translateYAnimatedValue={translateYAnimatedValue}
-        index={4}
+        index={5}
       >
         <LikeButton
           className=" shadow-md shadow-primary"
@@ -221,7 +237,7 @@ export const ExplorePostActions = ({
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
         translateYAnimatedValue={translateYAnimatedValue}
-        index={3}
+        index={4}
       >
         <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
       </ActionMenuItem>
@@ -229,12 +245,20 @@ export const ExplorePostActions = ({
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
         translateYAnimatedValue={translateYAnimatedValue}
-        index={2}
+        index={3}
       >
         <CommentButton
           className=" shadow-md shadow-primary"
           onPress={onComment}
         />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={2}
+      >
+        <MintButton className=" shadow-md shadow-primary" onPress={onMint} />
       </ActionMenuItem>
       <ActionMenuItem
         showMenu={showActions}
