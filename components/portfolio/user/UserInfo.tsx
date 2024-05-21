@@ -14,7 +14,7 @@ import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import Toast from "react-native-toast-message";
 import { Author } from "~/services/farcaster/types/neynar";
 import { Loading } from "~/components/common/Loading";
-import UserLogout from "./UserLogout";
+import UserSettings from "./UserSettings";
 import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
 
 export default function UserInfo({ fid }: { fid?: number }) {
@@ -46,12 +46,15 @@ export default function UserInfo({ fid }: { fid?: number }) {
   );
   // console.log("privy user info", user);
   if (!ready || !fid || !farcasterUserInfo) {
-    return null;
+    return <View className="h-26"></View>;
   }
   return (
-    <View className="flex-1 flex-row items-center gap-4">
+    <View className="flex-1 flex-row items-center gap-6 px-2">
       <View className="reletive">
-        <Avatar alt={username} className="size-20">
+        <Avatar
+          alt={username}
+          className="size-24 border-2 border-secondary bg-secondary/10"
+        >
           <AvatarImage source={{ uri: userAvatar }} />
           <AvatarFallback className="bg-white">
             <User className="size-16 fill-primary/80 font-medium text-primary" />
@@ -61,7 +64,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
           {farcasterAccount?.fid !== farcasterUserInfo?.fid ? (
             <FollowUserButton farcasterUserInfo={farcasterUserInfo} />
           ) : (
-            <UserLogout />
+            <UserSettings />
           )}
         </View>
       </View>
