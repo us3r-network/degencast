@@ -10,13 +10,15 @@ import type { RootState } from "../../store/store";
 
 type UserCommunityTokenState = {
   cache: Map<`0x${string}`, ApiResp<TokenWithTradeInfo[]>>;
+  address?: `0x${string}`;
   items: TokenWithTradeInfo[];
   status: AsyncRequestStatus;
   error: string | undefined;
 };
 
-const userCommunityTokenState: UserCommunityTokenState = {
+const initialUserCommunityTokenState: UserCommunityTokenState = {
   cache: new Map(),
+  address: undefined,
   items: [],
   status: AsyncRequestStatus.IDLE,
   error: undefined,
@@ -28,19 +30,22 @@ export const fetchItems = createAsyncThunk(
     const { userCommunityTokens } = thunkAPI.getState() as {
       userCommunityTokens: UserCommunityTokenState;
     };
-    const existCache = userCommunityTokens.cache.get(address);
-    if (existCache?.data) {
-      return existCache;
-    } else {
-      const response = await myTokens(address);
-      return response.data;
+    if (userCommunityTokens.address !== address) {
+      userCommunityTokens.address = address;
+      userCommunityTokens.items = initialUserCommunityTokenState.items;
+      userCommunityTokens.error = initialUserCommunityTokenState.error;
+      userCommunityTokens.status = initialUserCommunityTokenState.status;
+      const existCache = userCommunityTokens.cache.get(address);
+      if (existCache?.data) return existCache;
     }
+    const response = await myTokens(address);
+    return response.data;
   },
 );
 
 export const userCommunityTokenSlice = createSlice({
   name: "userCommunityTokens",
-  initialState: userCommunityTokenState,
+  initialState: initialUserCommunityTokenState,
   reducers: {},
   extraReducers(builder) {
     builder
@@ -59,7 +64,7 @@ export const userCommunityTokenSlice = createSlice({
             item.balance &&
             Number(item.balance) > 0 &&
             item.tradeInfo?.channel,
-        )
+        );
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;

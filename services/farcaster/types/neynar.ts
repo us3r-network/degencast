@@ -71,4 +71,14 @@ export type Channel = {
   image_url: string;
   object: string;
   parent_url: string;
+  hosts:Author[];
 };
+
+export type PageInfo = {
+    cursor: string | null;
+}
+
+export type NeynarChannelsResp = {
+  channels: Channel[];
+  next: PageInfo;
+}
