@@ -46,7 +46,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
   );
   // console.log("privy user info", user);
   if (!ready || !fid || !farcasterUserInfo) {
-    return <View className="h-26"></View>;
+    return null;
   }
   return (
     <View className="flex-1 flex-row items-center gap-6 px-2">
@@ -69,7 +69,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
         </View>
       </View>
       <View className="flex w-full gap-1">
-        <View className="w-full">
+        <View className="w-full space-y-0">
           {userDisplayName && (
             <Text className="line-clamp-1 font-bold text-white">
               {userDisplayName}

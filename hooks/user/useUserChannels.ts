@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchUserChannels } from "~/services/farcaster/neynar/farcaster";
 import { Channel } from "~/services/farcaster/types/neynar";
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 100;
 
 export default function useUserChannels() {
   const [items, setItems] = useState<Array<Channel>>([]);

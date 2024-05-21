@@ -11,7 +11,6 @@ import { useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import UserInfo from "~/components/portfolio/user/UserInfo";
-import UserLogout from "~/components/portfolio/user/UserLogout";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -74,9 +73,8 @@ export function PortfolioContent({
   });
   return (
     <View className="flex h-full w-full items-center gap-4 ">
-      <View className="w-full flex-row items-center justify-between">
+      <View className="w-full h-24">
         <UserInfo fid={fid} />
-        {/* {!fid && <UserLogout />} */}
       </View>
       <Tabs
         value={value}
