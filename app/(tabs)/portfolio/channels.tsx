@@ -123,16 +123,14 @@ function ChannelThumb({
           <Text className="line-clamp-1">{channel.name}</Text>
         </View>
       </Link>
-      <ChannelAssets
-        className="absolute bottom-8 right-1"
-        channel={channel}
-        address={address}
-      />
-      {isHost && (
-        <View className="rounded-full bg-secondary px-2">
-          <Text className="text-xs text-white">host</Text>
-        </View>
-      )}
+      <View className="absolute bottom-8 right-1">
+        <ChannelAssets channel={channel} address={address} />
+        {isHost && (
+          <View className="rounded-full bg-secondary px-2">
+            <Text className="text-xs text-white">host</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
