@@ -7,7 +7,6 @@ import {
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { myTokens } from "~/services/user/api";
 import type { RootState } from "../../store/store";
-import { Item } from "~/components/primitives/radio-group";
 
 type UserCommunityTokenState = {
   cache: Map<`0x${string}`, ApiResp<TokenWithTradeInfo[]>>;

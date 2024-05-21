@@ -37,13 +37,13 @@ export default function UserInfo({ fid }: { fid?: number }) {
     ? farcasterUserInfo.display_name
     : "";
   const username = farcasterUserInfo ? farcasterUserInfo.username : "";
-  console.log(
-    "farcasterUserInfo",
-    farcasterUserInfo,
-    userAvatar,
-    userDisplayName,
-    username,
-  );
+  // console.log(
+  //   "farcasterUserInfo",
+  //   farcasterUserInfo,
+  //   userAvatar,
+  //   userDisplayName,
+  //   username,
+  // );
   // console.log("privy user info", user);
   if (!ready || !fid || !farcasterUserInfo) {
     return null;
