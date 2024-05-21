@@ -14,6 +14,8 @@ import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import Toast from "react-native-toast-message";
 import { Author } from "~/services/farcaster/types/neynar";
 import { Loading } from "~/components/common/Loading";
+import UserLogout from "./UserLogout";
+import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
 
 export default function UserInfo({ fid }: { fid?: number }) {
   const { ready, authenticated, user } = usePrivy();
@@ -55,9 +57,13 @@ export default function UserInfo({ fid }: { fid?: number }) {
             <User className="size-16 fill-primary/80 font-medium text-primary" />
           </AvatarFallback>
         </Avatar>
-        {farcasterAccount?.fid !== farcasterUserInfo?.fid && (
-          <FollowUserButton farcasterUserInfo={farcasterUserInfo} />
-        )}
+        <View className="absolute bottom-0 right-0 size-6">
+          {farcasterAccount?.fid !== farcasterUserInfo?.fid ? (
+            <FollowUserButton farcasterUserInfo={farcasterUserInfo} />
+          ) : (
+            <UserLogout />
+          )}
+        </View>
       </View>
       <View className="flex w-full gap-1">
         <View className="w-full">
@@ -132,7 +138,7 @@ function FollowUserButton({
   const { followUser, unfollowUser } = useFarcasterWrite();
   if (loading)
     return (
-      <View className="absolute bottom-0 right-0 size-6">
+      <View className="size-6">
         <Loading />
       </View>
     );
@@ -141,7 +147,7 @@ function FollowUserButton({
       <Button
         size={"icon"}
         disabled={loading}
-        className="absolute bottom-0 right-0 size-6 rounded-full bg-secondary"
+        className="size-6 rounded-full bg-secondary"
         onPress={async () => {
           setLoading(true);
           const r = await unfollowUser(farcasterUserInfo?.fid || 0);
@@ -157,7 +163,7 @@ function FollowUserButton({
         }}
       >
         <Text>
-          <Minus />
+          <UserRoundCheck size={16} />
         </Text>
       </Button>
     );
@@ -182,7 +188,7 @@ function FollowUserButton({
         }}
       >
         <Text>
-          <Plus />
+          <UserRoundPlus size={16} />
         </Text>
       </Button>
     );

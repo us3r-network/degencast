@@ -1,10 +1,10 @@
 import { useConnectWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import * as Clipboard from "expo-clipboard";
-import { ArrowDown, Copy } from "lucide-react-native";
 import { useMemo } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useAccount } from "wagmi";
+import { ArrowDown, Copy } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -15,8 +15,8 @@ import {
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
-import FundButton from "./FundButton";
 import UserTokens from "../portfolio/tokens/UserTokens";
+import FundButton from "./FundButton";
 
 export default function DepositButton() {
   const { connectWallet } = useConnectWallet();

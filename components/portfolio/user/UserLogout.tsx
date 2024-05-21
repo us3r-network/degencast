@@ -26,12 +26,14 @@ export default function UserLogout() {
       <AlertDialogTrigger>
         <Button
           size={"icon"}
-          className="rounded-full bg-secondary"
+          className="size-6 rounded-full bg-secondary"
           onPress={async () => {
             await logout();
           }}
         >
-          <LogOut />
+          <Text>
+            <LogOut size={16} />
+          </Text>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="w-screen bg-primary">

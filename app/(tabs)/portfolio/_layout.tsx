@@ -76,7 +76,7 @@ export function PortfolioContent({
     <View className="flex h-full w-full items-center gap-4 ">
       <View className="w-full flex-row items-center justify-between">
         <UserInfo fid={fid} />
-        {!fid && <UserLogout />}
+        {/* {!fid && <UserLogout />} */}
       </View>
       <Tabs
         value={value}
