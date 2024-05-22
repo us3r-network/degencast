@@ -23,9 +23,7 @@ export default function useUserChannels(fid: number) {
   // }, [fid]);
 
   const loadMore = () => {
-    console.log("loadMore", status, fid);
     if (status !== AsyncRequestStatus.PENDING && fid) {
-      console.log("did loadMore", status, fid);
       dispatch(fetchItems(fid) as unknown as UnknownAction);
     }
   };

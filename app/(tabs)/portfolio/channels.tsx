@@ -58,7 +58,6 @@ export default function ChannelsScreen() {
                 keyExtractor={(item) => item.id}
                 onEndReached={() => {
                   if (loading || !hasNext) return;
-                  console.log("onEndReached", loading, hasNext);
                   loadMore();
                 }}
                 onEndReachedThreshold={2}

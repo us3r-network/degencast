@@ -199,6 +199,16 @@ function SwapToken({
               <TokenWithValue token={toToken} value={toAmount} />
             </View>
             <View className="w-full flex-row items-center justify-between gap-2">
+              <Text className="font-medium text-secondary">Fee</Text>
+              <Text className="text-xs">
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                notation: "compact",
+              }).format(0.3)}
+            </Text>
+            </View>
+            <View className="w-full flex-row items-center justify-between gap-2">
               <Text className="font-medium text-secondary">$SPELL</Text>
               <Text className="font-medium text-white">+1000</Text>
             </View>
