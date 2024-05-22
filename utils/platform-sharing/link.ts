@@ -1,3 +1,5 @@
+import { getZoraMintLink } from "../zora";
+
 export const DEGENCAST_WEB_HOST =
   process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://dev.degencast.xyz";
 
@@ -99,5 +101,34 @@ export const getTradePageFrameLink = (opts?: { fid?: string | number }) => {
   if (fid) {
     link += `?inviteFid=${fid}`;
   }
+  return link;
+};
+
+export const getMintCastWebsiteLink = (opts: {
+  chainId: number;
+  contractAddress: string;
+  tokenId: number;
+}) => {
+  const { chainId, contractAddress, tokenId } = opts;
+  let link = getZoraMintLink({
+    chainId,
+    contractAddress,
+    tokenId,
+  });
+  return link;
+};
+
+// TODO degencast cast mint frame link ?
+export const getMintCastFrameLink = (opts: {
+  chainId: number;
+  contractAddress: string;
+  tokenId: number;
+}) => {
+  const { chainId, contractAddress, tokenId } = opts;
+  let link = getZoraMintLink({
+    chainId,
+    contractAddress,
+    tokenId,
+  });
   return link;
 };

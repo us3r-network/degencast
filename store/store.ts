@@ -19,6 +19,7 @@ import userAction from "~/features/user/userActionSlice";
 import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
+import castCollection from "~/features/cast/castCollectionSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
 import communityDetail from "~/features/community/communityDetailSlice";
 import communityDetailTipsRank from "~/features/community/communityDetailTipsRankSlice";
@@ -38,6 +39,7 @@ export const store = configureStore({
     userAuth,
     warpcastChannels,
     castPage,
+    castCollection,
     communityTokens,
     communityShares,
     communityRank,

@@ -19,6 +19,7 @@ export default function PlatformSharingModal({
   websiteLink,
   frameLink,
   open,
+  showPoints = true,
   onOpenChange,
   navigateToCreatePageAfter,
 }: {
@@ -28,6 +29,7 @@ export default function PlatformSharingModal({
   websiteLink: string;
   frameLink: string;
   open: boolean;
+  showPoints?: boolean;
   onOpenChange: (open: boolean) => void;
   navigateToCreatePageAfter?: () => void;
 }) {
@@ -71,13 +73,13 @@ export default function PlatformSharingModal({
           <ShareButton
             iconSource={require("~/assets/images/warpcast.png")}
             text="Share & Earn"
-            points={inviteUnit}
+            points={showPoints ? inviteUnit : 0}
             onPress={onCreateCast}
           />
           <ShareButton
             iconSource={require("~/assets/images/x.png")}
             text="Share & Earn"
-            points={inviteUnit}
+            points={showPoints ? inviteUnit : 0}
             onPress={onTwitterShare}
           />
           <ShareButton
@@ -113,7 +115,7 @@ function ShareButton({
       <Image source={iconSource} style={{ width: 50, height: 50 }} />
       <View className=" flex-1 flex-col items-center justify-center">
         <Text className=" text-xs text-black">{text}</Text>
-        {points && (
+        {Number(points) > 0 && (
           <Text className=" mt-1 text-xs text-secondary">+{points} Points</Text>
         )}
       </View>

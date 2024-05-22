@@ -20,3 +20,11 @@ export const getAppShareTextWithTwitter = () => {
 export const getCastShareTextWithTwitter = () => {
   return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
 };
+
+export const getMintCastTextWithWarpcast = () => {
+  return `Mint cast in /${WARPCAST_CHANNEL_NAME}.`;
+};
+
+export const getMintCastTextWithTwitter = () => {
+  return `Mint cast in @${TWITTER_SCREEN_NAME}.`;
+};

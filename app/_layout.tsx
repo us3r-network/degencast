@@ -26,7 +26,7 @@ global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+  ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
@@ -91,13 +91,12 @@ export default function RootLayout() {
       >
         <QueryClientProvider client={queryClient}>
           <WagmiProvider config={wagmiConfig}>
-            <StateUpdateWrapper>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              </Stack>
-              <PortalHost />
-              <Toast config={toastConfig} />
-            </StateUpdateWrapper>
+            <StateUpdateWrapper />
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <PortalHost />
+            <Toast config={toastConfig} />
           </WagmiProvider>
         </QueryClientProvider>
       </PrivyProvider>
