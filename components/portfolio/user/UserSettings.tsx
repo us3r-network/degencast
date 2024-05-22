@@ -24,6 +24,7 @@ import {
   Wallet
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
+import { WalletIcon } from "~/components/common/WalletIcon";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -189,27 +190,6 @@ function LinkWallets() {
       </Pressable>
     </View>
   );
-}
-
-function WalletIcon({ type }: { type: string | undefined }) {
-  switch (type) {
-    case "privy":
-      return (
-        <Image
-          style={{ width: 16, height: 16 }}
-          source={require("~/assets/images/privy-icon.webp")}
-        />
-      );
-    case "metamask":
-      return (
-        <Image
-          style={{ width: 16, height: 16 }}
-          source={require("~/assets/images/metamask-icon.svg")}
-        />
-      );
-    default:
-      return <Wallet className="size-4" />;
-  }
 }
 
 function WalletItem({
@@ -382,7 +362,6 @@ function UnlinkButton({ action }: { action: () => void }) {
     </AlertDialog>
   );
 }
-
 
 function LogoutButton() {
   const { logout } = usePrivy();

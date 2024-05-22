@@ -82,7 +82,6 @@ export default function SendTokenButton({
         <DialogContent className="w-screen">
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>{!sending ? "Withdraw" : "Transaction"}</DialogTitle>
-            {!sending && <ActiveWallet />}
           </DialogHeader>
           <SendToken chain={defaultChain} setSending={setSending} />
         </DialogContent>
