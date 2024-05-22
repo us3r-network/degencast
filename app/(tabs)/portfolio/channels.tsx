@@ -1,6 +1,5 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { Link, useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
 import { FlatList, Image, View } from "react-native";
 import { useAccount } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
@@ -28,12 +27,10 @@ export default function ChannelsScreen() {
   const params = useLocalSearchParams();
   const { ready, authenticated, user, linkFarcaster } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
-  const fid = params.fid || farcasterAccount?.fid;
+  const fid = Number(params.fid || farcasterAccount?.fid || "0");
   const { address } = useAccount();
-  const { loading, items, load, hasNext } = useUserChannels();
-  useEffect(() => {
-    if (fid) load(Number(fid));
-  }, [fid]);
+  const { loading, items, hasNext, loadMore } = useUserChannels(fid);
+
   if (fid) {
     return (
       <View className="container h-full">
@@ -49,14 +46,20 @@ export default function ChannelsScreen() {
                 columnWrapperStyle={{ gap: 12 }}
                 ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
                 renderItem={({ item }) => (
-                  <ChannelThumb channel={item} address={address} />
+                  <ChannelThumb
+                    key={item.id}
+                    channel={item}
+                    address={address}
+                    fid={fid}
+                  />
                 )}
                 keyExtractor={(item) => item.id}
                 onEndReached={() => {
                   if (loading || !hasNext) return;
-                  load(Number(fid));
+                  console.log("onEndReached", loading, hasNext);
+                  loadMore();
                 }}
-                onEndReachedThreshold={1}
+                onEndReachedThreshold={2}
                 ListFooterComponent={() => {
                   return loading ? <Loading /> : null;
                 }}
@@ -100,12 +103,15 @@ export default function ChannelsScreen() {
 function ChannelThumb({
   channel,
   address,
+  fid,
 }: {
   channel: Channel;
   address?: `0x${string}`;
+  fid?: number;
 }) {
+  const isHost = channel.hosts.some((host) => host.fid === fid);
   return (
-    <View className="relative w-full flex-1">
+    <View className="relative flex-1">
       <Link className="flex-1" href={`/communities/${channel.id}`} asChild>
         <View className="flex gap-1">
           <AspectRatio ratio={1}>
@@ -117,11 +123,14 @@ function ChannelThumb({
           <Text className="line-clamp-1">{channel.name}</Text>
         </View>
       </Link>
-      <ChannelAssets
-        className="absolute bottom-8 right-1"
-        channel={channel}
-        address={address}
-      />
+      <View className="absolute bottom-8 right-1">
+        <ChannelAssets channel={channel} address={address} />
+        {isHost && (
+          <View className="rounded-full bg-secondary px-2">
+            <Text className="text-xs text-white">host</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -199,7 +208,8 @@ function MyPoints() {
         <View className="flex-row items-center gap-2">
           <Text>-</Text>
           <Button
-            size="sm" disabled
+            size="sm"
+            disabled
             variant="outline"
             onPress={() => {
               // console.log("Claim button pressed");

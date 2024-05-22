@@ -13,16 +13,15 @@ import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useAccount } from "wagmi";
 import {
-  ChevronDown,
-  ChevronUp,
   Copy,
   Edit,
   LogOut,
   MinusCircle,
   Plug,
   PlusCircle,
+  Settings,
   User,
-  Wallet,
+  Wallet
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
 import {
@@ -49,7 +48,7 @@ import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
-export default function UserWalletSelect({
+export default function UserSettings({
   showFarcasterAccount = true,
 }: {
   showFarcasterAccount?: boolean;
@@ -83,22 +82,12 @@ export default function UserWalletSelect({
   return (
     <TextClassContext.Provider value="text-sm font-medium">
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger
-          className={cn(
-            "h-6 flex-row items-center rounded-full border-none bg-white/40 px-2",
-          )}
-        >
-          <View className="mr-2 flex-row items-center gap-1">
-            <WalletIcon type={activeWallet?.walletClientType || ""} />
-            <Text className="text-white">
-              {shortPubKey(activeWallet?.address || "")}
+        <DropdownMenuTrigger>
+          <Button size={"icon"} className="size-6 rounded-full bg-secondary">
+            <Text>
+              <Settings size={16} />
             </Text>
-          </View>
-          {open ? (
-            <ChevronUp className="size-4 text-white" />
-          ) : (
-            <ChevronDown className="size-4 text-white" />
-          )}
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <View className="flex items-start gap-4 divide-solid">
@@ -138,6 +127,7 @@ export default function UserWalletSelect({
                 <FarcasterAccount />
               </Catalog>
             )}
+            <LogoutButton />
           </View>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -385,6 +375,49 @@ function UnlinkButton({ action }: { action: () => void }) {
             <Text>No</Text>
           </Button>
           <Button variant={"secondary"} className="flex-1" onPress={action}>
+            <Text>Yes</Text>
+          </Button>
+        </View>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+
+function LogoutButton() {
+  const { logout } = usePrivy();
+  const [open, setOpen] = useState(false);
+  return (
+    <AlertDialog open={open}>
+      <AlertDialogTrigger>
+        <Pressable
+          className="w-full flex-row items-center gap-2"
+          onPress={(event) => {
+            setOpen(true);
+          }}
+        >
+          <LogOut className="size-4" />
+          <Text>Logout</Text>
+        </Pressable>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="w-screen bg-primary">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex flex-row gap-2 text-primary-foreground">
+            Notice
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription id="alert-dialog-desc text-primary-foreground">
+          Are you sure you want to log out?
+        </AlertDialogDescription>
+        <View className="w-full flex-row items-center justify-stretch gap-2">
+          <Button
+            variant={"secondary"}
+            className="flex-1"
+            onPress={() => setOpen(false)}
+          >
+            <Text>No</Text>
+          </Button>
+          <Button variant={"secondary"} className="flex-1" onPress={logout}>
             <Text>Yes</Text>
           </Button>
         </View>

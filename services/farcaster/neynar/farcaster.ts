@@ -1,5 +1,5 @@
 import axios from "axios";
-import { NeynarCast } from "../types/neynar";
+import { NeynarCast, NeynarChannelsResp } from "../types/neynar";
 
 const NEYNAR_API_HOST = "https://api.neynar.com";
 const NEYNAR_HUB_API_HOST = "https://hub-api.neynar.com";
@@ -49,10 +49,30 @@ export async function fetchUserChannels({
 }: {
   fid: number;
   limit: number;
-  cursor?: string;
+  cursor?: string | null;
 }) {
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/user/channels?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
+    method: "get",
+    headers: {
+      api_key: NEYNAR_API_KEY,
+    },
+  });
+  // console.log("Retrieve all channels that a given fid follows", resp.data);
+  return resp.data;
+}
+
+export async function fetchUserActiveChannels({
+  fid,
+  limit,
+  cursor,
+}: {
+  fid: number;
+  limit: number;
+  cursor?: string | null;
+}): Promise<NeynarChannelsResp> {
+  const resp = await axios({
+    url: `${NEYNAR_API_HOST}/v2/farcaster/channel/user?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
     method: "get",
     headers: {
       api_key: NEYNAR_API_KEY,

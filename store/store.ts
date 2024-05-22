@@ -13,6 +13,7 @@ import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import communityRank from "~/features/trade/communityRankSlice";
 import communityShares from "~/features/trade/communitySharesSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
+import userChannels from "~/features/user/userChannelsSlice";
 import userCommunityShares from "~/features/user/communitySharesSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
 import userAction from "~/features/user/userActionSlice";
@@ -42,6 +43,7 @@ export const store = configureStore({
     communityShares,
     communityRank,
     userCommunityTokens,
+    userChannels,
     userCommunityShares,
     channelExplorePage,
     communityDetail,

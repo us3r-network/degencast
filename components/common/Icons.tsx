@@ -72,6 +72,11 @@ import {
   Download,
   CirclePlus,
   CircleCheck,
+  UserRoundCheck,
+  UserRoundPlus,
+  Chrome,
+  Globe,
+  Settings,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -159,6 +164,11 @@ interopIcon(Home);
 interopIcon(Download);
 interopIcon(CirclePlus);
 interopIcon(CircleCheck);
+interopIcon(UserRoundPlus);
+interopIcon(UserRoundCheck);
+interopIcon(Chrome);
+interopIcon(Globe);
+interopIcon(Settings);
 export {
   Activity,
   Airplay,
@@ -232,4 +242,9 @@ export {
   Download,
   CirclePlus,
   CircleCheck,
+  UserRoundCheck,
+  UserRoundPlus,
+  Chrome,
+  Globe,
+  Settings,
 };

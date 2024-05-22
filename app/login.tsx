@@ -7,16 +7,16 @@ import {
   usePrivy,
   useWallets,
 } from "@privy-io/react-auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Dimensions, Image, SafeAreaView, View } from "react-native";
+import { Chrome, Globe } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Chrome, Globe } from "lucide-react-native";
 
 export const SKIP_ONBOARDING_KEY = "skipOnboarding";
 export default function LoginScreen() {

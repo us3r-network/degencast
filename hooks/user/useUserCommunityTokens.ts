@@ -11,14 +11,15 @@ export default function useUserCommunityTokens(address?: `0x${string}`) {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector(selectUserCommunityTokens);
 
-  useEffect(() => {
-    if (status === AsyncRequestStatus.IDLE && address) {
-      dispatch(fetchItems(address) as unknown as UnknownAction);
-    }
-  }, [status, dispatch]);
+  // useEffect(() => {
+  //   if (status === AsyncRequestStatus.IDLE && address) {
+  //     dispatch(fetchItems(address) as unknown as UnknownAction);
+  //   }
+  // }, [status, dispatch]);
 
   useEffect(() => {
     if (status !== AsyncRequestStatus.PENDING && address) {
+      console.log("Fetching user community tokens for address", address);
       dispatch(fetchItems(address) as unknown as UnknownAction);
     }
   }, [address]);
