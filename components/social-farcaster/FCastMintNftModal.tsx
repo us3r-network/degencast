@@ -25,10 +25,12 @@ import {
 
 export default function FCastMintNftModal({
   cast,
+  channelId,
   open,
   onOpenChange,
 }: {
   cast: FarCast;
+  channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -68,6 +70,7 @@ export default function FCastMintNftModal({
   } = useCreateNew1155Token({
     cast,
     imgUrl: originImgUrl,
+    channelId,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
       onOpenChange(false);

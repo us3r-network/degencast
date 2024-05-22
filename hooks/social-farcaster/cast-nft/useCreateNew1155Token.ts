@@ -35,9 +35,11 @@ const CAST_TOKEN_DESCRIPTION = "Degencast Cast Collection";
 const getCastTokenMetadata = async ({
   imgUrl,
   cast,
+  channelId,
 }: {
   imgUrl: string;
   cast: FarCast;
+  channelId: string;
 }) => {
   const imageBlob = await getImage(imgUrl);
   return {
@@ -47,6 +49,7 @@ const getCastTokenMetadata = async ({
     image: imageBlob,
     properties: {
       imageOriginUrl: imgUrl,
+      channelId,
       castJson: JSON.stringify(cast),
       createAt: getCreateAt(),
     },
@@ -101,10 +104,12 @@ async function createNew1155Token({
 export default function useCreateNew1155Token({
   cast,
   imgUrl,
+  channelId,
   onCreateTokenSuccess,
 }: {
   cast: FarCast;
   imgUrl: string;
+  channelId: string;
   onCreateTokenSuccess?: (data: {
     tokenId: number;
     contractAddress: string;
@@ -127,7 +132,11 @@ export default function useCreateNew1155Token({
       if (!publicClient || !walletClient) {
         throw new Error("Wallet not connected");
       }
-      const tokenMetadata = await getCastTokenMetadata({ imgUrl, cast });
+      const tokenMetadata = await getCastTokenMetadata({
+        imgUrl,
+        cast,
+        channelId,
+      });
       const tokenMetadataURI = await storeNFT(tokenMetadata);
       if (!tokenMetadataURI) {
         throw new Error("Failed to store NFT metadata");
@@ -160,7 +169,11 @@ export default function useCreateNew1155Token({
       }
 
       const contractMetadata = await getCastCollectionMetadata({ imgUrl });
-      const tokenMetadata = await getCastTokenMetadata({ imgUrl, cast });
+      const tokenMetadata = await getCastTokenMetadata({
+        imgUrl,
+        cast,
+        channelId,
+      });
 
       const contractMetadataURI = await storeNFT(contractMetadata);
       const tokenMetadataURI = await storeNFT(tokenMetadata);

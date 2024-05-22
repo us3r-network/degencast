@@ -120,6 +120,7 @@ export function FCastExploreActions({
   showActions: boolean;
   showActionsChange: (showActions: boolean) => void;
 }) {
+  const channelId = communityInfo.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
@@ -202,6 +203,7 @@ export function FCastExploreActions({
       />
       <FCastMintNftModal
         cast={cast}
+        channelId={channelId}
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}
       />
