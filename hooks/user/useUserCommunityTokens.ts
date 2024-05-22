@@ -19,7 +19,6 @@ export default function useUserCommunityTokens(address?: `0x${string}`) {
 
   useEffect(() => {
     if (status !== AsyncRequestStatus.PENDING && address) {
-      console.log("Fetching user community tokens for address", address);
       dispatch(fetchItems(address) as unknown as UnknownAction);
     }
   }, [address]);

@@ -43,20 +43,21 @@ export default function ChannelsScreen() {
                 showsVerticalScrollIndicator={false}
                 data={items}
                 numColumns={3}
-                columnWrapperStyle={{ gap: 12 }}
+                columnWrapperStyle={{ gap: 12, flex: 1, justifyContent: "space-between"}}
                 ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
                 renderItem={({ item }) => (
-                  <ChannelThumb
-                    key={item.id}
-                    channel={item}
-                    address={address}
-                    fid={fid}
-                  />
+                  <View className="w-full max-w-[32%]">
+                    <ChannelThumb
+                      key={item.id}
+                      channel={item}
+                      address={address}
+                      fid={fid}
+                    />
+                  </View>
                 )}
                 keyExtractor={(item) => item.id}
                 onEndReached={() => {
                   if (loading || !hasNext) return;
-                  console.log("onEndReached", loading, hasNext);
                   loadMore();
                 }}
                 onEndReachedThreshold={2}
@@ -111,8 +112,8 @@ function ChannelThumb({
 }) {
   const isHost = channel.hosts.some((host) => host.fid === fid);
   return (
-    <View className="relative flex-1">
-      <Link className="flex-1" href={`/communities/${channel.id}`} asChild>
+    <View className="relative w-full">
+      <Link href={`/communities/${channel.id}`} asChild>
         <View className="flex gap-1">
           <AspectRatio ratio={1}>
             <Image
