@@ -34,7 +34,7 @@ export default function PointsRulesModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <DialogHeader>
-          <Text className=" text-base font-medium">$SPELL</Text>
+          <Text className=" text-base font-medium">$CAST</Text>
         </DialogHeader>
         <PointsRules onOpenChange={onOpenChange} />
       </DialogContent>
@@ -65,7 +65,7 @@ export function PointsRules({
   const { totalPoints } = useUserTotalPoints();
 
   const getPointsText = (unit: number) => {
-    return `${unit} $SPELL`;
+    return `${unit} $CAST`;
     // return unit > 1 ? `${unit} points` : `${unit} point`;
   };
 
