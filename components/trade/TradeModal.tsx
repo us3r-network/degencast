@@ -34,6 +34,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
+import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
@@ -53,9 +54,9 @@ export default function TradeModal({
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
-        <DialogHeader className={cn("flex gap-2")}>
+        <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2")}>
           <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
-          {!swaping && <ActiveWallet />}
+          {!swaping && <UserWalletSelect />}
         </DialogHeader>
         <SwapToken token1={token1} token2={token2} setSwaping={setSwaping} />
         {!swaping && (
