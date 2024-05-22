@@ -130,6 +130,7 @@ function SwapToken({
     transationLoading,
     isSuccess,
     error,
+    fee,
     reset,
   } = useSwapToken(account.address);
 
@@ -200,13 +201,7 @@ function SwapToken({
             </View>
             <View className="w-full flex-row items-center justify-between gap-2">
               <Text className="font-medium text-secondary">Fee</Text>
-              <Text className="text-xs">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-                notation: "compact",
-              }).format(0.3)}
-            </Text>
+              <TokenWithValue token={toToken} value={fee} />
             </View>
             <View className="w-full flex-row items-center justify-between gap-2">
               <Text className="font-medium text-secondary">$SPELL</Text>
