@@ -16,11 +16,13 @@ import { Author } from "~/services/farcaster/types/neynar";
 import { Loading } from "~/components/common/Loading";
 import UserSettings from "./UserSettings";
 import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
+import useUserChannels from "~/hooks/user/useUserChannels";
 
 export default function UserInfo({ fid }: { fid?: number }) {
   const { ready, authenticated, user } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
   fid = fid || farcasterAccount?.fid || undefined;
+  useUserChannels(fid); //preload channels
   const { items: userItems, load } = useUserBulk(
     farcasterAccount?.fid || undefined,
   );

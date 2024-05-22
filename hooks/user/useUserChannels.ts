@@ -7,7 +7,7 @@ import {
 } from "~/features/user/userChannelsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserChannels(fid: number) {
+export default function useUserChannels(fid?: number) {
   const dispatch = useDispatch();
   const { items, status, error, next } = useSelector(selectUserChannels);
 
@@ -16,7 +16,7 @@ export default function useUserChannels(fid: number) {
       console.log("init load", fid);
       dispatch(fetchItems(fid) as unknown as UnknownAction);
     }
-  }, [status, dispatch]);
+  }, [status, dispatch, fid]);
 
   // useEffect(() => {
   //   loadMore();
