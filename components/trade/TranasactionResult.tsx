@@ -4,8 +4,9 @@ import { Chain, TransactionReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { ExternalLink } from "../common/ExternalLink";
-import { Check, Info, X } from "../common/Icons";
+import { Check, X } from "../common/Icons";
 
+const EXPLORE_URL = "https://www.onceupon.xyz";
 export type TransationData = {
   chain: Chain;
   transactionReceipt?: TransactionReceipt;
@@ -33,7 +34,7 @@ export function TransactionInfo({
       ) : (
         <View className="size-16 items-center justify-center rounded-full bg-[white]/40">
           {/* <Info className="size-8 text-[white]" /> */}
-          <ActivityIndicator size="large" color="white"/>
+          <ActivityIndicator size="large" color="white" />
         </View>
       )}
       <Text className="font-medium">
@@ -47,7 +48,8 @@ export function TransactionInfo({
           {data.chain?.blockExplorers && (
             <ExternalLink
               className="flex-1/2 text-primary-foreground/80"
-              href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
+              // href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
+              href={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
               target="_blank"
             >
               <Button variant="outline" className="border-secondary bg-white">
