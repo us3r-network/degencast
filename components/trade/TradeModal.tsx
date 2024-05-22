@@ -204,7 +204,7 @@ function SwapToken({
               <TokenWithValue token={toToken} value={fee} />
             </View>
             <View className="w-full flex-row items-center justify-between gap-2">
-              <Text className="font-medium text-secondary">$SPELL</Text>
+              <Text className="font-medium text-secondary">$CAST</Text>
               <Text className="font-medium text-white">+1000</Text>
             </View>
           </View>
