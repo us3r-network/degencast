@@ -46,7 +46,7 @@ export default function ChannelsScreen() {
                 columnWrapperStyle={{ gap: 12, flex: 1, justifyContent: "space-between"}}
                 ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
                 renderItem={({ item }) => (
-                  <View className="w-full max-w-[32%]">
+                  <View className="w-full max-w-[31%]">
                     <ChannelThumb
                       key={item.id}
                       channel={item}

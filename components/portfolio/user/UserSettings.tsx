@@ -21,7 +21,7 @@ import {
   PlusCircle,
   Settings,
   User,
-  Wallet
+  Wallet,
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
 import { WalletIcon } from "~/components/common/WalletIcon";
@@ -155,7 +155,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
 }
 
 function LinkWallets() {
-  const { user, linkWallet, unlinkWallet } = usePrivy();
+  const { user, linkWallet } = usePrivy();
   const { connectWallet } = useConnectWallet();
   const { wallets: connectedWallets } = useWallets();
   const linkedWallets = useMemo(
@@ -179,9 +179,7 @@ function LinkWallets() {
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={(event) => {
-          linkWallet;
-        }}
+        onPress={linkWallet}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
@@ -192,13 +190,12 @@ function LinkWallets() {
   );
 }
 
-function WalletItem({
-  wallet,
-  action,
-}: {
+type WalletItemProps = {
   wallet: ConnectedWallet | WalletWithMetadata;
   action: () => void;
-}) {
+};
+
+function WalletItem({ wallet, action }: WalletItemProps) {
   const { unlinkWallet } = usePrivy();
   const { wallets: connectedWallets } = useWallets();
   return (

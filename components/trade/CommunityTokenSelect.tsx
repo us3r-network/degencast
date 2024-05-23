@@ -66,7 +66,7 @@ export default function CommunityToeknSelect({
           )}
         </View>
       </SelectTrigger>
-      <SelectContent className={cn("border-secondary bg-primary p-0")}>
+      <SelectContent side="bottom" className={cn("border-secondary bg-primary p-0 max-h-36")}>
         {tokens?.map((token) => (
           <SelectItem
             asChild

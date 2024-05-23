@@ -1,3 +1,4 @@
+import { useWallets } from "@privy-io/react-auth";
 import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -23,9 +24,9 @@ import About from "../common/About";
 import { ArrowUpDown } from "../common/Icons";
 import { Loading } from "../common/Loading";
 import { TokenWithValue } from "../common/TokenInfo";
+import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import ActiveWallet from "./ActiveWallet";
 import CommunityToeknSelect from "./CommunityTokenSelect";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 import {
@@ -34,7 +35,6 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
@@ -54,7 +54,7 @@ export default function TradeModal({
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
-        <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2")}>
+        <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2 z-50")}>
           <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
           {!swaping && <UserWalletSelect />}
         </DialogHeader>
@@ -85,6 +85,10 @@ function SwapToken({
   setSwaping?: (swaping: boolean) => void;
 }) {
   const account = useAccount();
+  const { wallets: connectedWallets } = useWallets();
+  const isEmbeddedWallet = connectedWallets.find(
+    (wallet) => wallet.address === account?.address,
+  )?.connectorType === "embedded";
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const [fromTokenSet, setFromTokenSet] = useState<TokenSetInfo>();
@@ -133,7 +137,7 @@ function SwapToken({
     error,
     fee,
     reset,
-  } = useSwapToken(account.address);
+  } = useSwapToken(account.address,isEmbeddedWallet);
 
   const { submitUserAction } = useUserAction();
 
@@ -272,7 +276,7 @@ function SwapToken({
     );
   else
     return (
-      <View className="z-50 flex w-full gap-2">
+      <View className="z-40 flex w-full gap-2">
         {fromTokenSet && (
           <View className="z-[100]">
             <TokenWithAmount

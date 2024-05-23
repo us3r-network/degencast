@@ -17,7 +17,7 @@ type SwapParams = {
   buyAmount?: string;
 };
 
-export default function useSwapToken(takerAddress?: `0x${string}`) {
+export default function useSwapToken(takerAddress?: `0x${string}`, skipValidation?: boolean) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
   const [swaping, setSwaping] = useState(false);
   const [fetchingQuote, setFetchingQuote] = useState(false);
@@ -106,7 +106,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     ) {
       return;
     }
-    console.log("start fetch quote from 0x");
+    console.log("start fetch quote from 0x", takerAddress);
     setSwaping(true);
     try {
       setFetchingQuote(true);
@@ -122,7 +122,9 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
           buyAmount &&
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
         takerAddress,
+        skipValidation,
       });
+      console.log("get quote from 0x", quote);
       const grossBuyAmount = Number(
         formatUnits(
           quote.grossBuyAmount,
@@ -135,14 +137,19 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
           buyToken.decimals || DEFAULT_DECIMALS,
         ) || "0",
       );
-      // console.log("grossBuyAmount", grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE, zeroExFee);
       setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);
       setFetchingQuote(false);
+      console.log(
+        "swap fee",
+        grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
+        zeroExFee,
+      );
       setWaitingUserSign(true);
       await sendTransactionAsync({
         to: quote.to,
         data: quote.data,
         value: quote.value,
+        gas: quote.gas,
       });
       setWaitingUserSign(false);
     } catch (e) {

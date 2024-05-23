@@ -9,9 +9,8 @@ import { useSetActiveWallet } from "@privy-io/wagmi";
 import * as Clipboard from "expo-clipboard";
 import React, { useMemo } from "react";
 import { Pressable, View } from "react-native";
-import Toast from "react-native-toast-message";
 import { useAccount } from "wagmi";
-import { Copy, Plug, PlusCircle } from "~/components/common/Icons";
+import { Plug, PlusCircle } from "~/components/common/Icons";
 import { WalletIcon } from "~/components/common/WalletIcon";
 import {
   Select,
@@ -90,9 +89,7 @@ export default function UserWalletSelect() {
                   label={wallet.address}
                   value={wallet.address}
                 >
-                  <WalletItem
-                    wallet={wallet}
-                  />
+                  <WalletItem wallet={wallet} />
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -124,14 +121,16 @@ function LinkWallets() {
   return (
     <View className="flex w-full gap-2">
       {unconnectedLinkedWallets.map((wallet) => (
-        <WalletItem wallet={wallet} action={() => connectWallet()} />
+        <WalletItem
+          key={wallet.address}
+          wallet={wallet}
+          action={() => connectWallet()}
+        />
       ))}
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={(event) => {
-          linkWallet();
-        }}
+        onPress={linkWallet}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
