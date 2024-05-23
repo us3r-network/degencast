@@ -136,6 +136,9 @@ export default function FCastMintNftModal({
               }
               onPress={() => {
                 if (chainId !== ZORA_CAST_NFT_CHAIN_ID) {
+                  console.log("chainId", chainId);
+                  console.log("ZORA_CAST_NFT_CHAIN_ID", ZORA_CAST_NFT_CHAIN_ID);
+
                   switchChain({ chainId: ZORA_CAST_NFT_CHAIN_ID });
                   return;
                 }
