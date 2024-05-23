@@ -19,12 +19,14 @@ type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   data: TransationData;
   buttonText: string;
   buttonAction?: () => void;
+  navigateToCreatePageAfter?: () => void;
 };
 
 export function TransactionInfo({
   data,
   buttonText,
   buttonAction,
+  navigateToCreatePageAfter,
 }: TransactionInfoProps) {
   // console.log("TransactionSuccessInfo", data);
   return (
@@ -71,6 +73,7 @@ export function TransactionInfo({
           <TransactionResultSharingButton
             type={ONCHAIN_ACTION_TYPE.SWAP}
             transactionDetailURL={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+            navigateToCreatePageAfter={navigateToCreatePageAfter}
           />
         </View>
       ) : (
