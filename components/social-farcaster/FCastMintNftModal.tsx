@@ -149,7 +149,9 @@ export default function FCastMintNftModal({
             >
               {create1155TokenLoading ? (
                 <View className=" flex-row items-center gap-2">
-                  <Text>Uploading Metadata & Minting</Text>
+                  <Text>
+                    {collection ? "Minting" : "Creating Collection & Minting"}
+                  </Text>
                   <ActivityIndicator className="text-secondary" />
                 </View>
               ) : chainId !== ZORA_CAST_NFT_CHAIN_ID ? (
