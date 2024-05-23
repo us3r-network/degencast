@@ -47,6 +47,7 @@ export default function useCastCollection() {
     (collection: {
       chainId: number;
       contractAddress: string;
+      contractMetadataURI: string;
       creatorAddress: string;
     }) => {
       dispatch(postCastCollection(collection));

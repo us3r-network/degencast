@@ -1,6 +1,7 @@
 import type { PublicClient, WalletClient } from "viem";
 import {
   create1155CreatorClient,
+  createPremintClient,
   getTokenIdFromCreateReceipt,
 } from "@zoralabs/protocol-sdk";
 import { usePublicClient, useWalletClient } from "wagmi";
@@ -12,9 +13,8 @@ import useCastCollection from "./useCastCollection";
 import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
 
-const CAST_COLLECTION_NAME = "Degencast Cast";
-const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
-const CAST_TOKEN_EXTERNAL_URL = "https://degencast.xyz?nft_link=cast";
+const CAST_COLLECTION_NAME = "Degencast Cast Collection";
+const CAST_COLLECTION_DESCRIPTION = "Degencast Cast Collection";
 
 const getCreateAt = () => {
   return Math.floor(Date.now() / 1000);
@@ -24,7 +24,7 @@ const getCastCollectionMetadata = async ({ imgUrl }: { imgUrl: string }) => {
   return {
     name: CAST_COLLECTION_NAME,
     description: CAST_COLLECTION_DESCRIPTION,
-    external_url: CAST_TOKEN_EXTERNAL_URL,
+    external_url: "https://degencast.xyz?nft_link=cast",
     image: imageBlob,
     properties: {
       imageOriginUrl: imgUrl,
@@ -33,8 +33,8 @@ const getCastCollectionMetadata = async ({ imgUrl }: { imgUrl: string }) => {
   };
 };
 
-const CAST_TOKEN_NAME = "Degencast Cast";
-const CAST_TOKEN_DESCRIPTION = "Degencast Cast";
+const CAST_TOKEN_NAME = "Degencast Cast Collection";
+const CAST_TOKEN_DESCRIPTION = "Degencast Cast Collection";
 const getCastTokenMetadata = async ({
   imgUrl,
   cast,
@@ -48,7 +48,7 @@ const getCastTokenMetadata = async ({
   return {
     name: CAST_TOKEN_NAME,
     description: CAST_TOKEN_DESCRIPTION,
-    external_url: CAST_TOKEN_EXTERNAL_URL,
+    external_url: "https://degencast.xyz?nft_link=cast",
     image: imageBlob,
     properties: {
       imageOriginUrl: imgUrl,
@@ -59,52 +59,68 @@ const getCastTokenMetadata = async ({
   };
 };
 
-async function createNew1155Token({
+async function createPremint({
   publicClient,
   walletClient,
-  contractAddress,
   contractMetadataURI,
   tokenMetadataURI,
+  checkSignature = false,
 }: {
   publicClient: PublicClient;
   walletClient: WalletClient;
-  contractAddress?: `0x${string}`;
-  contractMetadataURI?: string;
+  contractMetadataURI: string;
   tokenMetadataURI: string;
+  checkSignature?: boolean;
 }) {
-  if (!contractAddress && !contractMetadataURI) {
-    throw new Error("Contract address or metadata URI is required");
+  if (!contractMetadataURI) {
+    throw new Error(" contractMetadataURI is required");
   }
+
   const addresses = await walletClient.getAddresses();
   const chainId = await walletClient.getChainId();
   const creatorAccount = addresses[0]!;
-  const creatorClient = create1155CreatorClient({ publicClient });
-  const { request, contractAddress: collectionContractAddress } =
-    await creatorClient.createNew1155Token({
-      contract: contractAddress! || {
-        name: CAST_COLLECTION_NAME,
-        uri: contractMetadataURI,
-      },
-      tokenMetadataURI: tokenMetadataURI,
-      account: creatorAccount,
-      mintToCreatorCount: 1,
-      createReferral: ZORA_CREATE_REFERRAL,
-    });
-  const { request: simulateRequest } =
-    await publicClient.simulateContract(request);
-  const hash = await walletClient.writeContract(simulateRequest);
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+  const premintClient = createPremintClient({
+    chain: walletClient.chain!,
+    publicClient,
+  });
+  console.log("creatorAccount", creatorAccount);
+  console.log("contractMetadataURI", contractMetadataURI);
+  console.log("tokenMetadataURI", tokenMetadataURI);
+  // create and sign a free token creation.
+  const createdPremint = await premintClient.createPremint({
+    walletClient,
+    creatorAccount,
+    // if true, will validate that the creator is authorized to create premints on the contract.
+    checkSignature,
+    // collection info of collection to create
+    collection: {
+      contractAdmin: creatorAccount,
+      contractName: CAST_COLLECTION_NAME,
+      contractURI: contractMetadataURI,
+      additionalAdmins: [],
+    },
+    // token info of token to create
+    tokenCreationConfig: {
+      tokenURI: tokenMetadataURI,
+    },
+  });
+
+  const premintUid = createdPremint.uid;
+  const premintCollectionAddress = createdPremint.verifyingContract;
+  console.log("premintUid", premintUid);
+  console.log("premintCollectionAddress", premintCollectionAddress);
   return {
-    receipt,
+    premintUid,
     tokenInfo: {
-      contractAddress: collectionContractAddress,
+      contractAddress: premintCollectionAddress,
       creatorAccount,
       chainId,
     },
   };
 }
 
-export default function useCreateNew1155Token({
+export default function useCreateNew1155TokenForFree({
   cast,
   imgUrl,
   channelId,
@@ -126,11 +142,11 @@ export default function useCreateNew1155Token({
   const [loading, setLoading] = useState(false);
   const [newTokenId, setNewTokenId] = useState<number | null>(null);
 
-  const createNewToken = async (contractAddress: `0x${string}`) => {
+  const createNewToken = async (contractMetadataURI: string) => {
     try {
       setLoading(true);
-      if (!contractAddress) {
-        throw new Error("Contract address is required");
+      if (!contractMetadataURI) {
+        throw new Error(" contractMetadataURI is required");
       }
       if (!publicClient || !walletClient) {
         throw new Error("Wallet not connected");
@@ -144,30 +160,30 @@ export default function useCreateNew1155Token({
       if (!tokenMetadataURI) {
         throw new Error("Failed to store NFT metadata");
       }
-      const { receipt, tokenInfo } = await createNew1155Token({
+      const { tokenInfo, premintUid } = await createPremint({
         publicClient,
         walletClient,
-        contractAddress: contractAddress,
-        tokenMetadataURI: tokenMetadataURI,
+        contractMetadataURI,
+        tokenMetadataURI,
+        checkSignature: true,
       });
-      const tokenId = getTokenIdFromCreateReceipt(receipt);
-      setNewTokenId(Number(tokenId));
+      setNewTokenId(Number(premintUid));
       onCreateTokenSuccess?.({
-        tokenId: Number(tokenId),
-        contractAddress,
+        tokenId: Number(premintUid),
+        contractAddress: tokenInfo.contractAddress,
         chainId: tokenInfo.chainId,
       });
       postZoraToken({
         chainId: tokenInfo.chainId,
-        tokenId: Number(tokenId),
+        tokenId: Number(premintUid),
         contractAddress: tokenInfo.contractAddress,
         creatorAddress: tokenInfo.creatorAccount,
-        type: ZoraCollectionType.CAST,
+        type: ZoraCollectionType.PREMINT_CAST,
         tokenMetadataURI: tokenMetadataURI,
         metadataJson: JSON.stringify(tokenMetadata),
       });
     } catch (error) {
-      console.error("Error creating 1155 contract:", error);
+      console.error("Error creating 1155 token:", error);
     } finally {
       setLoading(false);
     }
@@ -192,38 +208,35 @@ export default function useCreateNew1155Token({
       if (!contractMetadataURI || !tokenMetadataURI) {
         throw new Error("Failed to store NFT metadata");
       }
-      const resp = await createNew1155Token({
+      const { tokenInfo, premintUid } = await createPremint({
         publicClient,
         walletClient,
-        contractMetadataURI: contractMetadataURI,
-        tokenMetadataURI: tokenMetadataURI,
+        contractMetadataURI,
+        tokenMetadataURI,
       });
-      const tokenInfo = resp.tokenInfo;
-
+      setNewTokenId(Number(premintUid));
       submitCollection({
         chainId: tokenInfo.chainId,
         creatorAddress: tokenInfo.creatorAccount,
         contractAddress: tokenInfo.contractAddress,
         contractMetadataURI: contractMetadataURI,
       });
-      const tokenId = getTokenIdFromCreateReceipt(resp.receipt);
-      setNewTokenId(Number(tokenId));
-      onCreateTokenSuccess?.({
-        tokenId: Number(tokenId),
-        contractAddress: tokenInfo.contractAddress,
-        chainId: resp.tokenInfo.chainId,
-      });
       postZoraToken({
         chainId: tokenInfo.chainId,
-        tokenId: Number(tokenId),
+        tokenId: Number(premintUid),
         contractAddress: tokenInfo.contractAddress,
         creatorAddress: tokenInfo.creatorAccount,
-        type: ZoraCollectionType.CAST,
+        type: ZoraCollectionType.PREMINT_CAST,
         tokenMetadataURI: tokenMetadataURI,
         metadataJson: JSON.stringify(tokenMetadata),
       });
+      onCreateTokenSuccess?.({
+        tokenId: Number(premintUid),
+        contractAddress: tokenInfo.contractAddress,
+        chainId: tokenInfo.chainId,
+      });
     } catch (error) {
-      console.error("Error creating 1155 contract:", error);
+      console.error("Error creating 1155 token:", error);
     } finally {
       setLoading(false);
     }

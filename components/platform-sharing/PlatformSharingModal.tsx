@@ -58,6 +58,7 @@ export default function PlatformSharingModal({
 
   const onCopy = async () => {
     await Clipboard.setStringAsync(websiteLink);
+    onOpenChange(false);
     Toast.show({
       type: "success",
       text1: "Link copied to clipboard!",

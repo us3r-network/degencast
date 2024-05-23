@@ -75,18 +75,20 @@ export const postCastCollection = createAsyncThunk<
   {
     chainId: number;
     creatorAddress: string;
+    contractMetadataURI: string;
     contractAddress: string;
   }
 >(
   "castCollection/postCastCollection",
   async (
-    { chainId, creatorAddress, contractAddress },
+    { chainId, creatorAddress, contractMetadataURI, contractAddress },
     { rejectWithValue, getState },
   ) => {
     const resp = await postZoraCollection({
       type: ZoraCollectionType.CAST,
       chainId,
       creatorAddress,
+      contractMetadataURI,
       contractAddress,
     });
     if (resp.data.code === ApiRespCode.SUCCESS) {

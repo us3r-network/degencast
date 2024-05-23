@@ -22,6 +22,7 @@ import {
   getMintCastFrameLink,
   getMintCastWebsiteLink,
 } from "~/utils/platform-sharing/link";
+// import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
   cast,
@@ -78,6 +79,22 @@ export default function FCastMintNftModal({
     },
   });
 
+  // premint
+  // const {
+  //   createNewCollection,
+  //   createNewToken,
+  //   loading: create1155TokenLoading,
+  // } = useCreateNew1155TokenForFree({
+  //   cast,
+  //   imgUrl: originImgUrl,
+  //   channelId,
+  //   onCreateTokenSuccess: (data) => {
+  //     setCreatedTokenInfo(data);
+  //     onOpenChange(false);
+  //     setOpenShare(true);
+  //   },
+  // });
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,6 +142,7 @@ export default function FCastMintNftModal({
                 }
                 if (collection) {
                   createNewToken(collection.contractAddress);
+                  // createNewToken(collection.contractMetadataURI);
                 } else {
                   createNewCollection();
                 }
@@ -136,7 +154,7 @@ export default function FCastMintNftModal({
                   <ActivityIndicator className="text-secondary" />
                 </View>
               ) : chainId !== ZORA_CAST_NFT_CHAIN_ID ? (
-                <Text>Switch to Base Chain</Text>
+                <Text>Switch Chain</Text>
               ) : (
                 <Text>Mint Cast & Share</Text>
               )}
