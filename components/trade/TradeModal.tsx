@@ -46,19 +46,31 @@ export default function TradeModal({
   triggerButton: React.ReactNode;
 }) {
   const [swaping, setSwaping] = useState(false);
+  const [open, setOpen] = useState(false);
   return (
     <Dialog
-      onOpenChange={() => {
+      onOpenChange={(open) => {
+        setOpen(open);
         setSwaping(false);
       }}
+      open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
-        <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2 z-50")}>
+        <DialogHeader
+          className={cn(
+            "z-50 mr-4 flex-row items-center justify-between gap-2",
+          )}
+        >
           <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
           {!swaping && <UserWalletSelect />}
         </DialogHeader>
-        <SwapToken token1={token1} token2={token2} setSwaping={setSwaping} />
+        <SwapToken
+          token1={token1}
+          token2={token2}
+          setSwaping={setSwaping}
+          setClose={() => setOpen(false)}
+        />
         {!swaping && (
           <DialogFooter>
             <About title="Swap & Earn" info={TRADE_INFO} />
@@ -79,16 +91,18 @@ function SwapToken({
   token1,
   token2,
   setSwaping,
+  setClose,
 }: {
   token1: TokenWithTradeInfo;
   token2: TokenWithTradeInfo;
   setSwaping?: (swaping: boolean) => void;
+  setClose?: () => void;
 }) {
   const account = useAccount();
   const { wallets: connectedWallets } = useWallets();
-  const isEmbeddedWallet = connectedWallets.find(
-    (wallet) => wallet.address === account?.address,
-  )?.connectorType === "embedded";
+  const isEmbeddedWallet =
+    connectedWallets.find((wallet) => wallet.address === account?.address)
+      ?.connectorType === "embedded";
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const [fromTokenSet, setFromTokenSet] = useState<TokenSetInfo>();
@@ -137,7 +151,7 @@ function SwapToken({
     error,
     fee,
     reset,
-  } = useSwapToken(account.address,isEmbeddedWallet);
+  } = useSwapToken(account.address, isEmbeddedWallet);
 
   const { submitUserAction } = useUserAction();
 
@@ -264,6 +278,7 @@ function SwapToken({
         data={transationData}
         buttonText="Trade more"
         buttonAction={tryAgain}
+        navigateToCreatePageAfter={setClose}
       />
     );
   else if (transationError)

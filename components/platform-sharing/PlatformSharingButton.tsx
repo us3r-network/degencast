@@ -31,6 +31,7 @@ export default function PlatformSharingButton({
   websiteLink,
   frameLink,
   className,
+  navigateToCreatePageAfter,
   ...props
 }: ButtonProps & {
   text?: string;
@@ -38,6 +39,7 @@ export default function PlatformSharingButton({
   warpcastText?: string;
   websiteLink: string;
   frameLink: string;
+  navigateToCreatePageAfter?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -63,6 +65,7 @@ export default function PlatformSharingButton({
         warpcastText={warpcastText}
         websiteLink={websiteLink}
         frameLink={frameLink}
+        navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>
   );
@@ -101,23 +104,32 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
 export function TransactionResultSharingButton({
   type,
   transactionDetailURL,
+  navigateToCreatePageAfter,
 }: {
   type: ONCHAIN_ACTION_TYPE;
   transactionDetailURL: string;
+  navigateToCreatePageAfter?: () => void;
 }) {
   const { currFid } = useFarcasterAccount();
   return (
     <PlatformSharingButton
       variant="secondary"
       className="bg-secondary p-2"
-      twitterText={getTransactionShareTextWithTwitter(type, transactionDetailURL)}
-      warpcastText={getTransactionShareTextWithWarpcast(type, transactionDetailURL)}
+      twitterText={getTransactionShareTextWithTwitter(
+        type,
+        transactionDetailURL,
+      )}
+      warpcastText={getTransactionShareTextWithWarpcast(
+        type,
+        transactionDetailURL,
+      )}
       websiteLink={getTradePageWebsiteLink({
         fid: currFid,
       })}
       frameLink={getTradePageFrameLink({
         fid: currFid,
       })}
+      navigateToCreatePageAfter={navigateToCreatePageAfter}
     />
   );
 }
