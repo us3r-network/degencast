@@ -5,6 +5,8 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { ExternalLink } from "../common/ExternalLink";
 import { Check, X } from "../common/Icons";
+import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 const EXPLORE_URL = "https://www.onceupon.xyz";
 export type TransationData = {
@@ -44,7 +46,7 @@ export function TransactionInfo({
       </Text>
       {data.description}
       {data.transactionReceipt?.transactionHash ? (
-        <View className="w-full flex-row justify-items-stretch gap-4">
+        <View className="w-full flex-row justify-items-stretch gap-2">
           {data.chain?.blockExplorers && (
             <ExternalLink
               className="flex-1/2 text-primary-foreground/80"
@@ -66,6 +68,10 @@ export function TransactionInfo({
           >
             <Text>{buttonText}</Text>
           </Button>
+          <TransactionResultSharingButton
+            type={ONCHAIN_ACTION_TYPE.SWAP}
+            transactionDetailURL={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+          />
         </View>
       ) : (
         <Text className="text-sm text-secondary">Proceed in your wallet!</Text>
@@ -79,6 +85,7 @@ type ErrorInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   buttonText: string;
   buttonAction?: () => void;
 };
+
 export function ErrorInfo({ error, buttonText, buttonAction }: ErrorInfoProps) {
   return (
     <View className="flex items-center gap-6">
