@@ -41,23 +41,23 @@ export default function FCastMintNftModal({
   const castHex = getCastHex(cast);
   const originImgUrl = `https://client.warpcast.com/v2/cast-image?castHash=0x${castHex}`;
   const [imgLoading, setImgLoading] = useState(true);
-  const [imgBase64, setImgBase64] = useState("");
+  // const [imgBase64, setImgBase64] = useState("");
   const [openShare, setOpenShare] = useState(false);
   const [createdTokenInfo, setCreatedTokenInfo] = useState<{
     chainId: number;
     contractAddress: string;
     tokenId: number;
   } | null>(null);
-  useEffect(() => {
-    (async () => {
-      try {
-        const base64 = await imgLinkToBase64(originImgUrl);
-        setImgBase64(base64);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, [originImgUrl]);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const base64 = await imgLinkToBase64(originImgUrl);
+  //       setImgBase64(base64);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   })();
+  // }, [originImgUrl]);
   const { findCollectionWithCache, castCollectionsLoading } =
     useCastCollection();
   const collection = useMemo(() => {
@@ -130,7 +130,6 @@ export default function FCastMintNftModal({
               className="font-bold text-white"
               variant={"secondary"}
               disabled={
-                !imgBase64 ||
                 switchChainStatus === "pending" ||
                 create1155TokenLoading ||
                 castCollectionsLoading
@@ -150,7 +149,9 @@ export default function FCastMintNftModal({
             >
               {create1155TokenLoading ? (
                 <View className=" flex-row items-center gap-2">
-                  <Text>Uploading Metadata & Minting</Text>
+                  <Text>
+                    {collection ? "Minting" : "Creating Collection & Minting"}
+                  </Text>
                   <ActivityIndicator className="text-secondary" />
                 </View>
               ) : chainId !== ZORA_CAST_NFT_CHAIN_ID ? (
