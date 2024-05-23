@@ -50,7 +50,7 @@ const SelectScrollUpButton = ({
       )}
       {...props}
     >
-      <ChevronUp size={14} className="text-foreground" />
+      <ChevronUp size={14} className="text-primary-foreground" />
     </SelectPrimitive.ScrollUpButton>
   );
 };
@@ -73,7 +73,7 @@ const SelectScrollDownButton = ({
       )}
       {...props}
     >
-      <ChevronDown size={14} className="text-foreground" />
+      <ChevronDown size={14} className="text-primary-foreground" />
     </SelectPrimitive.ScrollDownButton>
   );
 };
