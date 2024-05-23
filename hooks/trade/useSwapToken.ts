@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
-import { getPrice, getQuote } from "~/services/trade/api/0x";
+import {
+  BUY_TOKEN_PERCENTAGE_FEE,
+  getPrice,
+  getQuote,
+} from "~/services/trade/api/0x";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
 const DEFAULT_DECIMALS = 18;
@@ -19,6 +23,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
   const [fetchingQuote, setFetchingQuote] = useState(false);
   const [waitingUserSign, setWaitingUserSign] = useState(false);
   const [error, setError] = useState<Error | null>();
+  const [fee, setFee] = useState(0);
   const {
     data: hash,
     sendTransactionAsync,
@@ -118,7 +123,20 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
         takerAddress,
       });
-      console.log("quote", quote);
+      const grossBuyAmount = Number(
+        formatUnits(
+          quote.grossBuyAmount,
+          buyToken.decimals || DEFAULT_DECIMALS,
+        ) || "0",
+      );
+      const zeroExFee = Number(
+        formatUnits(
+          quote.fees.zeroExFee.feeAmount,
+          buyToken.decimals || DEFAULT_DECIMALS,
+        ) || "0",
+      );
+      // console.log("grossBuyAmount", grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE, zeroExFee);
+      setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);
       setFetchingQuote(false);
       setWaitingUserSign(true);
       await sendTransactionAsync({
@@ -136,14 +154,13 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     }
   };
 
-
   const reset = () => {
     setFetchingPrice(false);
     setSwaping(false);
     setFetchingQuote(false);
     setWaitingUserSign(false);
     resetSendTransaction();
-  }
+  };
   return {
     fetchingPrice,
     fetchingQuote,
@@ -151,6 +168,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     swaping,
     fetchPrice,
     swapToken,
+    fee,
     transactionReceipt,
     transationStatus,
     transationLoading,

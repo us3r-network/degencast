@@ -1,5 +1,5 @@
 import { useConnectWallet } from "@privy-io/react-auth";
-import { Wallet } from "lucide-react-native";
+import { Wallet } from "~/components/common/Icons";
 import { View } from "react-native";
 import { useAccount } from "wagmi";
 import { shortPubKey } from "~/utils/shortPubKey";

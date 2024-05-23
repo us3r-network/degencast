@@ -7,15 +7,15 @@ import {
 } from "~/features/user/communityTokensSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserCommunityTokens(address: `0x${string}`) {
+export default function useUserCommunityTokens(address?: `0x${string}`) {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector(selectUserCommunityTokens);
 
-  useEffect(() => {
-    if (status === AsyncRequestStatus.IDLE && address) {
-      dispatch(fetchItems(address) as unknown as UnknownAction);
-    }
-  }, [status, dispatch]);
+  // useEffect(() => {
+  //   if (status === AsyncRequestStatus.IDLE && address) {
+  //     dispatch(fetchItems(address) as unknown as UnknownAction);
+  //   }
+  // }, [status, dispatch]);
 
   useEffect(() => {
     if (status !== AsyncRequestStatus.PENDING && address) {

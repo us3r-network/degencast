@@ -36,7 +36,7 @@ export default function TradeScreen() {
         <Tabs
           value={value}
           onValueChange={(value) => {
-            router.navigate(`trade/${value}`);
+            router.navigate(`./${value}`);
             setValue(value);
           }}
           className="relative mx-auto box-border w-full max-w-screen-sm flex-1"

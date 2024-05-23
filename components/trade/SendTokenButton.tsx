@@ -32,7 +32,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
-import { ArrowUp } from "lucide-react-native";
+import { ArrowUp } from "~/components/common/Icons";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -82,7 +82,6 @@ export default function SendTokenButton({
         <DialogContent className="w-screen">
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>{!sending ? "Withdraw" : "Transaction"}</DialogTitle>
-            {!sending && <ActiveWallet />}
           </DialogHeader>
           <SendToken chain={defaultChain} setSending={setSending} />
         </DialogContent>

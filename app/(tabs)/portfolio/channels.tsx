@@ -1,10 +1,11 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
+import { Link, useLocalSearchParams } from "expo-router";
 import { FlatList, Image, View } from "react-native";
+import { useAccount } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
 import { MyCommunityToken } from "~/components/portfolio/tokens/UserCommunityTokens";
+import DegenTipsStats from "~/components/portfolio/user/DegenTipsStats";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { Button } from "~/components/ui/button";
 import {
@@ -26,11 +27,10 @@ export default function ChannelsScreen() {
   const params = useLocalSearchParams();
   const { ready, authenticated, user, linkFarcaster } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
-  const fid = params.fid || farcasterAccount?.fid;
-  const { loading, items, load, hasNext } = useUserChannels();
-  useEffect(() => {
-    if (fid) load(Number(fid));
-  }, [fid]);
+  const fid = Number(params.fid || farcasterAccount?.fid || "0");
+  const { address } = useAccount();
+  const { loading, items, hasNext, loadMore } = useUserChannels(fid);
+
   if (fid) {
     return (
       <View className="container h-full">
@@ -43,15 +43,24 @@ export default function ChannelsScreen() {
                 showsVerticalScrollIndicator={false}
                 data={items}
                 numColumns={3}
-                columnWrapperStyle={{ gap: 10 }}
-                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-                renderItem={({ item }) => <ChannelThumb channel={item} />}
+                columnWrapperStyle={{ gap: 12, flex: 1, justifyContent: "space-between"}}
+                ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+                renderItem={({ item }) => (
+                  <View className="w-full max-w-[32%]">
+                    <ChannelThumb
+                      key={item.id}
+                      channel={item}
+                      address={address}
+                      fid={fid}
+                    />
+                  </View>
+                )}
                 keyExtractor={(item) => item.id}
                 onEndReached={() => {
                   if (loading || !hasNext) return;
-                  load(Number(fid));
+                  loadMore();
                 }}
-                onEndReachedThreshold={1}
+                onEndReachedThreshold={2}
                 ListFooterComponent={() => {
                   return loading ? <Loading /> : null;
                 }}
@@ -92,11 +101,20 @@ export default function ChannelsScreen() {
   }
 }
 
-function ChannelThumb({ channel }: { channel: Channel }) {
+function ChannelThumb({
+  channel,
+  address,
+  fid,
+}: {
+  channel: Channel;
+  address?: `0x${string}`;
+  fid?: number;
+}) {
+  const isHost = channel.hosts.some((host) => host.fid === fid);
   return (
-    <Dialog className="flex-1">
-      <DialogTrigger className="w-full" asChild>
-        <View className="w-full">
+    <View className="relative w-full">
+      <Link href={`/communities/${channel.id}`} asChild>
+        <View className="flex gap-1">
           <AspectRatio ratio={1}>
             <Image
               source={{ uri: channel.image_url }}
@@ -105,48 +123,103 @@ function ChannelThumb({ channel }: { channel: Channel }) {
           </AspectRatio>
           <Text className="line-clamp-1">{channel.name}</Text>
         </View>
-      </DialogTrigger>
-      <DialogContent className="w-screen">
-        <DialogHeader className={cn("flex gap-2")}>
-          <DialogTitle>Channel Assets</DialogTitle>
-        </DialogHeader>
-        <ChannelAssets channel={channel} />
-      </DialogContent>
-    </Dialog>
+      </Link>
+      <View className="absolute bottom-8 right-1">
+        <ChannelAssets channel={channel} address={address} />
+        {isHost && (
+          <View className="rounded-full bg-secondary px-2">
+            <Text className="text-xs text-white">host</Text>
+          </View>
+        )}
+      </View>
+    </View>
   );
 }
 
 function ChannelAssets({
   channel,
   address,
+  className,
 }: {
   channel: Channel;
   address?: `0x${string}`;
+  className?: string;
 }) {
-  const totalBalance = 100;
+  const { items: userTokens } = useUserCommunityTokens(address);
+  const userChannelToken = userTokens.find(
+    (item) => item.tradeInfo?.channel === channel.id,
+  );
+  const userAssetsValue =
+    Number(userChannelToken?.tradeInfo?.stats?.token_price_usd || 0) *
+    Number(userChannelToken?.balance || 0);
+
+  if (userAssetsValue === 0) return null;
   return (
-    <View className="flex gap-6">
-      <View className="flex-row items-center justify-between gap-4">
-        <CommunityInfo name={channel.name} logo={channel.image_url} />
-        <Text>
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            notation: "compact",
-          }).format(totalBalance)}
-        </Text>
-      </View>
-      <Separator className="bg-secondary/10" />
-      {address && <MyChannelToken address={address} channelID={channel.id} />}
-    </View>
+    <Dialog>
+      <DialogTrigger asChild>
+        <View className={cn("rounded-full bg-secondary px-2", className)}>
+          <Text className="text-xs text-white">
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              notation: "compact",
+            }).format(userAssetsValue)}
+          </Text>
+        </View>
+      </DialogTrigger>
+      <DialogContent className="w-screen">
+        <DialogHeader className={cn("flex gap-2")}>
+          <DialogTitle>Channel Assets</DialogTitle>
+        </DialogHeader>
+        <View className="flex gap-6">
+          <View className="flex-row items-center justify-between gap-4">
+            <CommunityInfo name={channel.name} logo={channel.image_url} />
+            <Text>
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                notation: "compact",
+              }).format(userAssetsValue)}
+            </Text>
+          </View>
+          <Separator className="bg-secondary/10" />
+          {address && userChannelToken && (
+            <MyCommunityToken token={userChannelToken} withSwapButton />
+          )}
+          <MyPoints />
+        </View>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function MyChannelToken({ address, channelID }: { address: `0x${string}`, channelID:string }) {
-  const { items } = useUserCommunityTokens(address);
-  const channelToken = items.find((item) => item.tradeInfo?.channel === channelID);
-  if (!channelToken) return null;
+function MyPoints() {
   return (
-    <MyCommunityToken  {...channelToken} />
+    <View className="flex gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Allowance</Text>
+        <DegenTipsStats />
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Points</Text>
+        <Text>-</Text>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Rewards</Text>
+        <View className="flex-row items-center gap-2">
+          <Text>-</Text>
+          <Button
+            size="sm"
+            disabled
+            variant="outline"
+            onPress={() => {
+              // console.log("Claim button pressed");
+            }}
+          >
+            <Text>Claim</Text>
+          </Button>
+        </View>
+      </View>
+    </View>
   );
 }

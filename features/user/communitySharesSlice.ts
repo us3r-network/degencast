@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AsyncRequestStatus } from "~/services/shared/types";
-import { ShareInfo } from "~/services/user/types";
+import { ShareInfo } from "~/services/trade/types";
 import type { RootState } from "../../store/store";
 import { myShares } from "~/services/user/api";
 

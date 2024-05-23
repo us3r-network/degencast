@@ -31,6 +31,10 @@ export type Author = {
   verified_addresses: VerifiedAddresses;
   active_status: string;
   power_badge: boolean;
+  viewer_context?: {
+    followed_by: boolean;
+    following: boolean;
+  };
 };
 
 export interface Profile {
@@ -67,4 +71,14 @@ export type Channel = {
   image_url: string;
   object: string;
   parent_url: string;
+  hosts:Author[];
 };
+
+export type PageInfo = {
+    cursor: string | null;
+}
+
+export type NeynarChannelsResp = {
+  channels: Channel[];
+  next: PageInfo;
+}

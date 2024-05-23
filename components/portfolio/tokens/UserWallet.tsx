@@ -10,7 +10,7 @@ import UserWalletSelect from "./UserWalletSelect";
 export default function UserWallet() {
   return (
     <Card className="flex gap-6 bg-secondary p-4">
-      <View className="w-full flex-row items-center justify-between">
+      <View className="w-full flex-row items-center justify-between z-50">
         <View className="flex-row items-center gap-2">
           <Text className="font-medium">Active Wallet</Text>
         </View>

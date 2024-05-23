@@ -1,38 +1,38 @@
-import { useEffect, useRef, useState } from "react";
-import { fetchUserChannels } from "~/services/farcaster/neynar/farcaster";
-import { Channel } from "~/services/farcaster/types/neynar";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchItems,
+  selectUserChannels,
+} from "~/features/user/userChannelsSlice";
+import { AsyncRequestStatus } from "~/services/shared/types";
 
-const PAGE_SIZE = 30;
+export default function useUserChannels(fid?: number) {
+  const dispatch = useDispatch();
+  const { items, status, error, next } = useSelector(selectUserChannels);
 
-export default function useUserChannels() {
-  const [items, setItems] = useState<Array<Channel>>([]);
-  const [loading, setLoading] = useState(false);
-  const cursor = useRef<string>();
+  useEffect(() => {
+    if (status === AsyncRequestStatus.IDLE && fid) {
+      console.log("init load", fid);
+      dispatch(fetchItems(fid) as unknown as UnknownAction);
+    }
+  }, [status, dispatch, fid]);
 
-  const load = async (fid: number) => {
-    setLoading(true);
-    try {
-      const res = await fetchUserChannels({
-        fid,
-        limit: PAGE_SIZE,
-        cursor: cursor.current,
-      });
-      const { channels, next } = res;
+  // useEffect(() => {
+  //   loadMore();
+  // }, [fid]);
 
-      console.log("res and channels",res,channels)
-      setItems((pre) => [...pre, ...channels]);
-      cursor.current = next.cursor;
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+  const loadMore = () => {
+    if (status !== AsyncRequestStatus.PENDING && fid) {
+      dispatch(fetchItems(fid) as unknown as UnknownAction);
     }
   };
 
   return {
-    loading,
     items,
-    load,
-    hasNext: !!cursor.current,
+    loading: status === AsyncRequestStatus.PENDING,
+    error,
+    hasNext: next.cursor !== undefined,
+    loadMore,
   };
 }

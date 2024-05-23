@@ -1,4 +1,5 @@
-import React, { ReactNode, forwardRef, useEffect, useState } from "react";
+import { useConnectWallet } from "@privy-io/react-auth";
+import React, { forwardRef, useEffect, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
@@ -27,16 +28,14 @@ import {
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
-import ActiveWallet from "./ActiveWallet";
+import { TokenWithValue } from "../common/TokenInfo";
+import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
-import { TokenWithValue } from "../common/TokenInfo";
-import { base } from "viem/chains";
-import { useConnectWallet } from "@privy-io/react-auth";
 
 export function SellButton({
   logo,
@@ -77,9 +76,9 @@ export function SellButton({
         </DialogTrigger>
         {!transationData && !error && (
           <DialogContent className="w-screen">
-            <DialogHeader className={cn("flex gap-2")}>
+             <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2")}>
               <DialogTitle>Sell</DialogTitle>
-              <ActiveWallet />
+              <UserWalletSelect />
             </DialogHeader>
             <SellShare
               logo={logo}
@@ -288,9 +287,9 @@ export function BuyButton({
         </DialogTrigger>
         {!transationData && !error && (
           <DialogContent className="w-screen">
-            <DialogHeader className={cn("flex gap-2")}>
+             <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2")}>
               <DialogTitle>Buy Shares & get allowance</DialogTitle>
-              <ActiveWallet />
+              <UserWalletSelect />
             </DialogHeader>
             <BuyShare
               logo={logo}

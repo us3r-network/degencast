@@ -38,23 +38,20 @@ export default function DegenTipsStats({
     return null;
   }
   return (
-    <View className="w-full flex-row gap-4">
-      <ExternalLink href={`${DEGENTIPS_URL}`} target="_blank">
-        <Button variant="link" className="h-6 flex-row items-center gap-1 p-0">
-          <Text className="text-sm font-medium text-white">
-            {new Intl.NumberFormat("en-US", {
-              notation: "compact",
-            }).format(remainingDegenAllowance)}
-          </Text>
-          <Text className="text-sm text-secondary">/</Text>
-          <Text className="text-sm font-medium text-white">
-            {new Intl.NumberFormat("en-US", {
-              notation: "compact",
-            }).format(totalDegenAllowance)}
-          </Text>
-          <Text className="text-sm text-secondary">Degen allowance</Text>
-        </Button>
-      </ExternalLink>
-    </View>
+    <ExternalLink href={`${DEGENTIPS_URL}`} target="_blank">
+      <Button variant="link" className="h-6 flex-row items-center gap-1 p-0">
+        <Text className="text-sm font-medium text-white">
+          {new Intl.NumberFormat("en-US", {
+            notation: "compact",
+          }).format(remainingDegenAllowance)}
+        </Text>
+        <Text className="text-sm text-secondary">/</Text>
+        <Text className="text-sm font-medium text-white">
+          {new Intl.NumberFormat("en-US", {
+            notation: "compact",
+          }).format(totalDegenAllowance)}
+        </Text>
+      </Button>
+    </ExternalLink>
   );
 }
