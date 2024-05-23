@@ -6,11 +6,11 @@ import useAuth from "~/hooks/user/useAuth";
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useUserInviteCode from "~/hooks/user/useUserInviteCode";
+import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { authenticated, checkDegencastLogin } = useAuth();
 
-  // user action
   const { fetchUserActionConfig, submitUnreportedActions } = useUserAction();
   const { fetchTotalPoints } = useUserTotalPoints();
   const { submitUnreportedViewCasts } = useSeenCasts();
@@ -18,6 +18,7 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
     useAllJoinedCommunities();
   const { loadWarpcastChannels } = useWarpcastChannels();
   const { checkInviteLinkParams, clearUsedInviterData } = useUserInviteCode();
+  const { fetchCastCollections } = useCastCollection();
 
   useEffect(() => {
     checkDegencastLogin();
@@ -67,6 +68,10 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
       }
     })();
   }, [authenticated, loadAllJoinedCommunities, clearJoinedCommunities]);
+
+  useEffect(() => {
+    fetchCastCollections();
+  }, [fetchCastCollections]);
 
   return children;
 }

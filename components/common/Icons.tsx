@@ -72,6 +72,7 @@ import {
   Download,
   CirclePlus,
   CircleCheck,
+  Image,
   UserRoundCheck,
   UserRoundPlus,
   Chrome,
@@ -164,6 +165,7 @@ interopIcon(Home);
 interopIcon(Download);
 interopIcon(CirclePlus);
 interopIcon(CircleCheck);
+interopIcon(Image);
 interopIcon(UserRoundPlus);
 interopIcon(UserRoundCheck);
 interopIcon(Chrome);
@@ -242,6 +244,7 @@ export {
   Download,
   CirclePlus,
   CircleCheck,
+  Image,
   UserRoundCheck,
   UserRoundPlus,
   Chrome,
