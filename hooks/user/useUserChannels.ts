@@ -13,7 +13,6 @@ export default function useUserChannels(fid?: number) {
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE && fid) {
-      console.log("init load", fid);
       dispatch(fetchItems(fid) as unknown as UnknownAction);
     }
   }, [status, dispatch, fid]);

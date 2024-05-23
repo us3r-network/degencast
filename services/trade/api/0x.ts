@@ -11,6 +11,7 @@ type SwapParams = {
   sellAmount?: string;
   buyAmount?: string;
   takerAddress?: string;
+  skipValidation?: boolean;
 };
 
 export async function getQuote({
@@ -18,6 +19,7 @@ export async function getQuote({
   buyToken,
   sellAmount,
   takerAddress,
+  skipValidation,
 }: SwapParams) {
   if (!Number(sellAmount)) {
     return;
@@ -33,6 +35,7 @@ export async function getQuote({
         takerAddress,
         feeRecipient: INTEGRATOR_WALLET_ADDRESS,
         buyTokenPercentageFee: BUY_TOKEN_PERCENTAGE_FEE,
+        skipValidation,
       },
       headers: {
         "0x-api-key": ZERO_X_API_KEY,
