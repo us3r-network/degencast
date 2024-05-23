@@ -5,12 +5,13 @@ import {
 } from "@zoralabs/protocol-sdk";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { FarCast } from "~/services/farcaster/types";
-import { getImage, storeNFT } from "~/services/shared/api/nftStorage";
+import { storeNFT } from "~/services/shared/api/nftStorage";
 import { useState } from "react";
 import { ZORA_CREATE_REFERRAL } from "~/constants/zora";
 import useCastCollection from "./useCastCollection";
 import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
+import { imgBase64ToBlob, imgLinkToBase64WithCors } from "~/utils/image";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
@@ -20,14 +21,15 @@ const getCreateAt = () => {
   return Math.floor(Date.now() / 1000);
 };
 const getCastCollectionMetadata = async ({ imgUrl }: { imgUrl: string }) => {
-  const imageBlob = await getImage(imgUrl);
+  const imageBase64 = await imgLinkToBase64WithCors(imgUrl);
+  const imageBlob = imgBase64ToBlob(imageBase64);
   return {
     name: CAST_COLLECTION_NAME,
     description: CAST_COLLECTION_DESCRIPTION,
     external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
-      imageOriginUrl: imgUrl,
+      imageOriginUrl: imageBase64,
       createAt: getCreateAt(),
     },
   };
@@ -44,14 +46,15 @@ const getCastTokenMetadata = async ({
   cast: FarCast;
   channelId: string;
 }) => {
-  const imageBlob = await getImage(imgUrl);
+  const imageBase64 = await imgLinkToBase64WithCors(imgUrl);
+  const imageBlob = imgBase64ToBlob(imageBase64);
   return {
     name: CAST_TOKEN_NAME,
     description: CAST_TOKEN_DESCRIPTION,
     external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
-      imageOriginUrl: imgUrl,
+      imageOriginUrl: imageBase64,
       channelId,
       castJson: JSON.stringify(cast),
       createAt: getCreateAt(),

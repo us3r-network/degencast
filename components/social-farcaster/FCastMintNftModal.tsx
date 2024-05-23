@@ -8,7 +8,7 @@ import { AspectRatio } from "../ui/aspect-ratio";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { useEffect, useMemo, useState } from "react";
 import { Loading } from "../common/Loading";
-import { imgLinkToBase64 } from "~/utils/image";
+import { imgLinkToBase64, imgLinkToBase64WithCors } from "~/utils/image";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { ZORA_CAST_NFT_CHAIN_ID } from "~/constants/zora";
 import useCreateNew1155Token from "~/hooks/social-farcaster/cast-nft/useCreateNew1155Token";
@@ -39,7 +39,7 @@ export default function FCastMintNftModal({
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const castHex = getCastHex(cast);
-  const originImgUrl = `https://client.warpcast.com/v2/cast-image?castHash=0x${castHex}`;
+  const warpcastImgUrl = `https://client.warpcast.com/v2/cast-image?castHash=0x${castHex}`;
   const [imgLoading, setImgLoading] = useState(true);
   // const [imgBase64, setImgBase64] = useState("");
   const [openShare, setOpenShare] = useState(false);
@@ -70,7 +70,7 @@ export default function FCastMintNftModal({
     loading: create1155TokenLoading,
   } = useCreateNew1155Token({
     cast,
-    imgUrl: originImgUrl,
+    imgUrl: warpcastImgUrl,
     channelId,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
@@ -112,7 +112,7 @@ export default function FCastMintNftModal({
                   onLoadEnd={() => {
                     setImgLoading(false);
                   }}
-                  source={{ uri: originImgUrl }}
+                  source={{ uri: warpcastImgUrl }}
                   style={{
                     width: "100%",
                     height: "100%",
@@ -153,7 +153,9 @@ export default function FCastMintNftModal({
               {create1155TokenLoading ? (
                 <View className=" flex-row items-center gap-2">
                   <Text>
-                    {collection ? "Minting" : "Creating Collection & Minting"}
+                    {collection
+                      ? "Uploading Metadata & Minting"
+                      : "Creating Collection & Minting"}
                   </Text>
                   <ActivityIndicator className="text-secondary" />
                 </View>
