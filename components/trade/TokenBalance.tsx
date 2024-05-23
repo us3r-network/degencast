@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NATIVE_TOKEN_METADATA } from "~/constants";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -11,21 +11,17 @@ import { TextClassContext } from "~/components/ui/text";
 import { useChains } from "wagmi";
 import { Text } from "~/components/ui/text";
 
-const balanceVariants = cva(
-  "",
-  {
-    variants: {
-      variant: {
-        default:
-          "",
-        big: "",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
+const balanceVariants = cva("", {
+  variants: {
+    variant: {
+      default: "",
+      big: "",
     },
   },
-);
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 const balanceTextVariants = cva("text-xs font-semibold ", {
   variants: {
@@ -60,7 +56,11 @@ function NativeTokenBalance({
   const chains = useChains();
   const chain = chains.find((chain) => chain.id === chainId);
   const symbol = chain?.nativeCurrency.symbol || "";
-  setBalance?.(Number(balance));
+
+  useEffect(() => {
+    if (balance) setBalance?.(Number(balance));
+  }, [balance, setBalance]);
+  
   const Component = asChild ? Slot.View : TokenBalance;
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>
