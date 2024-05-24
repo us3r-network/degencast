@@ -60,8 +60,8 @@ export default function DepositButton() {
           </DialogHeader>
           <View className="flex gap-6">
             <UserTokens address={activeWalletAddress} />
-            <View className="flex-row items-center justify-between gap-2 rounded-lg border-2 border-secondary/50">
-              <Text className="ml-2 text-secondary/50">
+            <View className=" w-full flex-row items-center justify-between gap-2 rounded-lg border-2 border-secondary/50">
+              <Text className="ml-2 text-secondary/50 flex-1 line-clamp-1">
                 {activeWalletAddress}
               </Text>
               <Button
