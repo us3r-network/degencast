@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import { FARCASTER_API_URL } from "~/constants";
+import { API_BASE_URL, FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
@@ -319,4 +319,8 @@ export function getProfileFeeds({
     //   'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     // },
   });
+}
+
+export function getCastImageUrl(castHash: string) {
+  return `${API_BASE_URL}/3r-farcaster/cast-image?castHash=${castHash}`;
 }
