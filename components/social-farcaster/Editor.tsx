@@ -11,6 +11,9 @@ import { cn } from "~/lib/utils";
 import { uploadImage } from "~/services/upload";
 import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
+import { FarCast } from "~/services/farcaster/types";
+import { Card, CardContent } from "../ui/card";
+import FCast from "./FCast";
 
 const HomeChanel = {
   id: "",
@@ -26,6 +29,8 @@ export default function Editor({
   setImages,
   channel,
   setChannel,
+  previewComponent,
+  placeholder = "Create a cast...",
 }: {
   text: string;
   setText: (text: string) => void;
@@ -33,25 +38,28 @@ export default function Editor({
   setImages: (images: string[]) => void;
   channel: WarpcastChannel;
   setChannel: (channel: WarpcastChannel) => void;
+  previewComponent?: React.ReactNode;
+  placeholder?: string;
 }) {
   return (
-    <View className="flex flex-grow border-secondary">
-      <View className="flex-grow items-center px-4">
+    <View className="flex w-full flex-grow gap-5 border-secondary">
+      <View className="flex-grow items-center">
         <Textarea
+          autoFocus={true}
           className={cn(
             "h-full",
             "border-0 bg-[#fff] text-[12px] text-sm ",
             "w-full rounded-md p-0  outline-none",
             "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
           )}
-          placeholder="Create a post..."
+          placeholder={placeholder}
           value={text}
           onChangeText={setText}
           aria-labelledby="textareaLabel"
         />
       </View>
 
-      <View className="flex flex-col gap-2 p-4 ">
+      <View className="flex flex-col gap-5">
         {images.map((url, i) => {
           return (
             <Image
@@ -67,7 +75,9 @@ export default function Editor({
         })}
       </View>
 
-      <View className="flex flex-row p-4">
+      {previewComponent && <View>{previewComponent}</View>}
+
+      <View className="flex flex-row">
         <WarpcastChannelPicker channel={channel} setChannel={setChannel} />
         <View className="flex-grow" />
         <ImageSelector

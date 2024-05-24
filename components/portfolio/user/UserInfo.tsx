@@ -1,53 +1,200 @@
 import { usePrivy } from "@privy-io/react-auth";
-import React from "react";
-import { Text, View } from "react-native";
-import {
-  getUserAvatar,
-  getUserFarcasterAccount,
-  getUserHandle,
-  getUserName,
-} from "~/utils/privy";
-import UserGlobalPoints from "../../point/UserGlobalPoints";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
-import FarcasterStats from "./FarcasterStats";
-import { User } from "~/components/common/Icons";
+import React, { useEffect, useMemo } from "react";
+import { View } from "react-native";
+import { Minus, Plus, User } from "~/components/common/Icons";
+import { ExternalLink } from "~/components/common/ExternalLink";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
+import { WARRPCAST } from "~/constants/farcaster";
+import useUserBulk from "~/hooks/user/useUserBulk";
+import { getUserFarcasterAccount } from "~/utils/privy";
+import DegenTipsStats from "./DegenTipsStats";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import Toast from "react-native-toast-message";
+import { Author } from "~/services/farcaster/types/neynar";
+import { Loading } from "~/components/common/Loading";
+import UserSettings from "./UserSettings";
+import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
+import useUserChannels from "~/hooks/user/useUserChannels";
 
-export default function UserInfo() {
-  const { ready, authenticated, user, logout } = usePrivy();
-
-  const userAvatar = user ? getUserAvatar(user) : "";
-  const userName = user ? getUserName(user) : "";
-  const userHandle = user ? getUserHandle(user) : "";
+export default function UserInfo({ fid }: { fid?: number }) {
+  const { ready, authenticated, user } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
-  // console.log("privy user info", user);
+  fid = fid || farcasterAccount?.fid || undefined;
+  useUserChannels(fid); //preload channels
+  const { items: userItems, load } = useUserBulk(
+    farcasterAccount?.fid || undefined,
+  );
+  useEffect(() => {
+    if (fid) load(fid);
+  }, [farcasterAccount?.fid, fid]);
 
-  if (!ready || !user || !authenticated) {
-    return <Text>Loading...</Text>;
+  const farcasterUserInfo = userItems.length > 0 ? userItems[0] : undefined;
+  const userAvatar = useMemo(
+    () => (farcasterUserInfo ? farcasterUserInfo.pfp_url : ""),
+    [farcasterUserInfo],
+  );
+  const userDisplayName = farcasterUserInfo
+    ? farcasterUserInfo.display_name
+    : "";
+  const username = farcasterUserInfo ? farcasterUserInfo.username : "";
+  // console.log(
+  //   "farcasterUserInfo",
+  //   farcasterUserInfo,
+  //   userAvatar,
+  //   userDisplayName,
+  //   username,
+  // );
+  // console.log("privy user info", user);
+  if (!ready || !fid || !farcasterUserInfo) {
+    return null;
   }
   return (
-    <View className="mx-8 w-full flex-row items-center gap-4">
-      <Avatar alt={userHandle} className="size-20">
-        <AvatarImage source={{ uri: userAvatar }} />
-        <AvatarFallback className="bg-white">
-          <User className="size-12 fill-primary/80 font-bold text-primary"/>
-        </AvatarFallback>
-      </Avatar>
-      <View className="flex w-full gap-2">
-        <View className="inline-block w-full space-x-2 ">
-          {userName && (
-            <Text className="text-lg font-bold text-primary-foreground">
-              {userName}
-            </Text>
-          )}
-          {userHandle && (
-            <Text className="text-sm text-primary-foreground">
-              @{userHandle}
-            </Text>
+    <View className="flex-1 flex-row items-center gap-6 px-2">
+      <View className="reletive">
+        <Avatar
+          alt={username}
+          className="size-24 border-2 border-secondary bg-secondary/10"
+        >
+          <AvatarImage source={{ uri: userAvatar }} />
+          <AvatarFallback className="bg-white">
+            <User className="size-16 fill-primary/80 font-medium text-primary" />
+          </AvatarFallback>
+        </Avatar>
+        <View className="absolute bottom-0 right-0 size-6">
+          {farcasterAccount?.fid !== farcasterUserInfo?.fid ? (
+            <FollowUserButton farcasterUserInfo={farcasterUserInfo} />
+          ) : (
+            <UserSettings />
           )}
         </View>
-        {farcasterAccount?.fid && <FarcasterStats fid={farcasterAccount.fid} />}
-        <UserGlobalPoints />
+      </View>
+      <View className="flex w-full gap-1">
+        <View className="w-full space-y-0">
+          {userDisplayName && (
+            <Text className="line-clamp-1 font-bold text-white">
+              {userDisplayName}
+            </Text>
+          )}
+          {username && (
+            <Text className="line-clamp-1 text-secondary">@{username}</Text>
+          )}
+        </View>
+        <View className="w-full flex-row gap-4">
+          {farcasterUserInfo?.following_count && (
+            <ExternalLink
+              href={`${WARRPCAST}/${username}/following`}
+              target="_blank"
+            >
+              <Button
+                variant="link"
+                className="h-6 flex-row items-center gap-1 p-0"
+              >
+                <Text className="text-sm font-medium text-white">
+                  {new Intl.NumberFormat("en-US", {
+                    notation: "compact",
+                  }).format(farcasterUserInfo.following_count)}
+                </Text>
+                <Text className="text-sm  text-secondary">Following</Text>
+              </Button>
+            </ExternalLink>
+          )}
+          {farcasterUserInfo?.follower_count && (
+            <ExternalLink
+              href={`${WARRPCAST}/${username}/followers`}
+              target="_blank"
+              asChild
+            >
+              <Button
+                variant="link"
+                className="h-6 flex-row items-center gap-1 p-0"
+              >
+                <Text className="text-sm font-medium text-white">
+                  {new Intl.NumberFormat("en-US", {
+                    notation: "compact",
+                  }).format(farcasterUserInfo.follower_count)}
+                </Text>
+                <Text className="text-sm  text-secondary">Followers</Text>
+              </Button>
+            </ExternalLink>
+          )}
+        </View>
+        {fid && (
+          <View className="flex-row items-center gap-1">
+            <DegenTipsStats fid={fid} />
+            <Text className="text-sm text-secondary">Degen allowance</Text>
+          </View>
+        )}
       </View>
     </View>
   );
+}
+
+function FollowUserButton({
+  farcasterUserInfo,
+}: {
+  farcasterUserInfo: Author;
+}) {
+  const [followed, setFollowed] = React.useState<boolean>(
+    farcasterUserInfo?.viewer_context?.following || false,
+  );
+  const [loading, setLoading] = React.useState(false);
+  const { followUser, unfollowUser } = useFarcasterWrite();
+  if (loading)
+    return (
+      <View className="size-6">
+        <Loading />
+      </View>
+    );
+  if (followed)
+    return (
+      <Button
+        size={"icon"}
+        disabled={loading}
+        className="size-6 rounded-full bg-secondary"
+        onPress={async () => {
+          setLoading(true);
+          const r = await unfollowUser(farcasterUserInfo?.fid || 0);
+          console.log("unfollowUser", r);
+          if (r) setFollowed(false);
+          Toast.show({
+            type: r ? "success" : "error",
+            text1: r
+              ? "UnFollowed " + farcasterUserInfo?.display_name
+              : "Failed to unfollow!",
+          });
+          setLoading(false);
+        }}
+      >
+        <Text>
+          <UserRoundCheck size={16} />
+        </Text>
+      </Button>
+    );
+  else
+    return (
+      <Button
+        size={"icon"}
+        disabled={loading}
+        className="absolute bottom-0 right-0 size-6 rounded-full bg-secondary"
+        onPress={async () => {
+          setLoading(true);
+          const r = await followUser(farcasterUserInfo?.fid || 0);
+          console.log("followUser", r);
+          if (r) setFollowed(true);
+          Toast.show({
+            type: r ? "success" : "error",
+            text1: r
+              ? "Followed " + farcasterUserInfo?.display_name
+              : "Failed to follow!",
+          });
+          setLoading(false);
+        }}
+      >
+        <Text>
+          <UserRoundPlus size={16} />
+        </Text>
+      </Button>
+    );
 }

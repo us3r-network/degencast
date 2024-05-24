@@ -1,21 +1,36 @@
-import React from "react";
-import { ScrollView, View } from "react-native";
-import Balance from "./UserBalance";
-import CommunityTokens from "./UserCommunityTokens";
-import { useAccount } from "wagmi";
-import Share from "./UserShare";
-import Tips from "./UserTips";
+import { View } from "react-native";
+import { TokenInfo } from "~/components/common/TokenInfo";
+import {
+  ERC20TokenBalance,
+  NativeTokenBalance,
+} from "~/components/trade/TokenBalance";
+import { TextClassContext } from "~/components/ui/text";
+import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 
-export default function UserTokens() {
-  const { address } = useAccount();
+export default function UserTons({ address }: { address: `0x${string}` }) {
   return (
-    <ScrollView className="h-full w-full" showsVerticalScrollIndicator={false}>
-      <View className="flex w-full gap-6">
-        {address && <Balance address={address as `0x${string}`} />}
-        <CommunityTokens />
-        <Share />
-        <Tips />
+    <TextClassContext.Provider value="text-foreground">
+      <View className="w-full flex-row gap-2">
+        <View className="flex flex-1 gap-2 rounded-lg bg-blue-100 p-4">
+          <TokenInfo
+            name={NATIVE_TOKEN_METADATA.name}
+            logo={NATIVE_TOKEN_METADATA.logoURI}
+          />
+          <NativeTokenBalance
+            chainId={NATIVE_TOKEN_METADATA.chainId}
+            address={address}
+            variant="big"
+          />
+        </View>
+        <View className="flex flex-1 gap-2 rounded-lg bg-purple-100 p-4">
+          <TokenInfo name={DEGEN_METADATA.name} logo={DEGEN_METADATA.logoURI} />
+          <ERC20TokenBalance
+            token={DEGEN_METADATA}
+            address={address}
+            variant="big"
+          />
+        </View>
       </View>
-    </ScrollView>
+    </TextClassContext.Provider>
   );
 }

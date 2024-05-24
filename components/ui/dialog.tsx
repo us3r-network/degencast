@@ -4,6 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import * as DialogPrimitive from '~/components/primitives/dialog';
 import { cn } from '~/lib/utils';
+import { TextClassContext } from './text';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -22,7 +23,7 @@ const DialogOverlayWeb = React.forwardRef<
     <DialogPrimitive.Overlay
       style={StyleSheet.absoluteFill}
       className={cn(
-        'z-50 bg-black/80 flex justify-center items-center p-2',
+        'z-50 bg-black/80 flex justify-center max-sm:justify-end items-center p-2 max-sm:p-0',
         open ? 'web:animate-in web:fade-in-0' : 'web:animate-out web:fade-out-0',
         className
       )}
@@ -41,7 +42,7 @@ const DialogOverlayNative = React.forwardRef<
   return (
     <DialogPrimitive.Overlay
       style={StyleSheet.absoluteFill}
-      className={cn('z-50 flex bg-black/80 justify-center items-center p-2', className)}
+      className={cn('z-50 flex bg-black/80 justify-center max-sm:justify-end items-center p-2 max-sm:p-0', className)}
       {...props}
       ref={ref}
     >
@@ -61,16 +62,21 @@ const DialogOverlay = Platform.select({
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { portalHost?: string }
+>(({ className, children, portalHost, ...props }, ref) => {
   const { open } = DialogPrimitive.useRootContext();
   return (
-    <DialogPortal>
+    <DialogPortal hostName={portalHost}>
       <DialogOverlay>
+      <TextClassContext.Provider
+        value={cn(
+          'text-white',
+        )}
+      >
         <DialogPrimitive.Content
           ref={ref}
           className={cn(
-            'z-50 max-w-lg gap-4 border border-border web:cursor-default bg-background p-6 shadow-lg web:duration-200 rounded-lg',
+            'z-50 max-w-lg gap-4 web:cursor-default bg-background p-6 shadow-lg web:duration-200 rounded-lg',
             open
               ? 'web:animate-in web:fade-in-0 web:zoom-in-95'
               : 'web:animate-out web:fade-out-0 web:zoom-out-95',
@@ -90,6 +96,7 @@ const DialogContent = React.forwardRef<
             />
           </DialogPrimitive.Close>
         </DialogPrimitive.Content>
+        </TextClassContext.Provider>
       </DialogOverlay>
     </DialogPortal>
   );
@@ -116,7 +123,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      'text-lg native:text-xl text-foreground font-semibold leading-none tracking-tight',
+      'text-lg native:text-xl text-white font-semibold leading-none tracking-tight',
       className
     )}
     {...props}

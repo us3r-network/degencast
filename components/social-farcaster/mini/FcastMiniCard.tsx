@@ -35,17 +35,18 @@ export default function FcastMiniCard({
     <Card
       key={cast.id}
       className={cn(
-        "relative flex h-36 flex-col gap-5 overflow-hidden",
+        "relative flex min-h-36 flex-col gap-5 overflow-hidden border-secondary/10",
+        " sm:min-h-64",
         className,
       )}
       {...props}
     >
       {/* user info */}
-      <View className=" absolute bottom-0 left-0 w-full flex-row items-center gap-1 p-2">
+      <View className=" absolute bottom-0 left-0 z-20 w-full flex-row items-center gap-1 p-2">
         <Avatar alt={"Avatar"} className=" h-4 w-4 rounded-full object-cover">
           <AvatarImage source={{ uri: userData?.pfp }} />
           <AvatarFallback>
-            <Text>{userData?.display.slice(0, 1)}</Text>
+            <Text>{userData?.userName}</Text>
           </AvatarFallback>
         </Avatar>
         <Text className="line-clamp-1 text-xs font-medium">
@@ -53,21 +54,28 @@ export default function FcastMiniCard({
         </Text>
       </View>
       {/* body - text & embed */}
-      {!!cast.text && (
-        <View className="p-2">
+      {embedImgs.length === 0 && !!cast.text && (
+        <View className="p-2 pb-6">
           {/* <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} /> */}
-          <Text className=" line-clamp-4 text-xs leading-6">{cast.text}</Text>
+          <Text
+            className={cn(
+              " line-clamp-4 text-xs leading-6",
+              embedImgs.length === 0 && " sm:line-clamp-6",
+            )}
+          >
+            {cast.text}
+          </Text>
         </View>
       )}
       {embedImgs.length > 0 && (
         <Image
-          className="h-full w-full object-cover"
+          className="z-10 h-full w-full object-contain"
           source={{ uri: embedImgs[0].url }}
         />
       )}
 
       {!cast.text && (
-        <View className="flex flex-col gap-5 overflow-hidden">
+        <View className="z-10 flex flex-col gap-5 overflow-hidden">
           {/* {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />} */}
 
           {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}

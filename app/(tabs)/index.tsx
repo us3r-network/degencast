@@ -1,76 +1,156 @@
-import { View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSharedValue } from "react-native-reanimated";
-import CardSwipe from "~/components/common/CardSwipe";
+import {
+  Dimensions,
+  Pressable,
+  View,
+  ScrollView,
+  Platform,
+  SafeAreaView,
+} from "react-native";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions from "~/components/social-farcaster/FCastActions";
-import FCastCommunity from "~/components/social-farcaster/FCastCommunity";
-import useLoadExploreCasts from "~/hooks/explore/useLoadExploreCasts";
-import { cn } from "~/lib/utils";
+import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 
-const MAX_VISIBLE_ITEMS = 3;
-export default function ExploreScreen() {
-  const { casts, currentCastIndex, removeCast, farcasterUserDataObj } =
-    useLoadExploreCasts();
-  const animatedValue = useSharedValue(0);
+import { Card } from "~/components/ui/card";
+import FCastCommunity, {
+  FCastCommunityDefault,
+} from "~/components/social-farcaster/FCastCommunity";
+import { cn } from "~/lib/utils";
+import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
+import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
+import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
+import { useRef, useState } from "react";
+import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
+import { isDesktop } from "react-device-detect";
+
+const headerHeight = DEFAULT_HEADER_HEIGHT;
+const footerHeight = DEFAULT_TABBAR_HEIGHT;
+const itemPaddingTop = 15;
+const itemHeight =
+  Dimensions.get("window").height -
+  headerHeight -
+  footerHeight +
+  itemPaddingTop;
+
+export default function ExploreScreenScroll() {
+  const { navigateToChannelExplore } = useChannelExplorePage();
+  const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
+    useLoadExploreCastsWithNaynar();
+  const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
+  // 只渲染三个
+  const renderCasts = indexedCasts.slice(
+    Math.max(0, currentCastIndex - 1),
+    Math.min(indexedCasts.length, currentCastIndex + 2),
+  );
+
+  const offsetRemainderPrev = useRef(-1);
+  const timer = useRef<NodeJS.Timeout | null>(null);
+
+  const [showActions, setShowActions] = useState(false);
+
   return (
-    <View className={cn("flex-1 bg-primary")}>
-      <View className={cn("h-full w-full sm:mx-auto sm:my-0 sm:w-[430px]")}>
-        <GestureHandlerRootView
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    <SafeAreaView
+      style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
+      className="bg-background"
+    >
+      <View className={cn("w-full")} style={{ height: itemHeight }}>
+        <ScrollView
+          style={{ flex: 1, height: itemHeight }}
+          className="w-full items-center"
+          horizontal={false}
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled={true}
+          bounces={false}
+          scrollsToTop={false}
+          scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
+          onScroll={(event) => {
+            if (Platform.OS === "web") {
+              const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
+              const index = Math.round(offsetY / itemHeight);
+              const offsetRemainder = offsetY % itemHeight;
+              offsetRemainderPrev.current = offsetRemainder;
+              if (timer.current) clearTimeout(timer.current);
+              timer.current = setTimeout(() => {
+                if (offsetRemainderPrev.current === 0) {
+                  const castIndex = renderCasts[index].index;
+                  setCurrentCastIndex(castIndex);
+                }
+              }, 50);
+            }
+          }}
+          onMomentumScrollEnd={(event) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            const index = Math.round(offsetY / itemHeight);
+            const castIndex = renderCasts[index].index;
+            setCurrentCastIndex(castIndex);
+          }}
+          onScrollEndDrag={(event) => {
+            const offsetY = event.nativeEvent.contentOffset.y;
+            const index = Math.round(offsetY / itemHeight);
+            const castIndex = renderCasts[index].index;
+            setCurrentCastIndex(castIndex);
+          }}
         >
-          {casts.map(({ data, platform, community }, idx) => {
-            if (
-              idx > currentCastIndex + MAX_VISIBLE_ITEMS - 1 ||
-              idx < currentCastIndex
-            ) {
-              return null;
-            }
-            let backgroundColor = "#FFFFFF";
-            // if (currentCastIndex + 1 === idx) {
-            //   backgroundColor = "rgba(255, 255, 255, 0.80)";
-            // }
-            if (currentCastIndex + 2 === idx) {
-              backgroundColor = "rgba(255, 255, 255, 0.60)";
-            }
+          {renderCasts.map(({ data, platform, community, index }) => {
             return (
-              <CardSwipe
-                key={data.id}
-                animatedValue={animatedValue}
-                maxVisibleItems={MAX_VISIBLE_ITEMS}
-                index={idx}
-                currentIndex={currentCastIndex}
-                backgroundColor={backgroundColor}
-                onNext={() => {
-                  removeCast(idx);
+              <View
+                key={index.toString()}
+                className={cn(
+                  "flex w-full px-4 sm:max-w-screen-sm sm:px-0",
+                  isDesktop && " w-screen",
+                )}
+                style={{
+                  ...(!isDesktop
+                    ? { width: Dimensions.get("window").width }
+                    : {}),
+                  height: itemHeight,
+                  paddingTop: itemPaddingTop,
                 }}
               >
-                <View
+                <Card
                   className={cn(
-                    "h-[calc(100vh-240px)] w-[calc(100vw-40px)] rounded-2xl border-none p-5 sm:max-h-[690px] sm:w-[390px]",
+                    "box-border h-full w-full rounded-2xl border-none",
                   )}
+                  style={{
+                    height: itemHeight - 35 - itemPaddingTop,
+                  }}
                 >
-                  <FCast
-                    className="h-full w-full overflow-hidden"
+                  <Pressable
+                    className={cn("h-full w-full overflow-hidden p-4")}
+                    onPress={() => {
+                      navigateToChannelExplore(community?.channelId || "home", {
+                        origin: ChannelExploreDataOrigin.Explore,
+                        cast: data,
+                        farcasterUserDataObj: farcasterUserDataObj,
+                        community,
+                      });
+                    }}
+                  >
+                    <FCast
+                      cast={data}
+                      farcasterUserDataObj={farcasterUserDataObj}
+                    />
+                  </Pressable>
+                  <FCastExploreActions
+                    className=" absolute bottom-[50px] right-4"
                     cast={data}
                     farcasterUserDataObj={farcasterUserDataObj}
+                    communityInfo={community}
+                    showActions={showActions}
+                    showActionsChange={setShowActions}
                   />
-                  <FCastActions
-                    className=" absolute bottom-14 right-3"
-                    cast={data}
-                  />
-                  {community && (
+                  {community?.channelId ? (
                     <FCastCommunity
                       communityInfo={community}
-                      className="absolute -bottom-11 right-1/2 translate-x-1/2"
+                      className="absolute -bottom-[35px] right-1/2 translate-x-1/2"
                     />
+                  ) : (
+                    <FCastCommunityDefault className="absolute -bottom-[35px] right-1/2 translate-x-1/2" />
                   )}
-                </View>
-              </CardSwipe>
+                </Card>
+              </View>
             );
           })}
-        </GestureHandlerRootView>
+        </ScrollView>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

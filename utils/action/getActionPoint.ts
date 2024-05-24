@@ -10,19 +10,6 @@ export default function getActionPoint(
 ) {
   const actionName = actionData.action;
   const config = actionPointConfig[actionName];
-  if (
-    [
-      UserActionName.View,
-      UserActionName.Like,
-      UserActionName.UnLike,
-      UserActionName.Share,
-    ].includes(actionName)
-  ) {
-    return config?.unit || 0;
-  }
-  if ([UserActionName.Tips].includes(actionName)) {
-    return actionData.data?.value || 0;
-  }
-  // TODO other actions
-  return 0;
+
+  return config?.unit || 0;
 }

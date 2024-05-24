@@ -1,20 +1,23 @@
 import { round } from "lodash";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
-import useUserTips from "~/hooks/user/useUserTips";
-import { TipsInfo } from "~/services/user/types";
+import { InfoButton } from "~/components/common/InfoButton";
+import { COMING_SOON_TAG } from "~/components/common/TextWithTag";
+import { Button } from "~/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../ui/collapsible";
-import { CommunityInfo } from "../../common/CommunityInfo";
-import { Button } from "~/components/ui/button";
+} from "~/components/ui/collapsible";
+import { Text } from "~/components/ui/text";
+import useUserTips from "~/hooks/user/useUserTips";
+import { TipsInfo } from "~/services/user/types";
 
 const DEFAULT_ITEMS_NUM = 1;
 export default function Tips() {
-  const { items } = useUserTips();
+  const { loading, items } = useUserTips();
   const [open, setOpen] = React.useState(false);
   return (
     <Collapsible
@@ -24,9 +27,10 @@ export default function Tips() {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-primary">
-            Tips ({items.length})
+          <Text className="text-sm font-medium text-secondary">
+            Channel Tips {loading ? "" : `(${items.length})`}
           </Text>
+          <InfoButton title={TIPS_TITLE} info={TIPS_INFO} />
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
@@ -52,19 +56,22 @@ function Item(item: TipsInfo) {
     <View className="flex-row items-center justify-between">
       <CommunityInfo {...item} />
       <View className="flex-row items-center gap-2">
-        <Text>{round(Number(item.amount), 2)}</Text>
+        <Text className="text-sm">{round(Number(item.amount), 2)}</Text>
         <Button
           disabled
-          className="w-14 bg-secondary"
+          size="sm"
+          className="w-14"
+          variant={"secondary"}
           onPress={() => {
             // console.log("Claim button pressed");
           }}
         >
-          <Text className="text-xs font-bold text-secondary-foreground">
-            Claim
-          </Text>
+          <Text>Claim</Text>
         </Button>
       </View>
     </View>
   );
 }
+
+const TIPS_TITLE = `About Channel Tips ${COMING_SOON_TAG}`;
+const TIPS_INFO = `Tips are a way to show appreciation for a channel`;

@@ -6,7 +6,8 @@ export function isImg(url?: string) {
     url.endsWith(".png") ||
     url.endsWith(".jpg") ||
     url.endsWith(".jpeg") ||
-    url.endsWith(".gif")
+    url.endsWith(".gif") ||
+    url.startsWith("https://imagedelivery")
   );
 }
 
@@ -30,18 +31,22 @@ export type Embeds = {
   webpages: {
     url: string;
   }[];
-  casts: {
+  casts: Array<{
     castId: { fid: number; hash: string };
-  }[];
+    cast_id?: { fid: number; hash: string };
+  }>;
 };
-export function getEmbeds(cast: FarCast): Embeds {
+
+export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
   const imgs = [];
   const videos = [];
   const webpages = [];
   const casts = [];
 
-  for (const embed of cast.embeds) {
-    if (embed?.castId) {
+  for (const embed of embeds) {
+    if (embed?.cast_id) {
+      casts.push(embed);
+    } else if (embed?.castId) {
       casts.push(embed);
     } else if (embed?.url) {
       if (isImg(embed.url)) {
@@ -60,4 +65,8 @@ export function getEmbeds(cast: FarCast): Embeds {
     }
   }
   return { imgs, webpages, casts, videos };
+}
+
+export function getEmbeds(cast: FarCast): Embeds {
+  return formatEmbeds(cast.embeds);
 }

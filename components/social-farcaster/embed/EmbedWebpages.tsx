@@ -11,29 +11,29 @@ export default function EmbedWebpages({
   cast,
 }: {
   webpages: Embeds["webpages"];
-  cast: FarCast;
+  cast?: FarCast;
 }) {
   return (
-    <View>
+    <>
       {webpages.map((item, idx) => {
         return <EmbedWebpage url={item.url} cast={cast} key={idx} />;
       })}
-    </View>
+    </>
   );
 }
 
-function EmbedWebpage({ url, cast }: { url: string; cast: FarCast }) {
+function EmbedWebpage({ url, cast }: { url: string; cast?: FarCast }) {
   const { embedFrameMetadata, embedOgMetadata, loadEmbedWebpagesMetadata } =
     useLoadEmbedWebpagesMetadata();
   useEffect(() => {
     loadEmbedWebpagesMetadata([url]);
   }, []);
   return (
-    <View>
+    <>
       {embedFrameMetadata && (
         <EmbedFrame url={url} data={embedFrameMetadata} cast={cast} />
       )}
       {embedOgMetadata && <EmbedOG url={url} data={embedOgMetadata} />}
-    </View>
+    </>
   );
 }

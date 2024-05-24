@@ -1,7 +1,6 @@
 import { baseSepolia } from "viem/chains";
 import {
   useReadContract,
-  useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
@@ -42,7 +41,7 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
       functionName,
       args: [sharesSubject, BigInt(amount)],
     });
-    return { data, status };
+    return { data: data as bigint, status };
   };
 
   const getBalance = (account: `0x${string}` | undefined) => {
@@ -53,7 +52,7 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
       functionName: "sharesBalance",
       args: [sharesSubject, account],
     });
-    return { data, status };
+    return { data: data as bigint, status };
   };
 
   const getSupply = () => {
@@ -64,7 +63,7 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
       functionName: "sharesSupply",
       args: [sharesSubject],
     });
-    return { data, status };
+    return { data: data as bigint, status };
   };
 
   return {
@@ -76,8 +75,6 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
 
 export function useShareContractBuy(sharesSubject: `0x${string}`) {
   const chainId = SHARE_CONTRACT_CHAIN.id;
-  const { switchChain } = useSwitchChain();
-
   const {
     writeContract,
     data: hash,
@@ -85,7 +82,7 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
     error: writeError,
   } = useWriteContract();
   const {
-    data,
+    data: transactionReceipt,
     error: transationError,
     isLoading: waiting,
     isSuccess,
@@ -94,7 +91,6 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
     hash,
   });
   const buy = async (amount: number, value: bigint) => {
-    await switchChain({ chainId });
     console.log("buy", amount, chainId, sharesSubject);
     writeContract({
       address,
@@ -108,7 +104,7 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
 
   return {
     buy,
-    data,
+    transactionReceipt,
     status,
     writeError,
     transationError,
@@ -126,10 +122,8 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
     isPending: writing,
     isError: writeError,
   } = useWriteContract();
-  const { switchChain } = useSwitchChain();
 
   const sell = async (amount: number) => {
-    await switchChain({ chainId });
     writeContract({
       address,
       abi,
@@ -140,7 +134,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   };
 
   const {
-    data,
+    data: transactionReceipt,
     isError: transationError,
     isLoading: waiting,
     isSuccess,
@@ -150,7 +144,7 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
   });
   return {
     sell,
-    data,
+    transactionReceipt,
     status,
     writeError,
     transationError,

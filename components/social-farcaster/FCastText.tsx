@@ -4,6 +4,8 @@ import { View, TouchableOpacity, Linking } from "react-native";
 import { Text } from "../ui/text";
 import { Link } from "expo-router";
 import isURL from "validator/lib/isURL";
+import { useMemo } from "react";
+import { getEmbeds } from "~/utils/farcaster/getEmbeds";
 
 const BIOLINK_FARCASTER_SUFFIX = "fcast";
 const farcasterHandleToBioLinkHandle = (handle: string) => {
@@ -20,6 +22,8 @@ export default function FCastText({
   farcasterUserDataObj: { [key: string]: UserData } | undefined;
 }) {
   const { text, mentions, mentionsPositions: indices } = cast;
+  const embeds = useMemo(() => getEmbeds(cast), [cast]);
+  const embedWebpages = embeds.webpages;
   const segments = splitAndInsert(
     text,
     indices || [],
@@ -33,7 +37,7 @@ export default function FCastText({
       return (
         <Text
           key={index}
-          className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline"
+          className="inline-block text-secondary hover:cursor-pointer hover:underline"
         >{`@${mentionData.userName}`}</Text>
       );
       // TODO
@@ -41,7 +45,7 @@ export default function FCastText({
       //   <Link
       //     href={`/portfolio/${profileIdentity}`}
       //     key={index}
-      //     className="inline text-[#A36EFE] hover:cursor-pointer hover:underline"
+      //     className="inline text-secondary hover:cursor-pointer hover:underline"
       //   >
       //     {`@${mentionData.userName}`}
       //   </Link>
@@ -58,6 +62,11 @@ export default function FCastText({
               )
                 ? `https://${part}`
                 : part;
+              const findWebpage = embedWebpages.find((item) => {
+                return item.url.includes(part);
+              });
+              if (findWebpage) return null;
+
               return (
                 <TouchableOpacity
                   key={index_}
@@ -65,7 +74,7 @@ export default function FCastText({
                     Linking.openURL(link);
                   }}
                 >
-                  <Text className="inline-block break-all text-[#A36EFE] hover:cursor-pointer hover:underline">
+                  <Text className="inline-block break-all text-secondary hover:cursor-pointer hover:underline">
                     {part}
                   </Text>
                 </TouchableOpacity>
@@ -75,7 +84,7 @@ export default function FCastText({
               const channelId = part.slice(1);
               return (
                 <Link key={index_} href={`/communities/${channelId}`}>
-                  <Text className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline">
+                  <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
                     {part}
                   </Text>
                 </Link>

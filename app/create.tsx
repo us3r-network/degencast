@@ -1,17 +1,15 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { Stack, useNavigation } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, Image } from "react-native";
+import { View, Text, SafeAreaView, ActivityIndicator } from "react-native";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import { cn } from "~/lib/utils";
-import { uploadImage } from "~/services/upload";
-import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
+import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
+import Toast from "react-native-toast-message";
+import GoBackButton from "~/components/common/GoBackButton";
 
 const HomeChanel = {
   id: "",
@@ -21,69 +19,109 @@ const HomeChanel = {
   createdAt: 0,
 };
 export default function CreateScreen() {
-  const { submitCast, writing } = useFarcasterWrite();
+  const localSearchParams = useLocalSearchParams();
+  console.log("localSearchParams", localSearchParams);
+  const { embeds: searchEmbeds, text: searchText } = (localSearchParams ||
+    {}) as {
+    embeds: string[];
+    text: string;
+  };
+  const embeds =
+    typeof searchEmbeds === "string"
+      ? [{ url: searchEmbeds }]
+      : typeof searchEmbeds === "object"
+        ? searchEmbeds?.map((item) => ({ url: item }))
+        : [];
+  console.log("embeds", embeds);
+
+  const [posting, setPosting] = useState(false);
+  const { submitCast } = useFarcasterWrite();
   const navigation = useNavigation();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(searchText || "");
   const [images, setImages] = useState<string[]>([]);
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
   const { login, ready, user } = usePrivy();
 
+  const fid = user?.farcaster?.fid;
+
   return (
-    <SafeAreaView id="ss" className="h-full">
+    <SafeAreaView id="ss" style={{ flex: 1 }} className="h-full bg-white">
       <Stack.Screen
         options={{
-          title: "Post",
-          headerShadowVisible: false,
-          headerLeft: () => {
-            return (
-              <View className="w-fit p-3 ">
-                <Button
-                  className="rounded-full bg-[#a36efe1a]"
-                  size={"icon"}
-                  variant={"ghost"}
+          header: () => (
+            <View
+              className="flex flex-row items-center justify-between bg-white"
+              style={{
+                height: 70,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View className="flex flex-row items-center gap-3">
+                <GoBackButton
                   onPress={() => {
                     navigation.goBack();
                   }}
-                >
-                  <BackArrowIcon />
-                </Button>
+                />
               </View>
-            );
-          },
-          headerRight: () => {
-            return (
-              <View className="w-fit p-3 ">
-                <Button
-                  className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
-                  size={"icon"}
-                  variant={"ghost"}
-                  onPress={() => {
-                    submitCast({
-                      text: value,
-                      embeds: images.map((item) => {
-                        return { url: item };
-                      }),
-                      channel: channel.url,
-                    }).then(() => {
-                      console.log("Cast submitted");
-                      setValue("");
-                      setImages([]);
-                      setChannel(HomeChanel);
-                    });
-                  }}
-                >
-                  <PostIcon />
-                </Button>
-              </View>
-            );
-          },
+              {(posting && (
+                <View>
+                  <ActivityIndicator className="text-secondary" />
+                </View>
+              )) || (
+                <View>
+                  {fid && (
+                    <Button
+                      className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
+                      size={"icon"}
+                      variant={"ghost"}
+                      onPress={async () => {
+                        if (posting) return;
+                        setPosting(true);
+                        const data = {
+                          text: value,
+                          embeds: [
+                            ...(embeds || []),
+                            ...images.map((item) => {
+                              return { url: item };
+                            }),
+                          ],
+                          channel: channel.url,
+                        };
+
+                        const result = await submitCast(data);
+
+                        if (result?.hash) {
+                          setValue("");
+                          setImages([]);
+                          setChannel(HomeChanel);
+                          Toast.show({
+                            type: "postToast",
+                            props: {
+                              hash: result?.hash,
+                              fid: fid,
+                            },
+                            // position: "bottom",
+                          });
+                          setPosting(false);
+                          navigation.goBack();
+                        }
+                      }}
+                    >
+                      <PostIcon />
+                    </Button>
+                  )}
+                </View>
+              )}
+            </View>
+          ),
         }}
       />
       <View
-        className="m-auto h-full w-full  space-y-2 md:w-[500px]"
+        className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
         id="create-view"
       >
-        {(!user?.farcaster?.signerPublicKey && (
+        {(!fid && (
           <View className="flex-1 p-4 pt-16">
             <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
               <Text className="text-primary-foreground">
@@ -92,20 +130,17 @@ export default function CreateScreen() {
             </Button>
           </View>
         )) || (
-          <View className="h-full" id="ad">
-            <View className="flex flex-row items-center px-4 py-2">
+          <View className="h-full w-full" id="ad">
+            <View className="mb-5 flex flex-row items-center gap-1">
               {user?.farcaster?.pfp && (
-                <Avatar alt="" className="mr-2 h-6 w-6">
+                <Avatar alt="" className="h-5 w-5">
                   <AvatarImage source={{ uri: user?.farcaster?.pfp }} />
                 </Avatar>
               )}
-              <Text
-                className="text-sm font-bold text-foreground"
-                id="textareaLabel"
-              >
+              <Text className="text-sm font-medium" id="textareaLabel">
                 {user?.farcaster?.displayName}
               </Text>
-              <Text className="text-sm text-secondary" id="textareaLabel">
+              <Text className="text-xs text-secondary" id="textareaLabel">
                 @{user?.farcaster?.username}
               </Text>
             </View>
@@ -116,28 +151,14 @@ export default function CreateScreen() {
               setImages={setImages}
               channel={channel}
               setChannel={setChannel}
+              previewComponent={
+                embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
+              }
             />
           </View>
         )}
       </View>
     </SafeAreaView>
-  );
-}
-
-function BackArrowIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
-      <path
-        d="M2.10347 8.88054C1.61698 8.39405 1.61698 7.60586 2.10347 7.11937L7.88572 1.33713C8.11914 1.10371 8.43573 0.972572 8.76583 0.972572C9.09594 0.972572 9.41252 1.10371 9.64594 1.33713C9.87936 1.57055 10.0105 1.88713 10.0105 2.21724C10.0105 2.54734 9.87936 2.86393 9.64594 3.09735L4.74334 7.99996L9.64594 12.9026C9.87936 13.136 10.0105 13.4526 10.0105 13.7827C10.0105 14.1128 9.87936 14.4294 9.64594 14.6628C9.41252 14.8962 9.09594 15.0273 8.76583 15.0273C8.43573 15.0273 8.11914 14.8962 7.88572 14.6628L2.10347 8.88054Z"
-        fill="#4C2896"
-      />
-    </svg>
   );
 }
 

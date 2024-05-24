@@ -10,15 +10,14 @@ export enum UserActionName {
   Tips = "Tips",
   ConnectFarcaster = "ConnectFarcaster",
   BuyChannelShare = "BuyChannelShare",
+  Invite = "Invite",
+  SwapToken = "SwapToken",
 }
 
 export type UserActionData = {
   action: UserActionName;
-  castHash: string;
-  data?: {
-    type: string;
-    value: any;
-  };
+  castHash?: string;
+  data?: any;
 };
 
 export type UserActionPointConfig = {
@@ -28,30 +27,9 @@ export type UserActionPointConfig = {
   };
 };
 
-export type MyWalletTokensRespEntity = {
-  wallet: string;
-  tokens: TokenInfoWithMetadata[];
-};
-export type TokenInfoWithMetadata = {
-  chainId: number;
-  contractAddress: string;
-  name?: string | undefined;
-  rawBalance?: BigInt | string;
-  decimals?: number | undefined;
-  balance?: number | string | undefined;
-  symbol?: string | undefined;
-  logo?: string;
-};
-
-export type ShareInfo = {
-  name?: string | undefined;
-  logo?: string;
-  amount: number;
-  sharesSubject: `0x${string}`;
-};
-
 export type TipsInfo = {
   name?: string | undefined;
+  channelId: string;
   logo?: string;
   amount: number;
 };

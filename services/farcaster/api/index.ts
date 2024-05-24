@@ -1,8 +1,9 @@
 import axios, { AxiosPromise } from "axios";
-import { FARCASTER_API_URL } from "~/constants";
+import { API_BASE_URL, FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
+  FarCast,
   FarCastEmbedMetaV2,
   ProfileFeedsDataItem,
   ProfileFeedsGroups,
@@ -33,12 +34,10 @@ export function getFarcasterTrending({
   start,
   end,
   least,
-  channelId,
 }: {
   start: number;
   end: number;
   least?: number;
-  channelId?: string;
 }): RequestPromise<
   ApiResp<{
     casts: Array<TrendingCastData>;
@@ -57,11 +56,54 @@ export function getFarcasterTrending({
       startIndex: start,
       endIndex: end,
       ...(least ? { least } : {}),
-      channelId: channelId ?? "",
     },
   });
 }
 
+export type NaynarFarcasterTrendingPageInfo = {
+  cursor: string;
+  hasNextPage: boolean;
+};
+export function getNaynarFarcasterTrending({
+  cursor,
+  limit,
+  least,
+}: {
+  cursor: string;
+  limit: number;
+  least?: number;
+}): RequestPromise<
+  ApiResp<{
+    casts: Array<TrendingCastData>;
+    farcasterUserData: Array<FarcasterUserData>;
+    pageInfo: NaynarFarcasterTrendingPageInfo;
+    likeActions: Array<UserActionData>;
+  }>
+> {
+  return request({
+    url: `/topics/casts/naynar-trending`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+    params: {
+      cursor,
+      limit,
+      ...(least ? { least } : {}),
+    },
+  });
+}
+
+export type ChannelCastData = {
+  data: any;
+  platform: SocialPlatform;
+};
+export type ChannelTrendingCastData = {
+  casts: Array<ChannelCastData>;
+  farcasterUserData: Array<FarcasterUserData>;
+  pageInfo: FarcasterPageInfo;
+  likeActions: Array<UserActionData>;
+};
 export function getFarcasterTrendingWithChannelId({
   start,
   end,
@@ -72,16 +114,13 @@ export function getFarcasterTrendingWithChannelId({
   end: number;
   least?: number;
   channelId: string;
-}): RequestPromise<
-  ApiResp<{
-    casts: Array<TrendingCastData>;
-    farcasterUserData: Array<FarcasterUserData>;
-    pageInfo: FarcasterPageInfo;
-  }>
-> {
-  return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/trending`,
+}): RequestPromise<ApiResp<ChannelTrendingCastData>> {
+  return request({
+    url: `/3r-farcaster/trending`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params: {
       startIndex: start,
       endIndex: end,
@@ -105,6 +144,55 @@ export function getFarcasterEmbedCast({
       fid,
       hash,
     },
+  });
+}
+
+export function getFarcasterCastInfo(
+  hash: string,
+  {
+    endFarcasterCursor,
+    pageSize,
+    withReplies,
+  }: {
+    endFarcasterCursor?: string;
+    pageSize?: number;
+    withReplies?: boolean;
+  },
+): AxiosPromise<
+  ApiResp<{
+    cast: FarCast;
+    comments: { data: FarCast; platform: "farcaster" }[];
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
+  return request({
+    url: `/3r-farcaster/cast/${hash}`,
+    method: "get",
+    params: {
+      endFarcasterCursor,
+      pageSize,
+      ...(withReplies === false ? { withReplies } : {}),
+    },
+  });
+}
+
+export function getFarcasterCastComments(
+  hash: string,
+  params: {
+    pageSize?: number;
+    pageNumber?: number;
+  },
+): AxiosPromise<
+  ApiResp<{
+    casts: { data: FarCast; platform: "farcaster" }[];
+    farcasterUserData: FarcasterUserData[];
+  }>
+> {
+  return request({
+    url: `/3r-farcaster/casts/${hash}/replies`,
+    method: "get",
+    params,
   });
 }
 
@@ -159,9 +247,15 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   });
 }
 
-export function getUserDegenTipAllowance(addr: string) {
-  return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/degen-tip/allowance?address=${addr}`,
+export function getUserDegenTipAllowance({
+  fid,
+  address,
+}: {
+  fid?: string | number;
+  address: string;
+}) {
+  return request({
+    url: `/3r-farcaster/degen-tip/allowance?address=${address || ""}&fid=${fid || ""}`,
     method: "get",
   });
 }
@@ -225,4 +319,8 @@ export function getProfileFeeds({
     //   'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     // },
   });
+}
+
+export function getCastImageUrl(castHash: string) {
+  return `${API_BASE_URL}/3r-farcaster/cast-image?castHash=${castHash}`;
 }

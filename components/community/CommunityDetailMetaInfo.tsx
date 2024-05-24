@@ -4,6 +4,7 @@ import { CommunityData } from "~/services/community/api/community";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatNumberToUnitString } from "~/utils/number";
 import { cn } from "~/lib/utils";
+import { CommunityJoinIconButton } from "./CommunityJoinButton";
 
 export default function CommunityDetailMetaInfo({
   communityInfo,
@@ -15,36 +16,41 @@ export default function CommunityDetailMetaInfo({
   const { name, logo, description, memberInfo } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
   return (
-    <View className={cn("flex-row gap-5", className)} {...props}>
-      <Avatar alt={name || ""} className=" size-20">
+    <View className={cn("w-full flex-row gap-3", className)} {...props}>
+      <Avatar alt={name || ""} className="size-20 border border-secondary">
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="border-primary bg-secondary">
           <Text className="text-sm font-bold">{name}</Text>
         </AvatarFallback>
       </Avatar>
-      <View className="flex-col gap-3">
-        <Text className=" text-base font-bold leading-none  text-primary-foreground">
+      <View className="flex-1 flex-col gap-3">
+        <Text className="text-base font-bold leading-none text-primary-foreground">
           {name}
         </Text>
-        <Text className=" line-clamp-1 text-base leading-none text-[#A36EFE]">
-          {description}
-        </Text>
-        <View className=" flex-row items-end gap-3">
-          <View className=" flex-row gap-1">
-            <Text className=" text-sm leading-none  text-primary-foreground">
+        <View className="flex-row items-end gap-3">
+          <View className="flex-row gap-1">
+            <Text className="text-sm font-medium leading-none text-primary-foreground">
               {formatNumberToUnitString(totalNumber || 0)}
             </Text>
-            <Text className=" text-sm leading-none  text-[#A36EFE]">
-              members
+            <Text className="text-sm font-medium leading-none text-secondary">
+              Members
             </Text>
           </View>
-          <View className=" flex-row gap-1">
-            <Text className=" text-sm leading-none  text-primary-foreground">
+          <View className="flex-row gap-1">
+            <Text className="text-sm font-medium leading-none text-primary-foreground">
               {formatNumberToUnitString(newPostNumber || 0)}
             </Text>
-            <Text className=" text-sm leading-none  text-[#A36EFE]">casts</Text>
+            <Text className="text-sm font-medium leading-none text-secondary">
+              Casts
+            </Text>
           </View>
         </View>
+        <Text className="line-clamp-2 text-sm font-medium leading-6 text-secondary">
+          {description}
+        </Text>
+      </View>
+      <View className=" flex h-20 flex-col justify-center">
+        <CommunityJoinIconButton communityInfo={communityInfo} />
       </View>
     </View>
   );

@@ -1,25 +1,30 @@
-import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
+import { ShareInfo, TokenWithTradeInfo } from "~/services/trade/types";
+import request, { RequestPromise } from "../../shared/api/request";
 import {
   LoginRespEntity,
-  MyWalletTokensRespEntity,
-  ShareInfo,
   TipsInfo,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
 
-export function login(): RequestPromise<ApiResp<LoginRespEntity>> {
+export function login(params?: {
+  inviterFid: string | number;
+}): RequestPromise<ApiResp<LoginRespEntity>> {
+  const { inviterFid } = params || {};
   return request({
     url: `degencast-users/login`,
     method: "post",
+    params: {
+      ...(inviterFid ? { inviterFid } : {}),
+    },
     headers: {
       needToken: true,
     },
   });
 }
 
-export function postUserActions(actions: any[]) {
+export function postUserActions(actions: UserActionData[]) {
   return request({
     url: `/degencast-users/actions`,
     method: "post",
@@ -61,31 +66,35 @@ export function getUserPoints(): RequestPromise<ApiResp<{ value: number }>> {
   });
 }
 
-export function myTokens(): RequestPromise<
-  ApiResp<MyWalletTokensRespEntity[]>
-> {
+export function myTokens(
+  pubkey: `0x${string}`,
+): RequestPromise<ApiResp<TokenWithTradeInfo[]>> {
   return request({
     url: `topics/my-tokens`,
     method: "get",
+    params: {
+      pubkey,
+    },
     headers: {
       needToken: true,
     },
   });
 }
-export function myShares(): RequestPromise<
-  ApiResp<ShareInfo[]>
-> {
+export function myShares(
+  pubkey: `0x${string}`,
+): RequestPromise<ApiResp<ShareInfo[]>> {
   return request({
     url: `topics/my-shares`,
     method: "get",
+    params: {
+      pubkey,
+    },
     headers: {
       needToken: true,
     },
   });
 }
-export function myTips(): RequestPromise<
-  ApiResp<TipsInfo[]>
-> {
+export function myTips(): RequestPromise<ApiResp<TipsInfo[]>> {
   return request({
     url: `topics/my-tips`,
     method: "get",

@@ -1,24 +1,20 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useCallback } from "react";
 import {
   addOneToUnreportedActions,
-  plusTotalPoints,
-  removeReportedActions,
+  fetchUserActionConfig,
   selectUserAction,
-  setActionPointConfig,
-  setActionPointConfigRequestStatus,
-  setUnreportedActionsSubmitStatus,
+  submitAction,
+  submitUnreportedActions,
 } from "~/features/user/userActionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
-import { getActionPointConfig, postUserActions } from "~/services/user/api";
 import { UserActionData, UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import getActionPoint from "~/utils/action/getActionPoint";
 import useUserCastLikeActionsUtil from "./useUserCastLikeActionsUtil";
+import useAuth from "./useAuth";
 
 export default function useUserAction() {
   const dispatch = useAppDispatch();
-  const { authenticated } = usePrivy();
+  const { authenticated } = useAuth();
 
   const {
     actionPointConfig,
@@ -30,26 +26,15 @@ export default function useUserAction() {
   const { addManyToLikedActions, removeOneLidedActions } =
     useUserCastLikeActionsUtil();
 
-  const fetchUserActionConfig = useCallback(async () => {
+  const getUserActionConfig = useCallback(async () => {
     if (actionPointConfigRequestStatus !== AsyncRequestStatus.IDLE) return;
-    try {
-      dispatch(setActionPointConfigRequestStatus(AsyncRequestStatus.PENDING));
-      const res = await getActionPointConfig();
-      const { data } = res.data;
-      dispatch(setActionPointConfig(data));
-      dispatch(setActionPointConfigRequestStatus(AsyncRequestStatus.FULFILLED));
-    } catch (error) {
-      console.error(`fetchUserActionConfig error:`, error);
-      dispatch(setActionPointConfigRequestStatus(AsyncRequestStatus.REJECTED));
-    }
-  }, [actionPointConfig, actionPointConfigRequestStatus]);
+    dispatch(fetchUserActionConfig());
+  }, [actionPointConfigRequestStatus]);
 
   const submitUserAction = useCallback(
     async (actionData: UserActionData) => {
       if (authenticated) {
-        await postUserActions([actionData]);
-        const point = getActionPoint(actionData, actionPointConfig);
-        dispatch(plusTotalPoints(point));
+        dispatch(submitAction(actionData));
       } else {
         dispatch(addOneToUnreportedActions(actionData));
       }
@@ -57,7 +42,7 @@ export default function useUserAction() {
         addManyToLikedActions([actionData]);
       }
       if (actionData.action === UserActionName.UnLike) {
-        removeOneLidedActions(actionData.castHash);
+        removeOneLidedActions(actionData.castHash!);
       }
     },
     [
@@ -68,30 +53,18 @@ export default function useUserAction() {
     ],
   );
 
-  const submitUnreportedActions = useCallback(async () => {
+  const submitLocalUnreportedActions = useCallback(async () => {
     if (unreportedActionsSubmitStatus !== AsyncRequestStatus.IDLE) return;
-    if (unreportedActions.length > 0) {
-      try {
-        dispatch(setUnreportedActionsSubmitStatus(AsyncRequestStatus.PENDING));
-        await postUserActions(unreportedActions);
-        dispatch(removeReportedActions(unreportedActions));
-        dispatch(
-          setUnreportedActionsSubmitStatus(AsyncRequestStatus.FULFILLED),
-        );
-      } catch (error) {
-        console.error(`submitUnreportedActions error:`, error);
-        dispatch(setUnreportedActionsSubmitStatus(AsyncRequestStatus.REJECTED));
-      }
-    }
-  }, [unreportedActions, unreportedActionsSubmitStatus]);
+    dispatch(submitUnreportedActions());
+  }, [unreportedActionsSubmitStatus]);
 
   return {
     actionPointConfigRequestStatus,
     actionPointConfig,
     unreportedActions,
     unreportedActionsSubmitStatus,
-    fetchUserActionConfig,
+    fetchUserActionConfig: getUserActionConfig,
     submitUserAction,
-    submitUnreportedActions,
+    submitUnreportedActions: submitLocalUnreportedActions,
   };
 }

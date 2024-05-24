@@ -8,6 +8,7 @@ import {
 } from "~/features/community/joinCommunitySlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import useAuth from "../user/useAuth";
+import { upsertManyToCommunityBasicData } from "~/features/community/communityDetailSlice";
 
 export default function useAllJoinedCommunities() {
   const dispatch = useAppDispatch();
@@ -33,6 +34,13 @@ export default function useAllJoinedCommunities() {
         dispatch(
           setJoinedCommunitiesRequestStatus(AsyncRequestStatus.FULFILLED),
         );
+        const communityBasicData = data
+          .filter((item) => !!item.channelId)
+          .map((item) => ({
+            id: item.channelId as string,
+            data: item,
+          }));
+        dispatch(upsertManyToCommunityBasicData(communityBasicData));
       } else {
         throw new Error(msg);
       }
@@ -40,7 +48,7 @@ export default function useAllJoinedCommunities() {
       console.error(error);
       dispatch(setJoinedCommunitiesRequestStatus(AsyncRequestStatus.REJECTED));
     }
-  }, [joinedCommunitiesRequestStatus]);
+  }, [authenticated, joinedCommunitiesRequestStatus]);
 
   const clearJoinedCommunities = useCallback(() => {
     dispatch(setJoinedCommunities([]));
@@ -48,7 +56,8 @@ export default function useAllJoinedCommunities() {
   }, [dispatch]);
 
   const joinedCommunitiesPending =
-    joinedCommunitiesRequestStatus === AsyncRequestStatus.IDLE;
+    joinedCommunitiesRequestStatus === AsyncRequestStatus.PENDING;
+
   return {
     joinedCommunities,
     joinedCommunitiesPending,

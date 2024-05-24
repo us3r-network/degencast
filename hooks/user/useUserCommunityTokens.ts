@@ -1,32 +1,31 @@
-import { useCallback, useEffect, useState } from "react";
-import { myTokens } from "~/services/user/api";
-import { ApiRespCode } from "~/services/shared/types";
-import { TokenInfoWithMetadata } from "~/services/user/types";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchItems,
+  selectUserCommunityTokens,
+} from "~/features/user/communityTokensSlice";
+import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserCommunityTokens() {
-  const [items, setItems] = useState<TokenInfoWithMetadata[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const fetch = useCallback(async () => {
-    setLoading(true);
-    const response = await myTokens();
-    const { code, msg, data } = response.data;
-    if (code === ApiRespCode.SUCCESS) {
-      const tokens = data
-        .map((item: any) => item.tokens)
-        .flat()
-        .filter((item) => item.balance > 0 && item.name !== "");
-        setItems(tokens);
-    } else {
-      throw new Error(msg);
-    }
-    setLoading(false);
-  }, []);
+export default function useUserCommunityTokens(address?: `0x${string}`) {
+  const dispatch = useDispatch();
+  const { items, status, error } = useSelector(selectUserCommunityTokens);
+
+  // useEffect(() => {
+  //   if (status === AsyncRequestStatus.IDLE && address) {
+  //     dispatch(fetchItems(address) as unknown as UnknownAction);
+  //   }
+  // }, [status, dispatch]);
 
   useEffect(() => {
-    fetch().catch(console.error);
-  }, [fetch]);
+    if (status !== AsyncRequestStatus.PENDING && address) {
+      dispatch(fetchItems(address) as unknown as UnknownAction);
+    }
+  }, [address]);
 
   return {
     items,
+    loading: status === AsyncRequestStatus.PENDING,
+    error,
   };
 }

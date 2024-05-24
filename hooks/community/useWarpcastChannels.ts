@@ -36,7 +36,7 @@ export default function useAllJoinedCommunities() {
   }, []);
 
   const warpcastChannelsPending =
-    warpcastChannelsRequestStatus === AsyncRequestStatus.IDLE;
+    warpcastChannelsRequestStatus === AsyncRequestStatus.PENDING;
 
   return {
     warpcastChannels,

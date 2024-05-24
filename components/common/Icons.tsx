@@ -10,6 +10,7 @@ import {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Atom,
   Baby,
   BadgeAlert,
@@ -63,8 +64,23 @@ import {
   Minus,
   TrendingUp,
   TrendingDown,
+  Repeat,
+  Plug,
+  Cable,
+  Edit,
+  Home,
+  Download,
+  CirclePlus,
+  CircleCheck,
+  Image,
+  UserRoundCheck,
+  UserRoundPlus,
+  Chrome,
+  Globe,
+  Settings,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
+
 function interopIcon(icon: LucideIcon) {
   cssInterop(icon, {
     className: {
@@ -140,6 +156,21 @@ interopIcon(Share2);
 interopIcon(Minus);
 interopIcon(TrendingUp);
 interopIcon(TrendingDown);
+interopIcon(Repeat);
+interopIcon(Plug);
+interopIcon(Cable);
+interopIcon(Edit);
+interopIcon(ArrowUpDown);
+interopIcon(Home);
+interopIcon(Download);
+interopIcon(CirclePlus);
+interopIcon(CircleCheck);
+interopIcon(Image);
+interopIcon(UserRoundPlus);
+interopIcon(UserRoundCheck);
+interopIcon(Chrome);
+interopIcon(Globe);
+interopIcon(Settings);
 export {
   Activity,
   Airplay,
@@ -152,6 +183,7 @@ export {
   AlignRight,
   ArrowDown,
   ArrowUp,
+  ArrowUpDown,
   Atom,
   Baby,
   BadgeAlert,
@@ -204,4 +236,18 @@ export {
   Minus,
   TrendingUp,
   TrendingDown,
+  Repeat,
+  Plug,
+  Cable,
+  Edit,
+  Home,
+  Download,
+  CirclePlus,
+  CircleCheck,
+  Image,
+  UserRoundCheck,
+  UserRoundPlus,
+  Chrome,
+  Globe,
+  Settings,
 };

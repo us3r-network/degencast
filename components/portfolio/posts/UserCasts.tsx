@@ -1,14 +1,18 @@
 import { usePrivy } from "@privy-io/react-auth";
+import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, View, Text } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
+import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { ProfileFeedsGroups } from "~/services/farcaster/types";
+import getCastHex from "~/utils/farcaster/getCastHex";
 import { getUserFarcasterAccount } from "~/utils/privy";
-import { Image } from "expo-image";
-import { Button } from "~/components/ui/button";
-import { Loading } from "~/components/common/Loading";
 
 export default function CastsScreen() {
   const params = useLocalSearchParams();
@@ -16,6 +20,7 @@ export default function CastsScreen() {
   const farcasterAccount = getUserFarcasterAccount(user);
   const fid = params.fid || farcasterAccount?.fid;
   const { casts, farcasterUserDataObj, loading, loadCasts } = useUserCasts();
+  const { navigateToCastDetail } = useCastPage();
   useEffect(() => {
     if (fid) loadCasts({ fid: String(fid), group: ProfileFeedsGroups.POSTS });
   }, [fid]);
@@ -35,11 +40,22 @@ export default function CastsScreen() {
                 renderItem={({ item }) => {
                   const { data, platform } = item;
                   return (
-                    <FcastMiniCard
+                    <Pressable
                       className="flex-1"
-                      cast={data}
-                      farcasterUserDataObj={farcasterUserDataObj}
-                    />
+                      onPress={() => {
+                        const castHex = getCastHex(data);
+                        navigateToCastDetail(castHex, {
+                          origin: CastDetailDataOrigin.Community,
+                          cast: data,
+                          farcasterUserDataObj: farcasterUserDataObj,
+                        });
+                      }}
+                    >
+                      <FcastMiniCard
+                        cast={data}
+                        farcasterUserDataObj={farcasterUserDataObj}
+                      />
+                    </Pressable>
                   );
                 }}
                 keyExtractor={({ data, platform }) => data.id}
@@ -77,14 +93,14 @@ export default function CastsScreen() {
             Please connect Farcaster to display & create your casts
           </Text>
           <Button
-            className="flex-row items-center justify-between gap-2 rounded-lg bg-primary px-6 py-3"
+            className="flex-row items-center justify-between gap-2"
             onPress={linkFarcaster}
           >
             <Image
               source={require("~/assets/images/farcaster.png")}
               style={{ width: 16, height: 16 }}
             />
-            <Text className="text-primary-foreground">Link Farcaster</Text>
+            <Text>Link Farcaster</Text>
           </Button>
         </View>
       );
