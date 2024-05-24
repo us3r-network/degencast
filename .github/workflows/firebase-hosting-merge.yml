@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: yarn && yarn export
+      - run: yarn && yarn init-nativewind && yarn export
         env:
           CI: true
           REACT_APP_NAME: "DEGENCAST"
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: yarn && yarn export
+      - run: yarn && yarn init-nativewind && yarn export
         env:
           CI: true
           REACT_APP_NAME: "DEGENCAST"
@@ -90,7 +90,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: yarn && yarn export
+      - run: yarn && yarn init-nativewind && yarn export
         env:
           CI: true
           REACT_APP_NAME: "DEGENCAST"
