@@ -1,7 +1,6 @@
 import { baseSepolia } from "viem/chains";
 import {
   useReadContract,
-  useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
@@ -76,8 +75,6 @@ export function useShareContractInfo(sharesSubject: `0x${string}`) {
 
 export function useShareContractBuy(sharesSubject: `0x${string}`) {
   const chainId = SHARE_CONTRACT_CHAIN.id;
-  const { switchChain } = useSwitchChain();
-
   const {
     writeContract,
     data: hash,
@@ -94,7 +91,6 @@ export function useShareContractBuy(sharesSubject: `0x${string}`) {
     hash,
   });
   const buy = async (amount: number, value: bigint) => {
-    await switchChain({ chainId });
     console.log("buy", amount, chainId, sharesSubject);
     writeContract({
       address,
@@ -126,10 +122,8 @@ export function useShareContractSell(sharesSubject: `0x${string}`) {
     isPending: writing,
     isError: writeError,
   } = useWriteContract();
-  const { switchChain } = useSwitchChain();
 
   const sell = async (amount: number) => {
-    await switchChain({ chainId });
     writeContract({
       address,
       abi,
