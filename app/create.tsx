@@ -20,12 +20,18 @@ const HomeChanel = {
 };
 export default function CreateScreen() {
   const localSearchParams = useLocalSearchParams();
+  console.log("localSearchParams", localSearchParams);
   const { embeds: searchEmbeds, text: searchText } = (localSearchParams ||
     {}) as {
     embeds: string[];
     text: string;
   };
-  const embeds = searchEmbeds?.map((item) => ({ url: item }));
+  const embeds =
+    typeof searchEmbeds === "string"
+      ? [{ url: searchEmbeds }]
+      : typeof typeof searchEmbeds === "object"
+        ? searchEmbeds?.map((item) => ({ url: item }))
+        : [];
 
   const [posting, setPosting] = useState(false);
   const { submitCast } = useFarcasterWrite();
