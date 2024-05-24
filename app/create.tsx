@@ -29,9 +29,10 @@ export default function CreateScreen() {
   const embeds =
     typeof searchEmbeds === "string"
       ? [{ url: searchEmbeds }]
-      : typeof typeof searchEmbeds === "object"
+      : typeof searchEmbeds === "object"
         ? searchEmbeds?.map((item) => ({ url: item }))
         : [];
+  console.log("embeds", embeds);
 
   const [posting, setPosting] = useState(false);
   const { submitCast } = useFarcasterWrite();
