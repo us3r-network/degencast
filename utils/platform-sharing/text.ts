@@ -36,7 +36,7 @@ export const getTransactionShareTextWithWarpcast = (
 ) => {
   switch (type) {
     case ONCHAIN_ACTION_TYPE.SWAP:
-      return `Swap tokens in /${WARPCAST_CHANNEL_NAME}\n${transactionDetailURL}`;
+      return `Swap tokens in /${WARPCAST_CHANNEL_NAME}\n${transactionDetailURL}\n`;
     default:
       return `Trade & explore news in /${WARPCAST_CHANNEL_NAME}`;
   }
@@ -48,7 +48,7 @@ export const getTransactionShareTextWithTwitter = (
 ) => {
   switch (type) {
     case ONCHAIN_ACTION_TYPE.SWAP:
-      return `Swap tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}`;
+      return `Swap tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
     default:
       return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
   }
