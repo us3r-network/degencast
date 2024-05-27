@@ -44,7 +44,7 @@ export default function PortfolioScreen() {
       <View className="mx-auto box-border w-full max-w-screen-sm flex-1 px-4">
         {ready &&
           (!privyAuthenticated ? (
-            <Card className="flex h-full w-full items-center justify-center">
+            <Card className="flex h-full w-full items-center justify-center rounded-2xl">
               <Button onPress={login}>
                 <Text>Log in</Text>
               </Button>
@@ -91,7 +91,7 @@ export function PortfolioContent({
             value={tab.value}
             className="absolute inset-0 top-8"
           >
-            <Card className="h-full w-full p-2 pt-8">
+            <Card className="h-full w-full p-2 pt-8 rounded-2xl">
               <CardContent className="native:gap-2 h-full gap-4 p-0 sm:p-4">
                 <Stack
                   initialRouteName={tab.value}
