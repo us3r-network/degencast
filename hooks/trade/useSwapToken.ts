@@ -131,19 +131,21 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
           buyToken.decimals || DEFAULT_DECIMALS,
         ) || "0",
       );
-      const zeroExFee = Number(
-        formatUnits(
-          quote.fees.zeroExFee.feeAmount,
-          buyToken.decimals || DEFAULT_DECIMALS,
-        ) || "0",
-      );
-      setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);
+      if (quote.fees?.zeroExFee?.feeAmount){
+        const zeroExFee = Number(
+          formatUnits(
+            quote.fees?.zeroExFee?.feeAmount,
+            buyToken.decimals || DEFAULT_DECIMALS,
+          ) || "0",
+        );
+        setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);  
+        // console.log(
+        //   "swap fee",
+        //   grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
+        //   zeroExFee,
+        // );
+      }
       setFetchingQuote(false);
-      console.log(
-        "swap fee",
-        grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
-        zeroExFee,
-      );
       setWaitingUserSign(true);
       await sendTransactionAsync({
         to: quote.to,
