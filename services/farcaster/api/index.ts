@@ -12,6 +12,7 @@ import {
 } from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
+import { Channel } from "../types/neynar";
 
 export type FarcasterPageInfo = {
   startIndex: number;
@@ -318,6 +319,17 @@ export function getProfileFeeds({
     // headers: {
     //   'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     // },
+  });
+}
+
+export function fetchUserChannels({
+  fid,
+}: {
+  fid: number;
+}): AxiosPromise<ApiResp<Channel[]>> {
+  return request({
+    url: `/topics/recommendaton/channels?fid=${fid || ""}&pubkey=0xA25532B1287dEe6501fFa13Ff457fFcc9a6Ca6B0`,
+    method: "get",
   });
 }
 

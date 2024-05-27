@@ -18,7 +18,6 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import useUserChannels from "~/hooks/user/useUserChannels";
-import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { cn } from "~/lib/utils";
 import { Channel } from "~/services/farcaster/types/neynar";
 import { getUserFarcasterAccount } from "~/utils/privy";
@@ -43,16 +42,15 @@ export default function ChannelsScreen() {
                 showsVerticalScrollIndicator={false}
                 data={items}
                 numColumns={3}
-                columnWrapperStyle={{ gap: 12, flex: 1, justifyContent: "space-between"}}
+                columnWrapperStyle={{
+                  gap: 12,
+                  flex: 1,
+                  justifyContent: "space-between",
+                }}
                 ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
                 renderItem={({ item }) => (
                   <View className="w-full max-w-[31%]">
-                    <ChannelThumb
-                      key={item.id}
-                      channel={item}
-                      address={address}
-                      fid={fid}
-                    />
+                    <ChannelThumb key={item.id} channel={item} fid={fid} />
                   </View>
                 )}
                 keyExtractor={(item) => item.id}
@@ -101,16 +99,9 @@ export default function ChannelsScreen() {
   }
 }
 
-function ChannelThumb({
-  channel,
-  address,
-  fid,
-}: {
-  channel: Channel;
-  address?: `0x${string}`;
-  fid?: number;
-}) {
+function ChannelThumb({ channel, fid }: { channel: Channel; fid?: number }) {
   const isHost = channel.hosts.some((host) => host.fid === fid);
+  const hasToken = Number(channel.tokenInfo?.balance || 0) > 0;
   return (
     <View className="relative w-full">
       <Link href={`/communities/${channel.id}`} asChild>
@@ -125,7 +116,7 @@ function ChannelThumb({
         </View>
       </Link>
       <View className="absolute bottom-8 right-1">
-        <ChannelAssets channel={channel} address={address} />
+        {hasToken && <ChannelAssets channel={channel} />}
         {isHost && (
           <View className="rounded-full bg-secondary px-2">
             <Text className="text-xs text-white">host</Text>
@@ -138,20 +129,14 @@ function ChannelThumb({
 
 function ChannelAssets({
   channel,
-  address,
   className,
 }: {
   channel: Channel;
-  address?: `0x${string}`;
   className?: string;
 }) {
-  const { items: userTokens } = useUserCommunityTokens(address);
-  const userChannelToken = userTokens.find(
-    (item) => item.tradeInfo?.channel === channel.id,
-  );
   const userAssetsValue =
-    Number(userChannelToken?.tradeInfo?.stats?.token_price_usd || 0) *
-    Number(userChannelToken?.balance || 0);
+    Number(channel.tokenInfo?.tradeInfo?.stats?.token_price_usd || 0) *
+    Number(channel.tokenInfo?.balance || 0);
 
   if (userAssetsValue === 0) return null;
   return (
@@ -183,8 +168,8 @@ function ChannelAssets({
             </Text>
           </View>
           <Separator className="bg-secondary/10" />
-          {address && userChannelToken && (
-            <MyCommunityToken token={userChannelToken} withSwapButton />
+          {channel.tokenInfo && (
+            <MyCommunityToken token={channel.tokenInfo} withSwapButton />
           )}
           <MyPoints />
         </View>

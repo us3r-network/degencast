@@ -56,7 +56,7 @@ export default function CommunityToeknSelect({
       }}
       onValueChange={valueChangeHandler}
     >
-      <SelectTrigger className={cn("w-full gap-6 border-secondary px-2")}>
+      <SelectTrigger className={cn("w-full gap-6 border-none p-0")}>
         <View className="flex-row items-center gap-6">
           <TokenInfo name={selectedToken.name} logo={selectedToken.logoURI} />
           {showBalance && (

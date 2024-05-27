@@ -64,8 +64,13 @@ export default function TradeModal({
           )}
         >
           <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
-          {!swaping && <UserWalletSelect />}
         </DialogHeader>
+        {!swaping && (
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Active Wallet</Text>
+            <UserWalletSelect />
+          </View>
+        )}
         <SwapToken
           token1={token1}
           token2={token2}
@@ -83,7 +88,7 @@ export default function TradeModal({
 }
 
 const TRADE_INFO = [
-  "For a one-time swap of token worth 30 USD, earn 500 points.",
+  "For a one-time swap of token worth 30 USD, earn 500 $CAST.",
   "0.3% swap fee",
 ];
 
