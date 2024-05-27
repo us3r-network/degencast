@@ -33,6 +33,7 @@ import {
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
 import { ArrowUp } from "~/components/common/Icons";
+import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -54,7 +55,6 @@ export default function SendTokenButton({
       (wallet) => wallet.address === activeWalletAddress,
     );
     if (currentWallet) return currentWallet;
-
   }, [connectedWallets, activeWalletAddress]);
 
   if (!activeWalletAddress)
@@ -72,10 +72,13 @@ export default function SendTokenButton({
           setSending(false);
         }}
       >
-        <DialogTrigger asChild disabled={activeWallet?.connectorType!=="embedded"}>
+        <DialogTrigger
+          asChild
+          disabled={activeWallet?.connectorType !== "embedded"}
+        >
           <Button size={"icon"} className="rounded-full">
             <Text>
-            <ArrowUp />
+              <ArrowUp />
             </Text>
           </Button>
         </DialogTrigger>
@@ -97,8 +100,6 @@ const SendToken = forwardRef<
   }
 >(({ className, chain, setSending, ...props }, ref) => {
   const account = useAccount();
-  const chainId = useChainId();
-  const { switchChain, status: switchChainStatus } = useSwitchChain();
 
   const [address, setAddress] = useState<`0x${string}`>();
   const [amount, setAmount] = useState("");
@@ -235,31 +236,27 @@ const SendToken = forwardRef<
             onChangeText={(newText) => setAmount(newText)}
           />
         </View>
-        {token &&
-          (chainId === token.chainId ? (
-            <Button
-              variant={"secondary"}
-              disabled={
-                !address ||
-                Number(amount) > Number(token?.balance || 0) ||
-                isPending ||
-                transationLoading
-              }
-              onPress={send}
-            >
-              <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              disabled={switchChainStatus === "pending"}
-              onPress={async () => {
-                await switchChain({ chainId: token.chainId });
-              }}
-            >
-              <Text>Switch to {base.name}</Text>
-            </Button>
-          ))}
+        {token && (
+          <OnChainActionButtonWarper
+            variant="secondary"
+            className="mt-6"
+            targetChainId={token.chainId}
+            warpedButton={
+              <Button
+                variant={"secondary"}
+                disabled={
+                  !address ||
+                  Number(amount) > Number(token?.balance || 0) ||
+                  isPending ||
+                  transationLoading
+                }
+                onPress={send}
+              >
+                <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
+              </Button>
+            }
+          />
+        )}
       </View>
     );
 });

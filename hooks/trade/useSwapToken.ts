@@ -17,7 +17,7 @@ type SwapParams = {
   buyAmount?: string;
 };
 
-export default function useSwapToken(takerAddress?: `0x${string}`, skipValidation?: boolean) {
+export default function useSwapToken(takerAddress?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
   const [swaping, setSwaping] = useState(false);
   const [fetchingQuote, setFetchingQuote] = useState(false);
@@ -87,6 +87,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`, skipValidatio
         buyToken.decimals || DEFAULT_DECIMALS,
       ),
       price,
+      allowanceTarget: price?.allowanceTarget,
     };
   };
 
@@ -122,7 +123,6 @@ export default function useSwapToken(takerAddress?: `0x${string}`, skipValidatio
           buyAmount &&
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
         takerAddress,
-        skipValidation,
       });
       console.log("get quote from 0x", quote);
       const grossBuyAmount = Number(
@@ -131,19 +131,21 @@ export default function useSwapToken(takerAddress?: `0x${string}`, skipValidatio
           buyToken.decimals || DEFAULT_DECIMALS,
         ) || "0",
       );
-      const zeroExFee = Number(
-        formatUnits(
-          quote.fees.zeroExFee.feeAmount,
-          buyToken.decimals || DEFAULT_DECIMALS,
-        ) || "0",
-      );
-      setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);
+      if (quote.fees?.zeroExFee?.feeAmount){
+        const zeroExFee = Number(
+          formatUnits(
+            quote.fees?.zeroExFee?.feeAmount,
+            buyToken.decimals || DEFAULT_DECIMALS,
+          ) || "0",
+        );
+        setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);  
+        // console.log(
+        //   "swap fee",
+        //   grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
+        //   zeroExFee,
+        // );
+      }
       setFetchingQuote(false);
-      console.log(
-        "swap fee",
-        grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
-        zeroExFee,
-      );
       setWaitingUserSign(true);
       await sendTransactionAsync({
         to: quote.to,

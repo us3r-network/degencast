@@ -1,9 +1,9 @@
-import { useWallets } from "@privy-io/react-auth";
 import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { Address, parseUnits } from "viem";
 import { base } from "viem/chains";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -28,6 +28,7 @@ import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import CommunityToeknSelect from "./CommunityTokenSelect";
+import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 import {
   ErrorInfo,
@@ -99,12 +100,7 @@ function SwapToken({
   setClose?: () => void;
 }) {
   const account = useAccount();
-  const { wallets: connectedWallets } = useWallets();
-  const isEmbeddedWallet =
-    connectedWallets.find((wallet) => wallet.address === account?.address)
-      ?.connectorType === "embedded";
   const chainId = useChainId();
-  const { switchChain, status: switchChainStatus } = useSwitchChain();
   const [fromTokenSet, setFromTokenSet] = useState<TokenSetInfo>();
   const [toTokenSet, setToTokenSet] = useState<TokenSetInfo>();
   const [fromToken, setFromToken] = useState<TokenWithTradeInfo>();
@@ -151,10 +147,10 @@ function SwapToken({
     error,
     fee,
     reset,
-  } = useSwapToken(account.address, isEmbeddedWallet);
+  } = useSwapToken(account.address);
 
   const { submitUserAction } = useUserAction();
-
+  const [allowanceTarget, setAllowanceTarget] = useState<Address>();
   const fetchPriceInfo = async (amount: string) => {
     // console.log("fetchPriceInfo", fromToken, toToken, amount);
     if (!fromToken || !toToken || !amount) return;
@@ -164,8 +160,9 @@ function SwapToken({
       sellAmount: amount,
     });
     if (!priceInfo) return;
-    const { buyAmount } = priceInfo;
+    const { buyAmount, allowanceTarget } = priceInfo;
     setToAmount(buyAmount);
+    setAllowanceTarget(allowanceTarget);
   };
 
   const debouncedFetchPriceInfo = useCallback(
@@ -323,55 +320,61 @@ function SwapToken({
           </View>
         )}
         {fromToken &&
+          fromToken.decimals &&
+          fromToken.chainId &&
           toToken &&
-          (chainId === fromToken.chainId ? (
-            <Button
+          toToken.decimals && (
+            <OnChainActionButtonWarper
               variant="secondary"
               className="mt-6"
-              disabled={
-                !fromTokenBalance ||
-                fromTokenBalance < Number(fromAmount) ||
-                fetchingPrice ||
-                fetchingQuote ||
-                fetchingQuote ||
-                Number(fromAmount) === 0 ||
-                Number(toAmount) === 0 ||
-                transationLoading
+              targetChainId={fromToken.chainId}
+              takerAddress={account.address}
+              tokenAddress={fromToken.address}
+              allowanceTarget={allowanceTarget}
+              allowanceValue={
+                Number(fromAmount) > 0
+                  ? parseUnits(fromAmount, fromToken.decimals)
+                  : undefined
               }
-              onPress={() => {
-                swap();
-              }}
-            >
-              {fetchingPrice ? (
-                <View className="flex-row items-center gap-2">
-                  <ActivityIndicator color={"white"} />
-                  <Text>Fetching Price...</Text>
-                </View>
-              ) : fetchingQuote ? (
-                <View className="flex-row items-center gap-2">
-                  <ActivityIndicator color={"white"} />
-                  <Text>Fetching Quote...</Text>
-                </View>
-              ) : waitingUserSign ? (
-                <Text>Please sign the transaction!</Text>
-              ) : transationLoading ? (
-                <Text>Comfirming the transaction...</Text>
-              ) : (
-                <Text>Swap</Text>
-              )}
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              className="mt-6"
-              disabled={switchChainStatus === "pending"}
-              onPress={async () => {
-                await switchChain({ chainId: fromToken.chainId });
-              }}
-            >
-              <Text>Switch to {base.name}</Text>
-            </Button>
-          ))}
+              warpedButton={
+                <Button
+                  variant="secondary"
+                  className="mt-6"
+                  disabled={
+                    !fromTokenBalance ||
+                    fromTokenBalance < Number(fromAmount) ||
+                    fetchingPrice ||
+                    fetchingQuote ||
+                    fetchingQuote ||
+                    Number(fromAmount) === 0 ||
+                    Number(toAmount) === 0 ||
+                    transationLoading
+                  }
+                  onPress={() => {
+                    swap();
+                  }}
+                >
+                  {fetchingPrice ? (
+                    <View className="flex-row items-center gap-2">
+                      <ActivityIndicator color={"white"} />
+                      <Text>Fetching Price...</Text>
+                    </View>
+                  ) : fetchingQuote ? (
+                    <View className="flex-row items-center gap-2">
+                      <ActivityIndicator color={"white"} />
+                      <Text>Fetching Quote...</Text>
+                    </View>
+                  ) : waitingUserSign ? (
+                    <Text>Please sign the transaction!</Text>
+                  ) : transationLoading ? (
+                    <Text>Comfirming the transaction...</Text>
+                  ) : (
+                    <Text>Swap</Text>
+                  )}
+                </Button>
+              }
+            />
+          )}
       </View>
     );
 }
