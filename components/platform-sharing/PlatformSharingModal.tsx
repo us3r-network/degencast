@@ -12,6 +12,15 @@ import { openWarpcastCreateCast } from "~/utils/platform-sharing/warpcast";
 import useUserAction from "~/hooks/user/useUserAction";
 import Toast from "react-native-toast-message";
 
+export type ShareProps = {
+  text?: string;
+  twitterText?: string;
+  warpcastText?: string;
+  websiteLink?: string;
+  frameLink?: string;
+  navigateToCreatePageAfter?: () => void;
+};
+
 export default function PlatformSharingModal({
   text,
   twitterText,
@@ -22,16 +31,10 @@ export default function PlatformSharingModal({
   showPoints = true,
   onOpenChange,
   navigateToCreatePageAfter,
-}: {
-  text?: string;
-  twitterText?: string;
-  warpcastText?: string;
-  websiteLink: string;
-  frameLink: string;
+}: ShareProps & {
   open: boolean;
   showPoints?: boolean;
   onOpenChange: (open: boolean) => void;
-  navigateToCreatePageAfter?: () => void;
 }) {
   const { actionPointConfig } = useUserAction();
   const {
@@ -57,7 +60,7 @@ export default function PlatformSharingModal({
   };
 
   const onCopy = async () => {
-    await Clipboard.setStringAsync(websiteLink);
+    if (websiteLink) await Clipboard.setStringAsync(websiteLink);
     onOpenChange(false);
     Toast.show({
       type: "success",
@@ -71,23 +74,29 @@ export default function PlatformSharingModal({
           <Text>Share</Text>
         </DialogHeader>
         <View className="max-w-s flex flex-row gap-5 ">
-          <ShareButton
-            iconSource={require("~/assets/images/warpcast.png")}
-            text="Share & Earn"
-            points={showPoints ? inviteUnit : 0}
-            onPress={onCreateCast}
-          />
-          <ShareButton
-            iconSource={require("~/assets/images/x.png")}
-            text="Share & Earn"
-            points={showPoints ? inviteUnit : 0}
-            onPress={onTwitterShare}
-          />
-          <ShareButton
-            iconSource={require("~/assets/images/link.png")}
-            text="Copy"
-            onPress={onCopy}
-          />
+          {warpcastText && (
+            <ShareButton
+              iconSource={require("~/assets/images/warpcast.png")}
+              text="Share & Earn"
+              points={showPoints ? inviteUnit : 0}
+              onPress={onCreateCast}
+            />
+          )}
+          {twitterText && (
+            <ShareButton
+              iconSource={require("~/assets/images/x.png")}
+              text="Share & Earn"
+              points={showPoints ? inviteUnit : 0}
+              onPress={onTwitterShare}
+            />
+          )}
+          {websiteLink && (
+            <ShareButton
+              iconSource={require("~/assets/images/link.png")}
+              text="Copy"
+              onPress={onCopy}
+            />
+          )}
         </View>
       </DialogContent>
     </Dialog>

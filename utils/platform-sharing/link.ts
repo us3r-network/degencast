@@ -1,10 +1,8 @@
+import { DEGENCAST_FRAME_HOST } from "~/constants/farcaster";
 import { getZoraMintLink } from "../zora";
 
 export const DEGENCAST_WEB_HOST =
   process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://dev.degencast.xyz";
-
-// TODO env ?
-export const DEGENCAST_FRAME_HOST = "https://beta.frames.degencast.xyz";
 
 export const getCastDetailWebsiteLink = (
   castHex: string,
@@ -74,10 +72,9 @@ export const getAppWebsiteLink = (opts?: { fid?: string | number }) => {
   }
   return link;
 };
-
 // TODO degencast app frame link ?
 export const getAppFrameLink = (opts?: { fid?: string | number }) => {
-  let link = DEGENCAST_WEB_HOST;
+  let link = DEGENCAST_FRAME_HOST;
   const { fid } = opts || {};
   if (fid) {
     link += `?inviteFid=${fid}`;
@@ -96,7 +93,7 @@ export const getTradePageWebsiteLink = (opts?: { fid?: string | number }) => {
 
 // TODO degencast app frame link ?
 export const getTradePageFrameLink = (opts?: { fid?: string | number }) => {
-  let link = `${DEGENCAST_WEB_HOST}/trade/tokens`;
+  let link = `${DEGENCAST_FRAME_HOST}/swaptoken/frames/swap/degen`;
   const { fid } = opts || {};
   if (fid) {
     link += `?inviteFid=${fid}`;
