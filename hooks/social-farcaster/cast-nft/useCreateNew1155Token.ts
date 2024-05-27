@@ -12,6 +12,9 @@ import useCastCollection from "./useCastCollection";
 import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
 import { imgLinkToBlob } from "~/utils/image";
+import { UserData } from "~/utils/farcaster/user-data";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
@@ -20,11 +23,17 @@ const CAST_TOKEN_EXTERNAL_URL = "https://degencast.xyz?nft_link=cast";
 const getCreateAt = () => {
   return Math.floor(Date.now() / 1000);
 };
-const getCastCollectionMetadata = async ({ imgUrl }: { imgUrl: string }) => {
+const getCastCollectionMetadata = async ({
+  imgUrl,
+  currUserDisplayName,
+}: {
+  imgUrl: string;
+  currUserDisplayName: string;
+}) => {
   const imageBlob = await imgLinkToBlob(imgUrl);
   return {
-    name: CAST_COLLECTION_NAME,
-    description: CAST_COLLECTION_DESCRIPTION,
+    name: `${currUserDisplayName}'s Degencast`,
+    description: `${currUserDisplayName}'s Zora mint with degencast.xyz`,
     external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
@@ -39,16 +48,22 @@ const CAST_TOKEN_DESCRIPTION = "Degencast Cast";
 const getCastTokenMetadata = async ({
   imgUrl,
   cast,
+  castUserData,
   channelId,
 }: {
   imgUrl: string;
   cast: FarCast;
+  castUserData: UserData;
   channelId: string;
 }) => {
   const imageBlob = await imgLinkToBlob(imgUrl);
+  const text = cast.text;
+  const textPreview = text.length > 100 ? text.slice(0, 100) + "..." : text;
+  const userDisplayName = castUserData.display;
+  const castHex = getCastHex(cast);
   return {
-    name: CAST_TOKEN_NAME,
-    description: CAST_TOKEN_DESCRIPTION,
+    name: `${userDisplayName}: ${textPreview}`,
+    description: getCastDetailWebsiteLink(castHex),
     external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
@@ -107,13 +122,17 @@ async function createNew1155Token({
 
 export default function useCreateNew1155Token({
   cast,
+  castUserData,
   imgUrl,
   channelId,
+  currUserDisplayName,
   onCreateTokenSuccess,
 }: {
   cast: FarCast;
+  castUserData: UserData;
   imgUrl: string;
   channelId: string;
+  currUserDisplayName: string;
   onCreateTokenSuccess?: (data: {
     tokenId: number;
     contractAddress: string;
@@ -140,6 +159,7 @@ export default function useCreateNew1155Token({
         imgUrl,
         cast,
         channelId,
+        castUserData,
       });
       const tokenMetadataURI = await storeNFT(tokenMetadata);
       if (!tokenMetadataURI) {
@@ -181,11 +201,15 @@ export default function useCreateNew1155Token({
         throw new Error("Wallet not connected");
       }
 
-      const contractMetadata = await getCastCollectionMetadata({ imgUrl });
+      const contractMetadata = await getCastCollectionMetadata({
+        imgUrl,
+        currUserDisplayName,
+      });
       const tokenMetadata = await getCastTokenMetadata({
         imgUrl,
         cast,
         channelId,
+        castUserData,
       });
 
       const contractMetadataURI = await storeNFT(contractMetadata);

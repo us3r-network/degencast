@@ -27,6 +27,8 @@ export function FCastDetailActions({
   communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
+  const castUserData = farcasterUserDataObj[cast.fid];
+  const channelId = communityInfo.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
@@ -38,6 +40,7 @@ export function FCastDetailActions({
     useFarcasterRecastAction({ cast });
   const [openGiftModal, setOpenGiftModal] = useState(false);
   const [openShareModal, setOpenShareModal] = useState(false);
+  const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
   const onLike = () => {
@@ -87,6 +90,13 @@ export function FCastDetailActions({
         onGift={onGift}
         onShare={onShare}
         onComment={onComment}
+        onMint={() => {
+          if (!authenticated) {
+            login();
+            return;
+          }
+          setOpenMintNftModal(true);
+        }}
         {...props}
       />
 
@@ -101,6 +111,13 @@ export function FCastDetailActions({
         cast={cast}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
+      />
+      <FCastMintNftModal
+        cast={cast}
+        castUserData={castUserData}
+        channelId={channelId}
+        open={openMintNftModal}
+        onOpenChange={setOpenMintNftModal}
       />
     </>
   );
@@ -120,6 +137,7 @@ export function FCastExploreActions({
   showActions: boolean;
   showActionsChange: (showActions: boolean) => void;
 }) {
+  const castUserData = farcasterUserDataObj[cast.fid];
   const channelId = communityInfo.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
@@ -183,7 +201,13 @@ export function FCastExploreActions({
         onGift={onGift}
         onShare={onShare}
         onComment={onComment}
-        onMint={() => setOpenMintNftModal(true)}
+        onMint={() => {
+          if (!authenticated) {
+            login();
+            return;
+          }
+          setOpenMintNftModal(true);
+        }}
         showActions={showActions}
         showActionsChange={showActionsChange}
         {...props}
@@ -203,6 +227,7 @@ export function FCastExploreActions({
       />
       <FCastMintNftModal
         cast={cast}
+        castUserData={castUserData}
         channelId={channelId}
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}
