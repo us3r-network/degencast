@@ -223,6 +223,8 @@ export default function ChannelExploreScreen() {
                       className="h-full w-full overflow-hidden"
                       cast={data}
                       farcasterUserDataObj={farcasterUserDataObj}
+                      webpageImgIsFixedRatio={true}
+                      viewMoreWordLimits={isDesktop ? 200 : 80}
                     />
                   </Pressable>
                 </View>

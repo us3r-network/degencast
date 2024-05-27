@@ -51,10 +51,12 @@ export default function EmbedFrame({
   url,
   data,
   cast,
+  imgIsFixedRatio,
 }: {
   url: string;
   data: Frame;
   cast?: FarCast;
+  imgIsFixedRatio?: boolean;
 }) {
   const { getPrivySigner, prepareWrite } = useFarcasterWrite();
 
@@ -283,12 +285,12 @@ export default function EmbedFrame({
   );
 
   const ratio = useMemo(() => {
-    if (frameData.imageAspectRatio) {
+    if (!imgIsFixedRatio && frameData.imageAspectRatio) {
       const w_h = frameData.imageAspectRatio.split(":");
       return Number(w_h[0]) / Number(w_h[1]);
     }
     return 16 / 8;
-  }, [frameData]);
+  }, [frameData, imgIsFixedRatio]);
 
   useEffect(() => {
     setFrameData(data);
