@@ -1,3 +1,5 @@
+import { TokenWithTradeInfo } from "~/services/trade/types";
+
 export type NeynarCast = {
   object: "cast";
   hash: string;
@@ -72,6 +74,7 @@ export type Channel = {
   object: string;
   parent_url: string;
   hosts:Author[];
+  tokenInfo?: TokenWithTradeInfo;
 };
 
 export type PageInfo = {
