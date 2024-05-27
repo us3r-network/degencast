@@ -15,7 +15,7 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { TradeButton } from "../../trade/TradeButton";
 import { DEGEN_ADDRESS } from "~/constants";
 
-const DEFAULT_ITEMS_NUM = 3;
+const DEFAULT_ITEMS_NUM = 99;
 export default function CommunityTokens({
   address,
 }: {
