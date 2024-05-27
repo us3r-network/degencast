@@ -73,7 +73,7 @@ export default function UserWalletSelect() {
         >
           <View className="mr-2 flex-row items-center gap-1">
             <WalletIcon type={activeWallet?.walletClientType || ""} />
-            <Text className="text-white">
+            <Text className="text-primery">
               {shortPubKey(activeWallet?.address || "")}
             </Text>
           </View>
