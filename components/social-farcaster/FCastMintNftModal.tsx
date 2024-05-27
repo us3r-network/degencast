@@ -184,7 +184,7 @@ export default function FCastMintNftModal({
                 if (chainId !== ZORA_CAST_NFT_CHAIN_ID) {
                   return <Text>Switch Chain</Text>;
                 }
-                return <Text>Mint Cast & Share</Text>;
+                return <Text>Mint Cast & Earn 200 $CAST</Text>;
               })()}
             </Button>
           </View>

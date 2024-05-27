@@ -10,6 +10,8 @@ import TradeModal from "./TradeModal";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { upperFirst } from "lodash";
 import { ArrowUpDown } from "../common/Icons";
+import { LegacyRef, forwardRef } from "react";
+import { View } from "react-native";
 
 export default function SwapButton() {
   const account = useAccount();
@@ -124,21 +126,25 @@ export function ExploreTradeButton({
     );
 }
 
-function ExploreTradeStyledButton({
-  name,
-  logo,
-  className,
-  ...props
-}: ButtonProps & {
-  name: string;
-  logo: string;
-}) {
+const ExploreTradeStyledButton = forwardRef(function (
+  {
+    name,
+    logo,
+    className,
+    ...props
+  }: ButtonProps & {
+    name: string;
+    logo: string;
+  },
+  ref: LegacyRef<View>,
+) {
   return (
     <Button
       className={cn(
         "h-[50px] flex-row items-center gap-1 px-[12px] py-[6px]",
         className,
       )}
+      ref={ref}
       {...props}
     >
       <Text className=" text-base font-bold">Trade</Text>
@@ -157,4 +163,4 @@ function ExploreTradeStyledButton({
       )}
     </Button>
   );
-}
+});

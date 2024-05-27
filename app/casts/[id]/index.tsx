@@ -266,7 +266,7 @@ function CastDetailWithData({
                     farcasterUserDataObj={farcasterUserDataObj}
                     hidePoints
                   />
-                  <Separator className=" my-5" />
+                  <Separator className=" my-5 bg-primary/10" />
                   <View className="mb-5 w-full">
                     <Text className=" text-base font-medium">
                       Comments (
@@ -277,7 +277,9 @@ function CastDetailWithData({
               );
             }}
             data={comments}
-            ItemSeparatorComponent={() => <Separator className=" my-3" />}
+            ItemSeparatorComponent={() => (
+              <Separator className=" my-3 bg-primary/10" />
+            )}
             renderItem={({ item }) => {
               return (
                 <Pressable

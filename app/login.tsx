@@ -249,7 +249,7 @@ function SignUp({ onComplete }: { onComplete: () => void }) {
               className="absolute bottom-0 w-full"
               onPress={() => prepareWrite()}
             >
-              <Text>Add Farcaster Signer & Earn 1000 Points</Text>
+              <Text>Add Farcaster Signer & Earn 1000 $CAST</Text>
             </Button>
             <Button
               variant="ghost"

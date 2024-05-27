@@ -118,7 +118,7 @@ export function PointsRules({
             btnText="Trade"
             onBtnPress={() => {
               onOpenChange?.(false);
-              router.navigate("trade/tokens" as never);
+              router.navigate("channels/tokens" as never);
             }}
           />
           <RuleItem
