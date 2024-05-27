@@ -1,16 +1,8 @@
-import { cn } from "~/lib/utils";
-import { Share2 } from "../common/Icons";
-import { Button, ButtonProps } from "../ui/button";
-import PlatformSharingModal from "./PlatformSharingModal";
 import { useState } from "react";
-import {
-  getAppShareTextWithTwitter,
-  getAppShareTextWithWarpcast,
-  getCommunityShareTextWithTwitter,
-  getCommunityShareTextWithWarpcast,
-  getTransactionShareTextWithTwitter,
-  getTransactionShareTextWithWarpcast,
-} from "~/utils/platform-sharing/text";
+import { View } from "react-native";
+import { Text } from "~/components/ui/text";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import { cn } from "~/lib/utils";
 import {
   getAppFrameLink,
   getAppWebsiteLink,
@@ -19,10 +11,18 @@ import {
   getTradePageFrameLink,
   getTradePageWebsiteLink,
 } from "~/utils/platform-sharing/link";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import {
+  getAppShareTextWithTwitter,
+  getAppShareTextWithWarpcast,
+  getCommunityShareTextWithTwitter,
+  getCommunityShareTextWithWarpcast,
+  getTransactionShareTextWithTwitter,
+  getTransactionShareTextWithWarpcast,
+} from "~/utils/platform-sharing/text";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import { TransactionReceipt } from "viem";
-import { View } from "react-native";
+import { Share2 } from "../common/Icons";
+import { Button, ButtonProps } from "../ui/button";
+import PlatformSharingModal, { ShareProps } from "./PlatformSharingModal";
 
 export default function PlatformSharingButton({
   text,
@@ -33,14 +33,7 @@ export default function PlatformSharingButton({
   className,
   navigateToCreatePageAfter,
   ...props
-}: ButtonProps & {
-  text?: string;
-  twitterText?: string;
-  warpcastText?: string;
-  websiteLink: string;
-  frameLink: string;
-  navigateToCreatePageAfter?: () => void;
-}) {
+}: ButtonProps & ShareProps) {
   const [open, setOpen] = useState(false);
   return (
     <View>
@@ -101,38 +94,38 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
   );
 }
 
-export function TransactionResultSharingButton({
-  type,
-  transactionDetailURL,
-  navigateToCreatePageAfter,
-}: {
-  type: ONCHAIN_ACTION_TYPE;
-  transactionDetailURL: string;
-  navigateToCreatePageAfter?: () => void;
-}) {
-  const { currFid } = useFarcasterAccount();
-  return (
-    <PlatformSharingButton
-      variant="secondary"
-      className="bg-secondary p-2"
-      twitterText={getTransactionShareTextWithTwitter(
-        type,
-        transactionDetailURL,
-      )}
-      warpcastText={getTransactionShareTextWithWarpcast(
-        type,
-        transactionDetailURL,
-      )}
-      websiteLink={getTradePageWebsiteLink({
-        fid: currFid,
-      })}
-      frameLink={getTradePageFrameLink({
-        fid: currFid,
-      })}
-      navigateToCreatePageAfter={navigateToCreatePageAfter}
-    />
-  );
-}
+// export function TransactionResultSharingButton({
+//   type,
+//   transactionDetailURL,
+//   navigateToCreatePageAfter,
+// }: {
+//   type: ONCHAIN_ACTION_TYPE;
+//   transactionDetailURL: string;
+//   navigateToCreatePageAfter?: () => void;
+// }) {
+//   const { currFid } = useFarcasterAccount();
+//   return (
+//     <PlatformSharingButton
+//       variant="outline"
+//       className="border-secondary bg-white"
+//       twitterText={getTransactionShareTextWithTwitter(
+//         type,
+//         transactionDetailURL,
+//       )}
+//       warpcastText={getTransactionShareTextWithWarpcast(
+//         type,
+//         transactionDetailURL,
+//       )}
+//       websiteLink={getTradePageWebsiteLink({
+//         fid: currFid,
+//       })}
+//       frameLink={getTradePageFrameLink({
+//         fid: currFid,
+//       })}
+//       navigateToCreatePageAfter={navigateToCreatePageAfter}
+//     />
+//   );
+// }
 
 export function CommunitySharingButton({
   name,
@@ -154,5 +147,60 @@ export function CommunitySharingButton({
         fid: currFid,
       })}
     />
+  );
+}
+
+type TransactionResultProps = {
+  type: ONCHAIN_ACTION_TYPE;
+  transactionDetailURL: string;
+};
+
+export function TransactionResultSharingButton({
+  type,
+  transactionDetailURL,
+  text,
+  twitterText,
+  warpcastText,
+  websiteLink,
+  frameLink,
+  className,
+  navigateToCreatePageAfter,
+  ...props
+}: ButtonProps & ShareProps & TransactionResultProps) {
+  const [open, setOpen] = useState(false);
+  const { currFid } = useFarcasterAccount();
+
+  return (
+    <View>
+      <Button
+        variant="outline" className="border-secondary bg-white"
+        onPress={() => {
+          setOpen(true);
+        }}
+        {...props}
+      >
+        <Text>Share & Earn $CAST</Text>
+      </Button>
+      <PlatformSharingModal
+        open={open}
+        onOpenChange={(open) => setOpen(open)}
+        text={text}
+        twitterText={getTransactionShareTextWithTwitter(
+          type,
+          transactionDetailURL,
+        )}
+        warpcastText={getTransactionShareTextWithWarpcast(
+          type,
+          transactionDetailURL,
+        )}
+        websiteLink={getTradePageWebsiteLink({
+          fid: currFid,
+        })}
+        frameLink={getTradePageFrameLink({
+          fid: currFid,
+        })}
+        navigateToCreatePageAfter={navigateToCreatePageAfter}
+      />
+    </View>
   );
 }

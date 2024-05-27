@@ -4,7 +4,7 @@ import { Chain, TransactionReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { ExternalLink } from "../common/ExternalLink";
-import { Check, X } from "../common/Icons";
+import { Check, ReceiptText, X } from "../common/Icons";
 import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
@@ -56,8 +56,9 @@ export function TransactionInfo({
               href={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
               target="_blank"
             >
-              <Button variant="outline" className="border-secondary bg-white">
-                <Text className="text-secondary">See Details</Text>
+              <Button variant="secondary">
+                {/* <Text>See Details</Text> */}
+                <ReceiptText />
               </Button>
             </ExternalLink>
           )}

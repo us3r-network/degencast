@@ -78,6 +78,7 @@ import {
   Chrome,
   Globe,
   Settings,
+  ReceiptText,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -171,6 +172,7 @@ interopIcon(UserRoundCheck);
 interopIcon(Chrome);
 interopIcon(Globe);
 interopIcon(Settings);
+interopIcon(ReceiptText);
 export {
   Activity,
   Airplay,
@@ -250,4 +252,5 @@ export {
   Chrome,
   Globe,
   Settings,
+  ReceiptText,
 };
