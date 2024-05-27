@@ -17,6 +17,7 @@ export default function PlatformSharingModal({
   twitterText,
   warpcastText,
   websiteLink,
+  warpcastChannelId,
   frameLink,
   open,
   showPoints = true,
@@ -26,6 +27,7 @@ export default function PlatformSharingModal({
   text?: string;
   twitterText?: string;
   warpcastText?: string;
+  warpcastChannelId?: string;
   websiteLink: string;
   frameLink: string;
   open: boolean;
@@ -46,7 +48,14 @@ export default function PlatformSharingModal({
     } else {
       onOpenChange(false);
       navigation.navigate(
-        ...(["create", { text: createText, embeds: [frameLink] }] as never),
+        ...([
+          "create",
+          {
+            text: createText,
+            embeds: [frameLink],
+            channelId: warpcastChannelId || "",
+          },
+        ] as never),
       );
       navigateToCreatePageAfter?.();
     }

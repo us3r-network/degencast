@@ -1,6 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, SafeAreaView, ActivityIndicator } from "react-native";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -10,6 +10,7 @@ import Editor from "~/components/social-farcaster/Editor";
 import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
 import Toast from "react-native-toast-message";
 import GoBackButton from "~/components/common/GoBackButton";
+import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 
 const HomeChanel = {
   id: "",
@@ -21,10 +22,14 @@ const HomeChanel = {
 export default function CreateScreen() {
   const localSearchParams = useLocalSearchParams();
   console.log("localSearchParams", localSearchParams);
-  const { embeds: searchEmbeds, text: searchText } = (localSearchParams ||
-    {}) as {
+  const {
+    embeds: searchEmbeds,
+    text: searchText,
+    channelId: searchChannelId,
+  } = (localSearchParams || {}) as {
     embeds: string[];
     text: string;
+    channelId: string;
   };
   const embeds =
     typeof searchEmbeds === "string"
@@ -40,6 +45,17 @@ export default function CreateScreen() {
   const [value, setValue] = useState(searchText || "");
   const [images, setImages] = useState<string[]>([]);
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
+  const { warpcastChannels } = useWarpcastChannels();
+  useEffect(() => {
+    if (searchChannelId) {
+      const channel = warpcastChannels.find(
+        (channel) => channel.id === searchChannelId,
+      );
+      if (channel) {
+        setChannel(channel);
+      }
+    }
+  }, [warpcastChannels, searchChannelId]);
   const { login, ready, user } = usePrivy();
 
   const fid = user?.farcaster?.fid;

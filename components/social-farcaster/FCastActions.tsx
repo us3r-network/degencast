@@ -120,6 +120,7 @@ export function FCastExploreActions({
   showActions: boolean;
   showActionsChange: (showActions: boolean) => void;
 }) {
+  const castUserData = farcasterUserDataObj[cast.fid];
   const channelId = communityInfo.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
@@ -183,7 +184,13 @@ export function FCastExploreActions({
         onGift={onGift}
         onShare={onShare}
         onComment={onComment}
-        onMint={() => setOpenMintNftModal(true)}
+        onMint={() => {
+          if (!authenticated) {
+            login();
+            return;
+          }
+          setOpenMintNftModal(true);
+        }}
         showActions={showActions}
         showActionsChange={showActionsChange}
         {...props}
@@ -203,6 +210,7 @@ export function FCastExploreActions({
       />
       <FCastMintNftModal
         cast={cast}
+        castUserData={castUserData}
         channelId={channelId}
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}

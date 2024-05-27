@@ -1,7 +1,7 @@
 import { getZoraMintLink } from "../zora";
 
 export const DEGENCAST_WEB_HOST =
-  process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://dev.degencast.xyz";
+  process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://degencast.xyz";
 
 // TODO env ?
 export const DEGENCAST_FRAME_HOST = "https://beta.frames.degencast.xyz";
