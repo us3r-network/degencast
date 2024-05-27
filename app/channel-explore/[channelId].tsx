@@ -224,7 +224,7 @@ export default function ChannelExploreScreen() {
                       cast={data}
                       farcasterUserDataObj={farcasterUserDataObj}
                       webpageImgIsFixedRatio={true}
-                      viewMoreWordLimits={isDesktop ? 200 : 80}
+                      viewMoreWordLimits={isDesktop ? 200 : 50}
                     />
                   </Pressable>
                 </View>
