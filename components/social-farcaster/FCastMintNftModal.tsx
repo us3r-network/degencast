@@ -8,7 +8,6 @@ import { AspectRatio } from "../ui/aspect-ratio";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { useEffect, useMemo, useState } from "react";
 import { Loading } from "../common/Loading";
-import { imgLinkToBase64, imgLinkToBase64WithCors } from "~/utils/image";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { ZORA_CAST_NFT_CHAIN_ID } from "~/constants/zora";
 import useCreateNew1155Token from "~/hooks/social-farcaster/cast-nft/useCreateNew1155Token";
@@ -22,6 +21,11 @@ import {
   getMintCastFrameLink,
   getMintCastWebsiteLink,
 } from "~/utils/platform-sharing/link";
+import { getCastImageUrl } from "~/services/farcaster/api";
+import { usePrivy } from "@privy-io/react-auth";
+import { UserData } from "~/utils/farcaster/user-data";
+import useUserBulk from "~/hooks/user/useUserBulk";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 // import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
@@ -29,49 +33,58 @@ export default function FCastMintNftModal({
   channelId,
   open,
   onOpenChange,
+  castUserData,
 }: {
   cast: FarCast;
   channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  castUserData: UserData;
 }) {
-  const { address } = useAccount();
+  const { connectWallet } = usePrivy();
+  const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const castHex = getCastHex(cast);
-  const warpcastImgUrl = `https://client.warpcast.com/v2/cast-image?castHash=0x${castHex}`;
+  const imgUrl = getCastImageUrl(`0x${castHex}`);
   const [imgLoading, setImgLoading] = useState(true);
-  // const [imgBase64, setImgBase64] = useState("");
   const [openShare, setOpenShare] = useState(false);
   const [createdTokenInfo, setCreatedTokenInfo] = useState<{
     chainId: number;
     contractAddress: string;
     tokenId: number;
   } | null>(null);
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const base64 = await imgLinkToBase64(originImgUrl);
-  //       setImgBase64(base64);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   })();
-  // }, [originImgUrl]);
   const { findCollectionWithCache, castCollectionsLoading } =
     useCastCollection();
   const collection = useMemo(() => {
     if (!address || !chainId) return null;
     return findCollectionWithCache(address, chainId);
   }, [address, chainId, findCollectionWithCache]);
+
+  const { currFid } = useFarcasterAccount();
+  const {
+    items: userItems,
+    load,
+    loading: currUserDataLoading,
+  } = useUserBulk(Number(currFid) || undefined);
+  useEffect(() => {
+    if (currFid) load(Number(currFid));
+  }, [currFid]);
+
+  const farcasterUserInfo = userItems.length > 0 ? userItems[0] : undefined;
+  const currUserDisplayName = farcasterUserInfo
+    ? farcasterUserInfo.display_name
+    : "";
   const {
     createNewToken,
     createNewCollection,
     loading: create1155TokenLoading,
   } = useCreateNew1155Token({
     cast,
-    imgUrl: warpcastImgUrl,
+    castUserData,
+    imgUrl: imgUrl,
     channelId,
+    currUserDisplayName,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
       onOpenChange(false);
@@ -112,7 +125,7 @@ export default function FCastMintNftModal({
                   onLoadEnd={() => {
                     setImgLoading(false);
                   }}
-                  source={{ uri: warpcastImgUrl }}
+                  source={{ uri: imgUrl }}
                   style={{
                     width: "100%",
                     height: "100%",
@@ -130,15 +143,17 @@ export default function FCastMintNftModal({
               className="font-bold text-white"
               variant={"secondary"}
               disabled={
+                currUserDataLoading ||
                 switchChainStatus === "pending" ||
                 create1155TokenLoading ||
                 castCollectionsLoading
               }
               onPress={() => {
+                if (!isConnected) {
+                  connectWallet();
+                  return;
+                }
                 if (chainId !== ZORA_CAST_NFT_CHAIN_ID) {
-                  console.log("chainId", chainId);
-                  console.log("ZORA_CAST_NFT_CHAIN_ID", ZORA_CAST_NFT_CHAIN_ID);
-
                   switchChain({ chainId: ZORA_CAST_NFT_CHAIN_ID });
                   return;
                 }
@@ -150,20 +165,27 @@ export default function FCastMintNftModal({
                 }
               }}
             >
-              {create1155TokenLoading ? (
-                <View className=" flex-row items-center gap-2">
-                  <Text>
-                    {collection
-                      ? "Uploading Metadata & Minting"
-                      : "Creating Collection & Minting"}
-                  </Text>
-                  <ActivityIndicator className="text-secondary" />
-                </View>
-              ) : chainId !== ZORA_CAST_NFT_CHAIN_ID ? (
-                <Text>Switch Chain</Text>
-              ) : (
-                <Text>Mint Cast & Share</Text>
-              )}
+              {(() => {
+                if (!isConnected) {
+                  return <Text>Please connect your wallet first</Text>;
+                }
+                if (create1155TokenLoading) {
+                  return (
+                    <View className=" flex-row items-center gap-2">
+                      <Text>
+                        {collection
+                          ? "Uploading Metadata & Minting"
+                          : "Creating Collection & Minting"}
+                      </Text>
+                      <ActivityIndicator className="text-secondary" />
+                    </View>
+                  );
+                }
+                if (chainId !== ZORA_CAST_NFT_CHAIN_ID) {
+                  return <Text>Switch Chain</Text>;
+                }
+                return <Text>Mint Cast & Share</Text>;
+              })()}
             </Button>
           </View>
         </DialogContent>
@@ -175,6 +197,7 @@ export default function FCastMintNftModal({
           onOpenChange={(open) => setOpenShare(open)}
           twitterText={getMintCastTextWithTwitter()}
           warpcastText={getMintCastTextWithWarpcast()}
+          warpcastChannelId="zora"
           websiteLink={getMintCastWebsiteLink(createdTokenInfo!)}
           frameLink={getMintCastFrameLink(createdTokenInfo!)}
           navigateToCreatePageAfter={() => {

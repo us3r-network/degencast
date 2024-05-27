@@ -17,9 +17,11 @@ const farcasterHandleToBioLinkHandle = (handle: string) => {
 export default function FCastText({
   cast,
   farcasterUserDataObj,
+  viewMoreWordLimits,
 }: {
   cast: FarCast;
   farcasterUserDataObj: { [key: string]: UserData } | undefined;
+  viewMoreWordLimits?: number;
 }) {
   const { text, mentions, mentionsPositions: indices } = cast;
   const embeds = useMemo(() => getEmbeds(cast), [cast]);
@@ -55,6 +57,21 @@ export default function FCastText({
       return (
         <Text className="inline" key={index}>
           {s.split(/(\s|\n)/).map((part, index_) => {
+            if (viewMoreWordLimits) {
+              if (index_ === viewMoreWordLimits) {
+                return (
+                  <Text key={index_}>
+                    <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
+                      {" "}
+                      ... view more
+                    </Text>
+                  </Text>
+                );
+              }
+              if (index_ > viewMoreWordLimits) {
+                return null;
+              }
+            }
             if (isURL(part, { require_protocol: false })) {
               const link = !(
                 part.toLowerCase().startsWith("https://") ||

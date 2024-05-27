@@ -2,7 +2,7 @@ import { DEGENCAST_FRAME_HOST } from "~/constants/farcaster";
 import { getZoraMintLink } from "../zora";
 
 export const DEGENCAST_WEB_HOST =
-  process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://dev.degencast.xyz";
+  process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST || "https://degencast.xyz";
 
 export const getCastDetailWebsiteLink = (
   castHex: string,

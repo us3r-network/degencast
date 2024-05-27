@@ -127,6 +127,8 @@ export default function ExploreScreenScroll() {
                     <FCast
                       cast={data}
                       farcasterUserDataObj={farcasterUserDataObj}
+                      webpageImgIsFixedRatio={true}
+                      viewMoreWordLimits={isDesktop ? 200 : 50}
                     />
                   </Pressable>
                   <FCastExploreActions

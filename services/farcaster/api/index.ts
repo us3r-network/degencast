@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import { FARCASTER_API_URL } from "~/constants";
+import { API_BASE_URL, FARCASTER_API_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
@@ -331,4 +331,8 @@ export function fetchUserChannels({
     url: `/topics/recommendaton/channels?fid=${fid || ""}&pubkey=0xA25532B1287dEe6501fFa13Ff457fFcc9a6Ca6B0`,
     method: "get",
   });
+}
+
+export function getCastImageUrl(castHash: string) {
+  return `${API_BASE_URL}/3r-farcaster/cast-image?castHash=${castHash}`;
 }

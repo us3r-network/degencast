@@ -300,6 +300,7 @@ export const PostDetailActions = ({
   onGift,
   onShare,
   onComment,
+  onMint,
   hideLike,
   hideGift,
   hideShare,
@@ -313,6 +314,7 @@ export const PostDetailActions = ({
   onGift?: () => void;
   onShare?: () => void;
   onComment?: () => void;
+  onMint?: () => void;
   hideLike?: boolean;
   hideGift?: boolean;
   hideShare?: boolean;
@@ -348,6 +350,13 @@ export const PostDetailActions = ({
           onPress={onComment}
         />
       )}
+
+      <MintButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        onPress={onMint}
+      />
 
       {!hideShare && (
         <ShareButton
