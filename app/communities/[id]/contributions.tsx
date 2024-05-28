@@ -7,7 +7,7 @@ import { useCommunityCtx } from "./_layout";
 import { Image } from "react-native";
 import { Loading } from "~/components/common/Loading";
 
-export default function TipsRankScreen() {
+export default function ContributionsScreen() {
   const { community } = useCommunityCtx();
   const communityShare = community?.shares?.[0];
   const subjectAddress = communityShare?.subjectAddress;
