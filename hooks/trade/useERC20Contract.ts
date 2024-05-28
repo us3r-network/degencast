@@ -3,7 +3,7 @@ import { Address, erc20Abi } from "viem";
 import {
   useReadContract,
   useWaitForTransactionReceipt,
-  useWriteContract
+  useWriteContract,
 } from "wagmi";
 
 const MAX_ALLOWANCE = BigInt(2) ** BigInt(256) - BigInt(1);
@@ -53,18 +53,18 @@ export function useERC20Approve({
     });
   };
 
-  useEffect (() => {
-    if (isSuccess){
+  useEffect(() => {
+    if (isSuccess) {
       refetch();
       reset();
     }
   }, [isSuccess]);
 
-  useEffect (() => {
-    if (writeError || transationError){
+  useEffect(() => {
+    if (writeError || transationError) {
       reset();
     }
-  }, [writeError,transationError]);
+  }, [writeError, transationError]);
 
   return {
     allowance,
@@ -72,5 +72,62 @@ export function useERC20Approve({
     refetch,
     writing,
     waiting,
-  }
+  };
+}
+
+export function useERC20Transfer({
+  contractAddress,
+}: {
+  contractAddress: Address;
+}) {
+  const {
+    writeContract,
+    data: hash,
+    isPending,
+    error,
+    reset,
+  } = useWriteContract();
+
+  const {
+    data: transactionReceipt,
+    error: transationError,
+    isLoading: transationLoading,
+    isSuccess,
+    status: transationStatus,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const transfer = async (to: Address, amount: bigint) => {
+    console.log("transfer", to, amount, contractAddress);
+    writeContract({
+      address: contractAddress,
+      abi: erc20Abi,
+      functionName: "transfer",
+      args: [to, amount],
+    });
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      reset();
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (error || transationError) {
+      reset();
+    }
+  }, [error, transationError]);
+
+  return {
+    transfer,
+    error,
+    isPending,
+    isSuccess,
+    transactionReceipt,
+    transationError,
+    transationLoading,
+    transationStatus,
+  };
 }
