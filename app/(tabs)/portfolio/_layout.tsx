@@ -1,5 +1,4 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { useHeaderHeight } from "@react-navigation/elements";
 import {
   Stack,
   useFocusEffect,
@@ -25,7 +24,7 @@ const TABS = [
   { label: "Casts", value: "casts" },
 ];
 export default function PortfolioScreen() {
-  const headerHeight = useHeaderHeight() || DEFAULT_HEADER_HEIGHT;
+  const headerHeight = DEFAULT_HEADER_HEIGHT;
   const { ready, authenticated: privyAuthenticated } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
