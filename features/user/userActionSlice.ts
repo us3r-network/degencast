@@ -74,6 +74,7 @@ const defaultActionPointConfig: UserActionPointConfig = {
   BuyChannelShare: { unit: 500 },
   Invite: { unit: 200 },
   SwapToken: { unit: 500 },
+  MintCast: { unit: 200 },
 };
 const userActionState: UserActionState = {
   actionPointConfig: defaultActionPointConfig,
