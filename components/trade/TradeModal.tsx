@@ -238,7 +238,6 @@ function SwapToken({
 
   useEffect(() => {
     //todo: add condition of more than $30
-    console.log("isSuccess", isSuccess, transactionReceipt);
     if (isSuccess)
       submitUserAction({
         action: UserActionName.SwapToken,
