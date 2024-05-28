@@ -93,7 +93,9 @@ function ERC20TokenBalance({
   const tokenInfo = useUserToken(address, token.address, token.chainId);
   const balance = tokenInfo?.balance || "0";
   const symbol = token.symbol || "";
-  setBalance?.(Number(balance));
+  useEffect(() => {
+    if (balance) setBalance?.(Number(balance));
+  }, [balance, setBalance]);
   const Component = asChild ? Slot.View : TokenBalance;
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>

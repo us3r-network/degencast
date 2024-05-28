@@ -1,6 +1,5 @@
-import { useHeaderHeight } from "@react-navigation/elements";
 import { Stack, useFocusEffect, useRouter, useSegments } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Card, CardContent } from "~/components/ui/card";
@@ -16,7 +15,7 @@ const TABS = [
 ];
 
 export default function TradeScreen() {
-  const headerHeight = useHeaderHeight() || DEFAULT_HEADER_HEIGHT;
+  const headerHeight = DEFAULT_HEADER_HEIGHT;
   const segments = useSegments();
   const [value, setValue] = useState(segments[2] || TABS[0].value);
   const router = useRouter();

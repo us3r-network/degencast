@@ -87,7 +87,7 @@ const SelectContent = React.forwardRef<
   const { open } = SelectPrimitive.useRootContext();
 
   return (
-    // <SelectPrimitive.Portal hostName={portalHost}>
+    <SelectPrimitive.Portal hostName={portalHost}>
       <SelectPrimitive.Overlay
         style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
       >
@@ -120,7 +120,7 @@ const SelectContent = React.forwardRef<
           </SelectPrimitive.Content>
         </Animated.View>
       </SelectPrimitive.Overlay>
-    // </SelectPrimitive.Portal>
+    </SelectPrimitive.Portal>
   );
 });
 SelectContent.displayName = SelectPrimitive.Content.displayName;

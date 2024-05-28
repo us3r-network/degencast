@@ -1,12 +1,13 @@
 import { View, ViewProps, Image } from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "~/components/ui/text";
+import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 
 export function Header({ className, ...props }: ViewProps) {
   return (
     <View
       style={{
-        height: 54,
+        height: DEFAULT_HEADER_HEIGHT,
         paddingLeft: 15,
         paddingRight: 15,
       }}
