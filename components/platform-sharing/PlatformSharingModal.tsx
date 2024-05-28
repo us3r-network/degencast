@@ -135,7 +135,7 @@ function ShareButton({
       <View className=" flex-1 flex-col items-center justify-center">
         <Text className=" text-xs text-black">{text}</Text>
         {Number(points) > 0 && (
-          <Text className=" mt-1 text-xs text-secondary">+{points} Points</Text>
+          <Text className=" mt-1 text-xs text-secondary">+{points} $CAST</Text>
         )}
       </View>
     </Button>

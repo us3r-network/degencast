@@ -83,7 +83,7 @@ export const getAppFrameLink = (opts?: { fid?: string | number }) => {
 };
 
 export const getTradePageWebsiteLink = (opts?: { fid?: string | number }) => {
-  let link = `${DEGENCAST_WEB_HOST}/trade/tokens`;
+  let link = `${DEGENCAST_WEB_HOST}/channels/tokens`;
   const { fid } = opts || {};
   if (fid) {
     link += `?inviteFid=${fid}`;

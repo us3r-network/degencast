@@ -60,7 +60,7 @@ export default function useLoadExploreCastsWithNaynar() {
       addManyToLikedActions(likedActions);
       setCasts((pre) => [...pre, ...casts]);
       pageInfoRef.current = pageInfo;
-      console.log("pageInfo", pageInfo);
+      // console.log("pageInfo", pageInfo);
 
       if (farcasterUserData.length > 0) {
         const userDataObj = userDataObjFromArr(farcasterUserData);
