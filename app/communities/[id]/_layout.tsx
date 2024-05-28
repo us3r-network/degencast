@@ -30,7 +30,7 @@ const initialRouteName = "tokens";
 
 const TABS = [
   { label: "Tokens", value: "tokens" },
-  { label: "Shares", value: "shares" },
+  // { label: "Shares", value: "shares" },
   { label: "Tips Rank", value: "tips-rank" },
   { label: "Casts", value: "casts" },
 ];
