@@ -14,6 +14,7 @@ import communityRank from "~/features/trade/communityRankSlice";
 import communityShares from "~/features/trade/communitySharesSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
 import userChannels from "~/features/user/userChannelsSlice";
+import userHostChannels from "~/features/user/userHostChannelsSlice";
 import userCommunityShares from "~/features/user/communitySharesSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
 import userAction from "~/features/user/userActionSlice";
@@ -46,6 +47,7 @@ export const store = configureStore({
     communityRank,
     userCommunityTokens,
     userChannels,
+    userHostChannels,
     userCommunityShares,
     channelExplorePage,
     communityDetail,

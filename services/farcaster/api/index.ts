@@ -336,3 +336,14 @@ export function fetchUserChannels({
 export function getCastImageUrl(castHash: string) {
   return `${API_BASE_URL}/3r-farcaster/cast-image?castHash=${castHash}`;
 }
+
+export function fetchUserHostChannels({
+  fid,
+}: {
+  fid: number;
+}): AxiosPromise<ApiResp<{ id: string; name: string; imageUrl: string }[]>> {
+  return request({
+    url: `/topics/host-channels?fid=${fid}`,
+    method: "get",
+  });
+}
