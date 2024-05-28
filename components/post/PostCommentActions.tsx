@@ -90,10 +90,10 @@ export const RepostButton = ({
     <ActionButton {...props}>
       <Repeat
         size={iconSize}
-        className={cn(" stroke-secondary", reposted && " stroke-primary ")}
+        className={cn(" stroke-secondary", reposted && " stroke-[#00D1A7] ")}
       />
       <ActionText
-        className={cn(" text-secondary", reposted && " text-primary")}
+        className={cn(" text-secondary", reposted && " text-[#00D1A7]")}
       >
         {repostCount || 0}
       </ActionText>

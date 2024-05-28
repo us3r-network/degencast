@@ -21,6 +21,7 @@ import userAction from "~/features/user/userActionSlice";
 import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
+import castReactions from "~/features/cast/castReactionsSlice";
 import castCollection from "~/features/cast/castCollectionSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
 import communityDetail from "~/features/community/communityDetailSlice";
@@ -56,6 +57,7 @@ export const store = configureStore({
     communityDetailCasts,
     communityShareStatistics,
     communityTrending,
+    castReactions,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>
