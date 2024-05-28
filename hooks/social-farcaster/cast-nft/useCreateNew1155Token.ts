@@ -15,6 +15,8 @@ import { imgLinkToBlob } from "~/utils/image";
 import { UserData } from "~/utils/farcaster/user-data";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
+import useUserAction from "~/hooks/user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
@@ -139,6 +141,7 @@ export default function useCreateNew1155Token({
     chainId: number;
   }) => void;
 }) {
+  const { submitUserAction } = useUserAction();
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
   const { submitCollection } = useCastCollection();
@@ -186,6 +189,11 @@ export default function useCreateNew1155Token({
         type: ZoraCollectionType.CAST,
         tokenMetadataURI: tokenMetadataURI,
         metadataJson: JSON.stringify(tokenMetadata),
+      });
+      const castHex = getCastHex(cast);
+      submitUserAction({
+        action: UserActionName.MintCast,
+        castHash: castHex,
       });
     } catch (error) {
       console.error("Error creating 1155 contract:", error);
@@ -246,6 +254,11 @@ export default function useCreateNew1155Token({
         type: ZoraCollectionType.CAST,
         tokenMetadataURI: tokenMetadataURI,
         metadataJson: JSON.stringify(tokenMetadata),
+      });
+      const castHex = getCastHex(cast);
+      submitUserAction({
+        action: UserActionName.MintCast,
+        castHash: castHex,
       });
     } catch (error) {
       console.error("Error creating 1155 contract:", error);
