@@ -24,15 +24,20 @@ export default function useLoadExploreCastsWithNaynar() {
   const [loading, setLoading] = useState(false);
   const [firstLoading, setFirstLoading] = useState(true);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
-  const pageInfoRef = useRef({
+  const pageInfoRef = useRef<{
+    hasNextPage: boolean;
+    cursor: string;
+    requestFailed?: boolean;
+  }>({
     hasNextPage: true,
     cursor: "",
+    requestFailed: false,
   });
 
   const loadCasts = async (cursor: string, limit: number) => {
-    const { hasNextPage } = pageInfoRef.current;
+    const { hasNextPage, requestFailed } = pageInfoRef.current;
 
-    if (hasNextPage === false) {
+    if (hasNextPage === false || requestFailed) {
       return;
     }
     setLoading(true);
@@ -68,6 +73,7 @@ export default function useLoadExploreCastsWithNaynar() {
       }
     } catch (err) {
       console.error(err);
+      pageInfoRef.current["requestFailed"] = true;
     } finally {
       setLoading(false);
       setFirstLoading(false);

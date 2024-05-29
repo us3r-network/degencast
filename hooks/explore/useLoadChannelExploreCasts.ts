@@ -28,16 +28,21 @@ export default function useLoadChannelExploreCasts(params: {
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const channelIdRef = useRef(channelId);
-  const pageInfoRef = useRef({
+  const pageInfoRef = useRef<{
+    hasNextPage: boolean;
+    endIndex: number;
+    requestFailed?: boolean;
+  }>({
     hasNextPage: true,
     endIndex: 0,
+    requestFailed: false,
   });
   const initCastRef = useRef(initCast);
 
   const loadCasts = async (start: number, end: number) => {
-    const { hasNextPage } = pageInfoRef.current;
+    const { hasNextPage, requestFailed } = pageInfoRef.current;
 
-    if (hasNextPage === false) {
+    if (hasNextPage === false || requestFailed) {
       return;
     }
     setLoading(true);
@@ -81,6 +86,7 @@ export default function useLoadChannelExploreCasts(params: {
       }
     } catch (err) {
       console.error(err);
+      pageInfoRef.current["requestFailed"] = true;
     } finally {
       setLoading(false);
     }
