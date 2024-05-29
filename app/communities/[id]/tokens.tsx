@@ -60,7 +60,7 @@ export default function TokensScreen() {
               When the shares are sold out, all the liquidity from the bonding
               curve will be deposited into {`\n`}
               Raydium and token launch will begain. {`\n`}
-              Please apply in advance.
+              {isChannelHost && `Please apply in advance.`}
             </Text>
           </ScrollView>
           {isChannelHost && (
