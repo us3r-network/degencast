@@ -39,7 +39,8 @@ const itemHeight =
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
   const { navigateToCastDetail } = useCastPage();
-  const { channelId } = useLocalSearchParams<{ channelId: string }>();
+  const params = useLocalSearchParams<{ channelId: string }>();
+  const { channelId } = params as { channelId: string };
   const globalParams = useGlobalSearchParams<{ cast?: string }>();
   const { cast: castHex } = globalParams || {};
 
@@ -55,14 +56,13 @@ export default function ChannelExploreScreen() {
 
   const channelPageData = channelExploreData?.[channelId];
   const {
-    origin: channelPageOrigin,
     cast: channelPageCast,
     farcasterUserDataObj: channelPageCastUserDataObj,
   } = channelPageData || {};
 
-  const showGoHomeBtn = ![ChannelExploreDataOrigin.Explore].includes(
-    channelPageOrigin,
-  );
+  const routes = navigation.getState()?.routes;
+  const prevRoute = routes[routes.length - 2];
+  const showGoHomeBtn = prevRoute?.name !== "(tabs)";
 
   const cast = useMemo(() => {
     return channelPageCast && castHex && castHex === getCastHex(channelPageCast)

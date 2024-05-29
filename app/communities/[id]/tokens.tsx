@@ -31,7 +31,7 @@ export default function TokensScreen() {
   }
   return (
     <View className="flex-1 flex-col">
-      {communityToken ? (
+      {communityToken && communityToken?.tradeInfo ? (
         <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
           <CommunityTokenInfo
             tokenInfo={{

@@ -1,4 +1,4 @@
-import type { Frame } from 'frames.js';
+import type { Frame } from "frames.js";
 
 export enum ApiRespCode {
   SUCCESS = 0,
@@ -12,9 +12,9 @@ export type ApiResp<T> = {
 };
 
 export type FarCastEmbedMetaCast = {
-  type: 'cast';
+  type: "cast";
   cast: Partial<FarCast>;
-  user: { [key: string]: any }[];
+  user: { fid: string; type: number; value: string }[];
 };
 
 export type FarCastEmbedMeta = {
@@ -59,13 +59,13 @@ export type FarCast = {
   deleted_at: string | null;
   embeds: any[];
   fid: string;
-  hash: { type: 'Buffer'; data: Uint8Array };
+  hash: { type: "Buffer"; data: Uint8Array };
   id: string;
   mentions: number[];
   mentions_positions: string[];
   mentionsPositions: number[];
   parent_fid: string | null;
-  parent_hash: { type: 'Buffer'; data: Uint8Array } | null;
+  parent_hash: { type: "Buffer"; data: Uint8Array } | null;
   parent_url: string | null;
   rootParentUrl: string | null;
   parent: string | null;
@@ -90,8 +90,8 @@ export type FarCast = {
 };
 
 export enum SocialPlatform {
-  Farcaster = 'farcaster',
-  Lens = 'lens',
+  Farcaster = "farcaster",
+  Lens = "lens",
 }
 
 export type PlatformAccountData = {
@@ -197,11 +197,13 @@ export type PoapData = {
   created: string;
 };
 
-export type ProfileFeedsDataItem =
-  | { data: FarCast; platform: SocialPlatform.Farcaster }
-  // | { data: LensPost; platform: SocialPlatform.Lens; version?: string }
-  // | { data: LensMirror; platform: SocialPlatform.Lens; version?: string }
-  // | { data: LensComment; platform: SocialPlatform.Lens; version?: string };
+export type ProfileFeedsDataItem = {
+  data: FarCast;
+  platform: SocialPlatform.Farcaster;
+};
+// | { data: LensPost; platform: SocialPlatform.Lens; version?: string }
+// | { data: LensMirror; platform: SocialPlatform.Lens; version?: string }
+// | { data: LensComment; platform: SocialPlatform.Lens; version?: string };
 
 export type ProfileFeedsPageInfo = {
   // endLensCursor: string;
@@ -210,8 +212,8 @@ export type ProfileFeedsPageInfo = {
 };
 
 export enum ProfileFeedsGroups {
-  POSTS = 'posts',
-  LIKES = 'likes',
-  REPOSTS = 'reposts',
-  REPLIES = 'replies',
+  POSTS = "posts",
+  LIKES = "likes",
+  REPOSTS = "reposts",
+  REPLIES = "replies",
 }

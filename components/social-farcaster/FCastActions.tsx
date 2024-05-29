@@ -29,7 +29,7 @@ export function FCastDetailActions({
   isDetail?: boolean;
 }) {
   const castUserData = farcasterUserDataObj[cast.fid];
-  const channelId = communityInfo.channelId || "";
+  const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
