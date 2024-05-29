@@ -123,7 +123,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
         {fid && (
           <View className="flex-row items-center gap-1">
             <DegenTipsStats fid={fid} />
-            <Text className="text-sm text-secondary">Degen allowance</Text>
+            <Text className="text-sm text-secondary">DEGEN allowance</Text>
           </View>
         )}
       </View>
