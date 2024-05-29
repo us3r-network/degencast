@@ -14,7 +14,6 @@ import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 
 export default function PortfolioScreen() {
-  const headerHeight = DEFAULT_HEADER_HEIGHT;
   const { ready, authenticated: privyAuthenticated } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
@@ -26,7 +25,7 @@ export default function PortfolioScreen() {
   const segments = useSegments();
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: headerHeight }}
+      style={{ flex: 1, paddingTop: DEFAULT_HEADER_HEIGHT }}
       className="bg-background"
     >
       <View className="mx-auto box-border w-full max-w-screen-sm flex-1 px-4">

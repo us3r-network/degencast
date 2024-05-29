@@ -15,7 +15,6 @@ const TABS = [
 ];
 
 export default function TradeScreen() {
-  const headerHeight = DEFAULT_HEADER_HEIGHT;
   const segments = useSegments();
   const [value, setValue] = useState(segments[2] || TABS[0].value);
   const router = useRouter();
@@ -28,7 +27,7 @@ export default function TradeScreen() {
   });
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: headerHeight }}
+      style={{ flex: 1, paddingTop: DEFAULT_HEADER_HEIGHT }}
       className="bg-background"
     >
       <View className="box-border w-full flex-1 px-4 ">
