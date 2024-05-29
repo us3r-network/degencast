@@ -2,10 +2,15 @@ import { View, ViewProps } from "react-native";
 import { Text } from "~/components/ui/text";
 import { CommunityData } from "~/services/community/api/community";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { formatNumberToUnitString } from "~/utils/number";
 import { cn } from "~/lib/utils";
 import { CommunityJoinIconButton } from "./CommunityJoinButton";
 
+const displayValue = (value: number) => {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 1,
+    notation: "compact",
+  }).format(Number(value));
+};
 export default function CommunityDetailMetaInfo({
   communityInfo,
   className,
@@ -15,6 +20,7 @@ export default function CommunityDetailMetaInfo({
 }) {
   const { name, logo, description, memberInfo } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
+
   return (
     <View className={cn("w-full flex-row gap-3", className)} {...props}>
       <Avatar alt={name || ""} className="size-20 border border-secondary">
@@ -30,7 +36,7 @@ export default function CommunityDetailMetaInfo({
         <View className="flex-row items-end gap-3">
           <View className="flex-row gap-1">
             <Text className="text-sm font-medium leading-none text-primary-foreground">
-              {formatNumberToUnitString(totalNumber || 0)}
+              {displayValue(totalNumber || 0)}
             </Text>
             <Text className="text-sm font-medium leading-none text-secondary">
               Members
@@ -38,7 +44,7 @@ export default function CommunityDetailMetaInfo({
           </View>
           <View className="flex-row gap-1">
             <Text className="text-sm font-medium leading-none text-primary-foreground">
-              {formatNumberToUnitString(newPostNumber || 0)}
+              {displayValue(newPostNumber || 0)}
             </Text>
             <Text className="text-sm font-medium leading-none text-secondary">
               Casts
