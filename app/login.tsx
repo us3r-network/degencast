@@ -328,12 +328,11 @@ function Step0() {
       </Text>
       <View className="flex gap-2">
         <Text className="text-base font-medium">
-          √ TikTok-style Farcaster Exploration
+          √ Easiest way to explore channels
         </Text>
         <Text className="text-base font-medium">
           √ Trade Channel shares & NFTs & Fan Tokens
         </Text>
-        <Text className="text-base font-medium">√ Claim Channel Airdrops</Text>
         <Text className="text-base font-medium">√ Swap Channel Tokens</Text>
       </View>
       <Text className="text-base text-primary">
