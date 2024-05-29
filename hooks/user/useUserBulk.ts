@@ -2,7 +2,7 @@ import { useState } from "react";
 import { fetchUserBulk } from "~/services/farcaster/neynar/farcaster";
 import { Author } from "~/services/farcaster/types/neynar";
 
-export default function useUserBulk(viewer_fid: number | undefined) {
+export default function useUserBulk(viewer_fid?: number | undefined) {
   const [items, setItems] = useState<Array<Author>>([]);
   const [loading, setLoading] = useState(false);
 

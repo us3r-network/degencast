@@ -31,7 +31,7 @@ export function PortfolioContent({
       <Tabs
         value={value}
         onValueChange={(value) => {
-          const href = `./${value}` + (fid ? `?fid=${fid}` : "");
+          const href = `./${value}`;
           router.navigate(href);
           setValue(value);
         }}

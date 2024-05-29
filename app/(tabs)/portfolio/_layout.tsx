@@ -1,6 +1,5 @@
 import { usePrivy } from "@privy-io/react-auth";
 import {
-  useGlobalSearchParams,
   useRouter,
   useSegments
 } from "expo-router";
@@ -20,8 +19,6 @@ export default function PortfolioScreen() {
   const login = () => {
     router.push("/login");
   };
-  const params = useGlobalSearchParams();
-  const fid = params.fid ? Number(params.fid) : undefined;
   const segments = useSegments();
   return (
     <SafeAreaView
@@ -38,7 +35,7 @@ export default function PortfolioScreen() {
             </Card>
           ) : (
             authenticated && (
-              <PortfolioContent fid={fid} defaultTab={segments?.[2]} />
+              <PortfolioContent defaultTab={segments?.[2]} />
             )
           ))}
       </View>
