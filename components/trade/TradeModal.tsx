@@ -59,9 +59,7 @@ export default function TradeModal({
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
         <DialogHeader
-          className={cn(
-            "z-50 mr-4 flex-row items-center justify-between gap-2",
-          )}
+          className={cn("mr-4 flex-row items-center justify-between gap-2")}
         >
           <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
         </DialogHeader>
@@ -292,17 +290,15 @@ function SwapToken({
     );
   else
     return (
-      <View className="z-40 flex w-full gap-2">
+      <View className="flex w-full gap-2">
         {fromTokenSet && (
-          <View className="z-[100]">
-            <TokenWithAmount
-              tokenSet={fromTokenSet}
-              amount={fromAmount}
-              changeToken={setFromToken}
-              setAmount={(amount) => setFromAmount(amount)}
-              setBalance={(balance) => setFromTokenBalance(balance)}
-            />
-          </View>
+          <TokenWithAmount
+            tokenSet={fromTokenSet}
+            amount={fromAmount}
+            changeToken={setFromToken}
+            setAmount={(amount) => setFromAmount(amount)}
+            setBalance={(balance) => setFromTokenBalance(balance)}
+          />
         )}
         <View className="flex-row items-center">
           <Separator className="flex-1 bg-secondary" />
@@ -315,13 +311,11 @@ function SwapToken({
           <Separator className="flex-1 bg-secondary" />
         </View>
         {toTokenSet && (
-          <View className="z-50">
-            <TokenWithAmount
-              tokenSet={toTokenSet}
-              changeToken={setToToken}
-              amount={toAmount}
-            />
-          </View>
+          <TokenWithAmount
+            tokenSet={toTokenSet}
+            changeToken={setToToken}
+            amount={toAmount}
+          />
         )}
         {fromToken &&
           fromToken.decimals &&
@@ -422,8 +416,8 @@ function TokenWithAmount({
   const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
 
   return (
-    <View className="z-50 flex gap-2">
-      <View className="z-50 flex-row items-center justify-between">
+    <View className="flex gap-2">
+      <View className="flex-row items-center justify-between">
         {tokenSet.type === TokenType.USER_TOKENS ? (
           <UserTokenSelect
             defaultToken={tokenSet.defaultToken}

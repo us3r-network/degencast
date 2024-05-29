@@ -208,7 +208,7 @@ const SendToken = forwardRef<
             onChangeText={(newText) => setAddress(newText as `0x${string}`)}
           />
         </View>
-        <View className="z-50 flex gap-2">
+        <View className="flex gap-2">
           <Text>Token</Text>
           <ToeknSelect selectToken={setToken} chain={chain} />
         </View>
