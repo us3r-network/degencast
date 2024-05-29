@@ -11,6 +11,9 @@ import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPre
 import Toast from "react-native-toast-message";
 import GoBackButton from "~/components/common/GoBackButton";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
+import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
+import useUserAction from "~/hooks/user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 const HomeChanel = {
   id: "",
@@ -20,6 +23,8 @@ const HomeChanel = {
   createdAt: 0,
 };
 export default function CreateScreen() {
+  const { sharingCastMint, clearSharingCastMint } = useCastCollection();
+  const { submitUserAction } = useUserAction();
   const localSearchParams = useLocalSearchParams();
   console.log("localSearchParams", localSearchParams);
   const {
@@ -37,7 +42,6 @@ export default function CreateScreen() {
       : typeof searchEmbeds === "object"
         ? searchEmbeds?.map((item) => ({ url: item }))
         : [];
-  console.log("embeds", embeds);
 
   const [posting, setPosting] = useState(false);
   const { submitCast } = useFarcasterWrite();
@@ -120,6 +124,19 @@ export default function CreateScreen() {
                             // position: "bottom",
                           });
                           setPosting(false);
+
+                          const { castHex, url } = sharingCastMint || {};
+                          if (
+                            url &&
+                            embeds.length > 0 &&
+                            !!embeds.find((item) => item.url === url)
+                          ) {
+                            submitUserAction({
+                              action: UserActionName.MintCast,
+                              castHash: castHex,
+                            });
+                            clearSharingCastMint();
+                          }
                           navigation.goBack();
                         }
                       }}

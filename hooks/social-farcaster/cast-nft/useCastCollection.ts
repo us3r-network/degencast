@@ -5,6 +5,8 @@ import {
   postCastCollection,
   selectCastCollection,
   upsertToCastCollection,
+  setSharingCastMint,
+  clearSharingCastMint,
 } from "~/features/cast/castCollectionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import { ZoraCollectionEntity } from "~/services/zora-collection/types";
@@ -13,7 +15,8 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 export default function useCastCollection() {
   const { address, chainId } = useAccount();
   const dispatch = useAppDispatch();
-  const { collections, status } = useAppSelector(selectCastCollection);
+  const { collections, status, sharingCastMint } =
+    useAppSelector(selectCastCollection);
 
   const getCastCollections = useCallback(() => {
     if (!address || !chainId) return;
@@ -55,6 +58,16 @@ export default function useCastCollection() {
     [],
   );
 
+  const setSharingCastMintAction = useCallback(
+    (params: { castHex: string; url: string }) => {
+      dispatch(setSharingCastMint(params));
+    },
+    [],
+  );
+  const clearSharingCastMintAction = useCallback(() => {
+    dispatch(clearSharingCastMint());
+  }, []);
+
   const castCollectionsLoading = status === AsyncRequestStatus.PENDING;
 
   return {
@@ -64,5 +77,8 @@ export default function useCastCollection() {
     submitCollection,
     findCollectionWithCache,
     addCollectionToCache,
+    sharingCastMint,
+    setSharingCastMint: setSharingCastMintAction,
+    clearSharingCastMint: clearSharingCastMintAction,
   };
 }
