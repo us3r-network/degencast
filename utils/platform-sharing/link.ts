@@ -82,6 +82,30 @@ export const getAppFrameLink = (opts?: { fid?: string | number }) => {
   return link;
 };
 
+export const getPortfolioWebsiteLink = (opts?: {
+  fid: number;
+  inviteFid?: number;
+}) => {
+  let link = DEGENCAST_WEB_HOST;
+  const { fid, inviteFid } = opts || {};
+  if (fid) {
+    link += `/u/${fid}?inviteFid=${inviteFid}`;
+  }
+  return link;
+};
+// TODO degencast portfolio frame link ?
+export const getPortfolioFrameLink = (opts?: {
+  fid: number;
+  inviteFid?: number;
+}) => {
+  let link = DEGENCAST_FRAME_HOST;
+  const { fid, inviteFid } = opts || {};
+  if (fid) {
+    link += `/u/${fid}?inviteFid=${inviteFid}`;
+  }
+  return link;
+};
+
 export const getTradePageWebsiteLink = (opts?: { fid?: string | number }) => {
   let link = `${DEGENCAST_WEB_HOST}/channels/tokens`;
   const { fid } = opts || {};
