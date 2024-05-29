@@ -141,7 +141,7 @@ export default function useCreateNew1155Token({
     chainId: number;
   }) => void;
 }) {
-  const { submitUserAction } = useUserAction();
+  // const { submitUserAction } = useUserAction();
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
   const { submitCollection } = useCastCollection();
@@ -190,11 +190,11 @@ export default function useCreateNew1155Token({
         tokenMetadataURI: tokenMetadataURI,
         metadataJson: JSON.stringify(tokenMetadata),
       });
-      const castHex = getCastHex(cast);
-      submitUserAction({
-        action: UserActionName.MintCast,
-        castHash: castHex,
-      });
+      // const castHex = getCastHex(cast);
+      // submitUserAction({
+      //   action: UserActionName.MintCast,
+      //   castHash: castHex,
+      // });
     } catch (error) {
       console.error("Error creating 1155 contract:", error);
     } finally {
@@ -255,11 +255,11 @@ export default function useCreateNew1155Token({
         tokenMetadataURI: tokenMetadataURI,
         metadataJson: JSON.stringify(tokenMetadata),
       });
-      const castHex = getCastHex(cast);
-      submitUserAction({
-        action: UserActionName.MintCast,
-        castHash: castHex,
-      });
+      // const castHex = getCastHex(cast);
+      // submitUserAction({
+      //   action: UserActionName.MintCast,
+      //   castHash: castHex,
+      // });
     } catch (error) {
       console.error("Error creating 1155 contract:", error);
     } finally {

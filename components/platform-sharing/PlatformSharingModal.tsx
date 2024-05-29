@@ -30,12 +30,14 @@ export default function PlatformSharingModal({
   warpcastChannelId,
   frameLink,
   open,
-  showPoints = true,
+  hideWarpcastPoints,
+  hideTwitterPoints,
   onOpenChange,
   navigateToCreatePageAfter,
 }: ShareProps & {
   open: boolean;
-  showPoints?: boolean;
+  hideWarpcastPoints?: boolean;
+  hideTwitterPoints?: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const { actionPointConfig } = useUserAction();
@@ -87,7 +89,7 @@ export default function PlatformSharingModal({
             <ShareButton
               iconSource={require("~/assets/images/warpcast.png")}
               text="Share & Earn"
-              points={showPoints ? inviteUnit : 0}
+              points={!hideWarpcastPoints ? inviteUnit : 0}
               onPress={onCreateCast}
             />
           )}
@@ -95,7 +97,7 @@ export default function PlatformSharingModal({
             <ShareButton
               iconSource={require("~/assets/images/x.png")}
               text="Share & Earn"
-              points={showPoints ? inviteUnit : 0}
+              points={!hideTwitterPoints ? inviteUnit : 0}
               onPress={onTwitterShare}
             />
           )}

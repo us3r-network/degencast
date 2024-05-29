@@ -54,8 +54,11 @@ export default function FCastMintNftModal({
     contractAddress: string;
     tokenId: number;
   } | null>(null);
-  const { findCollectionWithCache, castCollectionsLoading } =
-    useCastCollection();
+  const {
+    findCollectionWithCache,
+    castCollectionsLoading,
+    setSharingCastMint,
+  } = useCastCollection();
   const collection = useMemo(() => {
     if (!address || !chainId) return null;
     return findCollectionWithCache(address, chainId);
@@ -193,7 +196,7 @@ export default function FCastMintNftModal({
       {createdTokenInfo && (
         <PlatformSharingModal
           open={openShare}
-          showPoints={false}
+          hideTwitterPoints={true}
           onOpenChange={(open) => setOpenShare(open)}
           twitterText={getMintCastTextWithTwitter()}
           warpcastText={getMintCastTextWithWarpcast()}
@@ -201,6 +204,10 @@ export default function FCastMintNftModal({
           websiteLink={getMintCastWebsiteLink(createdTokenInfo!)}
           frameLink={getMintCastFrameLink(createdTokenInfo!)}
           navigateToCreatePageAfter={() => {
+            setSharingCastMint({
+              castHex,
+              url: getMintCastWebsiteLink(createdTokenInfo!),
+            });
             onOpenChange?.(false);
           }}
         />

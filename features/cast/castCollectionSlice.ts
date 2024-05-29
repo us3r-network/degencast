@@ -11,6 +11,10 @@ import {
   postZoraCollection,
 } from "~/services/zora-collection/api";
 
+type SharingCastMint = {
+  castHex: string;
+  url: string;
+};
 type CastCollectionState = {
   collections: {
     [creatorAddress: string]: Array<ZoraCollectionEntity>;
@@ -19,6 +23,7 @@ type CastCollectionState = {
   errorMsg: string;
   postCollectionStatus: AsyncRequestStatus;
   postCollectionErrorMsg: string;
+  sharingCastMint?: SharingCastMint;
 };
 
 const castCollectionState: CastCollectionState = {
@@ -27,6 +32,7 @@ const castCollectionState: CastCollectionState = {
   errorMsg: "",
   postCollectionStatus: AsyncRequestStatus.IDLE,
   postCollectionErrorMsg: "",
+  sharingCastMint: undefined,
 };
 
 export const fetchCastCollections = createAsyncThunk<
@@ -123,6 +129,12 @@ export const castCollectionSlice = createSlice({
         state.collections[creatorAddress].push(collection);
       }
     },
+    setSharingCastMint: (state, action: PayloadAction<SharingCastMint>) => {
+      state.sharingCastMint = action.payload;
+    },
+    clearSharingCastMint: (state) => {
+      state.sharingCastMint = undefined;
+    },
   },
   extraReducers(builder) {
     builder
@@ -161,6 +173,10 @@ export const castCollectionSlice = createSlice({
 });
 
 const { actions, reducer } = castCollectionSlice;
-export const { upsertToCastCollection } = actions;
+export const {
+  upsertToCastCollection,
+  setSharingCastMint,
+  clearSharingCastMint,
+} = actions;
 export const selectCastCollection = (state: RootState) => state.castCollection;
 export default reducer;
