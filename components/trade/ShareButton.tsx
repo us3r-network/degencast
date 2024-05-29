@@ -476,7 +476,7 @@ const BuyShare = forwardRef<
 export const SHARE_TITLE = "About Channel Share";
 export const SHARE_INFO = [
   `Share holders could claim airdrops after channel token launch ${COMING_SOON_TAG}`,
-  `Share holders could receive channel allowance (same as your Degen allowance) ${COMING_SOON_TAG}`,
+  `Share holders could receive channel allowance (same as your DEGEN allowance) ${COMING_SOON_TAG}`,
   "The price of channel shares will increase after each buy",
   "4% of each trade goes into capital pool to support channel rewards, and Degencast takes a 1% commission",
 ];
