@@ -22,6 +22,14 @@ export const getCastShareTextWithTwitter = () => {
   return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
 };
 
+export const getPortfolioTextWithWarpcast = () => {
+  return `Trade & explore news in /${WARPCAST_CHANNEL_NAME}`;
+};
+
+export const getPortfolioTextWithTwitter = () => {
+  return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
+};
+
 export const getMintCastTextWithWarpcast = () => {
   return `Mint cast in /${WARPCAST_CHANNEL_NAME}`;
 };

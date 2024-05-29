@@ -7,7 +7,7 @@ import {
 import { TextClassContext } from "~/components/ui/text";
 import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 
-export default function UserTons({ address }: { address: `0x${string}` }) {
+export default function UserTokens({ address }: { address: `0x${string}` }) {
   return (
     <TextClassContext.Provider value="text-foreground">
       <View className="w-full flex-row gap-2">

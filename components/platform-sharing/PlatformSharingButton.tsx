@@ -8,6 +8,8 @@ import {
   getAppWebsiteLink,
   getCommunityFrameLink,
   getCommunityWebsiteLink,
+  getPortfolioFrameLink,
+  getPortfolioWebsiteLink,
   getTradePageFrameLink,
   getTradePageWebsiteLink,
 } from "~/utils/platform-sharing/link";
@@ -16,6 +18,8 @@ import {
   getAppShareTextWithWarpcast,
   getCommunityShareTextWithTwitter,
   getCommunityShareTextWithWarpcast,
+  getPortfolioTextWithTwitter,
+  getPortfolioTextWithWarpcast,
   getTransactionShareTextWithTwitter,
   getTransactionShareTextWithWarpcast,
 } from "~/utils/platform-sharing/text";
@@ -94,38 +98,23 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
   );
 }
 
-// export function TransactionResultSharingButton({
-//   type,
-//   transactionDetailURL,
-//   navigateToCreatePageAfter,
-// }: {
-//   type: ONCHAIN_ACTION_TYPE;
-//   transactionDetailURL: string;
-//   navigateToCreatePageAfter?: () => void;
-// }) {
-//   const { currFid } = useFarcasterAccount();
-//   return (
-//     <PlatformSharingButton
-//       variant="outline"
-//       className="border-secondary bg-white"
-//       twitterText={getTransactionShareTextWithTwitter(
-//         type,
-//         transactionDetailURL,
-//       )}
-//       warpcastText={getTransactionShareTextWithWarpcast(
-//         type,
-//         transactionDetailURL,
-//       )}
-//       websiteLink={getTradePageWebsiteLink({
-//         fid: currFid,
-//       })}
-//       frameLink={getTradePageFrameLink({
-//         fid: currFid,
-//       })}
-//       navigateToCreatePageAfter={navigateToCreatePageAfter}
-//     />
-//   );
-// }
+export function PortfolioSharingButton({ fid }: { fid: number }) {
+  const { currFid } = useFarcasterAccount();
+  return (
+    <PlatformSharingButton
+      twitterText={getPortfolioTextWithTwitter()}
+      warpcastText={getPortfolioTextWithWarpcast()}
+      websiteLink={getPortfolioWebsiteLink({
+        fid,
+        inviteFid: Number(currFid),
+      })}
+      frameLink={getPortfolioFrameLink({
+        fid,
+        inviteFid: Number(currFid),
+      })}
+    />
+  );
+}
 
 export function CommunitySharingButton({
   name,
@@ -173,7 +162,8 @@ export function TransactionResultSharingButton({
   return (
     <View>
       <Button
-        variant="outline" className="border-secondary bg-white"
+        variant="outline"
+        className="border-secondary bg-white"
         onPress={() => {
           setOpen(true);
         }}
