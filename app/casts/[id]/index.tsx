@@ -15,6 +15,8 @@ import NeynarEmbeds from "~/components/social-farcaster/NeynarEmbeds";
 import NeynarText from "~/components/social-farcaster/NeynarText";
 import { Separator } from "~/components/ui/separator";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
@@ -42,16 +44,56 @@ export default function CastDetail() {
 
 function CachedCastDetail() {
   const params = useLocalSearchParams();
-  const { id } = params;
+  const { id } = params as { id: string };
   const { castDetailData } = useCastPage();
   const data = castDetailData?.[id as string];
-  const { origin, cast, farcasterUserDataObj, community } = data;
+  const {
+    cast: cachedCast,
+    farcasterUserDataObj: cachedFarcasterUserDataObj,
+    community: cachedCommunity,
+  } = data;
+
+  // get cast info
+  const {
+    cast: fetchedCast,
+    farcasterUserDataObj: fetchedFarcasterUserDataObj,
+    loading: castLoading,
+    loadCastDetail,
+  } = useLoadCastDetail();
+  useEffect(() => {
+    loadCastDetail(id as string);
+  }, [id]);
+
+  // get community info
+  const parentUrl = cachedCast?.parentUrl || cachedCast?.parent_url;
+  const { warpcastChannels } = useWarpcastChannels();
+  const channel = useMemo(() => {
+    return warpcastChannels.find((item) => item.url === parentUrl);
+  }, [warpcastChannels, parentUrl]);
+  const channelId = channel?.id;
+
+  const {
+    communityDetail,
+    communityBasic,
+    loading: communityLoading,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId!);
+
+  const cast = { ...cachedCast, repliesCount: fetchedCast?.repliesCount || "" };
+  const farcasterUserDataObj = cachedFarcasterUserDataObj;
+  const community = communityDetail || communityBasic || cachedCommunity;
+
+  useEffect(() => {
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
   return (
     <CastDetailWithData
       castLoading={false}
-      cast={cast!}
+      cast={cast}
       farcasterUserDataObj={farcasterUserDataObj}
-      community={community!}
+      community={community}
     />
   );
 }
@@ -143,19 +185,48 @@ function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
 }
 
 function FetchedCastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params;
-  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
-    useLoadCastDetail();
+  const params = useLocalSearchParams<{ id: string }>();
+  const { id } = params as { id: string };
+
+  // get cast info
+  const {
+    cast: fetchedCast,
+    farcasterUserDataObj: fetchedFarcasterUserDataObj,
+    loading: castLoading,
+    loadCastDetail,
+  } = useLoadCastDetail();
   useEffect(() => {
     loadCastDetail(id as string);
   }, [id]);
-  // TODO - community info
-  const community = null;
+
+  // get community info
+  const parentUrl = fetchedCast?.parentUrl || fetchedCast?.parent_url;
+  const { warpcastChannels } = useWarpcastChannels();
+  const channel = useMemo(() => {
+    return warpcastChannels.find((item) => item.url === parentUrl);
+  }, [warpcastChannels, parentUrl]);
+  const channelId = channel?.id;
+
+  const {
+    communityDetail,
+    communityBasic,
+    loading: communityLoading,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId!);
+
+  const cast = fetchedCast;
+  const farcasterUserDataObj = fetchedFarcasterUserDataObj;
+  const community = communityDetail || communityBasic;
+
+  useEffect(() => {
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
 
   return (
     <CastDetailWithData
-      castLoading={loading}
+      castLoading={castLoading}
       cast={cast!}
       farcasterUserDataObj={farcasterUserDataObj}
       community={community!}
@@ -176,10 +247,10 @@ function CastDetailWithData({
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail, castDetailData } = useCastPage();
+  const { navigateToCastDetail } = useCastPage();
   const navigation = useNavigation();
   const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params;
+  const { id } = params as { id: string };
 
   const {
     comments,
@@ -193,12 +264,9 @@ function CastDetailWithData({
     loadCastComments();
   }, [loadCastComments]);
 
-  const channelPageData = castDetailData?.[id];
-  const { origin: castPageOrigin } = channelPageData || {};
-
-  const showGoHomeBtn = ![CastDetailDataOrigin.Explore].includes(
-    castPageOrigin,
-  );
+  const routes = navigation.getState()?.routes;
+  const prevRoute = routes[routes.length - 2];
+  const showGoHomeBtn = prevRoute?.name !== "(tabs)";
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

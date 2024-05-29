@@ -1,12 +1,15 @@
 import { useEffect, useMemo } from "react";
-import { FarCastEmbedMetaCast } from "~/services/farcaster/types";
-import { View, Image } from "react-native";
+import { FarCast, FarCastEmbedMetaCast } from "~/services/farcaster/types";
+import { View, Image, Pressable } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCastsMetadata";
 import { Card } from "~/components/ui/card";
 import { UserDataType } from "@external-types/farcaster";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId || embed.cast_id);
@@ -31,21 +34,10 @@ export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
 }
 
 function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
-  const userData = useMemo(() => {
-    const img = data.user.find((u) => u.type === UserDataType.PFP)?.value;
-    const username = data.user.find(
-      (u) => u.type === UserDataType.DISPLAY,
-    )?.value;
-    const uname = data.user.find(
-      (u) => u.type === UserDataType.USERNAME,
-    )?.value;
-
-    return {
-      img,
-      username,
-      uname,
-    };
-  }, [data.user]);
+  const { navigateToCastDetail } = useCastPage();
+  const { cast, user } = data;
+  const userDataObj = useMemo(() => userDataObjFromArr(user), [user]);
+  const userData = userDataObj[cast.fid as string];
 
   const castImg = useMemo(() => {
     const img = data.cast.embeds?.find((item) => isImg(item?.url))?.url;
@@ -53,29 +45,41 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   }, [data.cast]);
 
   return (
-    <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
-      <View className="flex flex-row items-center gap-1">
-        <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
-          <AvatarImage source={{ uri: userData.img }} />
-          <AvatarFallback>
-            <Text>{userData.username?.slice(0, 1)}</Text>
-          </AvatarFallback>
-        </Avatar>
-        <Text className="flex-shrink-0 text-sm font-medium">
-          {userData.username}
-        </Text>
-        <Text className="line-clamp-1 text-xs font-normal text-secondary">
-          @{userData.uname}
-        </Text>
-      </View>
-      <Text className="line-clamp-6 text-base">{data.cast.text}</Text>
-      {castImg && (
-        <Image
-          className="w-full rounded-[10px] object-cover"
-          source={{ uri: castImg }}
-        />
-      )}
-    </Card>
+    <Pressable
+      className="w-full "
+      onPress={() => {
+        const castHex = getCastHex(cast as FarCast);
+        // router.push(`/casts/${castHex}`);
+        navigateToCastDetail(castHex, {
+          cast: cast as FarCast,
+          farcasterUserDataObj: userDataObj,
+        });
+      }}
+    >
+      <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
+        <View className="flex flex-row items-center gap-1">
+          <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
+            <AvatarImage source={{ uri: userData.pfp }} />
+            <AvatarFallback>
+              <Text>{userData.display?.slice(0, 1)}</Text>
+            </AvatarFallback>
+          </Avatar>
+          <Text className="flex-shrink-0 text-sm font-medium">
+            {userData.display}
+          </Text>
+          <Text className="line-clamp-1 text-xs font-normal text-secondary">
+            @{userData.userName}
+          </Text>
+        </View>
+        <Text className="line-clamp-6 text-base">{data.cast.text}</Text>
+        {castImg && (
+          <Image
+            className="w-full rounded-[10px] object-cover"
+            source={{ uri: castImg }}
+          />
+        )}
+      </Card>
+    </Pressable>
   );
 }
 
