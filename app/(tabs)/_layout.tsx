@@ -125,12 +125,12 @@ export default function TabLayout() {
                   <UserGlobalPoints />
                   <SearchLink />
                   <PostLink />
-                  <View>
+                  {currFid && farcasterAccount && <View>
                     <PortfolioSharingButton
                       fid={Number(currFid)}
                       fname={farcasterAccount.username || ""}
                     />
-                  </View>
+                  </View>}
                 </HeaderRight>
               </Header>
             ),
