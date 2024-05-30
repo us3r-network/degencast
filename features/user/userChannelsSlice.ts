@@ -34,34 +34,33 @@ export const fetchItems = createAsyncThunk(
     const { userChannels } = thunkAPI.getState() as {
       userChannels: UserChannelsState;
     };
-    let priorityChannels: Channel[] = [];
-    if (userChannels.fid !== fid) {
-      userChannels.fid = fid;
-      userChannels.items = initialUserChannelsState.items;
-      userChannels.next = initialUserChannelsState.next;
-      userChannels.error = initialUserChannelsState.error;
-      userChannels.status = initialUserChannelsState.status;
-      const firstRes = await fetchUserChannels({
-        fid,
-      });
-      priorityChannels = firstRes.data.data;
-    }
-    if (userChannels.items.length > 0 && !userChannels.next.cursor) {
+    if (
+      userChannels.fid === fid &&
+      userChannels.items.length > 0 &&
+      !userChannels.next.cursor
+    ) {
       return {
         channels: [],
         next: {
           cursor: null,
         },
       };
-    } else {
-      const response = await fetchUserActiveChannels({
-        fid,
-        limit: MAX_PAGE_SIZE,
-        cursor: userChannels.next.cursor,
-      });
-      response.channels = [...priorityChannels, ...response.channels];
-      return response;
     }
+
+    let priorityChannels: Channel[] = [];
+    if (userChannels.fid !== fid) {
+      const firstRes = await fetchUserChannels({
+        fid,
+      });
+      priorityChannels = firstRes.data.data;
+    }
+    const response = await fetchUserActiveChannels({
+      fid,
+      limit: MAX_PAGE_SIZE,
+      cursor: userChannels.next.cursor,
+    });
+    response.channels = [...priorityChannels, ...response.channels];
+    return response;
   },
 );
 
@@ -73,11 +72,13 @@ export const userChannelsSlice = createSlice({
     builder
       .addCase(fetchItems.pending, (state, action) => {
         state.status = AsyncRequestStatus.PENDING;
-        // state.items = [];
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
-        state.fid = action.meta.arg;
+        if (state.fid !== action.meta.arg) {
+          state.fid = action.meta.arg;
+          state.items = [];
+        }
         const channels = uniqBy(
           [...state.items, ...action.payload.channels],
           "id",
