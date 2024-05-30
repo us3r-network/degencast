@@ -89,19 +89,19 @@ export const getPortfolioWebsiteLink = (opts?: {
   let link = DEGENCAST_WEB_HOST;
   const { fid, inviteFid } = opts || {};
   if (fid) {
-    link += `/u/${fid}?inviteFid=${inviteFid}`;
+    link += `/u/${fid}/tokens?inviteFid=${inviteFid}`;
   }
   return link;
 };
-// TODO degencast portfolio frame link ?
+
 export const getPortfolioFrameLink = (opts?: {
   fid: number;
-  inviteFid?: number;
+  fname: string;
 }) => {
-  let link = DEGENCAST_FRAME_HOST;
-  const { fid, inviteFid } = opts || {};
+  let link = `${DEGENCAST_FRAME_HOST}/portfolio/frames`;
+  const { fid, fname } = opts || {};
   if (fid) {
-    link += `/u/${fid}?inviteFid=${inviteFid}`;
+    link += `?fid=${fid}&fname=${fname}`;
   }
   return link;
 };
