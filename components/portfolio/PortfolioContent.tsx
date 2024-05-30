@@ -1,5 +1,5 @@
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import UserInfo from "~/components/portfolio/user/UserInfo";
 import { Card, CardContent } from "~/components/ui/card";
@@ -22,6 +22,11 @@ export function PortfolioContent({
 }) {
   const router = useRouter();
   const [value, setValue] = useState(defaultTab || TABS[0].value);
+  useEffect(() => {
+    if (defaultTab) {
+      setValue(defaultTab);
+    }
+  }, [defaultTab]);
 
   return (
     <View className="flex h-full w-full items-center gap-4 ">
