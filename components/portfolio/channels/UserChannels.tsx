@@ -21,7 +21,7 @@ import { Channel } from "~/services/farcaster/types/neynar";
 
 export default function ChannelList({ fid }: { fid: number }) {
   const { loading, items, hasNext, loadMore } = useUserChannels(fid);
-  console.log("ChannelList", { fid, loading, items, hasNext });
+  // console.log("ChannelList", { fid, loading, items, hasNext });
   return (
     <View className="container h-full">
       {loading && items.length === 0 ? (

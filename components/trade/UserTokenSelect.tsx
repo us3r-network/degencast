@@ -67,16 +67,20 @@ export default function MyToeknSelect({
   }
   return (
     <Select
-    defaultValue={DEFAULT_VALUE}
-    value={{
-      value: selectedToken.address,
-      label: selectedToken.name || "",
-    }}
+      defaultValue={DEFAULT_VALUE}
+      value={{
+        value: selectedToken.address,
+        label: selectedToken.name || "",
+      }}
       onValueChange={valueChangeHandler}
     >
       <SelectTrigger className={cn("w-full gap-6 border-none p-0")}>
         <View className="flex-row items-center gap-6">
-          <TokenInfo name={selectedToken.name} logo={selectedToken.logoURI} />
+          <TokenInfo
+            name={selectedToken.name}
+            logo={selectedToken.logoURI}
+            symbol={selectedToken.symbol}
+          />
           {showBalance && (
             <Text className="text-secondary">
               {Number(selectedToken.balance).toFixed(4)} {selectedToken.symbol}
@@ -97,7 +101,11 @@ export default function MyToeknSelect({
               key={token.address}
               className="w-full flex-row items-center gap-4 p-1"
             >
-              <TokenInfo name={token.name} logo={token.logoURI} />
+              <TokenInfo
+                name={token.name}
+                logo={token.logoURI}
+                symbol={token.symbol}
+              />
               {showBalance && account.address && token && (
                 <View className="flex-row items-center gap-2">
                   {token.address === NATIVE_TOKEN_METADATA.address ? (

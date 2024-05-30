@@ -82,6 +82,7 @@ export function MyCommunityToken({
             <TokenInfo
               name={token.name}
               logo={token.logoURI}
+              symbol={token.symbol}
               // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
             />
           </Pressable>
@@ -90,6 +91,7 @@ export function MyCommunityToken({
         <TokenInfo
           name={token.name}
           logo={token.logoURI}
+          symbol={token.symbol}
           // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
         />
       )}
