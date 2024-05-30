@@ -12,6 +12,7 @@ import {
 } from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
+import { Channel } from "../types/neynar";
 
 export type FarcasterPageInfo = {
   startIndex: number;
@@ -196,11 +197,9 @@ export function getFarcasterCastComments(
   });
 }
 
-// TODO:
 export function getSearchResult(query: string) {
   return axios({
-    // url: `${FARCASTER_API_URL}/topics/searching?query=${query}`,
-    url: `https://u3-server-test-3rnbvla4lq-df.a.run.app/topics/searching?query=${query}`,
+    url: `${FARCASTER_API_URL}/topics/searching?query=${query}`,
     method: "get",
   });
 }
@@ -321,6 +320,28 @@ export function getProfileFeeds({
   });
 }
 
+export function fetchUserChannels({
+  fid,
+}: {
+  fid: number;
+}): AxiosPromise<ApiResp<Channel[]>> {
+  return request({
+    url: `/topics/recommendaton/channels?fid=${fid || ""}&pubkey=0xA25532B1287dEe6501fFa13Ff457fFcc9a6Ca6B0`,
+    method: "get",
+  });
+}
+
 export function getCastImageUrl(castHash: string) {
   return `${API_BASE_URL}/3r-farcaster/cast-image?castHash=${castHash}`;
+}
+
+export function fetchUserHostChannels({
+  fid,
+}: {
+  fid: number;
+}): AxiosPromise<ApiResp<{ id: string; name: string; imageUrl: string }[]>> {
+  return request({
+    url: `/topics/host-channels?fid=${fid}`,
+    method: "get",
+  });
 }

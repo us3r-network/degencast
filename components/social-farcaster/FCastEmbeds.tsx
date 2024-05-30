@@ -11,9 +11,11 @@ import { cn } from "~/lib/utils";
 export default function FCastEmbeds({
   cast,
   className,
+  webpageImgIsFixedRatio,
   ...props
 }: ViewProps & {
   cast: FarCast;
+  webpageImgIsFixedRatio?: boolean;
 }) {
   // embed
   const embeds = useMemo(() => getEmbeds(cast), [cast]);
@@ -26,7 +28,11 @@ export default function FCastEmbeds({
       {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />}
       {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}
       {embedWebpages.length > 0 && (
-        <EmbedWebpages webpages={embedWebpages} cast={cast} />
+        <EmbedWebpages
+          webpages={embedWebpages}
+          cast={cast}
+          imgIsFixedRatio={webpageImgIsFixedRatio}
+        />
       )}
       {embedVideos.length > 0 && <EmbedVideo uri={embedVideos[0]?.url} />}
     </View>

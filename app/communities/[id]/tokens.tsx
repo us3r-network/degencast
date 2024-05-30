@@ -10,13 +10,18 @@ import { useCommunityCtx } from "./_layout";
 import { Image } from "react-native";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import { Loading } from "~/components/common/Loading";
+import useUserHostChannels from "~/hooks/user/useUserHostChannels";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import ApplyLaunchButton from "~/components/common/ApplyLaunchButton";
 
 export default function TokensScreen() {
   const { community } = useCommunityCtx();
   const communityToken = community?.tokens?.[0];
   const id = community?.channelId || "";
   const { communityDetail, loading } = useLoadCommunityDetail(id);
-
+  const { currFid } = useFarcasterAccount();
+  const { channels } = useUserHostChannels(Number(currFid));
+  const isChannelHost = !!id && !!channels.find((channel) => channel.id === id);
   if (!communityDetail && loading) {
     return (
       <View className="flex-1 flex-col items-center justify-center">
@@ -25,8 +30,8 @@ export default function TokensScreen() {
     );
   }
   return (
-    <View className="flex-1">
-      {communityToken ? (
+    <View className="flex-1 flex-col">
+      {communityToken && communityToken?.tradeInfo ? (
         <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
           <CommunityTokenInfo
             tokenInfo={{
@@ -38,23 +43,32 @@ export default function TokensScreen() {
           />
         </ScrollView>
       ) : (
-        <ScrollView
-          className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8"
-          showsHorizontalScrollIndicator={false}
-        >
-          <Image
-            source={require("~/assets/images/no-token.png")}
-            style={{ width: 280, height: 280 }}
-          />
-          <Text className=" text-center text-xl font-bold text-primary">
-            Coming Soon
-          </Text>
-          <Text className="text-center text-base leading-8 text-secondary">
-            Stay informed about the latest developments in Channel token
-            launches, where shares can transform into tradable ERC20 tokens once
-            a channel community gains enough momentum.
-          </Text>
-        </ScrollView>
+        <>
+          <ScrollView
+            className="mx-auto h-full max-w-72 flex-1 flex-col items-center justify-center gap-8"
+            showsHorizontalScrollIndicator={false}
+          >
+            <Image
+              source={require("~/assets/images/no-token.png")}
+              style={{ width: 280, height: 280 }}
+            />
+            <Text className=" text-center text-xl font-bold text-primary">
+              Coming Soon
+            </Text>
+            <Text className="text-center text-base leading-8 text-secondary">
+              Channel Share & Token Launch features are coming soon! {`\n`}
+              When the shares are sold out, all the liquidity from the bonding
+              curve will be deposited into {`\n`}
+              Raydium and token launch will begain. {`\n`}
+              {isChannelHost && `Please apply in advance.`}
+            </Text>
+          </ScrollView>
+          {isChannelHost && (
+            <View className=" py-5">
+              <ApplyLaunchButton channelId={id} />
+            </View>
+          )}
+        </>
         // <ShareActivities id={id as string} />
       )}
     </View>

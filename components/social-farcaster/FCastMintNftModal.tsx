@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { Image } from "expo-image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import getCastHex from "~/utils/farcaster/getCastHex";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loading } from "../common/Loading";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { ZORA_CAST_NFT_CHAIN_ID } from "~/constants/zora";
@@ -23,6 +23,9 @@ import {
 } from "~/utils/platform-sharing/link";
 import { getCastImageUrl } from "~/services/farcaster/api";
 import { usePrivy } from "@privy-io/react-auth";
+import { UserData } from "~/utils/farcaster/user-data";
+import useUserBulk from "~/hooks/user/useUserBulk";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 // import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
@@ -30,11 +33,13 @@ export default function FCastMintNftModal({
   channelId,
   open,
   onOpenChange,
+  castUserData,
 }: {
   cast: FarCast;
   channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  castUserData: UserData;
 }) {
   const { connectWallet } = usePrivy();
   const { address, isConnected } = useAccount();
@@ -49,20 +54,40 @@ export default function FCastMintNftModal({
     contractAddress: string;
     tokenId: number;
   } | null>(null);
-  const { findCollectionWithCache, castCollectionsLoading } =
-    useCastCollection();
+  const {
+    findCollectionWithCache,
+    castCollectionsLoading,
+    setSharingCastMint,
+  } = useCastCollection();
   const collection = useMemo(() => {
     if (!address || !chainId) return null;
     return findCollectionWithCache(address, chainId);
   }, [address, chainId, findCollectionWithCache]);
+
+  const { currFid } = useFarcasterAccount();
+  const {
+    items: userItems,
+    load,
+    loading: currUserDataLoading,
+  } = useUserBulk(Number(currFid) || undefined);
+  useEffect(() => {
+    if (currFid) load(Number(currFid));
+  }, [currFid]);
+
+  const farcasterUserInfo = userItems.length > 0 ? userItems[0] : undefined;
+  const currUserDisplayName = farcasterUserInfo
+    ? farcasterUserInfo.display_name
+    : "";
   const {
     createNewToken,
     createNewCollection,
     loading: create1155TokenLoading,
   } = useCreateNew1155Token({
     cast,
+    castUserData,
     imgUrl: imgUrl,
     channelId,
+    currUserDisplayName,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
       onOpenChange(false);
@@ -121,6 +146,7 @@ export default function FCastMintNftModal({
               className="font-bold text-white"
               variant={"secondary"}
               disabled={
+                currUserDataLoading ||
                 switchChainStatus === "pending" ||
                 create1155TokenLoading ||
                 castCollectionsLoading
@@ -161,7 +187,7 @@ export default function FCastMintNftModal({
                 if (chainId !== ZORA_CAST_NFT_CHAIN_ID) {
                   return <Text>Switch Chain</Text>;
                 }
-                return <Text>Mint Cast & Share</Text>;
+                return <Text>Mint Cast & Earn 200 $CAST</Text>;
               })()}
             </Button>
           </View>
@@ -170,13 +196,18 @@ export default function FCastMintNftModal({
       {createdTokenInfo && (
         <PlatformSharingModal
           open={openShare}
-          showPoints={false}
+          hideTwitterPoints={true}
           onOpenChange={(open) => setOpenShare(open)}
           twitterText={getMintCastTextWithTwitter()}
           warpcastText={getMintCastTextWithWarpcast()}
+          warpcastChannelId="zora"
           websiteLink={getMintCastWebsiteLink(createdTokenInfo!)}
           frameLink={getMintCastFrameLink(createdTokenInfo!)}
           navigateToCreatePageAfter={() => {
+            setSharingCastMint({
+              castHex,
+              url: getMintCastWebsiteLink(createdTokenInfo!),
+            });
             onOpenChange?.(false);
           }}
         />

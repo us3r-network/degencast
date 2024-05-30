@@ -12,26 +12,33 @@ import { openWarpcastCreateCast } from "~/utils/platform-sharing/warpcast";
 import useUserAction from "~/hooks/user/useUserAction";
 import Toast from "react-native-toast-message";
 
+export type ShareProps = {
+  text?: string;
+  twitterText?: string;
+  warpcastText?: string;
+  warpcastChannelId?: string;
+  websiteLink?: string;
+  frameLink?: string;
+  navigateToCreatePageAfter?: () => void;
+};
+
 export default function PlatformSharingModal({
   text,
   twitterText,
   warpcastText,
   websiteLink,
+  warpcastChannelId,
   frameLink,
   open,
-  showPoints = true,
+  hideWarpcastPoints,
+  hideTwitterPoints,
   onOpenChange,
   navigateToCreatePageAfter,
-}: {
-  text?: string;
-  twitterText?: string;
-  warpcastText?: string;
-  websiteLink: string;
-  frameLink: string;
+}: ShareProps & {
   open: boolean;
-  showPoints?: boolean;
+  hideWarpcastPoints?: boolean;
+  hideTwitterPoints?: boolean;
   onOpenChange: (open: boolean) => void;
-  navigateToCreatePageAfter?: () => void;
 }) {
   const { actionPointConfig } = useUserAction();
   const {
@@ -46,7 +53,14 @@ export default function PlatformSharingModal({
     } else {
       onOpenChange(false);
       navigation.navigate(
-        ...(["create", { text: createText, embeds: [frameLink] }] as never),
+        ...([
+          "create",
+          {
+            text: createText,
+            embeds: [frameLink],
+            channelId: warpcastChannelId || "",
+          },
+        ] as never),
       );
       navigateToCreatePageAfter?.();
     }
@@ -57,7 +71,7 @@ export default function PlatformSharingModal({
   };
 
   const onCopy = async () => {
-    await Clipboard.setStringAsync(websiteLink);
+    if (websiteLink) await Clipboard.setStringAsync(websiteLink);
     onOpenChange(false);
     Toast.show({
       type: "success",
@@ -71,23 +85,29 @@ export default function PlatformSharingModal({
           <Text>Share</Text>
         </DialogHeader>
         <View className="max-w-s flex flex-row gap-5 ">
-          <ShareButton
-            iconSource={require("~/assets/images/warpcast.png")}
-            text="Share & Earn"
-            points={showPoints ? inviteUnit : 0}
-            onPress={onCreateCast}
-          />
-          <ShareButton
-            iconSource={require("~/assets/images/x.png")}
-            text="Share & Earn"
-            points={showPoints ? inviteUnit : 0}
-            onPress={onTwitterShare}
-          />
-          <ShareButton
-            iconSource={require("~/assets/images/link.png")}
-            text="Copy"
-            onPress={onCopy}
-          />
+          {warpcastText && (
+            <ShareButton
+              iconSource={require("~/assets/images/warpcast.png")}
+              text="Share & Earn"
+              points={!hideWarpcastPoints ? inviteUnit : 0}
+              onPress={onCreateCast}
+            />
+          )}
+          {twitterText && (
+            <ShareButton
+              iconSource={require("~/assets/images/x.png")}
+              text="Share & Earn"
+              points={!hideTwitterPoints ? inviteUnit : 0}
+              onPress={onTwitterShare}
+            />
+          )}
+          {websiteLink && (
+            <ShareButton
+              iconSource={require("~/assets/images/link.png")}
+              text="Copy"
+              onPress={onCopy}
+            />
+          )}
         </View>
       </DialogContent>
     </Dialog>
@@ -117,7 +137,7 @@ function ShareButton({
       <View className=" flex-1 flex-col items-center justify-center">
         <Text className=" text-xs text-black">{text}</Text>
         {Number(points) > 0 && (
-          <Text className=" mt-1 text-xs text-secondary">+{points} Points</Text>
+          <Text className=" mt-1 text-xs text-secondary">+{points} $CAST</Text>
         )}
       </View>
     </Button>

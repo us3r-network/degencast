@@ -15,7 +15,7 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { TradeButton } from "../../trade/TradeButton";
 import { DEGEN_ADDRESS } from "~/constants";
 
-const DEFAULT_ITEMS_NUM = 3;
+const DEFAULT_ITEMS_NUM = 99;
 export default function CommunityTokens({
   address,
 }: {
@@ -82,6 +82,7 @@ export function MyCommunityToken({
             <TokenInfo
               name={token.name}
               logo={token.logoURI}
+              symbol={token.symbol}
               // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
             />
           </Pressable>
@@ -90,6 +91,7 @@ export function MyCommunityToken({
         <TokenInfo
           name={token.name}
           logo={token.logoURI}
+          symbol={token.symbol}
           // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
         />
       )}

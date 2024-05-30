@@ -76,10 +76,15 @@ export function SellButton({
         </DialogTrigger>
         {!transationData && !error && (
           <DialogContent className="w-screen">
-             <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2")}>
+            <DialogHeader
+              className={cn("mr-4 flex-row items-center justify-between gap-2")}
+            >
               <DialogTitle>Sell</DialogTitle>
-              <UserWalletSelect />
             </DialogHeader>
+            <View className="flex-row items-center justify-between gap-2">
+              <Text>Active Wallet</Text>
+              <UserWalletSelect />
+            </View>
             <SellShare
               logo={logo}
               name={name}
@@ -287,10 +292,15 @@ export function BuyButton({
         </DialogTrigger>
         {!transationData && !error && (
           <DialogContent className="w-screen">
-             <DialogHeader className={cn("flex-row items-center justify-between mr-4 gap-2")}>
+            <DialogHeader
+              className={cn("mr-4 flex-row items-center justify-between gap-2")}
+            >
               <DialogTitle>Buy Shares & get allowance</DialogTitle>
-              <UserWalletSelect />
             </DialogHeader>
+            <View className="flex-row items-center justify-between gap-2">
+              <Text>Active Wallet</Text>
+              <UserWalletSelect />
+            </View>
             <BuyShare
               logo={logo}
               name={name}
@@ -466,7 +476,7 @@ const BuyShare = forwardRef<
 export const SHARE_TITLE = "About Channel Share";
 export const SHARE_INFO = [
   `Share holders could claim airdrops after channel token launch ${COMING_SOON_TAG}`,
-  `Share holders could receive channel allowance (same as your Degen allowance) ${COMING_SOON_TAG}`,
+  `Share holders could receive channel allowance (same as your DEGEN allowance) ${COMING_SOON_TAG}`,
   "The price of channel shares will increase after each buy",
   "4% of each trade goes into capital pool to support channel rewards, and Degencast takes a 1% commission",
 ];

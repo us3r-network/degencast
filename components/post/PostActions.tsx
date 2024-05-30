@@ -1,6 +1,6 @@
 import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
-import { Heart, Plus, Share2, X } from "../common/Icons";
+import { DollarSign, Heart, Plus, Repeat, Share2, X } from "../common/Icons";
 import { Text } from "../ui/text";
 import { Animated, Easing, TextProps, View, ViewProps } from "react-native";
 import { Image } from "react-native";
@@ -62,6 +62,24 @@ export const LikeButton = ({
   );
 };
 
+export const RepostButton = ({
+  iconSize = 24,
+  reposted,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+  reposted?: boolean;
+}) => {
+  return (
+    <ActionButton {...props}>
+      <Repeat
+        size={iconSize}
+        className={cn(" stroke-primary", reposted && " stroke-[#00D1A7] ")}
+      />
+    </ActionButton>
+  );
+};
+
 export const GiftButton = ({
   iconSize = 24,
   ...props
@@ -70,11 +88,7 @@ export const GiftButton = ({
 }) => {
   return (
     <ActionButton {...props}>
-      <Image
-        source={require("~/assets/images/degen-icon.png")}
-        resizeMode="contain"
-        style={{ width: iconSize, height: iconSize }}
-      />
+      <DollarSign size={iconSize} className={cn("stroke-primary")} />
       {/* <ActionText>{giftCount || 0}</ActionText> */}
     </ActionButton>
   );
@@ -177,6 +191,9 @@ function ActionMenuItem({
 export const ExplorePostActions = ({
   liked,
   likeCount,
+  liking,
+  reposted,
+  reposting,
   showActions,
   showActionsChange,
   onLike,
@@ -184,11 +201,16 @@ export const ExplorePostActions = ({
   onShare,
   onComment,
   onMint,
+  onRepost,
+
   className,
   ...props
 }: ViewProps & {
   liked: boolean;
   likeCount?: number;
+  liking?: boolean;
+  reposted?: boolean;
+  reposting?: boolean;
   showActions: boolean;
   showActionsChange: (showActions: boolean) => void;
   onLike: () => void;
@@ -196,6 +218,7 @@ export const ExplorePostActions = ({
   onShare: () => void;
   onComment?: () => void;
   onMint?: () => void;
+  onRepost?: () => void;
 }) => {
   const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
@@ -228,6 +251,7 @@ export const ExplorePostActions = ({
       >
         <LikeButton
           className=" shadow-md shadow-primary"
+          disabled={liking}
           liked={liked}
           likeCount={likeCount}
           onPress={onLike}
@@ -266,7 +290,13 @@ export const ExplorePostActions = ({
         translateYAnimatedValue={translateYAnimatedValue}
         index={1}
       >
-        <ShareButton className=" shadow-md shadow-primary" onPress={onShare} />
+        {/* <ShareButton className=" shadow-md shadow-primary" onPress={onShare} /> */}
+        <RepostButton
+          className=" shadow-md shadow-primary"
+          disabled={reposting}
+          reposted={reposted}
+          onPress={onRepost}
+        />
       </ActionMenuItem>
       <ActionButton
         className=" z-10 h-[60px] w-[60px] shadow-md shadow-primary"
@@ -286,7 +316,15 @@ export const ExplorePostActions = ({
             },
           ]}
         >
-          <Plus size={30} className={cn(" fill-primary stroke-primary")} />
+          {showActions ? (
+            <Plus size={30} className={cn(" fill-primary stroke-primary")} />
+          ) : (
+            <Image
+              source={require("~/assets/images/degen-icon.png")}
+              resizeMode="contain"
+              style={{ width: 30, height: 30 }}
+            />
+          )}
         </Animated.View>
       </ActionButton>
     </View>
@@ -296,10 +334,15 @@ export const ExplorePostActions = ({
 export const PostDetailActions = ({
   liked = false,
   likeCount,
+  liking,
+  reposted,
+  reposting,
   onLike,
   onGift,
   onShare,
   onComment,
+  onMint,
+  onRepost,
   hideLike,
   hideGift,
   hideShare,
@@ -309,10 +352,15 @@ export const PostDetailActions = ({
 }: ViewProps & {
   liked?: boolean;
   likeCount?: number;
+  liking?: boolean;
+  reposted?: boolean;
+  reposting?: boolean;
   onLike?: () => void;
   onGift?: () => void;
   onShare?: () => void;
   onComment?: () => void;
+  onMint?: () => void;
+  onRepost?: () => void;
   hideLike?: boolean;
   hideGift?: boolean;
   hideShare?: boolean;
@@ -324,6 +372,7 @@ export const PostDetailActions = ({
         <LikeButton
           className={cn(" h-10 w-10 ", liked && " border-none")}
           variant={liked ? "default" : "outline"}
+          disabled={liking}
           iconSize={15}
           liked={liked}
           likeCount={likeCount}
@@ -349,14 +398,30 @@ export const PostDetailActions = ({
         />
       )}
 
-      {!hideShare && (
+      <MintButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        onPress={onMint}
+      />
+
+      {/* {!hideShare && (
         <ShareButton
           variant={"outline"}
           iconSize={15}
           className=" h-10 w-10"
           onPress={onShare}
         />
-      )}
+      )} */}
+
+      <RepostButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        reposted={reposted}
+        onPress={onRepost}
+        disabled={reposting}
+      />
     </View>
   );
 };

@@ -7,13 +7,13 @@ import { useCommunityCtx } from "./_layout";
 import { Image } from "react-native";
 import { Loading } from "~/components/common/Loading";
 
-export default function TipsRankScreen() {
+export default function ContributionsScreen() {
   const { community } = useCommunityCtx();
   const communityShare = community?.shares?.[0];
   const subjectAddress = communityShare?.subjectAddress;
-  if (subjectAddress) {
-    return <HasSubjectAddress />;
-  }
+  // if (subjectAddress) {
+  //   return <HasSubjectAddress />;
+  // }
   return <NoSubjectAddress />;
 }
 
@@ -62,14 +62,16 @@ function NoSubjectAddress() {
   return (
     <View className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8">
       <Image
-        source={require("~/assets/images/no-token.png")}
+        source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
       />
       <Text className=" text-center text-xl font-bold text-primary">
         Coming Soon
       </Text>
       <Text className="text-center text-base leading-8 text-secondary">
-        Channel allowances and tipping features are coming soon!
+        Participate in channel activities. {`\n`}
+        Curve up channel reward pool. {`\n`}
+        Earn more $DEGEN & $CAST!
       </Text>
     </View>
   );

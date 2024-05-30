@@ -7,7 +7,7 @@ import {
 import { TextClassContext } from "~/components/ui/text";
 import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 
-export default function UserTons({ address }: { address: `0x${string}` }) {
+export default function UserTokens({ address }: { address: `0x${string}` }) {
   return (
     <TextClassContext.Provider value="text-foreground">
       <View className="w-full flex-row gap-2">
@@ -15,6 +15,7 @@ export default function UserTons({ address }: { address: `0x${string}` }) {
           <TokenInfo
             name={NATIVE_TOKEN_METADATA.name}
             logo={NATIVE_TOKEN_METADATA.logoURI}
+            symbol={NATIVE_TOKEN_METADATA.symbol}
           />
           <NativeTokenBalance
             chainId={NATIVE_TOKEN_METADATA.chainId}
@@ -23,7 +24,11 @@ export default function UserTons({ address }: { address: `0x${string}` }) {
           />
         </View>
         <View className="flex flex-1 gap-2 rounded-lg bg-purple-100 p-4">
-          <TokenInfo name={DEGEN_METADATA.name} logo={DEGEN_METADATA.logoURI} />
+          <TokenInfo
+            name={DEGEN_METADATA.name}
+            logo={DEGEN_METADATA.logoURI}
+            symbol={DEGEN_METADATA.symbol}
+          />
           <ERC20TokenBalance
             token={DEGEN_METADATA}
             address={address}

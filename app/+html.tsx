@@ -1,4 +1,8 @@
 import { ScrollViewStyleReset } from "expo-router/html";
+import { Asset } from "expo-asset";
+const degencastLoadingGif = Asset.fromModule(
+  require("assets/images/degencast-loading.gif"),
+);
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
@@ -61,7 +65,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <img src={degencastLoadingGif.uri} id="degencast-loading" />
+      </body>
     </html>
   );
 }
@@ -74,4 +81,14 @@ body {
   body {
     background-color: #000;
   }
-}`;
+}
+  #degencast-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    width: 48px;
+    height: 48px;
+  }
+`;

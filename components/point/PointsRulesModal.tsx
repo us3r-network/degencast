@@ -61,6 +61,7 @@ export function PointsRules({
     BuyChannelShare: { unit: buyChannelShareUnit },
     Invite: { unit: inviteUnit },
     SwapToken: { unit: swapTokenUnit },
+    MintCast: { unit: mintCastUnit },
   } = actionPointConfig;
   const { totalPoints } = useUserTotalPoints();
 
@@ -118,7 +119,7 @@ export function PointsRules({
             btnText="Trade"
             onBtnPress={() => {
               onOpenChange?.(false);
-              router.navigate("trade/tokens" as never);
+              router.navigate("channels/tokens" as never);
             }}
           />
           <RuleItem
@@ -142,6 +143,15 @@ export function PointsRules({
           <RuleItem
             text="View casts"
             pointsText={`${getPointsText(viewUnit)} for each`}
+            btnText="Explore"
+            onBtnPress={() => {
+              onOpenChange?.(false);
+              router.navigate("/");
+            }}
+          />
+          <RuleItem
+            text="Mint casts"
+            pointsText={`${getPointsText(mintCastUnit)} for each`}
             btnText="Explore"
             onBtnPress={() => {
               onOpenChange?.(false);

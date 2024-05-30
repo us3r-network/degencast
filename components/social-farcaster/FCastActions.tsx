@@ -15,6 +15,7 @@ import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import FCastShareModal from "./FCastShareModal";
 import FCastMintNftModal from "./FCastMintNftModal";
+import Toast from "react-native-toast-message";
 
 export function FCastDetailActions({
   cast,
@@ -27,108 +28,15 @@ export function FCastDetailActions({
   communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
+  const castUserData = farcasterUserDataObj[cast.fid];
+  const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
   const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
-  const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
-    { cast },
-  );
-  const { recast, removeRecast, recasted, recastCount } =
-    useFarcasterRecastAction({ cast });
-  const [openGiftModal, setOpenGiftModal] = useState(false);
-  const [openShareModal, setOpenShareModal] = useState(false);
-  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
-    useUserDegenAllowance();
-  const onLike = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
-
-    if (liked) {
-      removeLikeCast();
-    } else {
-      likeCast();
-    }
-  };
-  const onGift = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
-  };
-  const onComment = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
-    if (!currFid) {
-      farcasterPrepareWrite();
-      return;
-    }
-    const castHex = getCastHex(cast);
-    navigateToCastReply(castHex, {
-      cast,
-      farcasterUserDataObj,
-      community: communityInfo,
-    });
-  };
-  const onShare = () => {
-    setOpenShareModal(true);
-  };
-  return (
-    <>
-      <PostDetailActions
-        liked={liked}
-        onLike={onLike}
-        onGift={onGift}
-        onShare={onShare}
-        onComment={onComment}
-        {...props}
-      />
-
-      <FCastGiftModal
-        totalAllowance={totalDegenAllowance}
-        remainingAllowance={remainingDegenAllowance}
-        cast={cast}
-        open={openGiftModal}
-        onOpenChange={setOpenGiftModal}
-      />
-      <FCastShareModal
-        cast={cast}
-        open={openShareModal}
-        onOpenChange={setOpenShareModal}
-      />
-    </>
-  );
-}
-
-export function FCastExploreActions({
-  cast,
-  farcasterUserDataObj,
-  communityInfo,
-  showActions,
-  showActionsChange,
-  ...props
-}: ViewProps & {
-  cast: FarCast;
-  farcasterUserDataObj: { [key: string]: UserData };
-  communityInfo: CommunityInfo;
-  showActions: boolean;
-  showActionsChange: (showActions: boolean) => void;
-}) {
-  const channelId = communityInfo.channelId || "";
-  const { navigateToCastReply } = useCastPage();
-  const { authenticated, login } = usePrivy();
-  const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
-  const { likeCast, removeLikeCast, liked, likeCount } = useFarcasterLikeAction(
-    { cast },
-  );
-  const { recast, removeRecast, recasted, recastCount } =
+  const { likeCast, removeLikeCast, liked, likeCount, likePending } =
+    useFarcasterLikeAction({ cast });
+  const { recast, removeRecast, recasted, recastCount, recastPending } =
     useFarcasterRecastAction({ cast });
   const [openGiftModal, setOpenGiftModal] = useState(false);
   const [openShareModal, setOpenShareModal] = useState(false);
@@ -174,16 +82,169 @@ export function FCastExploreActions({
   const onShare = () => {
     setOpenShareModal(true);
   };
+  const onRepost = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (recasted) {
+      // removeRecast();
+      Toast.show({
+        type: "info",
+        text1: "already recasted",
+      });
+    } else {
+      recast();
+    }
+  };
+  return (
+    <>
+      <PostDetailActions
+        liked={liked}
+        liking={likePending}
+        reposted={recasted}
+        reposting={recastPending}
+        onLike={onLike}
+        onGift={onGift}
+        onShare={onShare}
+        onComment={onComment}
+        onRepost={onRepost}
+        onMint={() => {
+          if (!authenticated) {
+            login();
+            return;
+          }
+          setOpenMintNftModal(true);
+        }}
+        {...props}
+      />
+
+      <FCastGiftModal
+        totalAllowance={totalDegenAllowance}
+        remainingAllowance={remainingDegenAllowance}
+        cast={cast}
+        open={openGiftModal}
+        onOpenChange={setOpenGiftModal}
+      />
+      <FCastShareModal
+        cast={cast}
+        open={openShareModal}
+        onOpenChange={setOpenShareModal}
+      />
+      <FCastMintNftModal
+        cast={cast}
+        castUserData={castUserData}
+        channelId={channelId}
+        open={openMintNftModal}
+        onOpenChange={setOpenMintNftModal}
+      />
+    </>
+  );
+}
+
+export function FCastExploreActions({
+  cast,
+  farcasterUserDataObj,
+  communityInfo,
+  showActions,
+  showActionsChange,
+  ...props
+}: ViewProps & {
+  cast: FarCast;
+  farcasterUserDataObj: { [key: string]: UserData };
+  communityInfo: CommunityInfo;
+  showActions: boolean;
+  showActionsChange: (showActions: boolean) => void;
+}) {
+  const castUserData = farcasterUserDataObj[cast.fid];
+  const channelId = communityInfo.channelId || "";
+  const { navigateToCastReply } = useCastPage();
+  const { authenticated, login } = usePrivy();
+  const { currFid } = useFarcasterAccount();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { likeCast, removeLikeCast, liked, likeCount, likePending } =
+    useFarcasterLikeAction({ cast });
+  const { recast, removeRecast, recasted, recastCount, recastPending } =
+    useFarcasterRecastAction({ cast });
+  const [openGiftModal, setOpenGiftModal] = useState(false);
+  const [openShareModal, setOpenShareModal] = useState(false);
+  const [openMintNftModal, setOpenMintNftModal] = useState(false);
+  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
+    useUserDegenAllowance();
+  const onLike = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+
+    if (liked) {
+      removeLikeCast();
+    } else {
+      likeCast();
+    }
+  };
+  const onGift = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
+  };
+  const onComment = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (!currFid) {
+      farcasterPrepareWrite();
+      return;
+    }
+    const castHex = getCastHex(cast);
+    navigateToCastReply(castHex, {
+      cast,
+      farcasterUserDataObj,
+      community: communityInfo,
+    });
+  };
+  const onShare = () => {
+    setOpenShareModal(true);
+  };
+  const onRepost = () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (recasted) {
+      // removeRecast();
+      Toast.show({
+        type: "info",
+        text1: "already recasted",
+      });
+    } else {
+      recast();
+    }
+  };
   return (
     <>
       <ExplorePostActions
         liked={liked}
         likeCount={likeCount}
+        liking={likePending}
+        reposted={recasted}
+        reposting={recastPending}
         onLike={onLike}
         onGift={onGift}
         onShare={onShare}
         onComment={onComment}
-        onMint={() => setOpenMintNftModal(true)}
+        onRepost={onRepost}
+        onMint={() => {
+          if (!authenticated) {
+            login();
+            return;
+          }
+          setOpenMintNftModal(true);
+        }}
         showActions={showActions}
         showActionsChange={showActionsChange}
         {...props}
@@ -203,6 +264,7 @@ export function FCastExploreActions({
       />
       <FCastMintNftModal
         cast={cast}
+        castUserData={castUserData}
         channelId={channelId}
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}

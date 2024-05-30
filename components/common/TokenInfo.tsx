@@ -15,7 +15,7 @@ type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   textClassName?: string;
 };
 
-export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
+export function TokenInfo({ name, logo, symbol, mc, textClassName }: TokenInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
       <Avatar
@@ -31,7 +31,7 @@ export function TokenInfo({ name, logo, mc, textClassName }: TokenInfoProps) {
       </Avatar>
       <View>
         <Text className={cn("line-clamp-1 text-sm font-medium", textClassName)}>
-          {name}
+          {symbol}
         </Text>
         {mc && mc > 0 && (
           <Text className="text-xs text-secondary">

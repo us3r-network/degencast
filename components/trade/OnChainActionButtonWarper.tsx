@@ -4,7 +4,7 @@ import { useChainId, useChains, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_ADDRESS } from "~/constants";
-import { useERC20Approve } from "~/hooks/trade/useERC20Approve";
+import { useERC20Approve } from "~/hooks/trade/useERC20Contract";
 
 type OnChainActionButtonWarperProps = React.ComponentPropsWithoutRef<
   typeof Button

@@ -78,6 +78,8 @@ import {
   Chrome,
   Globe,
   Settings,
+  ReceiptText,
+  DollarSign,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -171,6 +173,8 @@ interopIcon(UserRoundCheck);
 interopIcon(Chrome);
 interopIcon(Globe);
 interopIcon(Settings);
+interopIcon(ReceiptText);
+interopIcon(DollarSign);
 export {
   Activity,
   Airplay,
@@ -250,4 +254,6 @@ export {
   Chrome,
   Globe,
   Settings,
+  ReceiptText,
+  DollarSign,
 };

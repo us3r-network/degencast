@@ -17,6 +17,7 @@ import { SKIP_ONBOARDING_KEY } from "../login";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import {
   ExploreSharingButton,
+  PortfolioSharingButton,
   TradeSharingButton,
 } from "~/components/platform-sharing/PlatformSharingButton";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
@@ -28,7 +29,7 @@ import {
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
 
 export default function TabLayout() {
-  const { currFid } = useFarcasterAccount();
+  const { currFid, farcasterAccount } = useFarcasterAccount();
   // preload trade data
   useCommunityTokens();
   // useCommunityShares();
@@ -48,6 +49,7 @@ export default function TabLayout() {
     };
     goOnboarding();
   }, [ready, privyAuthenticated]);
+
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
@@ -124,6 +126,12 @@ export default function TabLayout() {
                   <UserGlobalPoints />
                   <SearchLink />
                   <PostLink />
+                  {currFid && farcasterAccount && <View>
+                    <PortfolioSharingButton
+                      fid={Number(currFid)}
+                      fname={farcasterAccount.username || ""}
+                    />
+                  </View>}
                 </HeaderRight>
               </Header>
             ),

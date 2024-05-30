@@ -30,6 +30,7 @@ import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import { isDesktop } from "react-device-detect";
+import { ScreenLoading } from "~/components/common/Loading";
 
 const headerHeight = 70;
 const footerHeight = 70;
@@ -39,7 +40,8 @@ const itemHeight =
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
   const { navigateToCastDetail } = useCastPage();
-  const { channelId } = useLocalSearchParams<{ channelId: string }>();
+  const params = useLocalSearchParams<{ channelId: string }>();
+  const { channelId } = params as { channelId: string };
   const globalParams = useGlobalSearchParams<{ cast?: string }>();
   const { cast: castHex } = globalParams || {};
 
@@ -55,14 +57,13 @@ export default function ChannelExploreScreen() {
 
   const channelPageData = channelExploreData?.[channelId];
   const {
-    origin: channelPageOrigin,
     cast: channelPageCast,
     farcasterUserDataObj: channelPageCastUserDataObj,
   } = channelPageData || {};
 
-  const showGoHomeBtn = ![ChannelExploreDataOrigin.Explore].includes(
-    channelPageOrigin,
-  );
+  const routes = navigation.getState()?.routes;
+  const prevRoute = routes[routes.length - 2];
+  const showGoHomeBtn = prevRoute?.name !== "(tabs)";
 
   const cast = useMemo(() => {
     return channelPageCast && castHex && castHex === getCastHex(channelPageCast)
@@ -150,6 +151,9 @@ export default function ChannelExploreScreen() {
           ),
         }}
       />
+      {casts.length === 0 && (
+        <ScreenLoading className=" fixed left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
+      )}
       <View className={cn("w-full flex-col")}>
         <View className="w-full" style={{ height: itemHeight }}>
           <ScrollView
@@ -223,6 +227,8 @@ export default function ChannelExploreScreen() {
                       className="h-full w-full overflow-hidden"
                       cast={data}
                       farcasterUserDataObj={farcasterUserDataObj}
+                      webpageImgIsFixedRatio={true}
+                      viewMoreWordLimits={isDesktop ? 200 : 50}
                     />
                   </Pressable>
                 </View>

@@ -65,8 +65,9 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { portalHost?: string }
 >(({ className, children, portalHost, ...props }, ref) => {
   const { open } = DialogPrimitive.useRootContext();
+  const dialogContainer = document.getElementById('dialog-container');
   return (
-    <DialogPortal hostName={portalHost}>
+    <DialogPortal hostName={portalHost} container={dialogContainer}>
       <DialogOverlay>
       <TextClassContext.Provider
         value={cn(

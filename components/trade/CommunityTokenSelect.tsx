@@ -56,9 +56,13 @@ export default function CommunityToeknSelect({
       }}
       onValueChange={valueChangeHandler}
     >
-      <SelectTrigger className={cn("w-full gap-6 border-secondary px-2")}>
+      <SelectTrigger className={cn("w-full gap-6 border-none p-0")}>
         <View className="flex-row items-center gap-6">
-          <TokenInfo name={selectedToken.name} logo={selectedToken.logoURI} />
+          <TokenInfo
+            name={selectedToken.name}
+            logo={selectedToken.logoURI}
+            symbol={selectedToken.symbol}
+          />
           {showBalance && (
             <Text className="text-secondary">
               {Number(selectedToken.balance).toFixed(4)} {selectedToken.symbol}
@@ -66,7 +70,10 @@ export default function CommunityToeknSelect({
           )}
         </View>
       </SelectTrigger>
-      <SelectContent side="bottom" className={cn("border-secondary bg-primary p-0 max-h-36")}>
+      <SelectContent
+        side="bottom"
+        className={cn("max-h-72 border-secondary bg-primary p-0")}
+      >
         {tokens?.map((token) => (
           <SelectItem
             asChild
@@ -79,7 +86,11 @@ export default function CommunityToeknSelect({
               key={token.address}
               className="w-full flex-row items-center gap-4 p-1"
             >
-              <TokenInfo name={token.name} logo={token.logoURI} />
+              <TokenInfo
+                name={token.name}
+                logo={token.logoURI}
+                symbol={token.symbol}
+              />
               {showBalance && (
                 <Text className="text-secondary">
                   {Number(token.balance).toFixed(4)} {token.symbol}

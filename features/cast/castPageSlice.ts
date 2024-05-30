@@ -14,12 +14,12 @@ export enum CastDetailDataOrigin {
 }
 
 export type CastDetailData = {
-  origin: CastDetailDataOrigin;
   cast: FarCast;
   farcasterUserDataObj: {
     [key: string]: UserData;
   };
   community?: CommunityInfo | null | undefined;
+  origin?: CastDetailDataOrigin;
 };
 
 export type CastReplayData = {
