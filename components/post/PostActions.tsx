@@ -1,6 +1,6 @@
 import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
-import { Heart, Plus, Repeat, Share2, X } from "../common/Icons";
+import { DollarSign, Heart, Plus, Repeat, Share2, X } from "../common/Icons";
 import { Text } from "../ui/text";
 import { Animated, Easing, TextProps, View, ViewProps } from "react-native";
 import { Image } from "react-native";
@@ -88,11 +88,7 @@ export const GiftButton = ({
 }) => {
   return (
     <ActionButton {...props}>
-      <Image
-        source={require("~/assets/images/degen-icon.png")}
-        resizeMode="contain"
-        style={{ width: iconSize, height: iconSize }}
-      />
+      <DollarSign size={iconSize} className={cn("stroke-primary")} />
       {/* <ActionText>{giftCount || 0}</ActionText> */}
     </ActionButton>
   );
@@ -320,7 +316,15 @@ export const ExplorePostActions = ({
             },
           ]}
         >
-          <Plus size={30} className={cn(" fill-primary stroke-primary")} />
+          {showActions ? (
+            <Plus size={30} className={cn(" fill-primary stroke-primary")} />
+          ) : (
+            <Image
+              source={require("~/assets/images/degen-icon.png")}
+              resizeMode="contain"
+              style={{ width: 30, height: 30 }}
+            />
+          )}
         </Animated.View>
       </ActionButton>
     </View>
