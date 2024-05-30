@@ -30,6 +30,7 @@ import communityDetailShares from "~/features/community/communityDetailSharesSli
 import communityDetailCasts from "~/features/community/communityDetailCastsSlice";
 import communityShareStatistics from "~/features/community/communityShareStatisticsSlice";
 import communityTrending from "~/features/community/communityTrendingSlice";
+import appSettings from "~/features/appSettingsSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -58,6 +59,7 @@ export const store = configureStore({
     communityShareStatistics,
     communityTrending,
     castReactions,
+    appSettings,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>

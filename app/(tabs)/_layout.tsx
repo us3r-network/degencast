@@ -26,6 +26,8 @@ import {
   HeaderRight,
 } from "~/components/layout/header/Header";
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
+import ScreenFirstLoading from "~/components/layout/ScreenFirstLoading";
+import useFirstLoadedScreenListener from "~/hooks/useFirstLoadedScreenListener";
 
 export default function TabLayout() {
   const { currFid } = useFarcasterAccount();
@@ -48,6 +50,12 @@ export default function TabLayout() {
     };
     goOnboarding();
   }, [ready, privyAuthenticated]);
+
+  const { routeFirstLoadedListener } = useFirstLoadedScreenListener();
+  useEffect(() => {
+    routeFirstLoadedListener();
+  }, [routeFirstLoadedListener]);
+
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
@@ -57,7 +65,12 @@ export default function TabLayout() {
           headerShown: useClientOnlyValue(false, true),
         }}
         tabBar={(props) => {
-          return <TabBar {...props} />;
+          return (
+            <>
+              <TabBar {...props} />
+              <ScreenFirstLoading />
+            </>
+          );
         }}
       >
         <Tabs.Screen
