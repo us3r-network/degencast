@@ -98,7 +98,13 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
   );
 }
 
-export function PortfolioSharingButton({ fid }: { fid: number }) {
+export function PortfolioSharingButton({
+  fid,
+  fname,
+}: {
+  fid: number;
+  fname: string;
+}) {
   const { currFid } = useFarcasterAccount();
   return (
     <PlatformSharingButton
@@ -110,7 +116,7 @@ export function PortfolioSharingButton({ fid }: { fid: number }) {
       })}
       frameLink={getPortfolioFrameLink({
         fid,
-        inviteFid: Number(currFid),
+        fname,
       })}
     />
   );

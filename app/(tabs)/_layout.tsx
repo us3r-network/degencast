@@ -29,7 +29,7 @@ import {
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
 
 export default function TabLayout() {
-  const { currFid } = useFarcasterAccount();
+  const { currFid, farcasterAccount } = useFarcasterAccount();
   // preload trade data
   useCommunityTokens();
   // useCommunityShares();
@@ -126,7 +126,10 @@ export default function TabLayout() {
                   <SearchLink />
                   <PostLink />
                   <View>
-                    <PortfolioSharingButton fid={Number(currFid)} />
+                    <PortfolioSharingButton
+                      fid={Number(currFid)}
+                      fname={farcasterAccount.username || ""}
+                    />
                   </View>
                 </HeaderRight>
               </Header>

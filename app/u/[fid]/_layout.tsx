@@ -64,7 +64,12 @@ export default function UserPortfolioScreen() {
                   </Text>
                 </View>
                 <View className="flex flex-row items-center gap-[10px]">
-                  {fid && <PortfolioSharingButton fid={Number(fid)} />}
+                  {fid && (
+                    <PortfolioSharingButton
+                      fid={Number(fid)}
+                      fname={username || ""}
+                    />
+                  )}
                 </View>
               </View>
             ),
