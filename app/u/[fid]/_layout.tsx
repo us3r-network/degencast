@@ -15,8 +15,8 @@ import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useUserBulk from "~/hooks/user/useUserBulk";
 
 export default function UserPortfolioScreen() {
+  const segments = useSegments();
   const navigation = useNavigation();
-  console.log("UserPortfolioScreen", navigation);
   const { fid } = useLocalSearchParams<{ fid: string }>();
   const { items: userItems, load } = useUserBulk();
 
@@ -31,7 +31,6 @@ export default function UserPortfolioScreen() {
     return "User Portfolio";
   }, [userItems]);
 
-  const segments = useSegments();
   if (Number(fid))
     return (
       <SafeAreaView
