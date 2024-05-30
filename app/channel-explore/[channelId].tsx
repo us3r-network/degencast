@@ -30,6 +30,7 @@ import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import { isDesktop } from "react-device-detect";
+import { ScreenLoading } from "~/components/common/Loading";
 
 const headerHeight = 70;
 const footerHeight = 70;
@@ -150,6 +151,9 @@ export default function ChannelExploreScreen() {
           ),
         }}
       />
+      {casts.length === 0 && (
+        <ScreenLoading className=" fixed left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
+      )}
       <View className={cn("w-full flex-col")}>
         <View className="w-full" style={{ height: itemHeight }}>
           <ScrollView

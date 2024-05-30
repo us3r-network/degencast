@@ -20,6 +20,7 @@ import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWi
 import { useRef, useState } from "react";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
+import { ScreenLoading } from "~/components/common/Loading";
 
 const headerHeight = DEFAULT_HEADER_HEIGHT;
 const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -153,6 +154,9 @@ export default function ExploreScreenScroll() {
           })}
         </ScrollView>
       </View>
+      {casts.length === 0 && (
+        <ScreenLoading className=" fixed left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
+      )}
     </SafeAreaView>
   );
 }
