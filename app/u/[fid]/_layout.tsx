@@ -7,20 +7,16 @@ import {
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  Header,
-  HeaderLeft,
-  HeaderRight,
-} from "~/components/layout/header/Header";
-import {
-  ExploreSharingButton,
-  PortfolioSharingButton,
-} from "~/components/platform-sharing/PlatformSharingButton";
+import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
+import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
 import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
+import { Text } from "~/components/ui/text";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useUserBulk from "~/hooks/user/useUserBulk";
 
 export default function UserPortfolioScreen() {
+  const navigation = useNavigation();
+  console.log("UserPortfolioScreen", navigation);
   const { fid } = useLocalSearchParams<{ fid: string }>();
   const { items: userItems, load } = useUserBulk();
 
@@ -50,14 +46,28 @@ export default function UserPortfolioScreen() {
           options={{
             headerTransparent: true,
             header: () => (
-              <Header>
-                <HeaderLeft title={username || "User Portfolio"} />
-                <HeaderRight>
-                  <View>
-                    {fid && <PortfolioSharingButton fid={Number(fid)} />}
-                  </View>
-                </HeaderRight>
-              </Header>
+              <View
+                style={{
+                  height: DEFAULT_HEADER_HEIGHT,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                }}
+                className="flex-row items-center justify-between bg-primary"
+              >
+                <View className="flex flex-row items-center gap-3">
+                  <GoBackButtonBgPrimary
+                    onPress={() => {
+                      navigation.goBack();
+                    }}
+                  />
+                  <Text className=" text-xl font-bold text-primary-foreground">
+                    {username || "User Portfolio"}
+                  </Text>
+                </View>
+                <View className="flex flex-row items-center gap-[10px]">
+                  {fid && <PortfolioSharingButton fid={Number(fid)} />}
+                </View>
+              </View>
             ),
           }}
         />

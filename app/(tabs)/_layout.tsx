@@ -17,6 +17,7 @@ import { SKIP_ONBOARDING_KEY } from "../login";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import {
   ExploreSharingButton,
+  PortfolioSharingButton,
   TradeSharingButton,
 } from "~/components/platform-sharing/PlatformSharingButton";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
@@ -124,6 +125,9 @@ export default function TabLayout() {
                   <UserGlobalPoints />
                   <SearchLink />
                   <PostLink />
+                  <View>
+                    <PortfolioSharingButton fid={Number(currFid)} />
+                  </View>
                 </HeaderRight>
               </Header>
             ),
