@@ -2444,10 +2444,10 @@
   resolved "https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@privy-io/react-auth@^1.65.1":
-  version "1.65.1"
-  resolved "https://registry.npmjs.org/@privy-io/react-auth/-/react-auth-1.65.1.tgz#ed788f45ef08a6e5af2dcde4bfe2bfe3fea1b5cf"
-  integrity sha512-mdls0uYSCptZRNcobgZc06pHlRIG2ZFY8rPxVNQBSuxz8/db3ZQH/tjtUPfVaLWaW8Zomnldv+KlMrVb6mC7zA==
+"@privy-io/react-auth@^1.66.3":
+  version "1.66.3"
+  resolved "https://registry.npmjs.org/@privy-io/react-auth/-/react-auth-1.66.3.tgz#d43344db1b186543d06d48ccc7fc6414e3a50622"
+  integrity sha512-k5FIawfSJYMLh9RZdbpx4XDlQ7fz7mxk5Oo7sA33j7vwUXClVk8fsg9NNOJNxB8oCfSSQ60xF/GUSkDIWrYk8g==
   dependencies:
     "@coinbase/wallet-sdk" "3.9.3"
     "@ethersproject/abstract-signer" "^5.7.0"
@@ -2489,10 +2489,10 @@
     web3-core "^1.8.0"
     web3-core-helpers "^1.8.0"
 
-"@privy-io/wagmi@^0.2.6":
-  version "0.2.6"
-  resolved "https://registry.npmjs.org/@privy-io/wagmi/-/wagmi-0.2.6.tgz#246dc431bb5013148ce5980b96d9efb62ca35d59"
-  integrity sha512-8Q2sxrJ3qSsni5ZDIgqFvJ9UU36JM710/w/uGyIeWMlzqwDNJplomn0E4WgN1BaZRqfDt37ofremRx3+QL0sQw==
+"@privy-io/wagmi@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.npmjs.org/@privy-io/wagmi/-/wagmi-0.2.8.tgz#f712c9ec5e33c33eef26bd44b5f4e0030895b106"
+  integrity sha512-9hsy6wYYGZnk8ULGZzt1osfyKRUvxIHDIAjA64wn3QdtoiLs482YiF2uVU/oqLmVDI8LvXYyc1IZsIiX3NSZOw==
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
