@@ -32,26 +32,13 @@ export default function FCastText({
     (mentions || []).map((mention, index) => {
       const mentionData = farcasterUserDataObj?.[mention];
       if (!mentionData) return null;
-      const profileIdentity = mentionData.userName.endsWith(".eth")
-        ? mentionData.userName
-        : farcasterHandleToBioLinkHandle(mentionData.userName);
-
       return (
-        <Text
-          key={index}
-          className="inline-block text-secondary hover:cursor-pointer hover:underline"
-        >{`@${mentionData.userName}`}</Text>
+        <Link href={`/u/${mentionData.fid}`} key={index}>
+          <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
+            {`@${mentionData.userName}`}
+          </Text>
+        </Link>
       );
-      // TODO
-      // return (
-      //   <Link
-      //     href={`/portfolio/${profileIdentity}`}
-      //     key={index}
-      //     className="inline text-secondary hover:cursor-pointer hover:underline"
-      //   >
-      //     {`@${mentionData.userName}`}
-      //   </Link>
-      // );
     }),
     (s, index) => {
       return (
