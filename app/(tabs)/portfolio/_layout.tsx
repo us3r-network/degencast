@@ -13,12 +13,9 @@ import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 
 export default function PortfolioScreen() {
-  const { ready, authenticated: privyAuthenticated } = usePrivy();
+  const { ready, authenticated: privyAuthenticated, login } = usePrivy();
   const { authenticated } = useAuth();
   const router = useRouter();
-  const login = () => {
-    router.push("/login");
-  };
   const segments = useSegments();
   return (
     <SafeAreaView

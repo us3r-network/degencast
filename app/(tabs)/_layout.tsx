@@ -29,6 +29,7 @@ import {
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
 import ScreenFirstLoading from "~/components/layout/ScreenFirstLoading";
 import useFirstLoadedScreenListener from "~/hooks/useFirstLoadedScreenListener";
+import OnboardingModal from "~/components/portfolio/user/Onboarding";
 
 export default function TabLayout() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
@@ -36,21 +37,6 @@ export default function TabLayout() {
   useCommunityTokens();
   // useCommunityShares();
   useCommunityRank();
-  const { ready, authenticated: privyAuthenticated } = usePrivy();
-  const router = useRouter();
-  useEffect(() => {
-    const goOnboarding = async () => {
-      const skipOnboardingDate =
-        await AsyncStorage.getItem(SKIP_ONBOARDING_KEY);
-      if (
-        ready &&
-        !privyAuthenticated &&
-        (!skipOnboardingDate || new Date(skipOnboardingDate) < new Date())
-      )
-        router.push("/login");
-    };
-    goOnboarding();
-  }, [ready, privyAuthenticated]);
 
   const { routeFirstLoadedListener } = useFirstLoadedScreenListener();
   useEffect(() => {
@@ -150,6 +136,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      <OnboardingModal />
     </SafeAreaView>
   );
 }
