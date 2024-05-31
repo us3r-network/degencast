@@ -309,22 +309,18 @@ export const ExplorePostActions = ({
                 {
                   rotate: toggleBtnAnimation.interpolate({
                     inputRange: [0, 1],
-                    outputRange: ["0deg", "45deg"],
+                    outputRange: ["0deg", "180deg"],
                   }),
                 },
               ],
             },
           ]}
         >
-          {showActions ? (
-            <Plus size={30} className={cn(" fill-primary stroke-primary")} />
-          ) : (
-            <Image
-              source={require("~/assets/images/degen-icon.png")}
-              resizeMode="contain"
-              style={{ width: 30, height: 30 }}
-            />
-          )}
+          <Image
+            source={require("~/assets/images/degen-icon.png")}
+            resizeMode="contain"
+            style={{ width: 30, height: 30 }}
+          />
         </Animated.View>
       </ActionButton>
     </View>
