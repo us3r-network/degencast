@@ -22,10 +22,12 @@ export default function FCastCommunity({
   const { navigateToCommunityDetail } = useCommunityPage();
   const { loading: communityTokensLoading, items: communityTokens } =
     useCommunityTokens();
+  const tokenAddress = communityInfo?.tokens?.[0]?.contract;
   const communityToken = communityTokens.find(
     (item) =>
-      item.tradeInfo?.channel &&
-      item.tradeInfo.channel === communityInfo?.channelId,
+      (item.tradeInfo?.channel &&
+        item.tradeInfo.channel === communityInfo?.channelId) ||
+      (tokenAddress && item.tradeInfo?.tokenAddress === tokenAddress),
   );
   return (
     <Pressable
