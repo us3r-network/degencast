@@ -1,36 +1,23 @@
-import {
-  Frame,
-  FrameButton,
-  FrameButtonLink,
-  FrameButtonsType,
-} from "frames.js";
-import {
-  FarcasterWithMetadata,
-  useExperimentalFarcasterSigner,
-  usePrivy,
-  useLinkAccount,
-  useConnectWallet,
-} from "@privy-io/react-auth";
-
-import { FarCast } from "~/services/farcaster/types";
-import { View, Image, Platform, Linking, Pressable } from "react-native";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Text } from "~/components/ui/text";
-import { cn } from "~/lib/utils";
-import { AspectRatio } from "~/components/ui/aspect-ratio";
-import Toast from "react-native-toast-message";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import { fromHex, toHex } from "viem";
 import { FarcasterNetwork, Message, makeFrameAction } from "@farcaster/hub-web";
 import {
-  postFrameActionApi,
-  postFrameActionRedirectApi,
-  postFrameActionTxApi,
-} from "~/services/farcaster/api/frame";
-import { FARCASTER_NETWORK } from "~/constants/farcaster";
+  FarcasterWithMetadata,
+  useConnectWallet,
+  usePrivy
+} from "@privy-io/react-auth";
+import {
+  sendTransaction,
+  switchChain,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
+import {
+  Frame
+} from "frames.js";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Image, Linking, Platform, Pressable, View } from "react-native";
+import Toast from "react-native-toast-message";
+import { fromHex, toHex } from "viem";
+import { useAccount, useChains, useConfig } from "wagmi";
+import { X } from "~/components/common/Icons";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -38,13 +25,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
-import { X } from "~/components/common/Icons";
-import { useAccount, useChains, useConfig } from "wagmi";
+import { AspectRatio } from "~/components/ui/aspect-ratio";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Text } from "~/components/ui/text";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import { cn } from "~/lib/utils";
 import {
-  sendTransaction,
-  switchChain,
-  waitForTransactionReceipt,
-} from "@wagmi/core";
+  postFrameActionApi,
+  postFrameActionRedirectApi,
+  postFrameActionTxApi,
+} from "~/services/farcaster/api/frame";
+import { FarCast } from "~/services/farcaster/types";
 import { shortAddress } from "~/utils/shortAddress";
 
 export default function EmbedFrame({
