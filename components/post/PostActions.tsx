@@ -249,27 +249,13 @@ export const ExplorePostActions = ({
         translateYAnimatedValue={translateYAnimatedValue}
         index={5}
       >
-        <LikeButton
-          className=" shadow-md shadow-primary"
-          disabled={liking}
-          liked={liked}
-          likeCount={likeCount}
-          onPress={onLike}
-        />
-      </ActionMenuItem>
-      <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
-        index={4}
-      >
         <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
       </ActionMenuItem>
       <ActionMenuItem
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
         translateYAnimatedValue={translateYAnimatedValue}
-        index={3}
+        index={4}
       >
         <CommentButton
           className=" shadow-md shadow-primary"
@@ -280,7 +266,7 @@ export const ExplorePostActions = ({
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
         translateYAnimatedValue={translateYAnimatedValue}
-        index={2}
+        index={3}
       >
         <MintButton className=" shadow-md shadow-primary" onPress={onMint} />
       </ActionMenuItem>
@@ -288,7 +274,7 @@ export const ExplorePostActions = ({
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
         translateYAnimatedValue={translateYAnimatedValue}
-        index={1}
+        index={2}
       >
         {/* <ShareButton className=" shadow-md shadow-primary" onPress={onShare} /> */}
         <RepostButton
@@ -296,6 +282,20 @@ export const ExplorePostActions = ({
           disabled={reposting}
           reposted={reposted}
           onPress={onRepost}
+        />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={1}
+      >
+        <LikeButton
+          className=" shadow-md shadow-primary"
+          disabled={liking}
+          liked={liked}
+          likeCount={likeCount}
+          onPress={onLike}
         />
       </ActionMenuItem>
       <ActionButton
@@ -309,22 +309,18 @@ export const ExplorePostActions = ({
                 {
                   rotate: toggleBtnAnimation.interpolate({
                     inputRange: [0, 1],
-                    outputRange: ["0deg", "45deg"],
+                    outputRange: ["0deg", "180deg"],
                   }),
                 },
               ],
             },
           ]}
         >
-          {showActions ? (
-            <Plus size={30} className={cn(" fill-primary stroke-primary")} />
-          ) : (
-            <Image
-              source={require("~/assets/images/degen-icon.png")}
-              resizeMode="contain"
-              style={{ width: 30, height: 30 }}
-            />
-          )}
+          <Image
+            source={require("~/assets/images/degen-icon.png")}
+            resizeMode="contain"
+            style={{ width: 30, height: 30 }}
+          />
         </Animated.View>
       </ActionButton>
     </View>
@@ -368,18 +364,6 @@ export const PostDetailActions = ({
 }) => {
   return (
     <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
-      {!hideLike && (
-        <LikeButton
-          className={cn(" h-10 w-10 ", liked && " border-none")}
-          variant={liked ? "default" : "outline"}
-          disabled={liking}
-          iconSize={15}
-          liked={liked}
-          likeCount={likeCount}
-          onPress={onLike}
-        />
-      )}
-
       {!hideGift && (
         <GiftButton
           variant={"outline"}
@@ -422,6 +406,18 @@ export const PostDetailActions = ({
         onPress={onRepost}
         disabled={reposting}
       />
+
+      {!hideLike && (
+        <LikeButton
+          className={cn(" h-10 w-10 ", liked && " border-none")}
+          variant={liked ? "default" : "outline"}
+          disabled={liking}
+          iconSize={15}
+          liked={liked}
+          likeCount={likeCount}
+          onPress={onLike}
+        />
+      )}
     </View>
   );
 };
