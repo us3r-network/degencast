@@ -217,3 +217,9 @@ export enum ProfileFeedsGroups {
   REPOSTS = "reposts",
   REPLIES = "replies",
 }
+
+export type FarcasterUserData = {
+  fid: string;
+  type: number;
+  value: string;
+};
