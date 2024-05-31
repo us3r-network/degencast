@@ -13,6 +13,8 @@ import {
 } from "~/services/user/api";
 import getActionPoint from "~/utils/action/getActionPoint";
 import { postSeenCasts } from "~/services/farcaster/api";
+import { computeHmac } from "~/utils/hmac";
+import { HTTP_HMAC_KEY } from "~/constants";
 
 export const keyPrefix = "degencast";
 export const unreportedActionsKey = `${keyPrefix}:unreportedActions`;
@@ -142,7 +144,18 @@ export const fetchUserActionConfig = createAsyncThunk<UserActionPointConfig>(
 export const submitAction = createAsyncThunk<UserActionData, UserActionData>(
   "userAction/submitAction",
   async (actionData, { rejectWithValue, getState }) => {
-    const resp = await postUserActions([actionData]);
+    if (!HTTP_HMAC_KEY) {
+      console.error("HTTP_HMAC_KEY is empty");
+      return rejectWithValue(new Error("HTTP_HMAC_KEY is empty"));
+    }
+    const state = getState() as RootState;
+    const { userAuth } = state;
+    const { degencastId } = userAuth;
+    const hmac = await computeHmac(
+      `${HTTP_HMAC_KEY}${degencastId}`,
+      JSON.stringify([actionData]),
+    );
+    const resp = await postUserActions([actionData], hmac);
     if (resp.data.code === ApiRespCode.SUCCESS) {
       return actionData;
     }
@@ -151,8 +164,13 @@ export const submitAction = createAsyncThunk<UserActionData, UserActionData>(
   {
     condition: (actionData, { getState }) => {
       const state = getState() as RootState;
-      const { userAction } = state;
+      const { userAction, userAuth } = state;
       const { reportedActions, reportPendingActions } = userAction;
+      const { degencastId } = userAuth;
+
+      if (!degencastId) {
+        return false;
+      }
       if (actionData.action === UserActionName.View) {
         const findReportedAction = reportedActions.find(
           (item) => item.castHash === actionData.castHash,
@@ -172,10 +190,19 @@ export const submitAction = createAsyncThunk<UserActionData, UserActionData>(
 export const submitUnreportedActions = createAsyncThunk<Array<UserActionData>>(
   "userAction/submitUnreportedActions",
   async (args, { rejectWithValue, getState }) => {
+    if (!HTTP_HMAC_KEY) {
+      console.error("HTTP_HMAC_KEY is empty");
+      return rejectWithValue(new Error("HTTP_HMAC_KEY is empty"));
+    }
     const state = getState() as RootState;
-    const { userAction } = state;
+    const { userAction, userAuth } = state;
     const { unreportedActions } = userAction;
-    const resp = await postUserActions(unreportedActions);
+    const { degencastId } = userAuth;
+    const hmac = await computeHmac(
+      `${HTTP_HMAC_KEY}${degencastId}`,
+      JSON.stringify(unreportedActions),
+    );
+    const resp = await postUserActions(unreportedActions, hmac);
     if (resp.data.code === ApiRespCode.SUCCESS) {
       return unreportedActions;
     }
@@ -184,8 +211,12 @@ export const submitUnreportedActions = createAsyncThunk<Array<UserActionData>>(
   {
     condition: (actionData, { getState }) => {
       const state = getState() as RootState;
-      const { userAction } = state;
+      const { userAction, userAuth } = state;
       const { unreportedActions, unreportedActionsSubmitStatus } = userAction;
+      const { degencastId } = userAuth;
+      if (!degencastId) {
+        return false;
+      }
       if (
         unreportedActions.length === 0 ||
         unreportedActionsSubmitStatus === AsyncRequestStatus.PENDING
