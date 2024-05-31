@@ -4,6 +4,7 @@ import { CommunityData } from "~/services/community/api/community";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "~/lib/utils";
 import { CommunityJoinIconButton } from "./CommunityJoinButton";
+import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -18,8 +19,15 @@ export default function CommunityDetailMetaInfo({
 }: ViewProps & {
   communityInfo: CommunityData;
 }) {
-  const { name, logo, description, memberInfo } = communityInfo;
+  const { name, logo, description, memberInfo, hostUserData } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
+  const fid = hostUserData?.[0]?.fid;
+  const hostUserDataObjArr = hostUserData?.length
+    ? userDataObjFromArr(hostUserData)
+    : null;
+  const hostUserDataObj = hostUserDataObjArr
+    ? hostUserDataObjArr[fid as string]
+    : null;
 
   return (
     <View className={cn("w-full flex-row gap-3", className)} {...props}>
@@ -51,7 +59,18 @@ export default function CommunityDetailMetaInfo({
             </Text>
           </View>
         </View>
-        <Text className="line-clamp-2 text-sm font-medium leading-6 text-secondary">
+        {!!hostUserDataObj && (
+          <View className="flex-row gap-1">
+            <Text className="text-sm font-medium leading-none text-secondary">
+              Host
+            </Text>
+            <Text className="text-sm font-medium leading-none text-primary-foreground">
+              @{hostUserDataObj?.userName}
+            </Text>
+          </View>
+        )}
+
+        <Text className="line-clamp-1 text-sm font-medium leading-6 text-secondary">
           {description}
         </Text>
       </View>

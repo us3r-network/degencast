@@ -1,3 +1,4 @@
+import { FarcasterUserData } from "~/services/farcaster/types";
 import { TradeInfo } from "./trade";
 
 export type CommunityEntity = {
@@ -34,6 +35,7 @@ export type CommunityEntity = {
   }>;
   channelId?: string;
   shares?: Array<{ subjectAddress: `0x${string}` }>;
+  hostUserData?: Array<FarcasterUserData>;
 };
 
 export type CommunityStatistics = {
@@ -46,7 +48,7 @@ export type CommunityStatistics = {
 
 export type MemberEntity = {
   fid: string;
-  data: Array<{ fid: string; type: number; value: string }>;
+  data: Array<FarcasterUserData>;
 };
 
 export type CommunityInfo = CommunityEntity & CommunityStatistics;
