@@ -94,12 +94,12 @@ export function ExploreTradeButton({
   const account = useAccount();
   const { connectWallet } = useConnectWallet();
 
-  const name = token2?.name || "";
+  const symbol = token2?.symbol || "";
   const logo = token2?.logoURI || "";
   if (!account.address)
     return (
       <ExploreTradeStyledButton
-        name={name}
+        name={symbol}
         logo={logo}
         onPress={connectWallet}
         {...props}
@@ -112,7 +112,7 @@ export function ExploreTradeButton({
         token2={token2}
         triggerButton={
           <ExploreTradeStyledButton
-            name={name}
+            name={symbol}
             logo={logo}
             disabled={
               (!token1 && !token2) ||
