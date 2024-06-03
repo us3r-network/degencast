@@ -19,7 +19,7 @@ export default function UserGlobalPoints() {
     totalPointsPrev.current = totalPoints;
     Animated.timing(pointChangeAnimation, {
       toValue: 1,
-      duration: 800,
+      duration: 600,
       useNativeDriver: true,
     }).start(() => {
       pointChangeAnimation.setValue(0);

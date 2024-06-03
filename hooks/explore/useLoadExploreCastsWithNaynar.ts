@@ -144,7 +144,7 @@ export default function useLoadExploreCastsWithNaynar() {
         });
         submitedViewActionCastsRef.current.push(castHex);
       }
-    }, 1000);
+    }, 500);
 
     // 如果已经上报过了，就不再上报
     if (!castHex || submitedViewActionCastsRef.current.includes(castHex)) {
