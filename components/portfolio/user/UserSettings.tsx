@@ -311,7 +311,7 @@ function FarcasterAccount() {
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         onPress={(event) => {
-          linkFarcaster;
+          linkFarcaster();
         }}
       >
         <View className="flex-row items-center gap-2">

@@ -44,13 +44,13 @@ export default function UserInfo({ fid }: { fid?: number }) {
     : walletAccount
       ? shortPubKey(walletAccount.address)
       : "";
-  // console.log(
-  //   "farcasterUserInfo",
-  //   farcasterUserInfo,
-  //   userAvatar,
-  //   userDisplayName,
-  //   username,
-  // );
+  console.log(
+    "farcasterUserInfo",
+    farcasterUserInfo,
+    userAvatar,
+    userDisplayName,
+    username,
+  );
   if (!ready || !authenticated) {
     return null;
   } else if (farcasterUserInfo)
@@ -142,7 +142,6 @@ export default function UserInfo({ fid }: { fid?: number }) {
             alt={username}
             className="size-24 border-2 border-secondary bg-secondary/10"
           >
-            <AvatarImage source={{ uri: userAvatar }} />
             <AvatarFallback className="bg-white">
               <User className="size-16 fill-primary/80 font-medium text-primary" />
             </AvatarFallback>
