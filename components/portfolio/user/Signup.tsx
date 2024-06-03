@@ -23,7 +23,6 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
   const { user } = usePrivy();
-  console.log("user", user);
   const { createWallet } = useCreateWallet();
   const { wallets } = useWallets();
   const embededWallet = wallets.find(
