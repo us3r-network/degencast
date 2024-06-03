@@ -36,6 +36,7 @@ jobs:
           EXPO_PUBLIC_NFT_STORAGE_API_KEY: "${{ vars.EXPO_PUBLIC_NFT_STORAGE_API_KEY }}"
           EXPO_PUBLIC_ZORA_CAST_NFT_CHAIN_ID: "${{ vars.EXPO_PUBLIC_ZORA_CAST_NFT_CHAIN_ID }}"
           EXPO_PUBLIC_ZORA_CREATE_REFERRAL: "${{ vars.EXPO_PUBLIC_ZORA_CREATE_REFERRAL }}"
+          EXPO_PUBLIC_HTTP_HMAC_KEY: "${{ vars.EXPO_PUBLIC_HTTP_HMAC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -70,6 +71,7 @@ jobs:
           EXPO_PUBLIC_NFT_STORAGE_API_KEY: "${{ vars.EXPO_PUBLIC_NFT_STORAGE_API_KEY }}"
           EXPO_PUBLIC_ZORA_CAST_NFT_CHAIN_ID: "${{ vars.EXPO_PUBLIC_ZORA_CAST_NFT_CHAIN_ID }}"
           EXPO_PUBLIC_ZORA_CREATE_REFERRAL: "${{ vars.EXPO_PUBLIC_ZORA_CREATE_REFERRAL }}"
+          EXPO_PUBLIC_HTTP_HMAC_KEY: "${{ vars.EXPO_PUBLIC_HTTP_HMAC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -104,6 +106,7 @@ jobs:
           EXPO_PUBLIC_NFT_STORAGE_API_KEY: "${{ vars.EXPO_PUBLIC_NFT_STORAGE_API_KEY }}"
           EXPO_PUBLIC_ZORA_CAST_NFT_CHAIN_ID: "${{ vars.EXPO_PUBLIC_ZORA_CAST_NFT_CHAIN_ID }}"
           EXPO_PUBLIC_ZORA_CREATE_REFERRAL: "${{ vars.EXPO_PUBLIC_ZORA_CREATE_REFERRAL }}"
+          EXPO_PUBLIC_HTTP_HMAC_KEY: "${{ vars.EXPO_PUBLIC_HTTP_HMAC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
