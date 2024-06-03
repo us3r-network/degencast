@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -25,6 +25,7 @@ import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCommunityRank from "~/hooks/trade/useCommunityRank";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import useFirstLoadedScreenListener from "~/hooks/useFirstLoadedScreenListener";
 
 export default function TabLayout() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
@@ -32,6 +33,11 @@ export default function TabLayout() {
   useCommunityTokens();
   // useCommunityShares();
   useCommunityRank();
+
+  const { routeFirstLoadedListener } = useFirstLoadedScreenListener();
+  useEffect(() => {
+    routeFirstLoadedListener();
+  }, [routeFirstLoadedListener]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
