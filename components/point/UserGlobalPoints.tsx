@@ -19,7 +19,7 @@ export default function UserGlobalPoints() {
     totalPointsPrev.current = totalPoints;
     Animated.timing(pointChangeAnimation, {
       toValue: 1,
-      duration: 500,
+      duration: 600,
       useNativeDriver: true,
     }).start(() => {
       pointChangeAnimation.setValue(0);
@@ -30,15 +30,15 @@ export default function UserGlobalPoints() {
     transform: [
       {
         scale: pointChangeAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 1.1],
+          inputRange: [0, 0.5, 1],
+          outputRange: [1, 1.1, 1],
         }),
       },
     ],
   };
   const pointAnimationTextStyle = {
     opacity: pointChangeAnimation.interpolate({
-      inputRange: [0, 0.5, 1],
+      inputRange: [0, 0.01, 1],
       outputRange: [1, 0, 1],
     }),
   };

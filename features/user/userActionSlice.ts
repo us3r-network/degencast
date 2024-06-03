@@ -372,6 +372,9 @@ export const userActionSlice = createSlice({
         const actionData = action.meta.arg;
         if (actionData.action === UserActionName.View) {
           state.reportPendingActions.push(actionData);
+          // 刷cast时乐观处理
+          const point = getActionPoint(actionData, state.actionPointConfig);
+          state.totalPoints += point;
         }
       })
       .addCase(submitAction.fulfilled, (state, action) => {
@@ -381,6 +384,8 @@ export const userActionSlice = createSlice({
           state.reportPendingActions = state.reportPendingActions.filter(
             (item) => item.castHash !== actionData.castHash,
           );
+          // 刷cast时已经乐观处理
+          return;
         }
         const point = getActionPoint(actionData, state.actionPointConfig);
         state.totalPoints += point;
