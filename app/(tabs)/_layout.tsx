@@ -1,5 +1,5 @@
-import { Tabs, useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import { Tabs } from "expo-router";
+import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -7,26 +7,24 @@ import {
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
-import TabBar from "~/components/layout/tabBar/TabBar";
-import { useClientOnlyValue } from "~/components/useClientOnlyValue";
-import useCommunityRank from "~/hooks/trade/useCommunityRank";
-import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
-import { usePrivy } from "@privy-io/react-auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SKIP_ONBOARDING_KEY } from "../login";
-import UserGlobalPoints from "~/components/point/UserGlobalPoints";
-import {
-  ExploreSharingButton,
-  PortfolioSharingButton,
-  TradeSharingButton,
-} from "~/components/platform-sharing/PlatformSharingButton";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import {
   Header,
   HeaderLeft,
   HeaderRight,
 } from "~/components/layout/header/Header";
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
+import TabBar from "~/components/layout/tabBar/TabBar";
+import {
+  ExploreSharingButton,
+  PortfolioSharingButton,
+  TradeSharingButton,
+} from "~/components/platform-sharing/PlatformSharingButton";
+import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+import OnboardingModal from "~/components/portfolio/user/Onboarding";
+import { useClientOnlyValue } from "~/components/useClientOnlyValue";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useCommunityRank from "~/hooks/trade/useCommunityRank";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 
 export default function TabLayout() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
@@ -34,21 +32,6 @@ export default function TabLayout() {
   useCommunityTokens();
   // useCommunityShares();
   useCommunityRank();
-  const { ready, authenticated: privyAuthenticated } = usePrivy();
-  const router = useRouter();
-  useEffect(() => {
-    const goOnboarding = async () => {
-      const skipOnboardingDate =
-        await AsyncStorage.getItem(SKIP_ONBOARDING_KEY);
-      if (
-        ready &&
-        !privyAuthenticated &&
-        (!skipOnboardingDate || new Date(skipOnboardingDate) < new Date())
-      )
-        router.push("/login");
-    };
-    goOnboarding();
-  }, [ready, privyAuthenticated]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
@@ -138,6 +121,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      <OnboardingModal />
     </SafeAreaView>
   );
 }

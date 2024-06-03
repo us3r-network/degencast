@@ -8,10 +8,11 @@ import {
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
+import { get } from "lodash";
 import React, { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import {
   Copy,
   Edit,
@@ -25,6 +26,7 @@ import {
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
 import { WalletIcon } from "~/components/common/WalletIcon";
+import { SlottableViewProps, ViewRef } from "~/components/primitives/types";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -174,7 +176,11 @@ function LinkWallets() {
   return (
     <View className="flex w-full gap-2">
       {unconnectedLinkedWallets.map((wallet) => (
-        <WalletItem wallet={wallet} action={() => connectWallet()} />
+        <WalletItem
+          key={wallet.address}
+          wallet={wallet}
+          action={() => connectWallet()}
+        />
       ))}
       {/* link wallet */}
       <Pressable
@@ -195,14 +201,16 @@ type WalletItemProps = {
   action: () => void;
 };
 
-function WalletItem({ wallet, action }: WalletItemProps) {
+const WalletItem = React.forwardRef<
+  ViewRef,
+  SlottableViewProps & WalletItemProps
+>(({ wallet, action }, ref) => {
   const { unlinkWallet } = usePrivy();
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
   const { wallets: connectedWallets } = useWallets();
   return (
-    <View
-      className="w-full flex-row items-center justify-between gap-6"
-      key={wallet.address}
-    >
+    <View className="w-full flex-row items-center justify-between gap-6">
       <Pressable className="flex-row items-center gap-2" onPress={action}>
         <WalletIcon type={wallet.walletClientType} />
         <Text>{shortPubKey(wallet.address)}</Text>
@@ -240,18 +248,20 @@ function WalletItem({ wallet, action }: WalletItemProps) {
               <Plug className="size-4" />
             </Pressable>
           )}
-
-          <UnlinkButton
-            action={() => {
-              console.log("unlinking wallet", wallet.address);
-              unlinkWallet(wallet.address);
-            }}
-          />
+          {get(wallet, "linked") && (
+            <UnlinkButton
+              action={() => {
+                console.log("unlinking wallet", wallet.address);
+                if (address === wallet.address) disconnect();
+                unlinkWallet(wallet.address);
+              }}
+            />
+          )}
         </View>
       )}
     </View>
   );
-}
+});
 
 function FarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
@@ -301,7 +311,7 @@ function FarcasterAccount() {
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         onPress={(event) => {
-          linkFarcaster;
+          linkFarcaster();
         }}
       >
         <View className="flex-row items-center gap-2">
@@ -326,6 +336,7 @@ function UnlinkButton({ action }: { action: () => void }) {
       <AlertDialogTrigger>
         <Pressable
           onPress={(event) => {
+            console.log("unlinking");
             setOpen(true);
           }}
           disabled={linkAccountNum <= 1}

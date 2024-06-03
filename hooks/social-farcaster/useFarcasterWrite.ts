@@ -262,7 +262,8 @@ export default function useFarcasterWrite() {
 
   return {
     prepareWrite,
-    writing: writing && prepareing,
+    writing: writing || prepareing,
+    prepareing,
     submitCast,
     replayCast: submitCast,
     submitCastWithOpts: submitCast,
