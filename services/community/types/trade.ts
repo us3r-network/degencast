@@ -46,20 +46,20 @@ export type TradeInfo = {
     };
     reserve_in_usd: string;
   };
-  volumeStats: Array<{
-    volume_usd: string;
-    date: number;
-    _id: string;
-  }>;
-  priceStats: Array<
-    [
-      {
-        price: string;
-        date: number;
-        _id: string;
-      },
-    ]
-  >;
+  // volumeStats: Array<{
+  //   volume_usd: string;
+  //   date: number;
+  //   _id: string;
+  // }>;
+  // priceStats: Array<
+  //   [
+  //     {
+  //       price: string;
+  //       date: number;
+  //       _id: string;
+  //     },
+  //   ]
+  // >;
   holdersStats: Array<{
     count: number;
     date: number;

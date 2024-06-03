@@ -23,7 +23,7 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
   const { user } = usePrivy();
-
+  console.log("user", user);
   const { createWallet } = useCreateWallet();
   const { wallets } = useWallets();
   const embededWallet = wallets.find(
@@ -86,8 +86,8 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
   const { login } = useLogin(loginHanler);
 
   const linkAccountHanler = {
-    onSuccess: (user: User) => {
-      console.log("Linked farcaster account", user);
+    onSuccess: (user: User, linkMethod: string) => {
+      console.log("Linked account", user, linkMethod);
       // nextStep(user);
     },
     onError: (error: unknown) => {
@@ -148,11 +148,15 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
       {step === 1 &&
         (user?.farcaster ? (
           <View className=" relative h-full w-full">
-            <StepImage step="1" />
-            {/* <Text>
-              Your linked farcaster account is: {user?.farcaster?.displayName}(
-              {user?.farcaster?.fid})
-            </Text> */}
+            <StepImage step="1a" />
+            <View className="absolute top-40 flex w-full items-center justify-center gap-2">
+              <Text className="text-xl font-bold">
+                Your linked farcaster account is
+              </Text>
+              <Text className="text-xl font-bold">
+                {user?.farcaster?.displayName} @{user?.farcaster?.username}
+              </Text>
+            </View>
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
               <StepIndicator stepNum={5} stepNo={step} />
               {NextButton}
@@ -177,9 +181,12 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
         (!!injectedWallet ? (
           <View className="relative h-full w-full">
             <StepImage step="2a" />
-            {/* <Text>
-              Your active wallet is: {shortPubKey(injectedWallet.address)}
-            </Text> */}
+            <View className="absolute top-40 flex w-full items-center justify-center gap-2">
+              <Text className="text-xl font-bold">Your active wallet is</Text>
+              <Text className="text-xl font-bold">
+                {shortPubKey(injectedWallet.address)}
+              </Text>
+            </View>
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
               <StepIndicator stepNum={5} stepNo={step} />
               {NextButton}
@@ -224,7 +231,7 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
                 className="w-1/2 rounded-full"
                 onPress={() => prepareWrite()}
               >
-                <Text>Add Farcaster Signer & Earn 1000 $CAST</Text>
+                <Text>Connect & Earn</Text>
               </Button>
             </View>
             {SkipButton}
