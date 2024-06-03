@@ -89,7 +89,7 @@ export default function SearchScreen() {
   }, [trendingCommunities]);
 
   return (
-    <ScrollView className=" bg-white">
+    <ScrollView className=" bg-primary ">
       <Stack.Screen
         options={{
           header: () => (
@@ -108,7 +108,7 @@ export default function SearchScreen() {
       />
       {loading && (
         <View className="flex items-center justify-center">
-          <Text>Loading...</Text>
+          <Text className=" text-primary-foreground ">Loading...</Text>
         </View>
       )}
 
@@ -144,10 +144,7 @@ export default function SearchScreen() {
           <View className="flex flex-row flex-wrap gap-2">
             {history.map((item, i) => {
               return (
-                <Link
-                  key={i}
-                  href={`/communities/${item.channelId}`}
-                >
+                <Link key={i} href={`/communities/${item.channelId}`}>
                   <SearchItem icon={item.logo} name={item.name} />
                 </Link>
               );
@@ -207,10 +204,7 @@ function CommunityGroup({
       <View className="flex flex-row flex-wrap gap-2">
         {communities.map((item, i) => {
           return (
-            <Link
-              key={i}
-              href={`/communities/${item.channelId}`}
-            >
+            <Link key={i} href={`/communities/${item.channelId}`}>
               <SearchItem icon={item.logo} name={item.name} />
             </Link>
           );
@@ -222,12 +216,12 @@ function CommunityGroup({
 
 function SearchItem({ icon, name }: { icon: string; name: String }) {
   return (
-    <View className="inline-flex w-fit flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
+    <View className="inline-flex w-fit flex-row items-center gap-2 rounded-lg bg-[#ffffff66] p-2.5 text-sm">
       <Avatar alt="" className="h-6 w-6">
         <AvatarImage source={{ uri: icon }} />
       </Avatar>
 
-      <Text>{name}</Text>
+      <Text className="text-primary-foreground">{name}</Text>
     </View>
   );
 }
@@ -239,13 +233,13 @@ function RecommendItem({ icon, name }: { icon: string; name: String }) {
         <AvatarImage source={{ uri: icon }} />
       </Avatar>
 
-      <Text>{name}</Text>
+      <Text className="text-primary-foreground">{name}</Text>
     </View>
   );
 }
 
 function SearchTitle({ title }: { title: string }) {
-  return <Text className="text-base">{title}</Text>;
+  return <Text className="text-primary-foreground">{title}</Text>;
 }
 
 function SearchHeader({
@@ -260,9 +254,10 @@ function SearchHeader({
   const navigation = useNavigation();
   const searchInputRef = useRef<TextInput>(null);
   return (
-    <View className="flex w-full flex-row items-center bg-white">
+    <View className="flex w-full flex-row items-center bg-primary">
       <View className="w-fit p-3 ">
         <GoBackButton
+          className="bg-[#ffffff66]"
           onPress={() => {
             navigation.goBack();
           }}
@@ -274,7 +269,8 @@ function SearchHeader({
       <View className="relative flex-grow md:w-96 md:flex-grow-0">
         <Input
           className={cn(
-            "border-0 bg-[#a36efe1a] text-[12px] text-sm color-[#4c2896] placeholder:color-[#4c2896]",
+            "color-primary-foreground",
+            "border-0 bg-[#ffffff66] text-[12px] text-sm  placeholder:color-[#4c2896]",
             "w-full rounded-full  px-4  outline-none md:w-96",
             "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
           )}
@@ -284,17 +280,6 @@ function SearchHeader({
           autoFocus={true}
           onChangeText={(text) => setValue(text)}
         />
-
-        <Button
-          className="absolute bottom-0 right-1 top-0 flex items-center justify-center"
-          size={"icon"}
-          variant={null}
-          onPress={() => {
-            setValue("");
-          }}
-        >
-          <CrossIcon />
-        </Button>
       </View>
       <View className="w-fit p-3 ">
         <Button
