@@ -104,8 +104,6 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
     [user],
   );
 
-  const { prepareWrite } = useFarcasterWrite();
-
   const SkipButton = (
     <Button
       variant="default"
@@ -207,8 +205,8 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
             {SkipButton}
           </View>
         ))}
-      {step === 3 &&
-        (user?.farcaster?.signerPublicKey ? (
+      {step === 3 && user?.farcaster &&
+        (user.farcaster.signerPublicKey ? (
           <View className="relative h-full w-full">
             <StepImage step="3" />
             {/* <Text className="text-base font-medium">
@@ -225,13 +223,7 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
             <StepImage step="3" />
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
               <StepIndicator stepNum={5} stepNo={step} />
-              <Button
-                variant="secondary"
-                className="w-1/2 rounded-full"
-                onPress={() => prepareWrite()}
-              >
-                <Text>Connect & Earn</Text>
-              </Button>
+              <RequestFarcasterSignerButton />
             </View>
             {SkipButton}
           </View>
@@ -254,6 +246,20 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
         </View>
       )}
     </>
+  );
+}
+
+function RequestFarcasterSignerButton() {
+  const { prepareWrite, prepareing } = useFarcasterWrite();
+  return (
+    <Button
+      variant="secondary"
+      className="w-1/2 rounded-full"
+      disabled={prepareing}
+      onPress={() => prepareWrite()}
+    >
+      <Text>Connect & Earn</Text>
+    </Button>
   );
 }
 
