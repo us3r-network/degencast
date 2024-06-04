@@ -23,7 +23,7 @@ import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
 import { cloneDeep } from "lodash";
-import { SwipeType } from "~/utils/userActionEvent";
+import { SwipeEventData, SwipeType } from "~/utils/userActionEvent";
 
 const headerHeight = DEFAULT_HEADER_HEIGHT;
 const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -43,13 +43,7 @@ const defaultSwipeData = {
 };
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
-  const swipeData = useRef<{
-    start: any;
-    move: Array<any>;
-    end: any;
-    scrollNativeEventList: Array<any>;
-    type: string;
-  }>(defaultSwipeData);
+  const swipeData = useRef<SwipeEventData>(defaultSwipeData);
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
     useLoadExploreCastsWithNaynar({
       swipeDataRefValue: swipeData.current,
