@@ -129,7 +129,7 @@ export default function ChannelExploreScreen() {
         return true;
       },
       onPanResponderGrant(e, gestureState) {
-        // if (isDesktop) return;
+        if (isDesktop) return;
         swipeData.current.start = { ...gestureState, timestamp: Date.now() };
       },
       onPanResponderMove: (evt, gestureState) => {
@@ -142,7 +142,7 @@ export default function ChannelExploreScreen() {
         // }
       },
       onPanResponderRelease(e, gestureState) {
-        // if (isDesktop) return;
+        if (isDesktop) return;
         swipeData.current.end = { ...gestureState, timestamp: Date.now() };
         swipeData.current.type = SwipeType.gesture;
       },

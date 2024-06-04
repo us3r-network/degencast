@@ -66,7 +66,7 @@ export default function ExploreScreenScroll() {
         return true;
       },
       onPanResponderGrant(e, gestureState) {
-        // if (isDesktop) return;
+        if (isDesktop) return;
         swipeData.current.start = { ...gestureState, timestamp: Date.now() };
       },
       onPanResponderMove: (evt, gestureState) => {
@@ -79,7 +79,7 @@ export default function ExploreScreenScroll() {
         // }
       },
       onPanResponderRelease(e, gestureState) {
-        // if (isDesktop) return;
+        if (isDesktop) return;
         swipeData.current.end = { ...gestureState, timestamp: Date.now() };
         swipeData.current.type = SwipeType.gesture;
       },
