@@ -30,7 +30,7 @@ export default function TradeScreen() {
       style={{ flex: 1, paddingTop: DEFAULT_HEADER_HEIGHT }}
       className="bg-background"
     >
-      <View className="box-border w-full flex-1 px-4 ">
+      <View className="box-border w-full flex-1 px-4">
         <Tabs
           value={value}
           onValueChange={(value) => {
