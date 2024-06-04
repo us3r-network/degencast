@@ -5,6 +5,7 @@ import {
   ScrollView,
   Platform,
   SafeAreaView,
+  PanResponder,
 } from "react-native";
 import FCast from "~/components/social-farcaster/FCast";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
@@ -17,10 +18,12 @@ import { cn } from "~/lib/utils";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
+import { cloneDeep } from "lodash";
+import { SwipeType } from "~/utils/userActionEvent";
 
 const headerHeight = DEFAULT_HEADER_HEIGHT;
 const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -33,8 +36,24 @@ const itemHeight =
 
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
+  const swipeData = useRef<{
+    start: any;
+    end: any;
+    scrollNativeEventList: Array<any>;
+    type: string;
+  }>({
+    start: null,
+    end: null,
+    scrollNativeEventList: [],
+    type: "",
+  });
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
-    useLoadExploreCastsWithNaynar();
+    useLoadExploreCastsWithNaynar({
+      swipeDataRefValue: swipeData.current,
+      onViewCastActionSubmited: () => {
+        swipeData.current = { ...swipeData.current, scrollNativeEventList: [] };
+      },
+    });
   const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
   // 只渲染三个
   const renderCasts = indexedCasts.slice(
@@ -47,12 +66,44 @@ export default function ExploreScreenScroll() {
 
   const [showActions, setShowActions] = useState(false);
 
+  const canSaveScrollStart = useRef(true);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return true;
+      },
+      onPanResponderGrant(e, gestureState) {
+        swipeData.current.start = { ...gestureState };
+        swipeData.current.type = SwipeType.gesture;
+        console.log("swipeData start", { ...gestureState });
+        console.log("swipeData", swipeData.current);
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // 手势滑动中
+      },
+      onPanResponderRelease(e, gestureState) {
+        swipeData.current.end = { ...gestureState };
+        swipeData.current.type = SwipeType.gesture;
+        console.log("swipeData end", { ...gestureState });
+        console.log("swipeData", swipeData.current);
+      },
+    }),
+  );
+
+  useEffect(() => {
+    canSaveScrollStart.current = true;
+  }, [currentCastIndex]);
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
       className="bg-background"
     >
-      <View className={cn("w-full")} style={{ height: itemHeight }}>
+      <View
+        className={cn("w-full")}
+        style={{ height: itemHeight }}
+        {...panResponder.current.panHandlers}
+      >
         <ScrollView
           style={{ flex: 1, height: itemHeight }}
           className="w-full items-center"
@@ -64,7 +115,13 @@ export default function ExploreScreenScroll() {
           scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
           onScroll={(event) => {
             if (Platform.OS === "web") {
-              const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
+              const nativeEvent = cloneDeep(event.nativeEvent);
+              // console.log("scroll", swipeData.current.scrollNativeEventList);
+
+              // swipeData.current.scrollNativeEventList?.push({ ...nativeEvent });
+              // swipeData.current.type = SwipeType.scroll;
+
+              const offsetY = Math.ceil(nativeEvent.contentOffset.y);
               const index = Math.round(offsetY / itemHeight);
               const offsetRemainder = offsetY % itemHeight;
               offsetRemainderPrev.current = offsetRemainder;
