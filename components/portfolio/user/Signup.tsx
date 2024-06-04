@@ -15,7 +15,6 @@ import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import { cn } from "~/lib/utils";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
-import { useAssets } from "expo-asset";
 
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
 // console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
