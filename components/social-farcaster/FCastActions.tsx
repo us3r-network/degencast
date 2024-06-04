@@ -157,7 +157,7 @@ export function FCastExploreActions({
   showActionsChange: (showActions: boolean) => void;
 }) {
   const castUserData = farcasterUserDataObj[cast.fid];
-  const channelId = communityInfo.channelId || "";
+  const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
