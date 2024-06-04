@@ -34,24 +34,27 @@ const itemHeight =
   footerHeight +
   itemPaddingTop;
 
+const defaultSwipeData = {
+  start: null,
+  move: [],
+  end: null,
+  scrollNativeEventList: [],
+  type: "",
+};
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
   const swipeData = useRef<{
     start: any;
+    move: Array<any>;
     end: any;
     scrollNativeEventList: Array<any>;
     type: string;
-  }>({
-    start: null,
-    end: null,
-    scrollNativeEventList: [],
-    type: "",
-  });
+  }>(defaultSwipeData);
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
     useLoadExploreCastsWithNaynar({
       swipeDataRefValue: swipeData.current,
       onViewCastActionSubmited: () => {
-        swipeData.current = { ...swipeData.current, scrollNativeEventList: [] };
+        swipeData.current = { ...defaultSwipeData };
       },
     });
   const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
@@ -66,34 +69,32 @@ export default function ExploreScreenScroll() {
 
   const [showActions, setShowActions] = useState(false);
 
-  const canSaveScrollStart = useRef(true);
-
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         return true;
       },
       onPanResponderGrant(e, gestureState) {
-        swipeData.current.start = { ...gestureState };
-        swipeData.current.type = SwipeType.gesture;
-        console.log("swipeData start", { ...gestureState });
-        console.log("swipeData", swipeData.current);
+        // if (isDesktop) return;
+        swipeData.current.start = { ...gestureState, timestamp: Date.now() };
       },
       onPanResponderMove: (evt, gestureState) => {
-        // 手势滑动中
+        // if (isDesktop) return;
+        // if (gestureState) {
+        //   swipeData.current?.move?.push({
+        //     ...gestureState,
+        //     timestamp: Date.now(),
+        //   });
+        // }
       },
       onPanResponderRelease(e, gestureState) {
-        swipeData.current.end = { ...gestureState };
+        // if (isDesktop) return;
+        swipeData.current.end = { ...gestureState, timestamp: Date.now() };
         swipeData.current.type = SwipeType.gesture;
-        console.log("swipeData end", { ...gestureState });
-        console.log("swipeData", swipeData.current);
       },
     }),
   );
 
-  useEffect(() => {
-    canSaveScrollStart.current = true;
-  }, [currentCastIndex]);
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
@@ -115,11 +116,18 @@ export default function ExploreScreenScroll() {
           scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
           onScroll={(event) => {
             if (Platform.OS === "web") {
-              const nativeEvent = cloneDeep(event.nativeEvent);
-              // console.log("scroll", swipeData.current.scrollNativeEventList);
+              const { nativeEvent } = event;
 
-              // swipeData.current.scrollNativeEventList?.push({ ...nativeEvent });
-              // swipeData.current.type = SwipeType.scroll;
+              // if (isDesktop && !!nativeEvent?.contentOffset) {
+              //   swipeData.current.scrollNativeEventList = [
+              //     ...swipeData.current.scrollNativeEventList,
+              //     {
+              //       ...nativeEvent,
+              //       timestamp: Date.now(),
+              //     },
+              //   ];
+              //   swipeData.current.type = SwipeType.scroll;
+              // }
 
               const offsetY = Math.ceil(nativeEvent.contentOffset.y);
               const index = Math.round(offsetY / itemHeight);
