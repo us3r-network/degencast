@@ -205,7 +205,8 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
             {SkipButton}
           </View>
         ))}
-      {step === 3 && user?.farcaster &&
+      {step === 3 &&
+        user?.farcaster &&
         (user.farcaster.signerPublicKey ? (
           <View className="relative h-full w-full">
             <StepImage step="3" />
@@ -286,15 +287,22 @@ const StepIndicator = ({
   return <View className={cn("flex-row gap-4", className)}>{steps}</View>;
 };
 
+const STEP_IMAGES = {
+  "0": require("assets/images/onboarding/0.png"),
+  "1": require("assets/images/onboarding/1.png"),
+  "2": require("assets/images/onboarding/2.png"),
+  "1a": require("assets/images/onboarding/1a.png"),
+  "2a": require("assets/images/onboarding/2a.png"),
+  "3": require("assets/images/onboarding/3.png"),
+  "4": require("assets/images/onboarding/4.png"),
+};
 const dimensions = Dimensions.get("window");
 const imageWidth = Math.min(dimensions.width, 400);
 function StepImage({ step, className }: { step: string; className?: string }) {
   return (
     <View className={cn("relative h-full w-full pb-20", className)}>
       <Image
-        source={{
-          uri: `/assets/images/onboarding/${step}.png`,
-        }}
+        source={STEP_IMAGES[step as keyof typeof STEP_IMAGES]}
         style={{
           width: imageWidth,
           height: imageWidth * 1.5,
