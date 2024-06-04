@@ -23,7 +23,11 @@ import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
 import { cloneDeep } from "lodash";
-import { SwipeEventData, SwipeType } from "~/utils/userActionEvent";
+import {
+  SwipeEventData,
+  SwipeType,
+  defaultSwipeData,
+} from "~/utils/userActionEvent";
 
 const headerHeight = DEFAULT_HEADER_HEIGHT;
 const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -34,13 +38,6 @@ const itemHeight =
   footerHeight +
   itemPaddingTop;
 
-const defaultSwipeData = {
-  start: null,
-  move: [],
-  end: null,
-  scrollNativeEventList: [],
-  type: "",
-};
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
@@ -110,20 +107,18 @@ export default function ExploreScreenScroll() {
           scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
           onScroll={(event) => {
             if (Platform.OS === "web") {
-              const { nativeEvent } = event;
+              if (isDesktop && !!event.nativeEvent?.contentOffset) {
+                // swipeData.current.move = [
+                //   ...swipeData.current.move,
+                //   {
+                //     ...event.nativeEvent,
+                //     timestamp: Date.now(),
+                //   },
+                // ];
+                swipeData.current.type = SwipeType.scroll;
+              }
 
-              // if (isDesktop && !!nativeEvent?.contentOffset) {
-              //   swipeData.current.scrollNativeEventList = [
-              //     ...swipeData.current.scrollNativeEventList,
-              //     {
-              //       ...nativeEvent,
-              //       timestamp: Date.now(),
-              //     },
-              //   ];
-              //   swipeData.current.type = SwipeType.scroll;
-              // }
-
-              const offsetY = Math.ceil(nativeEvent.contentOffset.y);
+              const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
               const index = Math.round(offsetY / itemHeight);
               const offsetRemainder = offsetY % itemHeight;
               offsetRemainderPrev.current = offsetRemainder;

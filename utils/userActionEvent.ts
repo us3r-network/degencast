@@ -7,6 +7,12 @@ export type SwipeEventData = {
   start: any;
   move: Array<any>;
   end: any;
-  scrollNativeEventList: Array<any>;
   type: string;
+};
+
+export const defaultSwipeData = {
+  start: null,
+  move: [],
+  end: null,
+  type: "",
 };

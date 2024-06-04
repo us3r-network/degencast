@@ -5,6 +5,7 @@ import {
 } from "expo-router";
 import {
   Dimensions,
+  PanResponder,
   Platform,
   Pressable,
   SafeAreaView,
@@ -31,6 +32,12 @@ import GoHomeButton from "~/components/common/GoHomeButton";
 import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
+import {
+  SwipeEventData,
+  SwipeType,
+  defaultSwipeData,
+} from "~/utils/userActionEvent";
+import { cloneDeep } from "lodash";
 
 const headerHeight = 70;
 const footerHeight = 70;
@@ -84,6 +91,7 @@ export default function ChannelExploreScreen() {
       : null;
   }, [cast]);
 
+  const swipeData = useRef<SwipeEventData>(defaultSwipeData);
   const {
     casts,
     farcasterUserDataObj: exploreFarcasterUserDataObj,
@@ -92,6 +100,10 @@ export default function ChannelExploreScreen() {
   } = useLoadChannelExploreCasts({
     channelId: channelId === "home" ? "" : channelId,
     initCast,
+    swipeDataRefValue: swipeData.current,
+    onViewCastActionSubmited: () => {
+      swipeData.current = { ...defaultSwipeData };
+    },
   });
 
   const currItem = casts[currentCastIndex];
@@ -108,8 +120,38 @@ export default function ChannelExploreScreen() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
+  console.log("indexedCasts", indexedCasts);
+  console.log("currentCastIndex", currentCastIndex);
+  console.log("renderCasts", renderCasts);
+
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return true;
+      },
+      onPanResponderGrant(e, gestureState) {
+        // if (isDesktop) return;
+        swipeData.current.start = { ...gestureState, timestamp: Date.now() };
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // if (isDesktop) return;
+        // if (gestureState) {
+        //   swipeData.current?.move?.push({
+        //     ...gestureState,
+        //     timestamp: Date.now(),
+        //   });
+        // }
+      },
+      onPanResponderRelease(e, gestureState) {
+        // if (isDesktop) return;
+        swipeData.current.end = { ...gestureState, timestamp: Date.now() };
+        swipeData.current.type = SwipeType.gesture;
+      },
+    }),
+  );
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
       <Stack.Screen
@@ -155,7 +197,11 @@ export default function ChannelExploreScreen() {
         <ScreenLoading className=" fixed left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
       )}
       <View className={cn("w-full flex-col")}>
-        <View className="w-full" style={{ height: itemHeight }}>
+        <View
+          className="w-full"
+          style={{ height: itemHeight }}
+          {...panResponder.current.panHandlers}
+        >
           <ScrollView
             style={{ flex: 1, height: itemHeight }}
             className="w-full"
@@ -167,6 +213,17 @@ export default function ChannelExploreScreen() {
             scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
             onScroll={(event) => {
               if (Platform.OS === "web") {
+                if (isDesktop && !!event.nativeEvent?.contentOffset) {
+                  // swipeData.current.move = [
+                  //   ...swipeData.current.move,
+                  //   {
+                  //     ...event.nativeEvent,
+                  //     timestamp: Date.now(),
+                  //   },
+                  // ];
+                  swipeData.current.type = SwipeType.scroll;
+                }
+
                 const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
                 const index = Math.round(offsetY / itemHeight);
                 const offsetRemainder = offsetY % itemHeight;
