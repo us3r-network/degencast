@@ -120,10 +120,6 @@ export default function ChannelExploreScreen() {
     Math.min(indexedCasts.length, currentCastIndex + 2),
   );
 
-  console.log("indexedCasts", indexedCasts);
-  console.log("currentCastIndex", currentCastIndex);
-  console.log("renderCasts", renderCasts);
-
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
 
@@ -214,13 +210,13 @@ export default function ChannelExploreScreen() {
             onScroll={(event) => {
               if (Platform.OS === "web") {
                 if (isDesktop && !!event.nativeEvent?.contentOffset) {
-                  // swipeData.current.move = [
-                  //   ...swipeData.current.move,
-                  //   {
-                  //     ...event.nativeEvent,
-                  //     timestamp: Date.now(),
-                  //   },
-                  // ];
+                  swipeData.current.move = [
+                    ...swipeData.current.move,
+                    {
+                      ...cloneDeep(event.nativeEvent),
+                      timestamp: Date.now(),
+                    },
+                  ];
                   swipeData.current.type = SwipeType.scroll;
                 }
 

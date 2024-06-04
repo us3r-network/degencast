@@ -108,13 +108,13 @@ export default function ExploreScreenScroll() {
           onScroll={(event) => {
             if (Platform.OS === "web") {
               if (isDesktop && !!event.nativeEvent?.contentOffset) {
-                // swipeData.current.move = [
-                //   ...swipeData.current.move,
-                //   {
-                //     ...event.nativeEvent,
-                //     timestamp: Date.now(),
-                //   },
-                // ];
+                swipeData.current.move = [
+                  ...swipeData.current.move,
+                  {
+                    ...cloneDeep(event.nativeEvent),
+                    timestamp: Date.now(),
+                  },
+                ];
                 swipeData.current.type = SwipeType.scroll;
               }
 
