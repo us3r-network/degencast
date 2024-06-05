@@ -251,13 +251,13 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
 }
 
 function RequestFarcasterSignerButton() {
-  const { prepareWrite, prepareing } = useFarcasterSigner();
+  const { requestSigner, requesting } = useFarcasterSigner();
   return (
     <Button
       variant="secondary"
       className="w-1/2 rounded-full"
-      disabled={prepareing}
-      onPress={() => prepareWrite()}
+      disabled={requesting}
+      onPress={() => requestSigner()}
     >
       <Text>Connect & Earn</Text>
     </Button>

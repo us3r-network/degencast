@@ -64,8 +64,7 @@ export default function useFarcasterWrite() {
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
 
-  const { prepareWrite, prepareing, getPrivySigner } = useFarcasterSigner();
-  const privySigner = useMemo(async () => await getPrivySigner(), []);
+  const { requesting, getPrivySigner } = useFarcasterSigner();
 
   const [writing, setWriting] = useState(false);
 
@@ -94,7 +93,7 @@ export default function useFarcasterWrite() {
         setWriting(false);
       }
     },
-    [privySigner, farcasterAccount, prepareWrite],
+    [farcasterAccount],
   );
 
   const removeCast = useCallback(
@@ -112,7 +111,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [privySigner, farcasterAccount, prepareWrite],
+    [farcasterAccount],
   );
 
   const reactionCast = useCallback(
@@ -140,7 +139,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [privySigner, farcasterAccount, prepareWrite],
+    [farcasterAccount],
   );
   const likeCast = useCallback(
     async (castHash: string, castAuthorFid: number) => {
@@ -170,7 +169,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [privySigner, farcasterAccount, prepareWrite],
+    [farcasterAccount],
   );
 
   const unfollowUser = useCallback(
@@ -188,11 +187,11 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [privySigner, farcasterAccount, prepareWrite],
+    [farcasterAccount],
   );
 
   return {
-    writing: writing || prepareing,
+    writing: writing || requesting,
     submitCast,
     replayCast: submitCast,
     submitCastWithOpts: submitCast,

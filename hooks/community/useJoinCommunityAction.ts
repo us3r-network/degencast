@@ -29,7 +29,7 @@ export default function useJoinCommunityAction(
   const dispatch = useAppDispatch();
   const { login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterSigner();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { authenticated } = useAuth();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);
@@ -52,8 +52,8 @@ export default function useJoinCommunityAction(
       login();
       return;
     }
-    if (!currFid) {
-      farcasterPrepareWrite();
+    if (!currFid || !hasSigner) {
+      requestSigner();
       return;
     }
     if (isPending) return;
@@ -91,7 +91,7 @@ export default function useJoinCommunityAction(
     authenticated,
     login,
     currFid,
-    farcasterPrepareWrite,
+    hasSigner,
     showToast,
   ]);
 

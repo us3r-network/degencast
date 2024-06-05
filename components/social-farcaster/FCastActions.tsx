@@ -33,7 +33,7 @@ export function FCastDetailActions({
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterSigner();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
   const { recast, removeRecast, recasted, recastCount, recastPending } =
@@ -68,8 +68,8 @@ export function FCastDetailActions({
       login();
       return;
     }
-    if (!currFid) {
-      farcasterPrepareWrite();
+    if (!currFid || !hasSigner) {
+      requestSigner();
       return;
     }
     const castHex = getCastHex(cast);
@@ -161,7 +161,7 @@ export function FCastExploreActions({
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterSigner();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
   const { recast, removeRecast, recasted, recastCount, recastPending } =
@@ -196,8 +196,8 @@ export function FCastExploreActions({
       login();
       return;
     }
-    if (!currFid) {
-      farcasterPrepareWrite();
+    if (!currFid || !hasSigner) {
+      requestSigner();
       return;
     }
     const castHex = getCastHex(cast);

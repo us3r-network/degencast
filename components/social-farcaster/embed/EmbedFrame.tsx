@@ -48,7 +48,7 @@ export default function EmbedFrame({
   cast?: FarCast;
   imgIsFixedRatio?: boolean;
 }) {
-  const { getPrivySigner, prepareWrite } = useFarcasterSigner();
+  const { getPrivySigner } = useFarcasterSigner();
 
   const { user, login, ready, authenticated } = usePrivy();
   const { chain, address } = useAccount();
@@ -143,7 +143,7 @@ export default function EmbedFrame({
         trustedData,
       };
     },
-    [frameData, farcasterAccount, cast, prepareWrite, text, address],
+    [frameData, farcasterAccount, cast, text, address],
   );
   const reportTransaction = useCallback(
     async (txId: string, btnIdx: number, postUrl: string, state?: string) => {

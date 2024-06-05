@@ -265,7 +265,7 @@ const WalletItem = React.forwardRef<
 
 function FarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
-  const { prepareWrite } = useFarcasterSigner();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   if (!user) return null;
   const farcasterAccount = getUserFarcasterAccount(user);
   // console.log("farcasterAccount", farcasterAccount);
@@ -284,14 +284,14 @@ function FarcasterAccount() {
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
-          {farcasterAccount.signerPublicKey ? (
+          {hasSigner ? (
             <Pressable disabled>
               <HasSignerIcon />
             </Pressable>
           ) : (
             <Pressable
               onPress={(event) => {
-                prepareWrite;
+                requestSigner();
               }}
             >
               <Edit className="size-4" />
