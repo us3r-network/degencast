@@ -858,21 +858,6 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@coinbase/wallet-sdk@3.9.1":
-  version "3.9.1"
-  resolved "https://registry.npmjs.org/@coinbase/wallet-sdk/-/wallet-sdk-3.9.1.tgz#503a14671bb392d653623ef2340934e213ac971f"
-  integrity sha512-cGUE8wm1/cMI8irRMVOqbFWYcnNugqCtuy2lnnHfgloBg+GRLs9RsrkOUDMdv/StfUeeKhCDyYudsXXvcL1xIA==
-  dependencies:
-    bn.js "^5.2.1"
-    buffer "^6.0.3"
-    clsx "^1.2.1"
-    eth-block-tracker "^7.1.0"
-    eth-json-rpc-filters "^6.0.0"
-    eventemitter3 "^5.0.1"
-    keccak "^3.0.3"
-    preact "^10.16.0"
-    sha.js "^2.4.11"
-
 "@coinbase/wallet-sdk@4.0.2":
   version "4.0.2"
   resolved "https://registry.npmjs.org/@coinbase/wallet-sdk/-/wallet-sdk-4.0.2.tgz#403b2194ecc9bcf8b8fd217ec5cd6529013b58f4"
@@ -4032,22 +4017,23 @@
     satori "0.10.9"
     yoga-wasm-web "0.3.3"
 
-"@wagmi/connectors@4.3.9":
-  version "4.3.9"
-  resolved "https://registry.npmjs.org/@wagmi/connectors/-/connectors-4.3.9.tgz#7d0643ca7012c3181ce7ae09616bed1e7a3a720c"
-  integrity sha512-sY6qWoWpiC9KFx10zkkVw3Hv2iNWuQTsHanTXX9bLfQ477i5S+QDYdkxx5n2Lf/KLoWL3CcohA7Gej0svgzz1Q==
+"@wagmi/connectors@5.0.7":
+  version "5.0.7"
+  resolved "https://registry.npmjs.org/@wagmi/connectors/-/connectors-5.0.7.tgz#f52fd917fa9e55af52acdf21b1c3c8724260a986"
+  integrity sha512-EoTtRKnUPhKpU/LFU7LU4iK8yNU/akU5vSgX+K21QXHi8ImhEEsd2nPEU5kfkWriGf+D/raD4gLZYsfppDRUaw==
   dependencies:
-    "@coinbase/wallet-sdk" "3.9.1"
+    "@coinbase/wallet-sdk" "4.0.2"
     "@metamask/sdk" "0.20.3"
     "@safe-global/safe-apps-provider" "0.18.1"
     "@safe-global/safe-apps-sdk" "8.1.0"
     "@walletconnect/ethereum-provider" "2.13.0"
     "@walletconnect/modal" "2.6.2"
+    cbw-sdk "npm:@coinbase/wallet-sdk@3.9.3"
 
-"@wagmi/core@2.9.7":
-  version "2.9.7"
-  resolved "https://registry.npmjs.org/@wagmi/core/-/core-2.9.7.tgz#2035655d4246f20e5f929e68bd0d43babd9841ec"
-  integrity sha512-PYkuZsiqVZAgPRuADD4UJeKR1TU94tn9LLsdd/f8y2nWbf+6Xzs7i5uQLjB+Drbm4NobgEUj0PqdPUQxCqPCQw==
+"@wagmi/core@2.10.5":
+  version "2.10.5"
+  resolved "https://registry.npmjs.org/@wagmi/core/-/core-2.10.5.tgz#9717ef118457dfb64550ca81a61efb66c2fbc4c3"
+  integrity sha512-BvqFEdJTTepOKtPnacq7oE8gUZ4llzdxmPSBEYePArd1dvP/e5gwwfS5/8VBcvDvGcoX4N0lw5A4NNOJKL0Q+A==
   dependencies:
     eventemitter3 "5.0.1"
     mipd "0.0.5"
@@ -5470,6 +5456,21 @@ cborg@^1.5.4, cborg@^1.6.0:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/cborg/-/cborg-1.10.2.tgz#83cd581b55b3574c816f82696307c7512db759a1"
   integrity sha512-b3tFPA9pUr2zCUiCfRd2+wok2/LBSNUMKOuRRok+WlvvAgEt/PlbgPTsZUcwCOs53IJvLgTp0eotwtosE6njug==
+
+"cbw-sdk@npm:@coinbase/wallet-sdk@3.9.3":
+  version "3.9.3"
+  resolved "https://registry.npmjs.org/@coinbase/wallet-sdk/-/wallet-sdk-3.9.3.tgz#daf10cb0c85d0363315b7270cb3f02bedc408aab"
+  integrity sha512-N/A2DRIf0Y3PHc1XAMvbBUu4zisna6qAdqABMZwBMNEfWrXpAwx16pZGkYCLGE+Rvv1edbcB2LYDRnACNcmCiw==
+  dependencies:
+    bn.js "^5.2.1"
+    buffer "^6.0.3"
+    clsx "^1.2.1"
+    eth-block-tracker "^7.1.0"
+    eth-json-rpc-filters "^6.0.0"
+    eventemitter3 "^5.0.1"
+    keccak "^3.0.3"
+    preact "^10.16.0"
+    sha.js "^2.4.11"
 
 chalk@^2.0.1, chalk@^2.4.2:
   version "2.4.2"
@@ -8642,6 +8643,11 @@ isows@1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/isows/-/isows-1.0.3.tgz#93c1cf0575daf56e7120bab5c8c448b0809d0d74"
   integrity sha512-2cKei4vlmg2cxEjm3wVSqn8pcoRF/LX/wpifuuNquFO4SQmPwarClT+SUCA2lt+l581tTeZIPIZuIDo2jWN1fg==
+
+isows@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/isows/-/isows-1.0.4.tgz#810cd0d90cc4995c26395d2aa4cfa4037ebdf061"
+  integrity sha512-hEzjY+x9u9hPmBom9IIAqdJCwNLax+xrPb51vEPpERoFlIxgmZcHzsT5jKG06nvInKOBGvReAVz80Umed5CczQ==
 
 istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   version "3.2.2"
@@ -13808,7 +13814,21 @@ viem@^1.0.0, viem@^1.1.4, viem@^1.12.2, viem@^1.16.2, viem@^1.19.3:
     isows "1.0.3"
     ws "8.13.0"
 
-viem@^2.7.8, viem@^2.9.5:
+viem@^2.13.6:
+  version "2.13.6"
+  resolved "https://registry.npmjs.org/viem/-/viem-2.13.6.tgz#32d1dc3215627044972bb905db4adfcf674655f1"
+  integrity sha512-BhvYhLrExC9P4AH9Gu/2A3VPUFkJT/ayH+A9anco2Ja/D0h3NStq+2uF4htcly1e68/U7IOrlCyX3Jz9zqeEJA==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.0"
+    "@noble/curves" "1.2.0"
+    "@noble/hashes" "1.3.2"
+    "@scure/bip32" "1.3.2"
+    "@scure/bip39" "1.2.1"
+    abitype "1.0.0"
+    isows "1.0.4"
+    ws "8.13.0"
+
+viem@^2.7.8:
   version "2.10.5"
   resolved "https://registry.npmjs.org/viem/-/viem-2.10.5.tgz#97e53421e20886b34e4e5e03d01f8b6e320d216f"
   integrity sha512-rzU2y6poYgXu7axcQmwddaJ/nGP3tjtslXdUCu+PvryeXACuuqoyP3chjTEHciG84a663gYbrVGbxNUFA3aURQ==
@@ -13834,13 +13854,13 @@ w3c-xmlserializer@^4.0.0:
   dependencies:
     xml-name-validator "^4.0.0"
 
-wagmi@^2.5.13:
-  version "2.8.7"
-  resolved "https://registry.npmjs.org/wagmi/-/wagmi-2.8.7.tgz#37b769655bd5903472b52ba5b3c96d4635412ace"
-  integrity sha512-IHnX2KzN8eENyKoWWd/bdtYuc2xDSvuN2xAw0S5X/I/Po6YO5GR1QbD/JvNmUmJem0napzhKFa8Pamh7Tk97fg==
+wagmi@^2.9.8:
+  version "2.9.8"
+  resolved "https://registry.npmjs.org/wagmi/-/wagmi-2.9.8.tgz#9a4bb06d0b073a1297d08291119f1f00f0113e54"
+  integrity sha512-uSfYKB0JWtajz8YSntMBO4QQolx1fPPckwAVrRl9X66zQb0FLqgZeXrnf+PjFnmNbNsSyO3neOD/3TQqNL6m4Q==
   dependencies:
-    "@wagmi/connectors" "4.3.9"
-    "@wagmi/core" "2.9.7"
+    "@wagmi/connectors" "5.0.7"
+    "@wagmi/core" "2.10.5"
     use-sync-external-store "1.2.0"
 
 walker@^1.0.7, walker@^1.0.8:
