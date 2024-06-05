@@ -5,6 +5,7 @@ import {
   ScrollView,
   Platform,
   SafeAreaView,
+  PanResponder,
 } from "react-native";
 import FCast from "~/components/social-farcaster/FCast";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
@@ -17,10 +18,16 @@ import { cn } from "~/lib/utils";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
+import { cloneDeep } from "lodash";
+import {
+  SwipeEventData,
+  SwipeType,
+  defaultSwipeData,
+} from "~/utils/userActionEvent";
 
 const headerHeight = DEFAULT_HEADER_HEIGHT;
 const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -33,8 +40,14 @@ const itemHeight =
 
 export default function ExploreScreenScroll() {
   const { navigateToChannelExplore } = useChannelExplorePage();
+  const swipeData = useRef<SwipeEventData>(defaultSwipeData);
   const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
-    useLoadExploreCastsWithNaynar();
+    useLoadExploreCastsWithNaynar({
+      swipeDataRefValue: swipeData.current,
+      onViewCastActionSubmited: () => {
+        swipeData.current = { ...defaultSwipeData };
+      },
+    });
   const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
   // 只渲染三个
   const renderCasts = indexedCasts.slice(
@@ -47,12 +60,42 @@ export default function ExploreScreenScroll() {
 
   const [showActions, setShowActions] = useState(false);
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return true;
+      },
+      onPanResponderGrant(e, gestureState) {
+        if (isDesktop) return;
+        swipeData.current.start = { ...gestureState, timestamp: Date.now() };
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // if (isDesktop) return;
+        // if (gestureState) {
+        //   swipeData.current?.move?.push({
+        //     ...gestureState,
+        //     timestamp: Date.now(),
+        //   });
+        // }
+      },
+      onPanResponderRelease(e, gestureState) {
+        if (isDesktop) return;
+        swipeData.current.end = { ...gestureState, timestamp: Date.now() };
+        swipeData.current.type = SwipeType.gesture;
+      },
+    }),
+  );
+
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
       className="bg-background"
     >
-      <View className={cn("w-full")} style={{ height: itemHeight }}>
+      <View
+        className={cn("w-full")}
+        style={{ height: itemHeight }}
+        {...panResponder.current.panHandlers}
+      >
         <ScrollView
           style={{ flex: 1, height: itemHeight }}
           className="w-full items-center"
@@ -64,6 +107,17 @@ export default function ExploreScreenScroll() {
           scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
           onScroll={(event) => {
             if (Platform.OS === "web") {
+              if (isDesktop && !!event.nativeEvent?.contentOffset) {
+                swipeData.current.move = [
+                  ...swipeData.current.move,
+                  {
+                    ...cloneDeep(event.nativeEvent),
+                    timestamp: Date.now(),
+                  },
+                ];
+                swipeData.current.type = SwipeType.scroll;
+              }
+
               const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
               const index = Math.round(offsetY / itemHeight);
               const offsetRemainder = offsetY % itemHeight;

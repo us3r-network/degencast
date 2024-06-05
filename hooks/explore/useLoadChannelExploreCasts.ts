@@ -18,8 +18,11 @@ const NEXT_PAGE_SIZE = 10;
 export default function useLoadChannelExploreCasts(params: {
   channelId: string;
   initCast?: ChannelCastData | undefined | null;
+  swipeDataRefValue: any;
+  onViewCastActionSubmited?: () => void;
 }) {
-  const { channelId, initCast } = params || {};
+  const { channelId, initCast, swipeDataRefValue, onViewCastActionSubmited } =
+    params || {};
   const { addManyToLikedActions } = useUserCastLikeActionsUtil();
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
@@ -159,14 +162,19 @@ export default function useLoadChannelExploreCasts(params: {
         submitUserAction({
           action: UserActionName.View,
           castHash: castHex,
+          data: {
+            swipeData: swipeDataRefValue,
+          },
         });
         submitedViewActionCastsRef.current.push(castHex);
+        onViewCastActionSubmited && onViewCastActionSubmited();
       }
-    }, 1000);
+    }, 500);
 
     // 如果已经上报过了，就不再上报
     if (!castHex || submitedViewActionCastsRef.current.includes(castHex)) {
       clearTimeout(timer);
+      onViewCastActionSubmited && onViewCastActionSubmited();
     }
 
     return () => {

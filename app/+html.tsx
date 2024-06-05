@@ -88,7 +88,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 9999;
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
   }
 `;

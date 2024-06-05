@@ -36,7 +36,7 @@ export default function FCastCommunity({
         className,
       )}
       onPress={() => {
-        if (!communityInfo.channelId) return;
+        if (!communityInfo?.channelId) return;
         navigateToCommunityDetail(communityInfo.channelId, communityInfo);
       }}
       {...props}

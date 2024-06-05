@@ -21,8 +21,8 @@ export function ScreenLoading({ className, ...props }: ViewProps) {
       <Image
         source={require("~/assets/images/degencast-loading.gif")}
         style={{
-          width: 48,
-          height: 48,
+          width: 60,
+          height: 60,
           resizeMode: "contain",
         }}
       />

@@ -15,7 +15,11 @@ const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
 
-export default function useLoadExploreCastsWithNaynar() {
+export default function useLoadExploreCastsWithNaynar(opts: {
+  swipeDataRefValue: any;
+  onViewCastActionSubmited?: () => void;
+}) {
+  const { swipeDataRefValue, onViewCastActionSubmited } = opts || {};
   const { addManyToLikedActions } = useUserCastLikeActionsUtil();
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
@@ -141,14 +145,19 @@ export default function useLoadExploreCastsWithNaynar() {
         submitUserAction({
           action: UserActionName.View,
           castHash: castHex,
+          data: {
+            swipeData: swipeDataRefValue,
+          },
         });
         submitedViewActionCastsRef.current.push(castHex);
+        onViewCastActionSubmited && onViewCastActionSubmited();
       }
-    }, 1000);
+    }, 500);
 
     // 如果已经上报过了，就不再上报
     if (!castHex || submitedViewActionCastsRef.current.includes(castHex)) {
       clearTimeout(timer);
+      onViewCastActionSubmited && onViewCastActionSubmited();
     }
 
     return () => {
