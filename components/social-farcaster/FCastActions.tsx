@@ -1,21 +1,21 @@
-import { ViewProps } from "react-native";
-import { FarCast } from "~/services/farcaster/types";
-import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
 import { usePrivy } from "@privy-io/react-auth";
-import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
-import FCastGiftModal from "./FCastGiftModal";
 import { useState } from "react";
-import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import { CommunityInfo } from "~/services/community/types/community";
-import { UserData } from "~/utils/farcaster/user-data";
-import getCastHex from "~/utils/farcaster/getCastHex";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
-import FCastShareModal from "./FCastShareModal";
-import FCastMintNftModal from "./FCastMintNftModal";
+import { ViewProps } from "react-native";
 import Toast from "react-native-toast-message";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
+import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
+import { CommunityInfo } from "~/services/community/types/community";
+import { FarCast } from "~/services/farcaster/types";
+import getCastHex from "~/utils/farcaster/getCastHex";
+import { UserData } from "~/utils/farcaster/user-data";
+import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
+import FCastGiftModal from "./FCastGiftModal";
+import FCastMintNftModal from "./FCastMintNftModal";
+import FCastShareModal from "./FCastShareModal";
 
 export function FCastDetailActions({
   cast,
@@ -33,7 +33,7 @@ export function FCastDetailActions({
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
   const { recast, removeRecast, recasted, recastCount, recastPending } =
@@ -161,7 +161,7 @@ export function FCastExploreActions({
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
   const { recast, removeRecast, recasted, recastCount, recastPending } =

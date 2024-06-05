@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { Dimensions, Image, View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { cn } from "~/lib/utils";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
@@ -251,7 +251,7 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
 }
 
 function RequestFarcasterSignerButton() {
-  const { prepareWrite, prepareing } = useFarcasterWrite();
+  const { prepareWrite, prepareing } = useFarcasterSigner();
   return (
     <Button
       variant="secondary"

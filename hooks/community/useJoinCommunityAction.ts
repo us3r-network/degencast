@@ -17,7 +17,7 @@ import { CommunityInfo } from "~/services/community/types/community";
 import useAuth from "../user/useAuth";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
-import useFarcasterWrite from "../social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "../social-farcaster/useFarcasterSigner";
 import Toast from "react-native-toast-message";
 
 export default function useJoinCommunityAction(
@@ -29,7 +29,7 @@ export default function useJoinCommunityAction(
   const dispatch = useAppDispatch();
   const { login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { prepareWrite: farcasterPrepareWrite } = useFarcasterSigner();
   const { authenticated } = useAuth();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);

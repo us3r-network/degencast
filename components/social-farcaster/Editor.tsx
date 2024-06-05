@@ -1,19 +1,11 @@
-import { usePrivy } from "@privy-io/react-auth";
-import { Stack, useNavigation } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, Image } from "react-native";
-import { Avatar, AvatarImage } from "~/components/ui/avatar";
+import { Image, View } from "react-native";
+import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import { cn } from "~/lib/utils";
-import { uploadImage } from "~/services/upload";
-import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { WarpcastChannel } from "~/services/community/api/community";
-import { FarCast } from "~/services/farcaster/types";
-import { Card, CardContent } from "../ui/card";
-import FCast from "./FCast";
+import { uploadImage } from "~/services/upload";
 
 const HomeChanel = {
   id: "",

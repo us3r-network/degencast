@@ -45,7 +45,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Text, TextClassContext } from "~/components/ui/text";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
 import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
@@ -265,7 +265,7 @@ const WalletItem = React.forwardRef<
 
 function FarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
-  const { prepareWrite } = useFarcasterWrite();
+  const { prepareWrite } = useFarcasterSigner();
   if (!user) return null;
   const farcasterAccount = getUserFarcasterAccount(user);
   // console.log("farcasterAccount", farcasterAccount);
