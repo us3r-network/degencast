@@ -158,7 +158,11 @@ export default function useLoadChannelExploreCasts(params: {
     const cast = casts?.[currentCastIndex]?.data as FarCast;
     const castHex = cast ? getCastHex(cast) : "";
     const timer = setTimeout(() => {
-      if (castHex && currentCastIndexRef.current === currentCastIndex) {
+      if (
+        currentCastIndexRef.current !== 0 &&
+        castHex &&
+        currentCastIndexRef.current === currentCastIndex
+      ) {
         submitUserAction({
           action: UserActionName.View,
           castHash: castHex,
