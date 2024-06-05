@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@farcaster/hub-web": "^0.8.8",
-    "@privy-io/react-auth": "^1.66.3",
-    "@privy-io/wagmi": "^0.2.8",
+    "@privy-io/react-auth": "^1.68.0",
+    "@privy-io/wagmi": "^0.2.10",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.5",
