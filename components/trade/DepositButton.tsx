@@ -46,7 +46,7 @@ export default function DepositButton() {
       <Dialog>
         <DialogTrigger
           asChild
-          disabled={activeWallet?.connectorType !== "embedded"}
+          disabled={activeWallet?.connectorType !== "embedded" && activeWallet?.connectorType !== "coinbase_wallet"}
         >
           <Button size={"icon"} className="rounded-full">
             <Text>

@@ -45,7 +45,8 @@ export default function UserInfo({ fid }: { fid?: number }) {
       ? shortPubKey(walletAccount.address)
       : "";
   console.log(
-    "farcasterUserInfo",
+    "UserInfo",
+    user,
     farcasterUserInfo,
     userAvatar,
     userDisplayName,
