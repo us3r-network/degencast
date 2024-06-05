@@ -125,15 +125,19 @@ export default function CreateScreen() {
                           });
                           setPosting(false);
 
-                          const { castHex, url } = sharingCastMint || {};
+                          const { castHex, url, mintInfo } =
+                            sharingCastMint || {};
                           if (
+                            castHex &&
                             url &&
+                            mintInfo &&
                             embeds.length > 0 &&
                             !!embeds.find((item) => item.url === url)
                           ) {
                             submitUserAction({
                               action: UserActionName.MintCast,
                               castHash: castHex,
+                              data: mintInfo,
                             });
                             clearSharingCastMint();
                           }

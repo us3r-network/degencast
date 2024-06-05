@@ -1,4 +1,4 @@
-import type { PublicClient, WalletClient } from "viem";
+import type { PublicClient, TransactionReceipt, WalletClient } from "viem";
 import {
   create1155CreatorClient,
   getTokenIdFromCreateReceipt,
@@ -17,6 +17,7 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
 import { UserActionName } from "~/services/user/types";
+import { cloneDeepWith } from "lodash";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
@@ -122,6 +123,22 @@ async function createNew1155Token({
   };
 }
 
+export type MintInfo = {
+  chainId: number;
+  contractAddress: string;
+  contractMetadataURI?: string;
+  tokenId: number;
+  tokenMetadataURI: string;
+  transactionReceipt: TransactionReceipt;
+  creatorAddress: string;
+};
+
+function customizer(value: any) {
+  if (typeof value === "bigint") {
+    return value.toString();
+  }
+}
+
 export default function useCreateNew1155Token({
   cast,
   castUserData,
@@ -135,11 +152,7 @@ export default function useCreateNew1155Token({
   imgUrl: string;
   channelId: string;
   currUserDisplayName: string;
-  onCreateTokenSuccess?: (data: {
-    tokenId: number;
-    contractAddress: string;
-    chainId: number;
-  }) => void;
+  onCreateTokenSuccess?: (data: MintInfo) => void;
 }) {
   // const { submitUserAction } = useUserAction();
   const { data: walletClient } = useWalletClient();
@@ -177,9 +190,12 @@ export default function useCreateNew1155Token({
       const tokenId = getTokenIdFromCreateReceipt(receipt);
       setNewTokenId(Number(tokenId));
       onCreateTokenSuccess?.({
-        tokenId: Number(tokenId),
-        contractAddress,
         chainId: tokenInfo.chainId,
+        tokenId: Number(tokenId),
+        contractAddress: tokenInfo.contractAddress,
+        creatorAddress: tokenInfo.creatorAccount,
+        tokenMetadataURI: tokenMetadataURI,
+        transactionReceipt: cloneDeepWith(receipt, customizer),
       });
       postZoraToken({
         chainId: tokenInfo.chainId,
@@ -225,13 +241,12 @@ export default function useCreateNew1155Token({
       if (!contractMetadataURI || !tokenMetadataURI) {
         throw new Error("Failed to store NFT metadata");
       }
-      const resp = await createNew1155Token({
+      const { receipt, tokenInfo } = await createNew1155Token({
         publicClient,
         walletClient,
         contractMetadataURI: contractMetadataURI,
         tokenMetadataURI: tokenMetadataURI,
       });
-      const tokenInfo = resp.tokenInfo;
 
       submitCollection({
         chainId: tokenInfo.chainId,
@@ -239,12 +254,16 @@ export default function useCreateNew1155Token({
         contractAddress: tokenInfo.contractAddress,
         contractMetadataURI: contractMetadataURI,
       });
-      const tokenId = getTokenIdFromCreateReceipt(resp.receipt);
+      const tokenId = getTokenIdFromCreateReceipt(receipt);
       setNewTokenId(Number(tokenId));
       onCreateTokenSuccess?.({
+        chainId: tokenInfo.chainId,
         tokenId: Number(tokenId),
         contractAddress: tokenInfo.contractAddress,
-        chainId: resp.tokenInfo.chainId,
+        creatorAddress: tokenInfo.creatorAccount,
+        tokenMetadataURI: tokenMetadataURI,
+        contractMetadataURI: contractMetadataURI,
+        transactionReceipt: cloneDeepWith(receipt, customizer),
       });
       postZoraToken({
         chainId: tokenInfo.chainId,

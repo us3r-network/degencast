@@ -10,7 +10,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Loading } from "../common/Loading";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { ZORA_CAST_NFT_CHAIN_ID } from "~/constants/zora";
-import useCreateNew1155Token from "~/hooks/social-farcaster/cast-nft/useCreateNew1155Token";
+import useCreateNew1155Token, {
+  MintInfo,
+} from "~/hooks/social-farcaster/cast-nft/useCreateNew1155Token";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 import PlatformSharingModal from "../platform-sharing/PlatformSharingModal";
 import {
@@ -49,11 +51,9 @@ export default function FCastMintNftModal({
   const imgUrl = getCastImageUrl(`0x${castHex}`);
   const [imgLoading, setImgLoading] = useState(true);
   const [openShare, setOpenShare] = useState(false);
-  const [createdTokenInfo, setCreatedTokenInfo] = useState<{
-    chainId: number;
-    contractAddress: string;
-    tokenId: number;
-  } | null>(null);
+  const [createdTokenInfo, setCreatedTokenInfo] = useState<MintInfo | null>(
+    null,
+  );
   const {
     findCollectionWithCache,
     castCollectionsLoading,
@@ -207,6 +207,7 @@ export default function FCastMintNftModal({
             setSharingCastMint({
               castHex,
               url: getMintCastWebsiteLink(createdTokenInfo!),
+              mintInfo: createdTokenInfo,
             });
             onOpenChange?.(false);
           }}

@@ -10,10 +10,19 @@ import {
   getZoraCollections,
   postZoraCollection,
 } from "~/services/zora-collection/api";
+import { TransactionReceipt } from "viem";
 
-type SharingCastMint = {
+export type SharingCastMint = {
   castHex: string;
   url: string;
+  mintInfo: {
+    chainId: number;
+    contractAddress: string;
+    contractMetadataURI: string;
+    creatorAddress: string;
+    tokenId: number;
+    transactionReceipt: TransactionReceipt;
+  };
 };
 type CastCollectionState = {
   collections: {
