@@ -60,7 +60,7 @@ function HasSubjectAddress() {
 
 function NoSubjectAddress() {
   return (
-    <View className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8">
+    <View className=" mx-auto h-full max-w-[350px] flex-col items-center justify-center gap-7">
       <Image
         source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
@@ -69,9 +69,8 @@ function NoSubjectAddress() {
         Coming Soon
       </Text>
       <Text className="text-center text-base leading-8 text-secondary">
-        Participate in channel activities. {`\n`}
-        Curve up channel reward pool. {`\n`}
-        Earn more $DEGEN & $CAST!
+        Contribute to Channel {`\n`}
+        Earn $DEGEN & $CAST!
       </Text>
     </View>
   );
