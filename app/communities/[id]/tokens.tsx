@@ -45,22 +45,19 @@ export default function TokensScreen() {
       ) : (
         <>
           <ScrollView
-            className="mx-auto h-full max-w-72 flex-1 flex-col items-center justify-center gap-8"
+            className="mx-auto max-w-[350px] flex-1 flex-col items-center justify-center"
             showsHorizontalScrollIndicator={false}
           >
             <Image
               source={require("~/assets/images/no-token.png")}
               style={{ width: 280, height: 280 }}
             />
-            <Text className=" text-center text-xl font-bold text-primary">
+            <Text className=" mt-7 text-center text-xl font-bold text-primary">
               Coming Soon
             </Text>
-            <Text className="text-center text-base leading-8 text-secondary">
-              Channel Share & Token Launch features are coming soon! {`\n`}
-              When the shares are sold out, all the liquidity from the bonding
-              curve will be deposited into {`\n`}
-              Raydium and token launch will begain. {`\n`}
-              {isChannelHost && `Please apply in advance.`}
+            <Text className="mt-7 text-center text-base leading-8 text-secondary">
+              Onchain Channel Pass for {`\n`}
+              Governance, Moderation and Monetisation
             </Text>
           </ScrollView>
           {isChannelHost && (
