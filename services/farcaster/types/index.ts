@@ -87,6 +87,11 @@ export type FarCast = {
   comment_count: string | null;
 
   tipsTotalAmount: number;
+
+  viewerContext?: {
+    liked: boolean;
+    recasted: boolean;
+  };
 };
 
 export enum SocialPlatform {

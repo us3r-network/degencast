@@ -1,10 +1,5 @@
-import {
-  FarcasterWithMetadata,
-  usePrivy
-} from "@privy-io/react-auth";
-import {
-  HubRestAPIClient
-} from "@standard-crypto/farcaster-js-hub-rest";
+import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
+import { HubRestAPIClient } from "@standard-crypto/farcaster-js-hub-rest";
 import axios from "axios";
 import { useCallback, useMemo, useState } from "react";
 import { FARCASTER_HUB_URL, NEYNAR_API_KEY } from "~/constants/farcaster";
@@ -93,7 +88,7 @@ export default function useFarcasterWrite() {
         setWriting(false);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   const removeCast = useCallback(
@@ -111,47 +106,82 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
-  const reactionCast = useCallback(
+  const submitReaction = useCallback(
     async (
       type: "like" | "recast",
       castHash: string,
       castAuthorFid: number,
     ) => {
       const privySigner = await getPrivySigner();
-      if (!privySigner) return;
-      try {
-        const result = await hubClient.submitReaction(
-          {
-            type,
-            target: {
-              fid: castAuthorFid,
-              hash: castHash,
-            },
-          },
-          farcasterAccount.fid!,
-          privySigner,
-        );
-        return result;
-      } catch (e) {
-        console.error(e);
+      if (!privySigner) {
+        throw new Error("No privy signer");
       }
+      const result = await hubClient.submitReaction(
+        {
+          type,
+          target: {
+            fid: castAuthorFid,
+            hash: castHash,
+          },
+        },
+        farcasterAccount.fid!,
+        privySigner,
+      );
+      return result;
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
+  );
+  const removeReaction = useCallback(
+    async (
+      type: "like" | "recast",
+      castHash: string,
+      castAuthorFid: number,
+    ) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) {
+        throw new Error("No privy signer");
+      }
+      const result = await hubClient.removeReaction(
+        {
+          type,
+          target: {
+            fid: castAuthorFid,
+            hash: castHash,
+          },
+        },
+        farcasterAccount.fid!,
+        privySigner,
+      );
+      return result;
+    },
+    [farcasterAccount, getPrivySigner],
   );
   const likeCast = useCallback(
     async (castHash: string, castAuthorFid: number) => {
-      return reactionCast("like", castHash, castAuthorFid);
+      return await submitReaction("like", castHash, castAuthorFid);
     },
-    [reactionCast],
+    [submitReaction],
+  );
+  const removeLikeCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return await removeReaction("like", castHash, castAuthorFid);
+    },
+    [removeReaction],
   );
   const recastCast = useCallback(
     async (castHash: string, castAuthorFid: number) => {
-      return reactionCast("recast", castHash, castAuthorFid);
+      return await submitReaction("recast", castHash, castAuthorFid);
     },
-    [reactionCast],
+    [submitReaction],
+  );
+  const removeRecastCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return await removeReaction("recast", castHash, castAuthorFid);
+    },
+    [removeReaction],
   );
 
   const followUser = useCallback(
@@ -169,7 +199,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   const unfollowUser = useCallback(
@@ -187,7 +217,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   return {
@@ -197,7 +227,9 @@ export default function useFarcasterWrite() {
     submitCastWithOpts: submitCast,
     removeCast: removeCast,
     likeCast: likeCast,
+    removeLikeCast: removeLikeCast,
     recastCast: recastCast,
+    removeRecastCast: removeRecastCast,
     followUser: followUser,
     unfollowUser: unfollowUser,
   };
