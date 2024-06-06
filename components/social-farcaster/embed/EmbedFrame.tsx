@@ -2,16 +2,14 @@ import { FarcasterNetwork, Message, makeFrameAction } from "@farcaster/hub-web";
 import {
   FarcasterWithMetadata,
   useConnectWallet,
-  usePrivy
+  usePrivy,
 } from "@privy-io/react-auth";
 import {
   sendTransaction,
   switchChain,
   waitForTransactionReceipt,
 } from "@wagmi/core";
-import {
-  Frame
-} from "frames.js";
+import { Frame } from "frames.js";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Linking, Platform, Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -29,7 +27,7 @@ import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { cn } from "~/lib/utils";
 import {
   postFrameActionApi,
@@ -50,7 +48,7 @@ export default function EmbedFrame({
   cast?: FarCast;
   imgIsFixedRatio?: boolean;
 }) {
-  const { getPrivySigner, prepareWrite } = useFarcasterWrite();
+  const { getPrivySigner } = useFarcasterSigner();
 
   const { user, login, ready, authenticated } = usePrivy();
   const { chain, address } = useAccount();
@@ -71,19 +69,18 @@ export default function EmbedFrame({
 
   const genFrameActionData = useCallback(
     async (btnIdx: number, txId?: string) => {
-      if (!prepareWrite()) {
+      if (!farcasterAccount.fid) {
         Toast.show({
           type: "info",
           text1: "Login farcaster first",
         });
         return;
       }
-
       const signer = await getPrivySigner();
-      if (!farcasterAccount.fid || !signer) {
+      if (!signer) {
         Toast.show({
           type: "info",
-          text1: "Login farcaster first",
+          text1: "Request farcaster signer first",
         });
         return;
       }
@@ -146,7 +143,7 @@ export default function EmbedFrame({
         trustedData,
       };
     },
-    [frameData, farcasterAccount, cast, prepareWrite, text, address],
+    [frameData, farcasterAccount, cast, text, address],
   );
   const reportTransaction = useCallback(
     async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
