@@ -170,6 +170,9 @@ export function getFarcasterCastInfo(
   return request({
     url: `/3r-farcaster/cast/${hash}`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params: {
       endFarcasterCursor,
       pageSize,
@@ -193,6 +196,9 @@ export function getFarcasterCastComments(
   return request({
     url: `/3r-farcaster/casts/${hash}/replies`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params,
   });
 }
