@@ -43,26 +43,23 @@ export function FCastDetailActions({
   const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
-  const onLike = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
 
+  const onLike = () => {
     if (liked) {
       removeLikeCast();
     } else {
       likeCast();
     }
   };
-  const onGift = () => {
-    if (!authenticated) {
-      login();
-      return;
+
+  const onRepost = () => {
+    if (recasted) {
+      removeRecast();
+    } else {
+      recast();
     }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
   };
+
   const onComment = () => {
     if (!authenticated) {
       login();
@@ -79,24 +76,20 @@ export function FCastDetailActions({
       community: communityInfo,
     });
   };
-  const onShare = () => {
-    setOpenShareModal(true);
-  };
-  const onRepost = () => {
+
+  const onGift = () => {
     if (!authenticated) {
       login();
       return;
     }
-    if (recasted) {
-      // removeRecast();
-      Toast.show({
-        type: "info",
-        text1: "already recasted",
-      });
-    } else {
-      recast();
-    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
   };
+
+  const onShare = () => {
+    setOpenShareModal(true);
+  };
+
   return (
     <>
       <PostDetailActions
@@ -171,26 +164,23 @@ export function FCastExploreActions({
   const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
-  const onLike = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
 
+  const onLike = () => {
     if (liked) {
       removeLikeCast();
     } else {
       likeCast();
     }
   };
-  const onGift = () => {
-    if (!authenticated) {
-      login();
-      return;
+
+  const onRepost = () => {
+    if (recasted) {
+      removeRecast();
+    } else {
+      recast();
     }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
   };
+
   const onComment = () => {
     if (!authenticated) {
       login();
@@ -207,23 +197,18 @@ export function FCastExploreActions({
       community: communityInfo,
     });
   };
-  const onShare = () => {
-    setOpenShareModal(true);
-  };
-  const onRepost = () => {
+
+  const onGift = () => {
     if (!authenticated) {
       login();
       return;
     }
-    if (recasted) {
-      // removeRecast();
-      Toast.show({
-        type: "info",
-        text1: "already recasted",
-      });
-    } else {
-      recast();
-    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
+  };
+
+  const onShare = () => {
+    setOpenShareModal(true);
   };
   return (
     <>
