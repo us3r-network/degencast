@@ -45,7 +45,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Text, TextClassContext } from "~/components/ui/text";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
 import { cn } from "~/lib/utils";
 import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
@@ -265,7 +265,7 @@ const WalletItem = React.forwardRef<
 
 function FarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
-  const { prepareWrite } = useFarcasterWrite();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   if (!user) return null;
   const farcasterAccount = getUserFarcasterAccount(user);
   // console.log("farcasterAccount", farcasterAccount);
@@ -284,14 +284,14 @@ function FarcasterAccount() {
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
-          {farcasterAccount.signerPublicKey ? (
+          {hasSigner ? (
             <Pressable disabled>
               <HasSignerIcon />
             </Pressable>
           ) : (
             <Pressable
               onPress={(event) => {
-                prepareWrite;
+                requestSigner();
               }}
             >
               <Edit className="size-4" />

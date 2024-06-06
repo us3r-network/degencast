@@ -10,7 +10,7 @@ import { useRouter } from "expo-router";
 import { usePrivy } from "@privy-io/react-auth";
 import useAuth from "~/hooks/user/useAuth";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import PlatformSharingModal from "../platform-sharing/PlatformSharingModal";
 import { useState } from "react";
 import {
@@ -50,7 +50,7 @@ export function PointsRules({
   const { login } = usePrivy();
   const { authenticated } = useAuth();
   const { signerPublicKey, currFid } = useFarcasterAccount();
-  const { prepareWrite: connectFarcaster } = useFarcasterWrite();
+  const { requestSigner } = useFarcasterSigner();
   const router = useRouter();
   const { actionPointConfig } = useUserAction();
   const {
@@ -101,7 +101,7 @@ export function PointsRules({
                 login();
                 return;
               }
-              connectFarcaster();
+              requestSigner();
             }}
           />
           <RuleItem
