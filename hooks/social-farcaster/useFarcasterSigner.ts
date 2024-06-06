@@ -29,10 +29,12 @@ export default function useFarcasterSigner() {
   const linkFarcasterHanler = {
     onSuccess: (user: User) => {
       console.log("Linked farcaster account", user);
-      requestSigner();
+      setLinkingFarcaster(false);
+      if (!requestingSigner) requestSigner();
     },
     onError: (error: unknown) => {
       console.error("Failed to link farcaster account", error);
+      setLinkingFarcaster(false);
     },
   };
   const { linkFarcaster } = useLinkAccount(linkFarcasterHanler);
@@ -45,9 +47,17 @@ export default function useFarcasterSigner() {
 
   const [hasSigner, setHasSigner] = useState(false);
   useEffect(() => {
+    // console.log("farcasterAccount", farcasterAccount);
     if (farcasterAccount) {
       if (farcasterAccount.signerPublicKey) {
         setHasSigner(true);
+        if (requestingSigner) {
+          setRequestingSigner(false);
+          submitUserAction({
+            action: UserActionName.ConnectFarcaster,
+            data: { signerPublicKey: farcasterAccount.signerPublicKey },
+          });
+        }
       }
     }
   }, [farcasterAccount]);
@@ -61,31 +71,31 @@ export default function useFarcasterSigner() {
     [getFarcasterSignerPublicKey, signFarcasterMessage],
   );
 
-  const [requesting, setRequesting] = useState(false);
+  const [linkingFarcaster, setLinkingFarcaster] = useState(false);
+  const [requestingSigner, setRequestingSigner] = useState(false);
   const requestSigner = async () => {
-    setRequesting(true);
+    if (linkingFarcaster || requestingSigner) return;
     if (!embededWallet) {
       console.log("Creating embeded wallet");
       await createWallet();
     }
     if (!farcasterAccount) {
       console.log("Linking farcaster");
-      await linkFarcaster(); // this does not mean linking is done, it just starts the process, the user will have to confirm the linking, then the onSuccess callback will be called
+      setLinkingFarcaster(true);
+      linkFarcaster(); // this does not mean linking is done, it just starts the process, the user will have to confirm the linking, then the onSuccess callback will be called
     } else {
       if (!farcasterAccount?.signerPublicKey) {
         console.log("Requesting farcaster signer");
         try {
           // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
-          await requestFarcasterSignerFromWarpcast();
+          setRequestingSigner(true);
+          requestFarcasterSignerFromWarpcast();
         } catch (error) {
           console.log("requestFarcasterSignerFromWarpcast Error: ", error);
+          setRequestingSigner(false);
         }
-        submitUserAction({
-          action: UserActionName.ConnectFarcaster,
-        });
       }
     }
-    setRequesting(false);
   };
 
   const getPrivySigner = useCallback(async () => {
@@ -97,7 +107,7 @@ export default function useFarcasterSigner() {
   return {
     hasSigner,
     requestSigner,
-    requesting,
+    requesting: linkingFarcaster || requestingSigner,
     getPrivySigner,
   };
 }
