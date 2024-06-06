@@ -19,6 +19,7 @@ import { HTTP_HMAC_KEY } from "~/constants";
 export const keyPrefix = "degencast";
 export const unreportedActionsKey = `${keyPrefix}:unreportedActions`;
 export const unreportedViewCastsKey = `${keyPrefix}:unreportedViewCasts`;
+export const actionDailyLimitKey = `${keyPrefix}:actionDailyLimit`;
 
 export const getStoredUnreportedActions = () => {
   try {
@@ -49,6 +50,19 @@ export const storeUnreportedViewCasts = (unreportedViewCasts: any[]) => {
   );
 };
 
+export const getStoredActionDailyLimit = () => {
+  try {
+    const actionDailyLimit = localStorage.getItem(actionDailyLimitKey);
+    return actionDailyLimit ? JSON.parse(actionDailyLimit) : {};
+  } catch (error) {
+    return {};
+  }
+};
+
+export const storeActionDailyLimit = (actionDailyLimit: any) => {
+  localStorage.setItem(actionDailyLimitKey, JSON.stringify(actionDailyLimit));
+};
+
 type UserActionState = {
   actionPointConfig: UserActionPointConfig;
   actionPointConfigRequestStatus: AsyncRequestStatus;
@@ -64,6 +78,11 @@ type UserActionState = {
   reportPendingActions: Array<UserActionData>;
   reportedViewCasts: Array<string>;
   reportPendingViewCasts: Array<string>;
+  dailyLimit: {
+    [key: string]: {
+      [actionName: string]: number;
+    };
+  };
 };
 
 const defaultActionPointConfig: UserActionPointConfig = {
@@ -93,7 +112,14 @@ const userActionState: UserActionState = {
   reportPendingActions: [],
   reportedViewCasts: [],
   reportPendingViewCasts: [],
+  dailyLimit: getStoredActionDailyLimit(),
 };
+
+const getYearMonthDay = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+};
+const dailyLimitKey = getYearMonthDay();
 
 export const fetchTotalPoints = createAsyncThunk<number>(
   "userAction/fetchTotalPoints",
@@ -165,11 +191,24 @@ export const submitAction = createAsyncThunk<UserActionData, UserActionData>(
     condition: (actionData, { getState }) => {
       const state = getState() as RootState;
       const { userAction, userAuth } = state;
-      const { reportedActions, reportPendingActions } = userAction;
+      const {
+        reportedActions,
+        reportPendingActions,
+        dailyLimit,
+        actionPointConfig,
+      } = userAction;
       const { degencastId } = userAuth;
-
       if (!degencastId) {
         return false;
+      }
+      const configDailyLimit =
+        actionPointConfig?.[actionData.action]?.dailyLimit;
+      if (configDailyLimit) {
+        const actionCount =
+          dailyLimit?.[dailyLimitKey]?.[actionData.action] || 0;
+        if (actionCount >= configDailyLimit) {
+          return false;
+        }
       }
       if (actionData.action === UserActionName.View) {
         const findReportedAction = reportedActions.find(
@@ -291,19 +330,35 @@ export const userActionSlice = createSlice({
       action: PayloadAction<UserActionData>,
     ) => {
       const actionData = action.payload;
-      const { unreportedActions } = state;
-      if (actionData.action === UserActionName.View) {
-        const findAction = unreportedActions.find(
-          (item) => item.castHash === actionData.castHash,
-        );
-        if (!findAction) {
+      const { unreportedActions, actionPointConfig, dailyLimit } = state;
+      const configDailyLimit =
+        actionPointConfig?.[actionData.action]?.dailyLimit;
+      const actionCount = dailyLimit?.[dailyLimitKey]?.[actionData.action] || 0;
+      if (!configDailyLimit || actionCount < configDailyLimit) {
+        // 更新dailyLimit
+        const newDailyLimit = {
+          ...state.dailyLimit,
+          [dailyLimitKey]: {
+            ...(state.dailyLimit?.[dailyLimitKey] || {}),
+            [actionData.action]: actionCount + 1,
+          },
+        };
+        if (actionData.action === UserActionName.View) {
+          const findAction = unreportedActions.find(
+            (item) => item.castHash === actionData.castHash,
+          );
+          if (!findAction) {
+            state.unreportedActions.push(action.payload);
+            state.dailyLimit = newDailyLimit;
+          }
+        } else {
           state.unreportedActions.push(action.payload);
+          state.dailyLimit = newDailyLimit;
         }
-      } else {
-        state.unreportedActions.push(action.payload);
-      }
 
-      storeUnreportedActions(state.unreportedActions);
+        storeUnreportedActions(state.unreportedActions);
+        storeActionDailyLimit(state.dailyLimit);
+      }
     },
     addOneToUnreportedViewCasts: (
       state: UserActionState,
@@ -369,15 +424,30 @@ export const userActionSlice = createSlice({
         state.actionPointConfigRequestStatus = AsyncRequestStatus.REJECTED;
       })
       .addCase(submitAction.pending, (state, action) => {
+        const { dailyLimit, actionPointConfig } = state;
         const actionData = action.meta.arg;
         if (actionData.action === UserActionName.View) {
           state.reportPendingActions.push(actionData);
           // 刷cast时乐观处理
-          const point = getActionPoint(actionData, state.actionPointConfig);
+          const point = getActionPoint(actionData, actionPointConfig);
           state.totalPoints += point;
+
+          // 更新dailyLimit
+          const actionCount =
+            dailyLimit?.[dailyLimitKey]?.[actionData.action] || 0;
+          const newDailyLimit = {
+            ...state.dailyLimit,
+            [dailyLimitKey]: {
+              ...(state.dailyLimit?.[dailyLimitKey] || {}),
+              [actionData.action]: actionCount + 1,
+            },
+          };
+          state.dailyLimit = newDailyLimit;
+          storeActionDailyLimit(state.dailyLimit);
         }
       })
       .addCase(submitAction.fulfilled, (state, action) => {
+        const { dailyLimit, actionPointConfig } = state;
         const actionData = action.meta.arg;
         if (actionData.action === UserActionName.View) {
           state.reportedActions.push(actionData);
@@ -387,8 +457,21 @@ export const userActionSlice = createSlice({
           // 刷cast时已经乐观处理
           return;
         }
-        const point = getActionPoint(actionData, state.actionPointConfig);
+        const point = getActionPoint(actionData, actionPointConfig);
         state.totalPoints += point;
+
+        // 更新dailyLimit
+        const actionCount =
+          dailyLimit?.[dailyLimitKey]?.[actionData.action] || 0;
+        const newDailyLimit = {
+          ...state.dailyLimit,
+          [dailyLimitKey]: {
+            ...(state.dailyLimit?.[dailyLimitKey] || {}),
+            [actionData.action]: actionCount + 1,
+          },
+        };
+        state.dailyLimit = newDailyLimit;
+        storeActionDailyLimit(state.dailyLimit);
       })
       .addCase(submitAction.rejected, (state, action) => {
         const actionData = action.meta.arg;

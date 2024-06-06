@@ -7,6 +7,7 @@ import {
   upsertToCastCollection,
   setSharingCastMint,
   clearSharingCastMint,
+  SharingCastMint,
 } from "~/features/cast/castCollectionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import { ZoraCollectionEntity } from "~/services/zora-collection/types";
@@ -58,12 +59,9 @@ export default function useCastCollection() {
     [],
   );
 
-  const setSharingCastMintAction = useCallback(
-    (params: { castHex: string; url: string }) => {
-      dispatch(setSharingCastMint(params));
-    },
-    [],
-  );
+  const setSharingCastMintAction = useCallback((params: SharingCastMint) => {
+    dispatch(setSharingCastMint(params));
+  }, []);
   const clearSharingCastMintAction = useCallback(() => {
     dispatch(clearSharingCastMint());
   }, []);
