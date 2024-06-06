@@ -88,7 +88,7 @@ export default function useFarcasterWrite() {
         setWriting(false);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   const removeCast = useCallback(
@@ -106,7 +106,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   const submitReaction = useCallback(
@@ -132,7 +132,7 @@ export default function useFarcasterWrite() {
       );
       return result;
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
   const removeReaction = useCallback(
     async (
@@ -157,7 +157,7 @@ export default function useFarcasterWrite() {
       );
       return result;
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
   const likeCast = useCallback(
     async (castHash: string, castAuthorFid: number) => {
@@ -199,7 +199,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   const unfollowUser = useCallback(
@@ -217,7 +217,7 @@ export default function useFarcasterWrite() {
         console.error(e);
       }
     },
-    [farcasterAccount],
+    [farcasterAccount, getPrivySigner],
   );
 
   return {
