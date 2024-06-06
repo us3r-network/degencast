@@ -10,6 +10,9 @@ import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
 import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
+import { useAppDispatch } from "~/store/hooks";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
+import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
@@ -23,7 +26,7 @@ export default function useLoadChannelExploreCasts(params: {
 }) {
   const { channelId, initCast, swipeDataRefValue, onViewCastActionSubmited } =
     params || {};
-  const { addManyToLikedActions } = useUserCastLikeActionsUtil();
+  const dispatch = useAppDispatch();
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
   const [casts, setCasts] = useState<Array<ChannelCastData>>([]);
@@ -60,17 +63,7 @@ export default function useLoadChannelExploreCasts(params: {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      const { casts, farcasterUserData, pageInfo, likeActions } = data;
-      const unlikeActions = likeActions.filter(
-        (action) => action.action === UserActionName.UnLike,
-      );
-      const likedActions = likeActions.filter(
-        (action) =>
-          !unlikeActions.find(
-            (unlikeAction) => unlikeAction.castHash === action.castHash,
-          ),
-      );
-      addManyToLikedActions(likedActions);
+      const { casts, farcasterUserData, pageInfo } = data;
 
       const initCastData = initCastRef.current;
       const filteredCastHexs = initCastData
@@ -79,6 +72,10 @@ export default function useLoadChannelExploreCasts(params: {
       const newCasts = casts.filter(
         (item) => !filteredCastHexs?.includes(getCastHex(item.data)),
       );
+      const viewerContexts = viewerContextsFromCasts(
+        newCasts.map((item) => item.data),
+      );
+      dispatch(upsertManyToReactions(viewerContexts));
 
       setCasts((pre) => [...pre, ...newCasts]);
       pageInfoRef.current = pageInfo;

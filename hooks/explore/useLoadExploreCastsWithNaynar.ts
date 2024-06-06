@@ -9,7 +9,9 @@ import { FarCast } from "~/services/farcaster/types";
 import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
-import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
+import { useAppDispatch } from "~/store/hooks";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
+import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
@@ -19,8 +21,9 @@ export default function useLoadExploreCastsWithNaynar(opts: {
   swipeDataRefValue: any;
   onViewCastActionSubmited?: () => void;
 }) {
+  const dispatch = useAppDispatch();
   const { swipeDataRefValue, onViewCastActionSubmited } = opts || {};
-  const { addManyToLikedActions } = useUserCastLikeActionsUtil();
+
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
   const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
@@ -54,19 +57,11 @@ export default function useLoadExploreCastsWithNaynar(opts: {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      const { casts, farcasterUserData, pageInfo, likeActions } = data;
-      const unlikeActions =
-        likeActions?.filter(
-          (action) => action.action === UserActionName.UnLike,
-        ) || [];
-      const likedActions =
-        likeActions?.filter(
-          (action) =>
-            !unlikeActions.find(
-              (unlikeAction) => unlikeAction.castHash === action.castHash,
-            ),
-        ) || [];
-      addManyToLikedActions(likedActions);
+      const { casts, farcasterUserData, pageInfo } = data;
+      const viewerContexts = viewerContextsFromCasts(
+        casts.map((item) => item.data),
+      );
+      dispatch(upsertManyToReactions(viewerContexts));
       setCasts((pre) => [...pre, ...casts]);
       pageInfoRef.current = pageInfo;
       // console.log("pageInfo", pageInfo);
