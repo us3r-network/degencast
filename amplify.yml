@@ -3,6 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - npm install --quiet --global expo-cli
         - >
           if [ -f yarn.lock ]; then
             yarn
@@ -13,7 +14,7 @@ frontend:
           fi
     build:
       commands:
-        - yarn build
+        - expo build:web
   artifacts:
     baseDirectory: web-build
     files:
