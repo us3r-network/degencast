@@ -153,14 +153,14 @@ export default function CommunityDetail() {
         {community && (
           <>
             <CommunityDetailMetaInfo communityInfo={community} />
-            <View className="box-border w-full flex-1 pt-7">
+            <View className="box-border w-full flex-1 pt-5">
               <Tabs
                 value={activeScreen}
                 onValueChange={(value) => {
                   setActiveScreen(value);
                   router.push(`/communities/${id}/${value}` as any);
                 }}
-                className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2"
+                className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2 px-4"
               >
                 <TabsList className="flex-row rounded-full bg-white shadow-lg">
                   {TABS.map((tab) => (
@@ -171,7 +171,7 @@ export default function CommunityDetail() {
                     >
                       <Text
                         className={cn(
-                          "whitespace-nowrap text-primary",
+                          "whitespace-nowrap font-medium text-primary",
                           activeScreen === tab.value &&
                             "text-primary-foreground",
                         )}
@@ -182,7 +182,7 @@ export default function CommunityDetail() {
                   ))}
                 </TabsList>
               </Tabs>
-              <Card className="box-border h-full w-full rounded-b-none p-5 pb-0 ">
+              <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-5 pb-0 pt-10 ">
                 <CommunityContext.Provider value={{ community, loading }}>
                   <Stack
                     initialRouteName={initialRouteName}
