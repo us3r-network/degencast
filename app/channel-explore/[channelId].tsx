@@ -109,6 +109,10 @@ export default function ChannelExploreScreen() {
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
 
+  console.log("currentCastIndex", currentCastIndex);
+  console.log("indexedCasts", indexedCasts);
+  console.log("renderCasts", renderCasts);
+
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => {
@@ -211,6 +215,11 @@ export default function ChannelExploreScreen() {
                 const offsetRemainder = offsetY % itemHeight;
                 offsetRemainderPrev.current = offsetRemainder;
                 if (timer.current) clearTimeout(timer.current);
+                console.log(
+                  "offsetRemainderPrev.current",
+                  offsetRemainderPrev.current,
+                );
+
                 timer.current = setTimeout(() => {
                   if (offsetRemainderPrev.current === 0) {
                     const castIndex = renderCasts[index].index;
@@ -232,10 +241,10 @@ export default function ChannelExploreScreen() {
               setCurrentCastIndex(castIndex);
             }}
           >
-            {renderCasts.map((data, index) => {
+            {renderCasts.map((data) => {
               return (
                 <View
-                  key={index.toString()}
+                  key={data.index.toString()}
                   className={cn(
                     "mx-auto h-full sm:max-w-screen-sm",
                     isDesktop && " w-screen",
