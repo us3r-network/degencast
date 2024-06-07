@@ -13,6 +13,7 @@ frontend:
           fi
     build:
       commands:
+        - yarn init-nativewind
         - yarn export
   artifacts:
     baseDirectory: web-build
