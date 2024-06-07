@@ -45,19 +45,18 @@ export default function useFarcasterSigner() {
     signFarcasterMessage,
   } = useExperimentalFarcasterSigner();
 
-  const [hasSigner, setHasSigner] = useState(false);
+  const [hasSigner, setHasSigner] = useState(
+    !!farcasterAccount?.signerPublicKey,
+  );
   useEffect(() => {
-    // console.log("farcasterAccount", farcasterAccount);
-    if (farcasterAccount) {
-      if (farcasterAccount.signerPublicKey) {
-        setHasSigner(true);
-        if (requestingSigner) {
-          setRequestingSigner(false);
-          submitUserAction({
-            action: UserActionName.ConnectFarcaster,
-            data: { signerPublicKey: farcasterAccount.signerPublicKey },
-          });
-        }
+    if (farcasterAccount && farcasterAccount.signerPublicKey && !hasSigner) {
+      setHasSigner(true);
+      if (requestingSigner) {
+        setRequestingSigner(false);
+        submitUserAction({
+          action: UserActionName.ConnectFarcaster,
+          data: { signerPublicKey: farcasterAccount.signerPublicKey },
+        });
       }
     }
   }, [farcasterAccount]);
@@ -99,7 +98,7 @@ export default function useFarcasterSigner() {
   };
 
   const getPrivySigner = useCallback(async () => {
-    if (await hasSigner) {
+    if (hasSigner) {
       return privySigner;
     }
   }, [privySigner]);

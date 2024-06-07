@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import { API_BASE_URL, FARCASTER_API_URL } from "~/constants";
+import { API_BASE_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
@@ -139,7 +139,7 @@ export function getFarcasterEmbedCast({
   hash: string;
 }) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/embed-cast`,
+    url: `${API_BASE_URL}/3r-farcaster/embed-cast`,
     method: "get",
     params: {
       fid,
@@ -199,7 +199,7 @@ export function getFarcasterCastComments(
 
 export function getSearchResult(query: string) {
   return axios({
-    url: `${FARCASTER_API_URL}/topics/searching?query=${query}`,
+    url: `${API_BASE_URL}/topics/searching?query=${query}`,
     method: "get",
   });
 }
@@ -210,7 +210,7 @@ export function getFarcasterEmbedMetadataV2(urls: string[]): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/embedv2`,
+    url: `${API_BASE_URL}/3r-farcaster/embedv2`,
     method: "get",
     params: {
       urls,
@@ -238,7 +238,7 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/statics`,
+    url: `${API_BASE_URL}/3r-farcaster/statics`,
     method: "get",
     params: {
       fid,
@@ -267,7 +267,7 @@ export function notifyTipApi(data: {
   castHash: string;
 }) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-bot/tip/notify`,
+    url: `${API_BASE_URL}/3r-bot/tip/notify`,
     method: "post",
     data,
   });
@@ -302,7 +302,7 @@ export function getProfileFeeds({
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-all/profileFeeds`,
+    url: `${API_BASE_URL}/3r-all/profileFeeds`,
     method: "get",
     params: {
       pageSize: pageSize || DEFAULT_PAGE_SIZE,

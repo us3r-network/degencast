@@ -1,15 +1,13 @@
 import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
 import { HubRestAPIClient } from "@standard-crypto/farcaster-js-hub-rest";
 import axios from "axios";
-import { useCallback, useMemo, useState } from "react";
-import { FARCASTER_HUB_URL, NEYNAR_API_KEY } from "~/constants/farcaster";
+import { useCallback, useState } from "react";
+import { FARCASTER_HUB_URL } from "~/constants/farcaster";
 import useFarcasterSigner from "./useFarcasterSigner";
 
 const hubClient = new HubRestAPIClient({
   hubUrl: FARCASTER_HUB_URL,
-  axiosInstance: axios.create({
-    headers: { api_key: NEYNAR_API_KEY },
-  }),
+  axiosInstance: axios.create(),
 });
 
 export type SubmitCastBody = {

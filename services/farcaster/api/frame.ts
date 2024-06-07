@@ -1,9 +1,9 @@
 import axios from "axios";
-import { FARCASTER_API_URL } from "~/constants";
+import { API_BASE_URL } from "~/constants";
 
 export function postFrameActionApi(data: any) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/frame-action/proxy`,
+    url: `${API_BASE_URL}/3r-farcaster/frame-action/proxy`,
     method: "post",
     data,
   });
@@ -11,7 +11,7 @@ export function postFrameActionApi(data: any) {
 
 export function postFrameActionRedirectApi(data: any) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/frame-action-redirect/proxy`,
+    url: `${API_BASE_URL}/3r-farcaster/frame-action-redirect/proxy`,
     method: "post",
     data,
   });
@@ -19,7 +19,7 @@ export function postFrameActionRedirectApi(data: any) {
 
 export function postFrameActionTxApi(data: any) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/frame-action-tx/proxy`,
+    url: `${API_BASE_URL}/3r-farcaster/frame-action-tx/proxy`,
     method: "post",
     data,
   });
