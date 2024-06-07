@@ -16,7 +16,7 @@ frontend:
         - yarn init-nativewind
         - yarn export
   artifacts:
-    baseDirectory: web-build
+    baseDirectory: dist
     files:
       - '**/*'
   cache:
