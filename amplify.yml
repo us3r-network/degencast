@@ -13,7 +13,7 @@ frontend:
           fi
     build:
       commands:
-        - npx expo build:web
+        - yarn export
   artifacts:
     baseDirectory: web-build
     files:
