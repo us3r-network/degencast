@@ -34,7 +34,7 @@ import {
   postFrameActionRedirectApi,
   postFrameActionTxApi,
 } from "~/services/farcaster/api/frame";
-import { FarCast } from "~/services/farcaster/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
 
 export default function EmbedFrame({
@@ -45,7 +45,7 @@ export default function EmbedFrame({
 }: {
   url: string;
   data: Frame;
-  cast?: FarCast;
+  cast?: NeynarCast;
   imgIsFixedRatio?: boolean;
 }) {
   const { getPrivySigner } = useFarcasterSigner();
@@ -99,8 +99,8 @@ export default function EmbedFrame({
           buttonIndex: btnIdx,
           inputText: Buffer.from(text),
           castId: {
-            fid: Number(cast.fid),
-            hash: Buffer.from(cast.hash.data),
+            fid: cast.author.fid,
+            hash: Buffer.from(cast.hash),
           },
           state: Buffer.from(frameData.state || ""),
           transactionId: Buffer.from(txId || ""),
@@ -126,8 +126,8 @@ export default function EmbedFrame({
         timestamp: trustedDataResult.value.data.timestamp,
         inputText: text,
         castId: {
-          fid: Number(cast.fid),
-          hash: toHex(cast.hash.data),
+          fid: cast.author.fid,
+          hash: Buffer.from(cast.hash),
         },
         state: frameData.state || "",
         transactionId: txId || "",

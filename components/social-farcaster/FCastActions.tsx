@@ -1,21 +1,22 @@
-import { ViewProps } from "react-native";
-import { FarCast } from "~/services/farcaster/types";
-import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
 import { usePrivy } from "@privy-io/react-auth";
-import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
-import FCastGiftModal from "./FCastGiftModal";
 import { useState } from "react";
-import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import { CommunityInfo } from "~/services/community/types/community";
-import { UserData } from "~/utils/farcaster/user-data";
-import getCastHex from "~/utils/farcaster/getCastHex";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
-import FCastShareModal from "./FCastShareModal";
-import FCastMintNftModal from "./FCastMintNftModal";
+import { ViewProps } from "react-native";
 import Toast from "react-native-toast-message";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
+import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
+import { CommunityInfo } from "~/services/community/types/community";
+import { FarCast } from "~/services/farcaster/types";
+import { UserData } from "~/utils/farcaster/user-data";
+import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
+import FCastGiftModal from "./FCastGiftModal";
+import FCastMintNftModal from "./FCastMintNftModal";
+import FCastShareModal from "./FCastShareModal";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 
 export function FCastDetailActions({
   cast,
@@ -23,17 +24,18 @@ export function FCastDetailActions({
   communityInfo,
   ...props
 }: ViewProps & {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   farcasterUserDataObj: { [key: string]: UserData };
   communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
-  const castUserData = farcasterUserDataObj[cast.fid];
+  const castFid = getCastFid(cast);
+  const castUserData = farcasterUserDataObj[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
   const { recast, removeRecast, recasted, recastCount, recastPending } =
@@ -43,33 +45,30 @@ export function FCastDetailActions({
   const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
-  const onLike = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
 
+  const onLike = () => {
     if (liked) {
       removeLikeCast();
     } else {
       likeCast();
     }
   };
-  const onGift = () => {
-    if (!authenticated) {
-      login();
-      return;
+
+  const onRepost = () => {
+    if (recasted) {
+      removeRecast();
+    } else {
+      recast();
     }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
   };
+
   const onComment = () => {
     if (!authenticated) {
       login();
       return;
     }
-    if (!currFid) {
-      farcasterPrepareWrite();
+    if (!currFid || !hasSigner) {
+      requestSigner();
       return;
     }
     const castHex = getCastHex(cast);
@@ -79,24 +78,20 @@ export function FCastDetailActions({
       community: communityInfo,
     });
   };
-  const onShare = () => {
-    setOpenShareModal(true);
-  };
-  const onRepost = () => {
+
+  const onGift = () => {
     if (!authenticated) {
       login();
       return;
     }
-    if (recasted) {
-      // removeRecast();
-      Toast.show({
-        type: "info",
-        text1: "already recasted",
-      });
-    } else {
-      recast();
-    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
   };
+
+  const onShare = () => {
+    setOpenShareModal(true);
+  };
+
   return (
     <>
       <PostDetailActions
@@ -161,7 +156,7 @@ export function FCastExploreActions({
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
   const { recast, removeRecast, recasted, recastCount, recastPending } =
@@ -171,33 +166,30 @@ export function FCastExploreActions({
   const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
-  const onLike = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
 
+  const onLike = () => {
     if (liked) {
       removeLikeCast();
     } else {
       likeCast();
     }
   };
-  const onGift = () => {
-    if (!authenticated) {
-      login();
-      return;
+
+  const onRepost = () => {
+    if (recasted) {
+      removeRecast();
+    } else {
+      recast();
     }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
   };
+
   const onComment = () => {
     if (!authenticated) {
       login();
       return;
     }
-    if (!currFid) {
-      farcasterPrepareWrite();
+    if (!currFid || !hasSigner) {
+      requestSigner();
       return;
     }
     const castHex = getCastHex(cast);
@@ -207,23 +199,18 @@ export function FCastExploreActions({
       community: communityInfo,
     });
   };
-  const onShare = () => {
-    setOpenShareModal(true);
-  };
-  const onRepost = () => {
+
+  const onGift = () => {
     if (!authenticated) {
       login();
       return;
     }
-    if (recasted) {
-      // removeRecast();
-      Toast.show({
-        type: "info",
-        text1: "already recasted",
-      });
-    } else {
-      recast();
-    }
+    loadDegenAllowance();
+    setOpenGiftModal(true);
+  };
+
+  const onShare = () => {
+    setOpenShareModal(true);
   };
   return (
     <>

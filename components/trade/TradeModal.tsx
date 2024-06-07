@@ -235,10 +235,15 @@ function SwapToken({
   }, [isSuccess, waitingUserSign, transactionReceipt, transationLoading]);
 
   useEffect(() => {
-    //todo: add condition of more than $30
-    if (isSuccess)
+    const usdAmount =
+      Number(fromAmount) *
+        Number(fromToken?.tradeInfo?.stats.token_price_usd) ||
+      Number(toAmount) * Number(toToken?.tradeInfo?.stats.token_price_usd);
+    const enoughAmount = usdAmount > 30;
+    if (isSuccess && enoughAmount && transactionReceipt?.transactionHash)
       submitUserAction({
         action: UserActionName.SwapToken,
+        data: { hash: transactionReceipt?.transactionHash },
       });
   }, [isSuccess]);
 

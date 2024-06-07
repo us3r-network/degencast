@@ -1,10 +1,6 @@
 import axios from "axios";
 import { NeynarCast, NeynarChannelsResp } from "../types/neynar";
-
-const NEYNAR_API_HOST = "https://api.neynar.com";
-const NEYNAR_HUB_API_HOST = "https://hub-api.neynar.com";
-
-const NEYNAR_API_KEY = "976F5E1F-03AA-4BCC-81B2-CB80BB6F844A";
+import { NEYNAR_API_HOST, FARCASTER_HUB_URL } from "~/constants/farcaster";
 
 export async function fetchCastWithHash({
   hash,
@@ -14,9 +10,6 @@ export async function fetchCastWithHash({
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/cast?identifier=${hash}&type=hash`,
     method: "get",
-    headers: {
-      api_key: NEYNAR_API_KEY,
-    },
   });
 
   console.log("fetchCastWithHash", resp.data);
@@ -31,11 +24,8 @@ export async function fetchCastWithHashFid({
   fid: string;
 }) {
   const resp = await axios({
-    url: `${NEYNAR_HUB_API_HOST}/v1/castById?fid=${fid}&hash=${hash}`,
+    url: `${FARCASTER_HUB_URL}/v1/castById?fid=${fid}&hash=${hash}`,
     method: "get",
-    headers: {
-      api_key: NEYNAR_API_KEY,
-    },
   });
 
   console.log("fetchCastWithHashFid", resp.data);
@@ -54,9 +44,6 @@ export async function fetchUserChannels({
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/user/channels?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
     method: "get",
-    headers: {
-      api_key: NEYNAR_API_KEY,
-    },
   });
   // console.log("Retrieve all channels that a given fid follows", resp.data);
   return resp.data;
@@ -74,9 +61,6 @@ export async function fetchUserActiveChannels({
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/channel/user?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
     method: "get",
-    headers: {
-      api_key: NEYNAR_API_KEY,
-    },
   });
   // console.log("Retrieve all channels that a given fid follows", resp.data);
   return resp.data;
@@ -92,9 +76,6 @@ export async function fetchUserBulk({
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/user/bulk?fids=${fids.join(",")}&viewer_fid=${viewer_fid}`,
     method: "get",
-    headers: {
-      api_key: NEYNAR_API_KEY,
-    },
   });
   return resp.data;
   /*

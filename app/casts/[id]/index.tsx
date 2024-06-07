@@ -24,12 +24,17 @@ import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastD
 import { CommunityInfo } from "~/services/community/types/community";
 
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastHex,
+  getCastParentUrl,
+  getCastRepliesCount,
+} from "~/utils/farcaster/cast-utils";
 import { UserData } from "~/utils/farcaster/user-data";
 
 export default function CastDetail() {
-  const params = useLocalSearchParams<{ id: string; fid?: string }>();
-  const { id, fid } = params;
+  const params = useLocalSearchParams();
+  const { id, fid } = params as { id: string; fid?: string };
   const { castDetailData } = useCastPage();
   const data = castDetailData?.[id as string];
   const { cast } = data || {};
@@ -65,7 +70,7 @@ function CachedCastDetail() {
   }, [id]);
 
   // get community info
-  const parentUrl = cachedCast?.parentUrl || cachedCast?.parent_url;
+  const parentUrl = getCastParentUrl(cachedCast);
   const { warpcastChannels } = useWarpcastChannels();
   const channel = useMemo(() => {
     return warpcastChannels.find((item) => item.url === parentUrl);
@@ -149,19 +154,8 @@ function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
                 return null;
               }
               return (
-                <View className="mt-5 gap-6">
-                  <FCastUserInfo
-                    userData={{
-                      fid: cast.author.fid + "",
-                      pfp: cast.author.pfp_url,
-                      display: cast.author.display_name,
-                      userName: cast.author.username,
-                      bio: "",
-                      url: "",
-                    }}
-                  />
-                  <NeynarText text={cast.text} />
-                  <NeynarEmbeds embeds={cast.embeds} />
+                <View className="mt-5">
+                  <FCast cast={cast} />
                 </View>
               );
             }}
@@ -241,7 +235,7 @@ function CastDetailWithData({
   community,
 }: {
   castLoading: boolean;
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   farcasterUserDataObj: {
     [key: string]: UserData;
   };
@@ -337,8 +331,7 @@ function CastDetailWithData({
                   <Separator className=" my-5 bg-primary/10" />
                   <View className="mb-5 w-full">
                     <Text className=" text-base font-medium">
-                      Comments (
-                      {Number(cast?.comment_count || cast?.repliesCount || 0)})
+                      Comments ({getCastRepliesCount(cast)})
                     </Text>
                   </View>
                 </View>

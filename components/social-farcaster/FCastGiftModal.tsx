@@ -9,6 +9,7 @@ import { Input } from "../ui/input";
 import useUserDegenAllowanceAction from "~/hooks/user/useUserDegenAllowanceAction";
 import { Image } from "react-native";
 import Toast from "react-native-toast-message";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export default function FCastGiftModal({
   totalAllowance,
@@ -19,7 +20,7 @@ export default function FCastGiftModal({
 }: {
   totalAllowance: number;
   remainingAllowance: number;
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {

@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import { API_BASE_URL, FARCASTER_API_URL } from "~/constants";
+import { API_BASE_URL } from "~/constants";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import {
   ApiResp,
@@ -12,7 +12,7 @@ import {
 } from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
-import { Channel } from "../types/neynar";
+import { Channel, NeynarCast } from "../types/neynar";
 
 export type FarcasterPageInfo = {
   startIndex: number;
@@ -95,6 +95,38 @@ export function getNaynarFarcasterTrending({
   });
 }
 
+export type NaynarChannelCastsFeedPageInfo = {
+  cursor: string;
+  hasNextPage: boolean;
+};
+export function getNaynarChannelCastsFeed({
+  cursor,
+  limit,
+  channelId,
+}: {
+  cursor: string;
+  limit: number;
+  channelId: string;
+}): RequestPromise<
+  ApiResp<{
+    casts: Array<NeynarCast>;
+    pageInfo: NaynarChannelCastsFeedPageInfo;
+  }>
+> {
+  return request({
+    url: `/topics/channels/casts/feed`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+    params: {
+      cursor,
+      limit,
+      channelId: channelId ?? "",
+    },
+  });
+}
+
 export type ChannelCastData = {
   data: any;
   platform: SocialPlatform;
@@ -139,7 +171,7 @@ export function getFarcasterEmbedCast({
   hash: string;
 }) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/embed-cast`,
+    url: `${API_BASE_URL}/3r-farcaster/embed-cast`,
     method: "get",
     params: {
       fid,
@@ -170,6 +202,9 @@ export function getFarcasterCastInfo(
   return request({
     url: `/3r-farcaster/cast/${hash}`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params: {
       endFarcasterCursor,
       pageSize,
@@ -193,13 +228,16 @@ export function getFarcasterCastComments(
   return request({
     url: `/3r-farcaster/casts/${hash}/replies`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
     params,
   });
 }
 
 export function getSearchResult(query: string) {
   return axios({
-    url: `${FARCASTER_API_URL}/topics/searching?query=${query}`,
+    url: `${API_BASE_URL}/topics/searching?query=${query}`,
     method: "get",
   });
 }
@@ -210,7 +248,7 @@ export function getFarcasterEmbedMetadataV2(urls: string[]): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/embedv2`,
+    url: `${API_BASE_URL}/3r-farcaster/embedv2`,
     method: "get",
     params: {
       urls,
@@ -238,7 +276,7 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-farcaster/statics`,
+    url: `${API_BASE_URL}/3r-farcaster/statics`,
     method: "get",
     params: {
       fid,
@@ -267,7 +305,7 @@ export function notifyTipApi(data: {
   castHash: string;
 }) {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-bot/tip/notify`,
+    url: `${API_BASE_URL}/3r-bot/tip/notify`,
     method: "post",
     data,
   });
@@ -302,7 +340,7 @@ export function getProfileFeeds({
   }>
 > {
   return axios({
-    url: `${FARCASTER_API_URL}/3r-all/profileFeeds`,
+    url: `${API_BASE_URL}/3r-all/profileFeeds`,
     method: "get",
     params: {
       pageSize: pageSize || DEFAULT_PAGE_SIZE,

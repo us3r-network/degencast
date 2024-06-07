@@ -1,11 +1,15 @@
 import { useCallback, useRef, useState } from "react";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { getFarcasterCastComments } from "~/services/farcaster/api";
 import { FarCast } from "~/services/farcaster/types";
 import { ApiRespCode } from "~/services/shared/types";
+import { useAppDispatch } from "~/store/hooks";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
+import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 
 const PAGE_SIZE = 20;
 export default function useLoadCastComments(castHex: string) {
+  const dispatch = useAppDispatch();
   const [firstLoaded, setFirstLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
@@ -35,6 +39,10 @@ export default function useLoadCastComments(castHex: string) {
       if (code === ApiRespCode.SUCCESS) {
         const { farcasterUserData: farcasterUserDataTmp, casts: newComments } =
           data;
+        const viewerContexts = viewerContextsFromCasts(
+          newComments.map((item) => item.data),
+        );
+        dispatch(upsertManyToReactions(viewerContexts));
 
         const userDataObj = userDataObjFromArr(farcasterUserDataTmp);
         setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));

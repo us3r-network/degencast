@@ -6,7 +6,7 @@ import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePag
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { ProfileFeedsGroups } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export function CastList({ fid }: { fid: number }) {
   const { casts, farcasterUserDataObj, loading, loadCasts } = useUserCasts();

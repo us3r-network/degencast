@@ -5,7 +5,6 @@ import { Text } from "../ui/text";
 import { Button } from "../ui/button";
 import { Image } from "expo-image";
 import { AspectRatio } from "../ui/aspect-ratio";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { useEffect, useMemo, useState } from "react";
 import { Loading } from "../common/Loading";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
@@ -28,6 +27,8 @@ import { usePrivy } from "@privy-io/react-auth";
 import { UserData } from "~/utils/farcaster/user-data";
 import useUserBulk from "~/hooks/user/useUserBulk";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 // import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
@@ -37,7 +38,7 @@ export default function FCastMintNftModal({
   onOpenChange,
   castUserData,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;

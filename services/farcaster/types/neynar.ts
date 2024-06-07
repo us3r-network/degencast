@@ -16,7 +16,29 @@ export type NeynarCast = {
   embeds: any[];
   reactions: Reactions;
   replies: Replies;
-  mentioned_profiles: any[];
+  mentioned_profiles: Author[];
+  frames?: Frame[];
+  viewer_context?: {
+    liked: boolean;
+    recasted: boolean;
+  };
+};
+
+export type Frame = {
+  version: string;
+  title: string;
+  image: string;
+  image_aspect_ratio: number;
+  buttons: Array<{
+    index: number;
+    title: string;
+    action_type: string;
+    target: string;
+  }>;
+  input: any;
+  state: any;
+  post_url: string;
+  frames_url: string;
 };
 
 export type Author = {
@@ -56,8 +78,8 @@ export interface VerifiedAddresses {
 export interface Reactions {
   likes_count: number;
   recasts_count: number;
-  likes: any[];
-  recasts: any[];
+  likes: Array<{ fid: number; fname: string }>;
+  recasts: Array<{ fid: number; fname: string }>;
 }
 
 export interface Replies {
@@ -73,15 +95,15 @@ export type Channel = {
   image_url: string;
   object: string;
   parent_url: string;
-  hosts:Author[];
+  hosts: Author[];
   tokenInfo?: TokenWithTradeInfo;
 };
 
 export type PageInfo = {
-    cursor: string | null;
-}
+  cursor: string | null;
+};
 
 export type NeynarChannelsResp = {
   channels: Channel[];
   next: PageInfo;
-}
+};

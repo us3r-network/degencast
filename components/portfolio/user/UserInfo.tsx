@@ -30,9 +30,16 @@ export default function UserInfo({ fid }: { fid?: number }) {
   );
   useEffect(() => {
     if (fid) load(fid);
-  }, [farcasterAccount?.fid, fid]);
+  }, [fid]);
 
-  const farcasterUserInfo = userItems.length > 0 ? userItems[0] : undefined;
+  const farcasterUserInfo = useMemo(() => {
+    if (fid && userItems && userItems.length > 0) {
+      return userItems[0];
+    } else {
+      return undefined;
+    }
+  }, [userItems, fid]);
+
   const userAvatar = farcasterUserInfo ? farcasterUserInfo.pfp_url : "";
   const userDisplayName = farcasterUserInfo
     ? farcasterUserInfo.display_name
@@ -44,13 +51,14 @@ export default function UserInfo({ fid }: { fid?: number }) {
     : walletAccount
       ? shortPubKey(walletAccount.address)
       : "";
-  console.log(
-    "farcasterUserInfo",
-    farcasterUserInfo,
-    userAvatar,
-    userDisplayName,
-    username,
-  );
+  // console.log(
+  //   "UserInfo",
+  //   user,
+  //   farcasterUserInfo,
+  //   userAvatar,
+  //   userDisplayName,
+  //   username,
+  // );
   if (!ready || !authenticated) {
     return null;
   } else if (farcasterUserInfo)

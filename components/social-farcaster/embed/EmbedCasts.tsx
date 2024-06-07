@@ -8,8 +8,8 @@ import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCast
 import { Card } from "~/components/ui/card";
 import { UserDataType } from "@external-types/farcaster";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId || embed.cast_id);

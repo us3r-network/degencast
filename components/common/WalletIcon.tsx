@@ -1,7 +1,5 @@
 import { Image } from "react-native";
-import {
-    Wallet
-} from "~/components/common/Icons";
+import { Wallet } from "~/components/common/Icons";
 
 export function WalletIcon({ type }: { type: string | undefined }) {
   switch (type) {
@@ -9,7 +7,7 @@ export function WalletIcon({ type }: { type: string | undefined }) {
       return (
         <Image
           style={{ width: 16, height: 16 }}
-          source={require("~/assets/images/privy-icon.webp")}
+          source={require("~/assets/images/wallet-icon/privy.webp")}
           className="rounded-md"
         />
       );
@@ -17,7 +15,15 @@ export function WalletIcon({ type }: { type: string | undefined }) {
       return (
         <Image
           style={{ width: 16, height: 16 }}
-          source={require("~/assets/images/metamask-icon.svg")}
+          source={require("~/assets/images/wallet-icon/metamask.svg")}
+        />
+      );
+    case "coinbase_wallet":
+    case "coinbase_smart_wallet":
+      return (
+        <Image
+          style={{ width: 16, height: 16 }}
+          source={require("~/assets/images/wallet-icon/coinbase.png")}
         />
       );
     default:
