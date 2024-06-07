@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FarCast } from "~/services/farcaster/types";
 import useFarcasterWrite from "./useFarcasterWrite";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import useFarcasterAccount from "./useFarcasterAccount";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
@@ -13,13 +12,19 @@ import {
 } from "~/features/cast/castReactionsSlice";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterSigner from "./useFarcasterSigner";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastFid,
+  getCastHex,
+  getCastReactionsCount,
+} from "~/utils/farcaster/cast-utils";
 
 export default function useFarcasterRecastAction({
   cast,
   onRecastSuccess,
   onRemoveRecastSuccess,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   onRecastSuccess?: () => void;
   onRemoveRecastSuccess?: () => void;
 }) {
@@ -33,7 +38,7 @@ export default function useFarcasterRecastAction({
   const { recastCast, removeRecastCast } = useFarcasterWrite();
 
   const castHex = useMemo(() => getCastHex(cast), [cast]);
-  const castFid = useMemo(() => cast.fid, [cast]);
+  const castFid = useMemo(() => getCastFid(cast), [cast]);
 
   const recasted = useMemo(
     () => !!reactions?.[castHex]?.recasted,
@@ -45,7 +50,7 @@ export default function useFarcasterRecastAction({
   );
 
   const [recastCount, setRecastCount] = useState<number>(
-    Number(cast.recast_count || cast.recastsCount || 0),
+    getCastReactionsCount(cast).recastsCount,
   );
 
   const recastCastAction = useCallback(async () => {

@@ -4,20 +4,20 @@ import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import { Text } from "~/components/ui/text";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import { useCommunityCtx } from "./_layout";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import { cn } from "~/lib/utils";
 import { Loading } from "~/components/common/Loading";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export default function CastsScreen() {
   const { community } = useCommunityCtx();
   const { navigateToCastDetail } = useCastPage();
   const { navigateToChannelExplore } = useChannelExplorePage();
-  const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params;
+  const params = useLocalSearchParams();
+  const { id } = params as { id: string };
   const { casts, farcasterUserDataObj, loading, loadCasts } =
     useLoadCommunityCasts(id);
 

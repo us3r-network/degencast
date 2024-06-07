@@ -3,15 +3,16 @@ import { notifyTipApi } from "~/services/farcaster/api";
 import useFarcasterWrite from "../social-farcaster/useFarcasterWrite";
 import { FarCast } from "~/services/farcaster/types";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import useUserAction from "./useUserAction";
 import { UserActionName } from "~/services/user/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 
 export default function useUserDegenAllowanceAction({
   cast,
   onSuccess,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   onSuccess?: () => void;
 }) {
   const { submitUserAction } = useUserAction();
@@ -25,11 +26,12 @@ export default function useUserDegenAllowanceAction({
       try {
         setLoading(true);
         const castHex = getCastHex(cast);
+        const castFid = getCastFid(cast);
         await submitCastWithOpts({
           text: `${allowanceValue} $DEGEN`,
           parentCastId: {
             hash: castHex,
-            fid: Number(cast.fid),
+            fid: Number(castFid),
           },
         });
         submitUserAction({

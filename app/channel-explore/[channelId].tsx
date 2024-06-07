@@ -16,7 +16,6 @@ import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
 import { cn } from "~/lib/utils";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { useNavigation } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
@@ -26,7 +25,6 @@ import { useEffect, useMemo, useRef } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { SocialPlatform } from "~/services/farcaster/types";
-import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
@@ -38,6 +36,8 @@ import {
   defaultSwipeData,
 } from "~/utils/userActionEvent";
 import { cloneDeep } from "lodash";
+import useLoadChannelExploreCastsWithNeynar from "~/hooks/explore/useLoadChannelExploreCastsWithNeynar";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 const headerHeight = 70;
 const footerHeight = 70;
@@ -82,35 +82,21 @@ export default function ChannelExploreScreen() {
     return communityDetail || communityBasic;
   }, [communityDetail, communityBasic]);
 
-  const initCast = useMemo(() => {
-    return cast
-      ? {
-          platform: SocialPlatform.Farcaster,
-          data: cast,
-        }
-      : null;
-  }, [cast]);
-
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
-  const {
-    casts,
-    farcasterUserDataObj: exploreFarcasterUserDataObj,
-    currentCastIndex,
-    setCurrentCastIndex,
-  } = useLoadChannelExploreCasts({
-    channelId: channelId === "home" ? "" : channelId,
-    initCast,
-    swipeDataRefValue: swipeData.current,
-    onViewCastActionSubmited: () => {
-      swipeData.current = { ...defaultSwipeData };
-    },
-  });
+  const { casts, currentCastIndex, setCurrentCastIndex } =
+    useLoadChannelExploreCastsWithNeynar({
+      channelId: channelId === "home" ? "" : channelId,
+      initCast: cast,
+      swipeDataRefValue: swipeData.current,
+      onViewCastActionSubmited: () => {
+        swipeData.current = { ...defaultSwipeData };
+      },
+    });
 
   const currItem = casts[currentCastIndex];
 
   const farcasterUserDataObj = {
     ...(channelPageCastUserDataObj || {}),
-    ...exploreFarcasterUserDataObj,
   };
 
   const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
@@ -177,9 +163,9 @@ export default function ChannelExploreScreen() {
                 )}
               </View>
               <View>
-                {currItem?.data && (
+                {currItem && (
                   <FCastDetailActions
-                    cast={currItem.data!}
+                    cast={currItem}
                     farcasterUserDataObj={farcasterUserDataObj}
                     communityInfo={community}
                   />
@@ -246,7 +232,7 @@ export default function ChannelExploreScreen() {
               setCurrentCastIndex(castIndex);
             }}
           >
-            {renderCasts.map(({ data, platform, index }) => {
+            {renderCasts.map((data, index) => {
               return (
                 <View
                   key={index.toString()}

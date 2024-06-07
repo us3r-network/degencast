@@ -3,12 +3,12 @@ import { FarCast } from "~/services/farcaster/types";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import { PostCommentActions } from "../post/PostCommentActions";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import Toast from "react-native-toast-message";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export default function FCastCommentActions({
   cast,

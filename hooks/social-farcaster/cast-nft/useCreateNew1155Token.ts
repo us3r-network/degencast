@@ -13,11 +13,12 @@ import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
 import { imgLinkToBlob } from "~/utils/image";
 import { UserData } from "~/utils/farcaster/user-data";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
 import { UserActionName } from "~/services/user/types";
 import { cloneDeepWith } from "lodash";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
@@ -55,7 +56,7 @@ const getCastTokenMetadata = async ({
   channelId,
 }: {
   imgUrl: string;
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   castUserData: UserData;
   channelId: string;
 }) => {
@@ -147,7 +148,7 @@ export default function useCreateNew1155Token({
   currUserDisplayName,
   onCreateTokenSuccess,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   castUserData: UserData;
   imgUrl: string;
   channelId: string;

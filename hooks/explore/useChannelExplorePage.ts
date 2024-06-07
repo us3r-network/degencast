@@ -6,8 +6,8 @@ import {
   selectChannelExplorePage,
   upsertChannelExploreData,
 } from "~/features/community/channelExplorePageSlice";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { upsertCommunityBasicData } from "~/features/community/communityDetailSlice";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export default function useChannelExplorePage() {
   const router = useRouter();

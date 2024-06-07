@@ -12,7 +12,7 @@ import {
 } from "../types";
 import { CommunityInfo } from "~/services/community/types/community";
 import { UserActionData } from "~/services/user/types";
-import { Channel } from "../types/neynar";
+import { Channel, NeynarCast } from "../types/neynar";
 
 export type FarcasterPageInfo = {
   startIndex: number;
@@ -91,6 +91,38 @@ export function getNaynarFarcasterTrending({
       cursor,
       limit,
       ...(least ? { least } : {}),
+    },
+  });
+}
+
+export type NaynarChannelCastsFeedPageInfo = {
+  cursor: string;
+  hasNextPage: boolean;
+};
+export function getNaynarChannelCastsFeed({
+  cursor,
+  limit,
+  channelId,
+}: {
+  cursor: string;
+  limit: number;
+  channelId: string;
+}): RequestPromise<
+  ApiResp<{
+    casts: Array<NeynarCast>;
+    pageInfo: NaynarChannelCastsFeedPageInfo;
+  }>
+> {
+  return request({
+    url: `/topics/channels/casts/feed`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+    params: {
+      cursor,
+      limit,
+      channelId: channelId ?? "",
     },
   });
 }

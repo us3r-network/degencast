@@ -10,12 +10,13 @@ import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
 import { CommunityInfo } from "~/services/community/types/community";
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserData } from "~/utils/farcaster/user-data";
 import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
 import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
 import FCastShareModal from "./FCastShareModal";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 
 export function FCastDetailActions({
   cast,
@@ -23,12 +24,13 @@ export function FCastDetailActions({
   communityInfo,
   ...props
 }: ViewProps & {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   farcasterUserDataObj: { [key: string]: UserData };
   communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
-  const castUserData = farcasterUserDataObj[cast.fid];
+  const castFid = getCastFid(cast);
+  const castUserData = farcasterUserDataObj[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
