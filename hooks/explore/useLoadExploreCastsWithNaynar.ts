@@ -6,12 +6,12 @@ import {
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 import useSeenCasts from "../user/useSeenCasts";
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
 import { useAppDispatch } from "~/store/hooks";
 import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;

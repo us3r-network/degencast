@@ -18,7 +18,7 @@ export type SharingCastMint = {
   mintInfo: {
     chainId: number;
     contractAddress: string;
-    contractMetadataURI: string;
+    contractMetadataURI?: string;
     creatorAddress: string;
     tokenId: number;
     transactionReceipt: TransactionReceipt;

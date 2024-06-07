@@ -1,26 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ChannelCastData,
-  getFarcasterTrendingWithChannelId,
-} from "~/services/farcaster/api";
-import { userDataObjFromArr } from "~/utils/farcaster/user-data";
+import { useEffect, useRef, useState } from "react";
+import { getNaynarChannelCastsFeed } from "~/services/farcaster/api";
 import useSeenCasts from "../user/useSeenCasts";
 import { FarCast } from "~/services/farcaster/types";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
-import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
 import { useAppDispatch } from "~/store/hooks";
 import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
 
-export default function useLoadChannelExploreCasts(params: {
+export default function useLoadChannelExploreCastsWithNeynar(params: {
   channelId: string;
-  initCast?: ChannelCastData | undefined | null;
+  initCast?: NeynarCast | FarCast | undefined | null;
   swipeDataRefValue: any;
   onViewCastActionSubmited?: () => void;
 }) {
@@ -29,23 +25,22 @@ export default function useLoadChannelExploreCasts(params: {
   const dispatch = useAppDispatch();
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
-  const [casts, setCasts] = useState<Array<ChannelCastData>>([]);
+  const [casts, setCasts] = useState<Array<NeynarCast | FarCast>>([]);
   const [currentCastIndex, setCurrentCastIndex] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const channelIdRef = useRef(channelId);
   const pageInfoRef = useRef<{
     hasNextPage: boolean;
-    endIndex: number;
+    cursor: string;
     requestFailed?: boolean;
   }>({
     hasNextPage: true,
-    endIndex: 0,
+    cursor: "",
     requestFailed: false,
   });
   const initCastRef = useRef(initCast);
 
-  const loadCasts = async (start: number, end: number) => {
+  const loadCasts = async (cursor: string, limit: number) => {
     const { hasNextPage, requestFailed } = pageInfoRef.current;
 
     if (hasNextPage === false || requestFailed) {
@@ -53,37 +48,30 @@ export default function useLoadChannelExploreCasts(params: {
     }
     setLoading(true);
     try {
-      console.log("loadCasts", start, end);
-      const resp = await getFarcasterTrendingWithChannelId({
-        start,
-        end,
+      const resp = await getNaynarChannelCastsFeed({
+        cursor,
+        limit,
         channelId: channelIdRef.current,
       });
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      const { casts, farcasterUserData, pageInfo } = data;
+      const { casts, pageInfo } = data;
 
       const initCastData = initCastRef.current;
-      const filteredCastHexs = initCastData
-        ? [getCastHex(initCastData.data)]
-        : [];
+      let filteredCastHexs: string[] = [];
+      if (initCastData) {
+        filteredCastHexs = [getCastHex(initCastData)];
+      }
       const newCasts = casts.filter(
-        (item) => !filteredCastHexs?.includes(getCastHex(item.data)),
+        (item) => !filteredCastHexs?.includes(item.hash),
       );
-      const viewerContexts = viewerContextsFromCasts(
-        newCasts.map((item) => item.data),
-      );
+      const viewerContexts = viewerContextsFromCasts(newCasts);
       dispatch(upsertManyToReactions(viewerContexts));
 
       setCasts((pre) => [...pre, ...newCasts]);
       pageInfoRef.current = pageInfo;
-
-      if (farcasterUserData.length > 0) {
-        const userDataObj = userDataObjFromArr(farcasterUserData);
-        setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
-      }
     } catch (err) {
       console.error(err);
       pageInfoRef.current["requestFailed"] = true;
@@ -93,12 +81,12 @@ export default function useLoadChannelExploreCasts(params: {
   };
 
   const loadFirstPageCasts = async () => {
-    await loadCasts(0, FIRST_PAGE_SIZE - 1);
+    await loadCasts("", FIRST_PAGE_SIZE);
   };
 
   const loadNextPageCasts = async () => {
-    const { endIndex } = pageInfoRef.current;
-    await loadCasts(endIndex + 1, endIndex + NEXT_PAGE_SIZE);
+    const { cursor } = pageInfoRef.current;
+    await loadCasts(cursor, NEXT_PAGE_SIZE);
   };
 
   // load first page casts
@@ -106,14 +94,14 @@ export default function useLoadChannelExploreCasts(params: {
     (async () => {
       pageInfoRef.current = {
         hasNextPage: true,
-        endIndex: 0,
+        cursor: "",
       };
       const initCastData = initCastRef.current;
       if (channelId !== channelIdRef.current) {
         channelIdRef.current = channelId;
         setCasts([]);
       } else if (initCastData) {
-        setCasts([initCastData]);
+        setCasts([initCastData as any]);
       }
       await loadFirstPageCasts();
     })();
@@ -135,7 +123,7 @@ export default function useLoadChannelExploreCasts(params: {
   const watchedCastsRef = useRef<string[]>([]);
   useEffect(() => {
     // seen casts
-    const cast = casts?.[currentCastIndex]?.data as FarCast;
+    const cast = casts?.[currentCastIndex];
     const castHex = cast ? getCastHex(cast) : "";
     if (
       currentCastIndex !== 0 &&
@@ -152,7 +140,7 @@ export default function useLoadChannelExploreCasts(params: {
   const currentCastIndexRef = useRef(currentCastIndex);
   useEffect(() => {
     currentCastIndexRef.current = currentCastIndex;
-    const cast = casts?.[currentCastIndex]?.data as FarCast;
+    const cast = casts?.[currentCastIndex];
     const castHex = cast ? getCastHex(cast) : "";
     const timer = setTimeout(() => {
       if (
@@ -186,7 +174,6 @@ export default function useLoadChannelExploreCasts(params: {
   return {
     loading,
     casts,
-    farcasterUserDataObj,
     currentCastIndex,
     setCurrentCastIndex,
   };

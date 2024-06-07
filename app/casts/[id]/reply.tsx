@@ -9,7 +9,6 @@ import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { useLocalSearchParams } from "expo-router";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { FarCast } from "~/services/farcaster/types";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import { Card, CardContent } from "~/components/ui/card";
@@ -18,6 +17,8 @@ import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
 import GoBackButton from "~/components/common/GoBackButton";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 const HomeChanel = {
   id: "",
@@ -80,7 +81,7 @@ function CastReplyWithData({
   community,
 }: {
   castLoading: boolean;
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   farcasterUserDataObj: {
     [key: string]: UserData;
   };
@@ -141,7 +142,7 @@ function CastReplyWithData({
                       }),
                       parentCastId: {
                         hash: getCastHex(cast),
-                        fid: Number(cast.fid),
+                        fid: getCastFid(cast),
                       },
                     }).then((res) => {
                       console.log("res", res);

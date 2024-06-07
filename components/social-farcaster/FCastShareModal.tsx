@@ -9,20 +9,21 @@ import { Image } from "react-native";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import useAuth from "~/hooks/user/useAuth";
 import { usePrivy } from "@privy-io/react-auth";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import Toast from "react-native-toast-message";
 import { getCastShareTextWithTwitter } from "~/utils/platform-sharing/text";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export default function FCastShareModal({
   cast,
   open,
   onOpenChange,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {

@@ -2,11 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FarCast } from "~/services/farcaster/types";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterWrite from "./useFarcasterWrite";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import useFarcasterAccount from "./useFarcasterAccount";
 import useUserAction from "../user/useUserAction";
 import { UserActionName } from "~/services/user/types";
-import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   addLike,
@@ -16,13 +14,19 @@ import {
   selectCastReactions,
 } from "~/features/cast/castReactionsSlice";
 import useFarcasterSigner from "./useFarcasterSigner";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastFid,
+  getCastHex,
+  getCastReactionsCount,
+} from "~/utils/farcaster/cast-utils";
 
 export default function useFarcasterLikeAction({
   cast,
   onLikeSuccess,
   onRemoveLikeSuccess,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   onLikeSuccess?: () => void;
   onRemoveLikeSuccess?: () => void;
 }) {
@@ -36,7 +40,7 @@ export default function useFarcasterLikeAction({
   const { likeCast, removeLikeCast } = useFarcasterWrite();
 
   const castHex = useMemo(() => getCastHex(cast), [cast]);
-  const castFid = useMemo(() => cast.fid, [cast]);
+  const castFid = useMemo(() => getCastFid(cast), [cast]);
 
   const liked = useMemo(
     () => !!reactions?.[castHex]?.liked,
@@ -48,7 +52,7 @@ export default function useFarcasterLikeAction({
   );
 
   const [likeCount, setLikeCount] = useState<number>(
-    Number(cast.like_count || cast.likesCount || 0),
+    getCastReactionsCount(cast).likesCount,
   );
 
   const likeCastAction = useCallback(async () => {

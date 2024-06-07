@@ -1,7 +1,8 @@
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "./getCastHex";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastHex, getCastViewerContext } from "./cast-utils";
 
-export function viewerContextsFromCasts(casts: Array<FarCast>) {
+export function viewerContextsFromCasts(casts: Array<FarCast | NeynarCast>) {
   const viewerContexts = casts.reduce(
     (
       acc: {
@@ -10,7 +11,7 @@ export function viewerContextsFromCasts(casts: Array<FarCast>) {
       cast,
     ) => {
       const castHex = getCastHex(cast);
-      const viewerContext = cast?.viewerContext;
+      const viewerContext = getCastViewerContext(cast);
       if (viewerContext) {
         acc[castHex] = viewerContext;
       }
