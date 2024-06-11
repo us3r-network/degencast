@@ -50,7 +50,21 @@ export function formatEmbeds(
     if (embed?.cast_id) {
       casts.push(embed);
     } else if (embed?.castId) {
-      casts.push(embed);
+      casts.push({
+        ...embed,
+        castId: {
+          ...embed.castId,
+          hash: Buffer.from(embed?.castId.hash).toString("hex"),
+        },
+      });
+    } else if (embed?.cast_id) {
+      casts.push({
+        ...embed,
+        cast_id: {
+          ...embed.cast_id,
+          hash: Buffer.from(embed?.cast_id.hash).toString("hex"),
+        },
+      });
     } else if (embed?.url) {
       if (isImg(embed.url)) {
         imgs.push({

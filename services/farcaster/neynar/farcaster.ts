@@ -4,11 +4,13 @@ import { NEYNAR_API_HOST, FARCASTER_HUB_URL } from "~/constants/farcaster";
 
 export async function fetchCastWithHash({
   hash,
+  viewer_fid,
 }: {
   hash: string;
+  viewer_fid?: number;
 }): Promise<{ cast: NeynarCast }> {
   const resp = await axios({
-    url: `${NEYNAR_API_HOST}/v2/farcaster/cast?identifier=${hash}&type=hash`,
+    url: `${NEYNAR_API_HOST}/v2/farcaster/cast?identifier=${hash}&type=hash&viewer_fid=${viewer_fid || ""}`,
     method: "get",
   });
 

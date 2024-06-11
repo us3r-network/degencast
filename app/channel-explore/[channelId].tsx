@@ -109,10 +109,6 @@ export default function ChannelExploreScreen() {
   const offsetRemainderPrev = useRef(-1);
   const timer = useRef<NodeJS.Timeout | null>(null);
 
-  console.log("currentCastIndex", currentCastIndex);
-  console.log("indexedCasts", indexedCasts);
-  console.log("renderCasts", renderCasts);
-
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => {

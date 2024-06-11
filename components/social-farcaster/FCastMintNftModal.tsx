@@ -42,7 +42,9 @@ export default function FCastMintNftModal({
   channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  castUserData: UserData;
+  castUserData?: {
+    display: string;
+  };
 }) {
   const { connectWallet } = usePrivy();
   const { address, isConnected } = useAccount();
