@@ -22,6 +22,7 @@ import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 import castReactions from "~/features/cast/castReactionsSlice";
+import embedCasts from "~/features/cast/embedCastsSlice";
 import castCollection from "~/features/cast/castCollectionSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
 import communityDetail from "~/features/community/communityDetailSlice";
@@ -59,6 +60,7 @@ export const store = configureStore({
     communityShareStatistics,
     communityTrending,
     castReactions,
+    embedCasts,
     appSettings,
     // userTips,
   },

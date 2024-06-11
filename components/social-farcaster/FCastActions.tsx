@@ -25,12 +25,12 @@ export function FCastDetailActions({
   ...props
 }: ViewProps & {
   cast: FarCast | NeynarCast;
-  farcasterUserDataObj: { [key: string]: UserData };
+  farcasterUserDataObj?: { [key: string]: UserData };
   communityInfo: CommunityInfo;
   isDetail?: boolean;
 }) {
   const castFid = getCastFid(cast);
-  const castUserData = farcasterUserDataObj[castFid];
+  const castUserData = farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();

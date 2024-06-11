@@ -4,12 +4,12 @@ import { CastId } from "@external-types/farcaster";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export function isNeynarCast(cast: FarCast | NeynarCast) {
-  return typeof cast.hash === "string" && cast.hash.startsWith("0x");
+  return typeof cast?.hash === "string" && cast.hash.startsWith("0x");
 }
 
 export function getCastHex(cast: FarCast | NeynarCast) {
   if (isNeynarCast(cast)) {
-    return (cast as NeynarCast).hash.slice(2);
+    return (cast as NeynarCast)?.hash.slice(2);
   } else {
     const castId: CastId = getCastId({ cast } as {
       cast: FarCast;
@@ -27,9 +27,9 @@ export function getCastFid(cast: FarCast | NeynarCast) {
 
 export function getCastParentUrl(cast: FarCast | NeynarCast) {
   if (isNeynarCast(cast)) {
-    return (cast as NeynarCast).parent_url;
+    return (cast as NeynarCast)?.parent_url;
   }
-  return (cast as FarCast).parentUrl || (cast as FarCast).parent_url;
+  return (cast as FarCast)?.parentUrl || (cast as FarCast)?.parent_url;
 }
 
 export function getCastReactionsCount(cast: FarCast | NeynarCast) {

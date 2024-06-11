@@ -57,13 +57,15 @@ const getCastTokenMetadata = async ({
 }: {
   imgUrl: string;
   cast: FarCast | NeynarCast;
-  castUserData: UserData;
+  castUserData?: {
+    display: string;
+  };
   channelId: string;
 }) => {
   const imageBlob = await imgLinkToBlob(imgUrl);
   const text = cast.text;
   const textPreview = text.length > 100 ? text.slice(0, 100) + "..." : text;
-  const userDisplayName = castUserData.display;
+  const userDisplayName = castUserData?.display || "";
   const castHex = getCastHex(cast);
   return {
     name: `${userDisplayName}: ${textPreview}`,
@@ -149,7 +151,9 @@ export default function useCreateNew1155Token({
   onCreateTokenSuccess,
 }: {
   cast: FarCast | NeynarCast;
-  castUserData: UserData;
+  castUserData?: {
+    display: string;
+  };
   imgUrl: string;
   channelId: string;
   currUserDisplayName: string;
