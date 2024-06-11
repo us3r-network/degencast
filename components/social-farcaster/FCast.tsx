@@ -2,7 +2,6 @@ import { View, ViewProps } from "react-native";
 import { FarCast } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import FCastText from "./FCastText";
-import UserGlobalPoints from "../point/UserGlobalPoints";
 import { cn } from "~/lib/utils";
 import FCastUserInfo from "./FCastUserInfo";
 import FCastEmbeds from "./FCastEmbeds";

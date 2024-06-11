@@ -13,7 +13,6 @@ export default function useLoadCommunityCasts(channelId: string) {
   const {
     items: casts,
     pageInfo,
-    farcasterUserDataObj,
     status,
     errorMsg,
   } = groupData[channelId] || groupDataDefault;
@@ -29,7 +28,6 @@ export default function useLoadCommunityCasts(channelId: string) {
     casts,
     pageInfo,
     errorMsg,
-    farcasterUserDataObj,
     loadCasts,
   };
 }

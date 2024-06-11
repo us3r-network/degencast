@@ -55,8 +55,8 @@ export default function CommunityDetail() {
   const { currFid } = useFarcasterAccount();
   const headerHeight = DEFAULT_HEADER_HEIGHT;
   const navigation = useNavigation();
-  const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params;
+  const params = useLocalSearchParams();
+  const { id } = params as { id: string };
   const segments = useSegments();
   const [activeScreen, setActiveScreen] = useState(initialRouteName);
   useEffect(() => {

@@ -16,7 +16,7 @@ export enum CastDetailDataOrigin {
 
 export type CastDetailData = {
   cast: FarCast | NeynarCast;
-  farcasterUserDataObj: {
+  farcasterUserDataObj?: {
     [key: string]: UserData;
   };
   community?: CommunityInfo | null | undefined;
