@@ -95,6 +95,10 @@ export function getNaynarFarcasterTrending({
   });
 }
 
+export type NaynarChannelCastsFeedData = {
+  casts: Array<NeynarCast>;
+  pageInfo: NaynarChannelCastsFeedPageInfo;
+};
 export type NaynarChannelCastsFeedPageInfo = {
   cursor: string;
   hasNextPage: boolean;
@@ -107,12 +111,7 @@ export function getNaynarChannelCastsFeed({
   cursor: string;
   limit: number;
   channelId: string;
-}): RequestPromise<
-  ApiResp<{
-    casts: Array<NeynarCast>;
-    pageInfo: NaynarChannelCastsFeedPageInfo;
-  }>
-> {
+}): RequestPromise<ApiResp<NaynarChannelCastsFeedData>> {
   return request({
     url: `/topics/channels/casts/feed`,
     method: "get",
