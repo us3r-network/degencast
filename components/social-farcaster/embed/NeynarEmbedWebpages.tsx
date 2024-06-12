@@ -4,6 +4,7 @@ import { Embeds } from "~/utils/farcaster/getEmbeds";
 import EmbedOG from "./EmbedOG";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import NeynarEmbedFrame from "./NeynarEmbedFrame";
+import { neynarFrameDataToFrameJsData } from "~/utils/farcaster/frame";
 
 export default function NeynarEmbedWebpages({
   webpages,
@@ -11,50 +12,45 @@ export default function NeynarEmbedWebpages({
   imgIsFixedRatio,
 }: {
   webpages: Embeds["webpages"];
-  cast?: NeynarCast;
+  cast: NeynarCast;
   imgIsFixedRatio?: boolean;
 }) {
+  const { frames: castFrames } = cast;
+  const frames = castFrames?.map((frame) => ({
+    ...neynarFrameDataToFrameJsData(frame),
+    url: frame.frames_url,
+  }));
+  const ogs =
+    castFrames && castFrames?.length > 0
+      ? webpages.filter(
+          (item) => !castFrames?.find((f) => f.frames_url === item.url),
+        )
+      : webpages;
   return (
     <>
-      {webpages.map((item, idx) => {
+      {frames?.map((item, idx) => {
         return (
-          <EmbedWebpage
+          <NeynarEmbedFrame
+            key={idx.toString()}
             url={item.url}
+            data={item}
             cast={cast}
-            key={idx}
             imgIsFixedRatio={imgIsFixedRatio}
           />
         );
+      })}
+      {ogs.map((item, idx) => {
+        return <EmbedWebpage url={item.url} key={idx} />;
       })}
     </>
   );
 }
 
-function EmbedWebpage({
-  url,
-  cast,
-  imgIsFixedRatio,
-}: {
-  url: string;
-  cast?: NeynarCast;
-  imgIsFixedRatio?: boolean;
-}) {
-  const { embedFrameMetadata, embedOgMetadata, loadEmbedWebpagesMetadata } =
+function EmbedWebpage({ url }: { url: string }) {
+  const { embedOgMetadata, loadEmbedWebpagesMetadata } =
     useLoadEmbedWebpagesMetadata();
   useEffect(() => {
     loadEmbedWebpagesMetadata([url]);
   }, []);
-  return (
-    <>
-      {embedFrameMetadata && (
-        <NeynarEmbedFrame
-          url={url}
-          data={embedFrameMetadata}
-          cast={cast}
-          imgIsFixedRatio={imgIsFixedRatio}
-        />
-      )}
-      {embedOgMetadata && <EmbedOG url={url} data={embedOgMetadata} />}
-    </>
-  );
+  return <>{embedOgMetadata && <EmbedOG url={url} data={embedOgMetadata} />}</>;
 }

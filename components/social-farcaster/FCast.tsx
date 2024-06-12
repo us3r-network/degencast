@@ -66,10 +66,12 @@ export default function FCast({
         />
       )}
 
-      <FCastEmbeds
-        cast={cast}
-        webpageImgIsFixedRatio={webpageImgIsFixedRatio}
-      />
+      {hasEmbeds && (
+        <FCastEmbeds
+          cast={cast}
+          webpageImgIsFixedRatio={webpageImgIsFixedRatio}
+        />
+      )}
     </View>
   );
 }
