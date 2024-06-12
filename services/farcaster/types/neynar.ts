@@ -17,26 +17,31 @@ export type NeynarCast = {
   reactions: Reactions;
   replies: Replies;
   mentioned_profiles: Author[];
-  frames?: Frame[];
+  frames?: NeynarFrame[];
   viewer_context?: {
     liked: boolean;
     recasted: boolean;
   };
 };
 
-export type Frame = {
+export type NeynarFrame = {
   version: string;
   title: string;
   image: string;
-  image_aspect_ratio: number;
+  image_aspect_ratio: string;
   buttons: Array<{
     index: number;
-    title: string;
+    title?: string;
     action_type: string;
-    target: string;
+    target?: string;
+    post_url?: string;
   }>;
-  input: any;
-  state: any;
+  input: {
+    text?: string;
+  };
+  state: {
+    serialized?: string;
+  };
   post_url: string;
   frames_url: string;
 };
