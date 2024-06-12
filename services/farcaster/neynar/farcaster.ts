@@ -1,5 +1,9 @@
 import axios from "axios";
-import { NeynarCast, NeynarChannelsResp } from "../types/neynar";
+import {
+  ConversationCast,
+  NeynarCast,
+  NeynarChannelsResp,
+} from "../types/neynar";
 import { NEYNAR_API_HOST, FARCASTER_HUB_URL } from "~/constants/farcaster";
 
 export async function fetchCastWithHash({
@@ -11,6 +15,28 @@ export async function fetchCastWithHash({
 }): Promise<{ cast: NeynarCast }> {
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/cast?identifier=${hash}&type=hash&viewer_fid=${viewer_fid || ""}`,
+    method: "get",
+  });
+
+  console.log("fetchCastWithHash", resp.data);
+  return resp.data;
+}
+
+export async function fetchCastConversationWithHash({
+  hash,
+  viewer_fid,
+  reply_depth = 1,
+}: {
+  hash: string;
+  viewer_fid?: number;
+  reply_depth?: number;
+}): Promise<{
+  conversation: {
+    cast: ConversationCast;
+  };
+}> {
+  const resp = await axios({
+    url: `${NEYNAR_API_HOST}/v2/farcaster/cast/conversation?identifier=${hash}&type=hash&reply_depth=${reply_depth}&include_chronological_parent_casts=false&viewer_fid=${viewer_fid || ""}`,
     method: "get",
   });
 

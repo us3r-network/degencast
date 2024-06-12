@@ -107,3 +107,7 @@ export type NeynarChannelsResp = {
   channels: Channel[];
   next: PageInfo;
 };
+
+export type ConversationCast = NeynarCast & {
+  direct_replies: Array<ConversationCast>;
+};

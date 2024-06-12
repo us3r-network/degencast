@@ -15,8 +15,8 @@ import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
+import useLoadNeynarCastComments from "~/hooks/social-farcaster/useLoadNeynarCastComments";
 import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
 import { CommunityInfo } from "~/services/community/types/community";
 
@@ -219,11 +219,9 @@ function CastDetailWithData({
 
   const {
     comments,
-    farcasterUserDataObj: commentsFarcasterUserDataObj,
     loading: commentsLoading,
-    firstLoaded: commentsFirstLoaded,
     loadCastComments,
-  } = useLoadCastComments(id);
+  } = useLoadNeynarCastComments(id);
 
   useEffect(() => {
     loadCastComments();
@@ -316,11 +314,10 @@ function CastDetailWithData({
               return (
                 <Pressable
                   onPress={() => {
-                    const castHex = getCastHex(cast);
+                    const castHex = getCastHex(item);
                     navigateToCastDetail(castHex, {
                       origin: CastDetailDataOrigin.Comments,
-                      cast: item.data,
-                      farcasterUserDataObj: commentsFarcasterUserDataObj,
+                      cast: item,
                       community: community,
                     });
                     // router.push(`/casts/${castHex}`);
@@ -328,25 +325,28 @@ function CastDetailWithData({
                 >
                   <FCastComment
                     className="flex-1"
-                    cast={item.data}
-                    farcasterUserDataObj={commentsFarcasterUserDataObj}
+                    cast={item}
                     communityInfo={community}
                   />
                 </Pressable>
               );
             }}
-            keyExtractor={({ data }) => data.id}
+            keyExtractor={(item, index) => index.toString()}
             onEndReached={() => {
-              if (
-                !cast ||
-                commentsLoading ||
-                (commentsFirstLoaded && comments?.length === 0)
-              )
-                return;
-              loadCastComments();
+              // if (
+              //   !cast ||
+              //   commentsLoading ||
+              //   (!commentsLoading && comments?.length === 0)
+              // )
+              //   return;
+              // loadCastComments();
+              return;
             }}
             onEndReachedThreshold={0.1}
             ListFooterComponent={() => {
+              if (!castLoading && commentsLoading) {
+                return <Loading />;
+              }
               return <View className="mb-10" />;
             }}
           />
