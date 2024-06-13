@@ -4,9 +4,11 @@ import {
   FrameVersion,
   ImageAspectRatio,
 } from "frames.js";
+import { cloneDeep } from "lodash";
 import { NeynarFrame } from "~/services/farcaster/types/neynar";
 
-export function neynarFrameDataToFrameJsData(frameData: NeynarFrame): Frame {
+export function neynarFrameDataToFrameJsData(frame: NeynarFrame): Frame {
+  const frameData = cloneDeep(frame);
   return {
     version: frameData.version as FrameVersion,
     postUrl: frameData.post_url,
@@ -38,7 +40,7 @@ export function frameJsDataToNeynarFrameData(
     image_aspect_ratio: frameData.imageAspectRatio || "",
     buttons:
       frameData?.buttons?.map((button, idx) => ({
-        index: idx,
+        index: idx + 1,
         title: button.label,
         action_type: button.action,
         target: button.target,
