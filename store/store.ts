@@ -31,6 +31,7 @@ import communityDetailShares from "~/features/community/communityDetailSharesSli
 import communityDetailCasts from "~/features/community/communityDetailCastsSlice";
 import communityShareStatistics from "~/features/community/communityShareStatisticsSlice";
 import communityTrending from "~/features/community/communityTrendingSlice";
+import coverChannels from "~/features/community/coverChannelsSlice";
 import appSettings from "~/features/appSettingsSlice";
 // import userTips from "~/features/user/tipsSlice";
 
@@ -59,6 +60,7 @@ export const store = configureStore({
     communityDetailCasts,
     communityShareStatistics,
     communityTrending,
+    coverChannels,
     castReactions,
     embedCasts,
     appSettings,

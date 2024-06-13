@@ -1,216 +1,92 @@
 import {
-  Dimensions,
-  Pressable,
-  View,
-  ScrollView,
-  Platform,
-  SafeAreaView,
-  PanResponder,
-} from "react-native";
-import FCast from "~/components/social-farcaster/FCast";
-import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
-
-import { Card } from "~/components/ui/card";
-import FCastCommunity, {
-  FCastCommunityDefault,
-} from "~/components/social-farcaster/FCastCommunity";
+  Stack,
+  useRouter,
+  useLocalSearchParams,
+  useSegments,
+  useNavigation,
+  useGlobalSearchParams,
+} from "expo-router";
+import { useEffect, useState } from "react";
+import { View, Text, SafeAreaView } from "react-native";
+import FollowingScreen from "~/components/explore/following";
+import HostingScreen from "~/components/explore/hosting";
+import TrendingScreen from "~/components/explore/trending";
+import { Card, CardContent } from "~/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { DEFAULT_HEADER_HEIGHT } from "~/constants";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
-import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
-import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
-import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
-import { useEffect, useRef, useState } from "react";
-import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
-import { isDesktop } from "react-device-detect";
-import { ScreenLoading } from "~/components/common/Loading";
-import { cloneDeep } from "lodash";
-import {
-  SwipeEventData,
-  SwipeType,
-  defaultSwipeData,
-} from "~/utils/userActionEvent";
 
-const headerHeight = DEFAULT_HEADER_HEIGHT;
-const footerHeight = DEFAULT_TABBAR_HEIGHT;
-const itemPaddingTop = 15;
-const itemHeight =
-  Dimensions.get("window").height -
-  headerHeight -
-  footerHeight +
-  itemPaddingTop;
+const initialRouteName = "trending";
 
-export default function ExploreScreenScroll() {
-  const { navigateToChannelExplore } = useChannelExplorePage();
-  const swipeData = useRef<SwipeEventData>(defaultSwipeData);
-  const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
-    useLoadExploreCastsWithNaynar({
-      swipeDataRefValue: swipeData.current,
-      onViewCastActionSubmited: () => {
-        swipeData.current = { ...defaultSwipeData };
-      },
-    });
-  const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
-  // 只渲染三个
-  const renderCasts = indexedCasts.slice(
-    Math.max(0, currentCastIndex - 1),
-    Math.min(indexedCasts.length, currentCastIndex + 2),
-  );
+const TABS = [
+  { label: "Trending", value: "trending", screenComponent: <TrendingScreen /> },
+  {
+    label: "Following",
+    value: "following",
+    screenComponent: <FollowingScreen />,
+  },
+  { label: "Hosting", value: "hosting", screenComponent: <HostingScreen /> },
+];
 
-  const offsetRemainderPrev = useRef(-1);
-  const timer = useRef<NodeJS.Timeout | null>(null);
-
-  const [showActions, setShowActions] = useState(false);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return true;
-      },
-      onPanResponderGrant(e, gestureState) {
-        if (isDesktop) return;
-        swipeData.current.start = { ...gestureState, timestamp: Date.now() };
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        // if (isDesktop) return;
-        // if (gestureState) {
-        //   swipeData.current?.move?.push({
-        //     ...gestureState,
-        //     timestamp: Date.now(),
-        //   });
-        // }
-      },
-      onPanResponderRelease(e, gestureState) {
-        if (isDesktop) return;
-        swipeData.current.end = { ...gestureState, timestamp: Date.now() };
-        swipeData.current.type = SwipeType.gesture;
-      },
-    }),
-  );
-
+export default function ExploreLayout() {
+  const { currFid } = useFarcasterAccount();
+  const headerHeight = DEFAULT_HEADER_HEIGHT;
+  const globalParams = useGlobalSearchParams<{ tab?: string }>();
+  const { tab } = globalParams || {};
+  const [activeScreen, setActiveScreen] = useState(initialRouteName);
+  useEffect(() => {
+    if (tab) {
+      setActiveScreen(tab);
+    }
+  }, [tab]);
+  const router = useRouter();
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
+      style={{ flex: 1, paddingTop: headerHeight }}
       className="bg-background"
     >
-      <View
-        className={cn("w-full")}
-        style={{ height: itemHeight }}
-        {...panResponder.current.panHandlers}
-      >
-        <ScrollView
-          style={{ flex: 1, height: itemHeight }}
-          className="w-full items-center"
-          horizontal={false}
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled={true}
-          bounces={false}
-          scrollsToTop={false}
-          scrollEventThrottle={Platform.OS === "web" ? 16 : 0}
-          onScroll={(event) => {
-            if (Platform.OS === "web") {
-              if (isDesktop && !!event.nativeEvent?.contentOffset) {
-                swipeData.current.move = [
-                  ...swipeData.current.move,
-                  {
-                    ...cloneDeep(event.nativeEvent),
-                    timestamp: Date.now(),
-                  },
-                ];
-                swipeData.current.type = SwipeType.scroll;
-              }
-
-              const offsetY = Math.ceil(event.nativeEvent.contentOffset.y);
-              const index = Math.round(offsetY / itemHeight);
-              const offsetRemainder = offsetY % itemHeight;
-              offsetRemainderPrev.current = offsetRemainder;
-              if (timer.current) clearTimeout(timer.current);
-              timer.current = setTimeout(() => {
-                if (offsetRemainderPrev.current === 0) {
-                  const castIndex = renderCasts[index].index;
-                  setCurrentCastIndex(castIndex);
-                }
-              }, 50);
-            }
+      <View className=" m-auto w-full flex-1 sm:w-full sm:max-w-screen-sm">
+        <Tabs
+          value={activeScreen}
+          onValueChange={(value) => {
+            setActiveScreen(value);
           }}
-          onMomentumScrollEnd={(event) => {
-            const offsetY = event.nativeEvent.contentOffset.y;
-            const index = Math.round(offsetY / itemHeight);
-            const castIndex = renderCasts[index].index;
-            setCurrentCastIndex(castIndex);
-          }}
-          onScrollEndDrag={(event) => {
-            const offsetY = event.nativeEvent.contentOffset.y;
-            const index = Math.round(offsetY / itemHeight);
-            const castIndex = renderCasts[index].index;
-            setCurrentCastIndex(castIndex);
-          }}
+          className="h-full w-full"
         >
-          {renderCasts.map(({ data, platform, community, index }) => {
-            return (
-              <View
-                key={index.toString()}
-                className={cn(
-                  "flex w-full px-4 sm:max-w-screen-sm sm:px-0",
-                  isDesktop && " w-screen",
-                )}
-                style={{
-                  ...(!isDesktop
-                    ? { width: Dimensions.get("window").width }
-                    : {}),
-                  height: itemHeight,
-                  paddingTop: itemPaddingTop,
-                }}
-              >
-                <Card
-                  className={cn(
-                    "box-border h-full w-full rounded-2xl border-none",
-                  )}
-                  style={{
-                    height: itemHeight - 35 - itemPaddingTop,
-                  }}
+          <View className="absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2 px-4">
+            <TabsList className="flex-row rounded-full bg-white shadow-lg">
+              {TABS.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  className={cn("flex-1 flex-row rounded-full")}
+                  value={tab.value}
                 >
-                  <Pressable
-                    className={cn("h-full w-full overflow-hidden p-4")}
-                    onPress={() => {
-                      navigateToChannelExplore(community?.channelId || "home", {
-                        origin: ChannelExploreDataOrigin.Explore,
-                        cast: data,
-                        farcasterUserDataObj: farcasterUserDataObj,
-                        community,
-                      });
-                    }}
+                  <Text
+                    className={cn(
+                      "whitespace-nowrap font-medium text-primary",
+                      activeScreen === tab.value && "text-primary-foreground",
+                    )}
                   >
-                    <FCast
-                      cast={data}
-                      farcasterUserDataObj={farcasterUserDataObj}
-                      webpageImgIsFixedRatio={true}
-                      viewMoreWordLimits={isDesktop ? 200 : 50}
-                    />
-                  </Pressable>
-                  <FCastExploreActions
-                    className=" absolute bottom-[50px] right-4"
-                    cast={data}
-                    farcasterUserDataObj={farcasterUserDataObj}
-                    communityInfo={community}
-                    showActions={showActions}
-                    showActionsChange={setShowActions}
-                  />
-                  {community?.channelId ? (
-                    <FCastCommunity
-                      communityInfo={community}
-                      className="absolute -bottom-[35px] right-1/2 translate-x-1/2"
-                    />
-                  ) : (
-                    <FCastCommunityDefault className="absolute -bottom-[35px] right-1/2 translate-x-1/2" />
-                  )}
-                </Card>
-              </View>
-            );
-          })}
-        </ScrollView>
+                    {tab.label}
+                  </Text>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </View>
+          {TABS.map((tab) => (
+            <TabsContent
+              key={tab.value}
+              value={tab.value}
+              className="h-full w-full pt-5"
+            >
+              <Card className="box-border h-full w-full overflow-hidden rounded-[20px] border-none">
+                {tab.screenComponent}
+              </Card>
+            </TabsContent>
+          ))}
+        </Tabs>
       </View>
-      {casts.length === 0 && (
-        <ScreenLoading className=" fixed left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
-      )}
     </SafeAreaView>
   );
 }
