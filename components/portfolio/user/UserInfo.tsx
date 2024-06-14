@@ -18,6 +18,7 @@ import UserSettings from "./UserSettings";
 import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
 import useUserChannels from "~/hooks/user/useUserChannels";
 import { shortPubKey } from "~/utils/shortPubKey";
+import useUserCasts from "~/hooks/user/useUserCasts";
 
 export default function UserInfo({ fid }: { fid?: number }) {
   const { ready, authenticated, user } = usePrivy();
@@ -25,9 +26,8 @@ export default function UserInfo({ fid }: { fid?: number }) {
   const walletAccount = getUserWallets(user)[0];
   fid = fid || farcasterAccount?.fid || undefined;
   useUserChannels(fid); //preload channels
-  const { userInfo, load } = useUserBulk(
-    farcasterAccount?.fid || undefined,
-  );
+  useUserCasts(fid, farcasterAccount.fid || undefined); //preload casts
+  const { userInfo, load } = useUserBulk(farcasterAccount?.fid || undefined);
   useEffect(() => {
     if (fid) load(fid);
   }, [fid]);
@@ -66,8 +66,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
             </AvatarFallback>
           </Avatar>
           <View className="absolute bottom-0 right-0 size-6">
-            {userInfo &&
-            farcasterAccount?.fid !== userInfo.fid ? (
+            {userInfo && farcasterAccount?.fid !== userInfo.fid ? (
               <FollowUserButton farcasterUserInfo={userInfo} />
             ) : (
               <UserSettings />
