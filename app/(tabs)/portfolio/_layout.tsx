@@ -1,5 +1,5 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { useRouter, useSegments } from "expo-router";
+import { useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
@@ -12,7 +12,6 @@ import useAuth from "~/hooks/user/useAuth";
 export default function PortfolioScreen() {
   const { ready, authenticated: privyAuthenticated, login } = usePrivy();
   const { authenticated } = useAuth();
-  const router = useRouter();
   const segments = useSegments();
   return (
     <SafeAreaView
