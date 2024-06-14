@@ -46,7 +46,7 @@ export default function ExploreLayout() {
       style={{ flex: 1, paddingTop: headerHeight }}
       className="bg-background"
     >
-      <View className=" m-auto w-full flex-1 sm:w-full sm:max-w-screen-sm">
+      <View className=" m-auto w-full flex-1 max-sm:px-4 sm:w-full sm:max-w-screen-sm">
         <Tabs
           value={activeScreen}
           onValueChange={(value) => {

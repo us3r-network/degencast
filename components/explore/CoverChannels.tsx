@@ -27,17 +27,17 @@ export default function CoverChannels({ data }: { data: CoverChannelsData }) {
             )}
           >
             <Link
-              className="flex-1"
+              className="h-full w-full"
               href={`/communities/${channel.id}`}
               asChild
             >
-              <Pressable>
+              <Pressable className="h-full w-full">
                 <Avatar
                   alt={channel.name || ""}
                   className="h-full w-full rounded-none"
                 >
                   <AvatarImage source={{ uri: channel.imageUrl || "" }} />
-                  <AvatarFallback className="bg-secondary">
+                  <AvatarFallback className="flex h-full w-full items-center justify-center bg-secondary">
                     <Text className="text-sm font-bold">{channel.name}</Text>
                   </AvatarFallback>
                 </Avatar>
