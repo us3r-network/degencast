@@ -166,3 +166,28 @@ export function fetchWarpcastChannels(): RequestPromise<
     method: "get",
   });
 }
+
+export type CoverChannelsParams = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type CoverChannelsData = Array<{
+  id: string;
+  url: string;
+  name: string;
+  imageUrl: string;
+  description: string;
+  createdAt: number;
+  leadFid: number;
+  hostFids: number[];
+  followerCount: number;
+}>;
+export function fetchCoverChannels(
+  params: CoverChannelsParams,
+): RequestPromise<ApiResp<CoverChannelsData>> {
+  return request({
+    url: `/topics/channels/trending`,
+    method: "get",
+    params,
+  });
+}
