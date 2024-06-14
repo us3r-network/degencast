@@ -14,12 +14,13 @@ import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { TradeButton } from "../../trade/TradeButton";
 import { DEGEN_ADDRESS } from "~/constants";
+import { Address } from "viem";
 
 const DEFAULT_ITEMS_NUM = 99;
 export default function CommunityTokens({
   address,
 }: {
-  address: `0x${string}`;
+  address: Address;
 }) {
   const { loading, items } = useUserCommunityTokens(address);
   const otherTokens = useMemo(
