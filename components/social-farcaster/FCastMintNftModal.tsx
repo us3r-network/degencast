@@ -69,7 +69,7 @@ export default function FCastMintNftModal({
 
   const { currFid } = useFarcasterAccount();
   const {
-    items: userItems,
+    userInfo,
     load,
     loading: currUserDataLoading,
   } = useUserBulk(Number(currFid) || undefined);
@@ -77,9 +77,8 @@ export default function FCastMintNftModal({
     if (currFid) load(Number(currFid));
   }, [currFid]);
 
-  const farcasterUserInfo = userItems.length > 0 ? userItems[0] : undefined;
-  const currUserDisplayName = farcasterUserInfo
-    ? farcasterUserInfo.display_name
+  const currUserDisplayName = userInfo
+    ? userInfo.display_name
     : "";
   const {
     createNewToken,

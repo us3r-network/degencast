@@ -4,9 +4,10 @@ import { ScrollView, View } from "react-native";
 import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
 import UserToekns from "~/components/portfolio/tokens/UserTokens";
 import useUserBulk from "~/hooks/user/useUserBulk";
+import { Text } from "~/components/ui/text";
 
 export default function UserTokensScreen() {
-  const { items: userItems, load } = useUserBulk();
+  const { userInfo, load } = useUserBulk();
 
   const { fid } = useLocalSearchParams<{ fid: string }>();
   useEffect(() => {
@@ -14,18 +15,23 @@ export default function UserTokensScreen() {
   }, [fid]);
 
   const address = useMemo(() => {
-    if (!userItems || userItems.length === 0) return undefined;
-    const user = userItems[0];
-    if (user?.verified_addresses?.eth_addresses?.length > 0)
-      return user.verified_addresses.eth_addresses[0];
-  }, [userItems]);
+    if (!userInfo) return undefined;
+    if (userInfo?.verified_addresses?.eth_addresses?.length > 0)
+      return userInfo.verified_addresses.eth_addresses[0];
+  }, [userInfo]);
 
   return (
     <ScrollView className="h-full w-full" showsVerticalScrollIndicator={false}>
-      <View className="flex w-full gap-6">
-        {address && <UserToekns address={address as `0x${string}`} />}
-        {address && <CommunityTokens address={address as `0x${string}`} />}
-      </View>
+      {address ? (
+        <View className="flex w-full gap-6">
+          <UserToekns address={address as `0x${string}`} />
+          <CommunityTokens address={address as `0x${string}`} />
+        </View>
+      ) : (
+        <View>
+          <Text>No Verified Address</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
