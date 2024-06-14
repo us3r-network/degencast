@@ -18,6 +18,7 @@ import UserSettings from "./UserSettings";
 import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
 import useUserChannels from "~/hooks/user/useUserChannels";
 import { shortPubKey } from "~/utils/shortPubKey";
+import useUserCasts from "~/hooks/user/useUserCasts";
 
 export default function UserInfo({ fid }: { fid?: number }) {
   const { ready, authenticated, user } = usePrivy();
@@ -25,43 +26,33 @@ export default function UserInfo({ fid }: { fid?: number }) {
   const walletAccount = getUserWallets(user)[0];
   fid = fid || farcasterAccount?.fid || undefined;
   useUserChannels(fid); //preload channels
-  const { items: userItems, load } = useUserBulk(
-    farcasterAccount?.fid || undefined,
-  );
+  useUserCasts(fid, farcasterAccount.fid || undefined); //preload casts
+  const { userInfo, load } = useUserBulk(farcasterAccount?.fid || undefined);
   useEffect(() => {
     if (fid) load(fid);
   }, [fid]);
 
-  const farcasterUserInfo = useMemo(() => {
-    if (fid && userItems && userItems.length > 0) {
-      return userItems[0];
-    } else {
-      return undefined;
-    }
-  }, [userItems, fid]);
-
-  const userAvatar = farcasterUserInfo ? farcasterUserInfo.pfp_url : "";
-  const userDisplayName = farcasterUserInfo
-    ? farcasterUserInfo.display_name
+  const userAvatar = userInfo ? userInfo.pfp_url : "";
+  const userDisplayName = userInfo
+    ? userInfo.display_name
     : walletAccount
       ? shortPubKey(walletAccount.address)
       : "";
-  const username = farcasterUserInfo
-    ? farcasterUserInfo.username
+  const username = userInfo
+    ? userInfo.username
     : walletAccount
       ? shortPubKey(walletAccount.address)
       : "";
   // console.log(
   //   "UserInfo",
-  //   user,
-  //   farcasterUserInfo,
+  //   userInfo,
   //   userAvatar,
   //   userDisplayName,
   //   username,
   // );
   if (!ready || !authenticated) {
     return null;
-  } else if (farcasterUserInfo)
+  } else if (userInfo)
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
@@ -75,9 +66,8 @@ export default function UserInfo({ fid }: { fid?: number }) {
             </AvatarFallback>
           </Avatar>
           <View className="absolute bottom-0 right-0 size-6">
-            {farcasterUserInfo &&
-            farcasterAccount?.fid !== farcasterUserInfo.fid ? (
-              <FollowUserButton farcasterUserInfo={farcasterUserInfo} />
+            {userInfo && farcasterAccount?.fid !== userInfo.fid ? (
+              <FollowUserButton farcasterUserInfo={userInfo} />
             ) : (
               <UserSettings />
             )}
@@ -95,7 +85,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
             )}
           </View>
           <View className="w-full flex-row gap-4">
-            {farcasterUserInfo?.following_count && (
+            {userInfo?.following_count && (
               <ExternalLink
                 href={`${WARRPCAST}/${username}/following`}
                 target="_blank"
@@ -107,13 +97,13 @@ export default function UserInfo({ fid }: { fid?: number }) {
                   <Text className="text-sm font-medium text-white">
                     {new Intl.NumberFormat("en-US", {
                       notation: "compact",
-                    }).format(farcasterUserInfo.following_count)}
+                    }).format(userInfo.following_count)}
                   </Text>
                   <Text className="text-sm  text-secondary">Following</Text>
                 </Button>
               </ExternalLink>
             )}
-            {farcasterUserInfo?.follower_count && (
+            {userInfo?.follower_count && (
               <ExternalLink
                 href={`${WARRPCAST}/${username}/followers`}
                 target="_blank"
@@ -126,7 +116,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
                   <Text className="text-sm font-medium text-white">
                     {new Intl.NumberFormat("en-US", {
                       notation: "compact",
-                    }).format(farcasterUserInfo.follower_count)}
+                    }).format(userInfo.follower_count)}
                   </Text>
                   <Text className="text-sm  text-secondary">Followers</Text>
                 </Button>

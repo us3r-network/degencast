@@ -100,7 +100,7 @@ export default function EmbedFrame({
           inputText: Buffer.from(text),
           castId: {
             fid: cast.author.fid,
-            hash: Buffer.from(cast.hash),
+            hash: fromHex(cast.hash as `0x`, "bytes"),
           },
           state: Buffer.from(frameData.state || ""),
           transactionId: Buffer.from(txId || ""),
@@ -127,7 +127,7 @@ export default function EmbedFrame({
         inputText: text,
         castId: {
           fid: cast.author.fid,
-          hash: Buffer.from(cast.hash),
+          hash: fromHex(cast.hash as `0x`, "bytes"),
         },
         state: frameData.state || "",
         transactionId: txId || "",

@@ -14,6 +14,7 @@ import communityRank from "~/features/trade/communityRankSlice";
 import communityShares from "~/features/trade/communitySharesSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
 import userChannels from "~/features/user/userChannelsSlice";
+import userCasts from "~/features/user/userCastsSlice";
 import userHostChannels from "~/features/user/userHostChannelsSlice";
 import userCommunityShares from "~/features/user/communitySharesSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
@@ -22,6 +23,7 @@ import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 import castReactions from "~/features/cast/castReactionsSlice";
+import embedCasts from "~/features/cast/embedCastsSlice";
 import castCollection from "~/features/cast/castCollectionSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
 import communityDetail from "~/features/community/communityDetailSlice";
@@ -49,6 +51,7 @@ export const store = configureStore({
     communityRank,
     userCommunityTokens,
     userChannels,
+    userCasts,
     userHostChannels,
     userCommunityShares,
     channelExplorePage,
@@ -59,6 +62,7 @@ export const store = configureStore({
     communityShareStatistics,
     communityTrending,
     castReactions,
+    embedCasts,
     appSettings,
     // userTips,
   },

@@ -65,7 +65,7 @@ export default function useLoadChannelExploreCastsWithNeynar(params: {
         filteredCastHexs = [getCastHex(initCastData)];
       }
       const newCasts = casts.filter(
-        (item) => !filteredCastHexs?.includes(item.hash),
+        (item) => !filteredCastHexs?.includes(getCastHex(item)),
       );
       const viewerContexts = viewerContextsFromCasts(newCasts);
       dispatch(upsertManyToReactions(viewerContexts));
