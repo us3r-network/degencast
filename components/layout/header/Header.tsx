@@ -24,20 +24,20 @@ export function HeaderLeft({
   title,
   className,
   ...props
-}: ViewProps & { title: string }) {
+}: ViewProps & { title?: string }) {
   return (
     <View className={cn("flex-row items-center gap-5", className)} {...props}>
-      <View className="hidden sm:block">
+      <View>
         <Image
-          source={require("~/assets/images/favicon.png")}
+          source={require("~/assets/images/degencast-logo.png")}
           style={{
-            width: 40,
-            height: 40,
+            width: 24,
+            height: 24,
             resizeMode: "contain",
           }}
         />
       </View>
-      <Text className=" text-xl text-white">{title}</Text>
+      {title && <Text className=" text-xl text-white">{title}</Text>}
     </View>
   );
 }

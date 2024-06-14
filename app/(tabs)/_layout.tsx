@@ -54,7 +54,7 @@ export default function TabLayout() {
             headerTransparent: true,
             header: () => (
               <Header>
-                <HeaderLeft title="Explore" />
+                <HeaderLeft />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
@@ -79,7 +79,7 @@ export default function TabLayout() {
             },
             header: () => (
               <Header>
-                <HeaderLeft title="Channels" />
+                <HeaderLeft />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
@@ -104,17 +104,19 @@ export default function TabLayout() {
             },
             header: () => (
               <Header>
-                <HeaderLeft title="Portfolio" />
+                <HeaderLeft />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
                   <PostLink />
-                  {currFid && farcasterAccount && <View>
-                    <PortfolioSharingButton
-                      fid={Number(currFid)}
-                      fname={farcasterAccount.username || ""}
-                    />
-                  </View>}
+                  {currFid && farcasterAccount && (
+                    <View>
+                      <PortfolioSharingButton
+                        fid={Number(currFid)}
+                        fname={farcasterAccount.username || ""}
+                      />
+                    </View>
+                  )}
                 </HeaderRight>
               </Header>
             ),

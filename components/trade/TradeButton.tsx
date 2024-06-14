@@ -141,15 +141,15 @@ const ExploreTradeStyledButton = forwardRef(function (
   return (
     <Button
       className={cn(
-        "h-[50px] flex-row items-center gap-1 px-[12px] py-[6px]",
+        "h-[60px] flex-row items-center gap-1 rounded-[20px] bg-secondary px-[12px] py-[6px]",
         className,
       )}
       ref={ref}
       {...props}
     >
-      <Text className=" text-base font-bold">Trade</Text>
+      <Text className=" text-2xl font-bold">Trade</Text>
       {logo && (
-        <Avatar alt={name || ""} className={cn(" size-5")}>
+        <Avatar alt={name || ""} className={cn(" size-6")}>
           <AvatarImage source={{ uri: logo || "" }} />
           <AvatarFallback className="bg-secondary">
             <Text className="text-sm font-medium">
@@ -159,7 +159,7 @@ const ExploreTradeStyledButton = forwardRef(function (
         </Avatar>
       )}
       {name && (
-        <Text className={cn("line-clamp-1 text-base font-bold")}>{name}</Text>
+        <Text className={cn("line-clamp-1 text-2xl font-bold")}>{name}</Text>
       )}
     </Button>
   );

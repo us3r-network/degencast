@@ -4,48 +4,68 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { Link } from "expo-router";
+import { Card } from "../ui/card";
 
 export default function CoverChannels({ data }: { data: CoverChannelsData }) {
-  // gridCols = 6; gridRows = 12;
   return (
-    <View className="z-10 grid h-full w-full">
-      {data.map((channel, idx) => {
-        return (
-          <View
-            key={idx.toString()}
-            className={cn(
-              " bg-secondary ",
-              idx === 0 ? `col-start-1 col-end-3 row-start-1 row-end-3` : "",
-              idx === 1 ? `col-start-3 col-end-5 row-start-1 row-end-3` : "",
-              idx === 2 ? `col-start-5 col-end-7 row-start-1 row-end-3` : "",
-              idx === 3 ? `col-start-1 col-end-7 row-start-3 row-end-7` : "",
-              idx === 4 ? `col-start-1 col-end-5 row-start-7 row-end-10` : "",
-              idx === 5 ? `col-start-1 col-end-5 row-start-10 row-end-13` : "",
-              idx === 6 ? `col-start-5 col-end-7 row-start-7 row-end-9 ` : "",
-              idx === 7 ? `col-start-5 col-end-7 row-start-9 row-end-11` : "",
-              idx === 8 ? `col-start-5 col-end-7 row-start-11 row-end-13` : "",
-            )}
-          >
-            <Link
-              className="h-full w-full"
-              href={`/communities/${channel.id}`}
-              asChild
+    <Card className="box-border h-full w-full  overflow-hidden rounded-[20px] border-none p-1">
+      <View className="grid-rows-24 grid-cols-24 grid h-full w-full gap-1 overflow-hidden rounded-[20px]">
+        {data.map((channel, idx) => {
+          return (
+            <View
+              key={idx.toString()}
+              className={cn(
+                " overflow-hidden bg-secondary ",
+                idx === 0
+                  ? `col-start-1 col-end-9 row-start-1 row-end-5 sm:row-end-7`
+                  : "",
+                idx === 1
+                  ? `col-end-17 col-start-9 row-start-1 row-end-5 sm:row-end-7`
+                  : "",
+                idx === 2
+                  ? `col-start-17 col-end-25 row-start-1 row-end-5  sm:row-end-7`
+                  : "",
+                idx === 3
+                  ? `col-end-25 col-start-1 row-start-5 row-end-10  sm:row-start-7 sm:row-end-13`
+                  : "",
+                idx === 4
+                  ? `row-end-18 col-end-16 sm:col-end-17 sm:row-end-19 col-start-1 row-start-10 sm:row-start-13`
+                  : "",
+                idx === 5
+                  ? `row-end-25 row-start-18 col-end-16 sm:col-end-17  sm:row-start-19  col-start-1`
+                  : "",
+                idx === 6
+                  ? `row-end-15 col-start-16 col-end-25 sm:col-start-17 sm:row-end-17  row-start-10  sm:row-start-13`
+                  : "",
+                idx === 7
+                  ? `row-end-20 col-start-16 col-end-25 row-start-15 sm:col-start-17  sm:row-start-17  sm:row-end-21`
+                  : "",
+                idx === 8
+                  ? `row-end-25 row-start-20 col-start-16 col-end-25 sm:col-start-17  sm:row-start-21  sm:row-end-25`
+                  : "",
+              )}
             >
-              <Pressable className="h-full w-full">
-                <Avatar
-                  alt={channel.name || ""}
-                  className="h-full w-full rounded-none"
-                >
-                  <AvatarImage source={{ uri: channel.imageUrl || "" }} />
-                  <AvatarFallback className="flex h-full w-full items-center justify-center bg-secondary">
-                    <Text className="text-sm font-bold">{channel.name}</Text>
-                  </AvatarFallback>
-                </Avatar>
-              </Pressable>
-            </Link>
-          </View>
-        );
-      })}
-    </View>
+              <Link
+                className="h-full w-full"
+                href={`/communities/${channel.id}`}
+                asChild
+              >
+                <Pressable className="h-full w-full">
+                  <Avatar
+                    alt={channel.name || ""}
+                    className="h-full w-full rounded-none transition-transform duration-300 ease-in-out hover:scale-110"
+                  >
+                    <AvatarImage source={{ uri: channel.imageUrl || "" }} />
+                    <AvatarFallback className="flex h-full w-full items-center justify-center bg-secondary">
+                      <Text className="text-sm font-bold">{channel.name}</Text>
+                    </AvatarFallback>
+                  </Avatar>
+                </Pressable>
+              </Link>
+            </View>
+          );
+        })}
+      </View>
+    </Card>
   );
 }
