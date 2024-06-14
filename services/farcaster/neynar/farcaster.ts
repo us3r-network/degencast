@@ -99,10 +99,13 @@ export async function fetchUserBulk({
   viewer_fid,
 }: {
   fids: number[];
-  viewer_fid: number;
+  viewer_fid?: number;
 }) {
+  const url =
+    `${NEYNAR_API_HOST}/v2/farcaster/user/bulk?fids=${fids.join(",")}` +
+    (viewer_fid ? `&viewer_fid=${viewer_fid}` : "");
   const resp = await axios({
-    url: `${NEYNAR_API_HOST}/v2/farcaster/user/bulk?fids=${fids.join(",")}&viewer_fid=${viewer_fid}`,
+    url,
     method: "get",
   });
   return resp.data;

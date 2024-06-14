@@ -14,7 +14,7 @@ export default function useUserBulk(viewer_fid?: number | undefined) {
     try {
       const res = await fetchUserBulk({
         fids,
-        viewer_fid: viewer_fid ? viewer_fid : 0,
+        viewer_fid
       });
       const { users } = res;
       setItems(users);
