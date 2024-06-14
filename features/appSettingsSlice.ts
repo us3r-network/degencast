@@ -3,10 +3,12 @@ import { RootState } from "~/store/store";
 
 type AppSettingsState = {
   firstLoadedScreenNames: string[];
+  openExploreCastMenu: boolean;
 };
 
 const appSettingsState: AppSettingsState = {
   firstLoadedScreenNames: [],
+  openExploreCastMenu: false,
 };
 
 export const appSettingsSlice = createSlice({
@@ -18,10 +20,13 @@ export const appSettingsSlice = createSlice({
         state.firstLoadedScreenNames.push(action.payload);
       }
     },
+    setOpenExploreCastMenu: (state, action: PayloadAction<boolean>) => {
+      state.openExploreCastMenu = action.payload;
+    },
   },
 });
 
 const { actions, reducer } = appSettingsSlice;
-export const { addFirstLoadedScreenName } = actions;
+export const { addFirstLoadedScreenName, setOpenExploreCastMenu } = actions;
 export const selectAppSettings = (state: RootState) => state.appSettings;
 export default reducer;

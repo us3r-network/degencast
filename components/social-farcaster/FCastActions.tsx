@@ -145,13 +145,14 @@ export function FCastExploreActions({
   showActionsChange,
   ...props
 }: ViewProps & {
-  cast: FarCast;
-  farcasterUserDataObj: { [key: string]: UserData };
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: { [key: string]: UserData };
   communityInfo: CommunityInfo;
   showActions: boolean;
   showActionsChange: (showActions: boolean) => void;
 }) {
-  const castUserData = farcasterUserDataObj[cast.fid];
+  const castFid = getCastFid(cast);
+  const castUserData = farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();

@@ -52,7 +52,7 @@ export default function ExploreLayout() {
           onValueChange={(value) => {
             setActiveScreen(value);
           }}
-          className="flex h-full w-full flex-col gap-4"
+          className="flex h-full w-full flex-col"
         >
           <TabsList className="m-0 h-auto flex-row justify-start gap-[30px] p-0">
             {TABS.map((tab) => (
