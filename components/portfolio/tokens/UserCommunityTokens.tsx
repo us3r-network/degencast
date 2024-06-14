@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { round } from "lodash";
-import React from "react";
+import React, { useMemo } from "react";
 import { Pressable, View } from "react-native";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { TokenInfo } from "~/components/common/TokenInfo";
@@ -12,15 +12,23 @@ import {
 import { Text } from "~/components/ui/text";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import TradeButton from "../../trade/TradeButton";
+import { TradeButton } from "../../trade/TradeButton";
+import { DEGEN_ADDRESS } from "~/constants";
 
-const DEFAULT_ITEMS_NUM = 3;
+const DEFAULT_ITEMS_NUM = 99;
 export default function CommunityTokens({
   address,
 }: {
   address: `0x${string}`;
 }) {
   const { loading, items } = useUserCommunityTokens(address);
+  const otherTokens = useMemo(
+    () =>
+      items?.filter(
+        (item) => item.address.toLowerCase() !== DEGEN_ADDRESS.toLowerCase(),
+      ),
+    [items],
+  );
   const [open, setOpen] = React.useState(false);
   // console.log("my-tokens: ", address, items);
   return (
@@ -31,46 +39,67 @@ export default function CommunityTokens({
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">
-            Channel Tokens {loading ? "" : `(${items.length})`}
+          <Text className="text-sm font-medium text-secondary">
+            Channel Tokens {loading ? "" : `(${otherTokens.length})`}
           </Text>
         </View>
-        {items?.length > DEFAULT_ITEMS_NUM &&
+        {otherTokens?.length > DEFAULT_ITEMS_NUM &&
           (open ? <ChevronUp /> : <ChevronDown />)}
       </CollapsibleTrigger>
       <View className="flex w-full gap-2">
-        {items?.length > 0 &&
-          items
+        {otherTokens?.length > 0 &&
+          otherTokens
             .slice(0, DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.address} {...item} />)}
+            .map((item) => (
+              <MyCommunityToken key={item.address} token={item} />
+            ))}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
-        {items?.length > DEFAULT_ITEMS_NUM &&
-          items
+        {otherTokens?.length > DEFAULT_ITEMS_NUM &&
+          otherTokens
             .slice(DEFAULT_ITEMS_NUM)
-            .map((item) => <Item key={item.address} {...item} />)}
+            .map((item) => (
+              <MyCommunityToken key={item.address} token={item} />
+            ))}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-function Item(item: TokenWithTradeInfo) {
+export function MyCommunityToken({
+  token,
+  withSwapButton,
+}: {
+  token: TokenWithTradeInfo;
+  withSwapButton?: boolean;
+}) {
+  // console.log("item", item);
   return (
     <View className="flex-row items-center justify-between">
-      <Link href={`/communities/${item.channelId}/tokens`} asChild>
-        <Pressable>
-          <TokenInfo
-            name={item.name}
-            logo={item.logoURI}
-            mc={Number(item.tradeInfo?.stats?.fdv_usd)}
-          />{" "}
-        </Pressable>
-      </Link>
-      <View className="flex-row items-center gap-2">
-        <Text className="text-sm">{round(Number(item.balance), 2)}</Text>
-        <TradeButton
-          fromToken={item}
+      {token.tradeInfo?.channel ? (
+        <Link href={`/communities/${token.tradeInfo?.channel}/tokens`} asChild>
+          <Pressable>
+            <TokenInfo
+              name={token.name}
+              logo={token.logoURI}
+              symbol={token.symbol}
+              // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
+            />
+          </Pressable>
+        </Link>
+      ) : (
+        <TokenInfo
+          name={token.name}
+          logo={token.logoURI}
+          symbol={token.symbol}
+          // mc={Number(item.tradeInfo?.stats?.fdv_usd)}
         />
+      )}
+      <View className="flex-row items-center gap-2">
+        <Text className="text-lg font-medium">
+          {round(Number(token.balance), 2)}
+        </Text>
+        {withSwapButton && <TradeButton token1={token} />}
       </View>
     </View>
   );

@@ -43,7 +43,6 @@ export const communityTokenSlice = createSlice({
             symbol: item.symbol || "",
             name: item.name || item.tradeInfo.name,
             logoURI: item.logoURI || item.tradeInfo.imageURL,
-            channelId: item.tradeInfo.channel,
           } as TokenWithTradeInfo;
         });
         // state.items = action.payload.data;

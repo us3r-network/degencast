@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
-import { getPrice, getQuote } from "~/services/trade/api/0x";
+import {
+  BUY_TOKEN_PERCENTAGE_FEE,
+  getPrice,
+  getQuote,
+} from "~/services/trade/api/0x";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
 const DEFAULT_DECIMALS = 18;
@@ -15,11 +19,16 @@ type SwapParams = {
 
 export default function useSwapToken(takerAddress?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [swaping, setSwaping] = useState(false);
+  const [fetchingQuote, setFetchingQuote] = useState(false);
+  const [waitingUserSign, setWaitingUserSign] = useState(false);
   const [error, setError] = useState<Error | null>();
+  const [fee, setFee] = useState(0);
   const {
     data: hash,
-    sendTransaction,
+    sendTransactionAsync,
     error: sendTransactionError,
+    reset: resetSendTransaction,
   } = useSendTransaction();
   const {
     data: transactionReceipt,
@@ -31,13 +40,19 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     hash,
   });
 
+  useEffect(() => {
+    if (transationStatus !== "pending") {
+      setSwaping(false);
+    }
+  }, [transationStatus]);
+
   const fetchPrice = async ({
     sellToken,
     buyToken,
     sellAmount,
     buyAmount,
   }: SwapParams) => {
-    console.log("fetchPrice", sellToken, buyToken, sellAmount, buyAmount);
+    // console.log("fetchPrice", sellToken, buyToken, sellAmount, buyAmount);
     if (!sellToken || !buyToken) {
       console.log("no sellToken or buyToken");
       return;
@@ -50,7 +65,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
       console.log("no sellAmount or buyAmount");
       return;
     }
-    console.log("start fetch price from 0x");
+    // console.log("start fetch price from 0x");
     setFetchingPrice(true);
     const price = await getPrice({
       sellToken: sellToken.address,
@@ -63,7 +78,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
       takerAddress,
     });
-    console.log("price", price);
+    // console.log("price", price);
     setFetchingPrice(false);
     if (!price) return;
     return {
@@ -72,6 +87,7 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
         buyToken.decimals || DEFAULT_DECIMALS,
       ),
       price,
+      allowanceTarget: price?.allowanceTarget,
     };
   };
 
@@ -91,9 +107,10 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
     ) {
       return;
     }
-    console.log("start fetch quote from 0x");
-    setFetchingPrice(true);
+    console.log("start fetch quote from 0x", takerAddress);
+    setSwaping(true);
     try {
+      setFetchingQuote(true);
       const quote = await getQuote({
         sellToken: sellToken.address,
         buyToken: buyToken.address,
@@ -107,23 +124,65 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
         takerAddress,
       });
-      console.log("quote", quote);
-      sendTransaction({ to: quote.to, data: quote.data, value: quote.value });
+      console.log("get quote from 0x", quote);
+      const grossBuyAmount = Number(
+        formatUnits(
+          quote.grossBuyAmount,
+          buyToken.decimals || DEFAULT_DECIMALS,
+        ) || "0",
+      );
+      if (quote.fees?.zeroExFee?.feeAmount){
+        const zeroExFee = Number(
+          formatUnits(
+            quote.fees?.zeroExFee?.feeAmount,
+            buyToken.decimals || DEFAULT_DECIMALS,
+          ) || "0",
+        );
+        setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);  
+        // console.log(
+        //   "swap fee",
+        //   grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
+        //   zeroExFee,
+        // );
+      }
+      setFetchingQuote(false);
+      setWaitingUserSign(true);
+      await sendTransactionAsync({
+        to: quote.to,
+        data: quote.data,
+        value: quote.value,
+        gas: quote.gas,
+      });
+      setWaitingUserSign(false);
     } catch (e) {
       console.error("swapToken error", e);
+      setFetchingQuote(false);
+      setWaitingUserSign(false);
+      setSwaping(false);
       // setError(e as Error)
     }
-    setFetchingPrice(false);
   };
 
+  const reset = () => {
+    setFetchingPrice(false);
+    setSwaping(false);
+    setFetchingQuote(false);
+    setWaitingUserSign(false);
+    resetSendTransaction();
+  };
   return {
     fetchingPrice,
+    fetchingQuote,
+    waitingUserSign,
+    swaping,
     fetchPrice,
     swapToken,
+    fee,
     transactionReceipt,
     transationStatus,
     transationLoading,
     isSuccess,
     error: error || sendTransactionError || transationError,
+    reset,
   };
 }

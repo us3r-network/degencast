@@ -2,7 +2,6 @@ import { base } from "viem/chains";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
-export const FARCASTER_API_URL = process.env.EXPO_PUBLIC_FARCASTER_API_URL;
 
 export const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || "";
 export const ZERO_X_API_KEY = process.env.EXPO_PUBLIC_ZERO_X_API_KEY || "";
@@ -32,4 +31,7 @@ export const DEGEN_METADATA: TokenWithTradeInfo = {
     "https://assets.coingecko.com/coins/images/34515/standard/android-chrome-512x512.png",
 };
 
-export const DEFAULT_HEADER_HEIGHT = 64;
+export const DEFAULT_HEADER_HEIGHT = 54;
+export const DEFAULT_TABBAR_HEIGHT = 90;
+
+export const HTTP_HMAC_KEY = process.env.EXPO_PUBLIC_HTTP_HMAC_KEY || "";

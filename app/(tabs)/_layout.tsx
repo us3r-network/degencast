@@ -1,27 +1,38 @@
-import { Link, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Edit, Search } from "~/components/common/Icons";
 import {
   ExploreIcon,
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
+import {
+  Header,
+  HeaderLeft,
+  HeaderRight,
+} from "~/components/layout/header/Header";
+import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
 import TabBar from "~/components/layout/tabBar/TabBar";
-import UserWallets from "~/components/portfolio/user/UserWallets";
-import { Button } from "~/components/ui/button";
+import {
+  ExploreSharingButton,
+  PortfolioSharingButton,
+  TradeSharingButton,
+} from "~/components/platform-sharing/PlatformSharingButton";
+import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+import OnboardingModal from "~/components/portfolio/user/Onboarding";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCommunityRank from "~/hooks/trade/useCommunityRank";
-import useCommunityShares from "~/hooks/trade/useCommunityShares";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
-import { Text } from "~/components/ui/text";
 
 export default function TabLayout() {
+  const { currFid, farcasterAccount } = useFarcasterAccount();
   // preload trade data
   useCommunityTokens();
-  useCommunityShares();
+  // useCommunityShares();
   useCommunityRank();
+
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
@@ -41,36 +52,44 @@ export default function TabLayout() {
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
             headerTransparent: true,
-            headerTitleStyle: {
-              color: "white",
-            },
-            headerRight: () => (
-              <View className="mr-4 flex-row items-center gap-4">
-                <Link href="/search" asChild>
-                  <Button className="w-32 flex-row items-center justify-start gap-1 rounded-full bg-white/40">
-                    <Search className=" h-4 w-4 stroke-white" />
-                    <Text className=" text-base font-medium">Search</Text>
-                  </Button>
-                </Link>
-                <Link href="/create" asChild>
-                  <Button variant={"secondary"} size={"sm"}>
-                    <Text className=" text-base font-medium">Cast</Text>
-                  </Button>
-                </Link>
-              </View>
+            header: () => (
+              <Header>
+                <HeaderLeft title="Explore" />
+                <HeaderRight>
+                  <UserGlobalPoints />
+                  <SearchLink />
+                  <PostLink />
+                  <View>
+                    <ExploreSharingButton fid={currFid} />
+                  </View>
+                </HeaderRight>
+              </Header>
             ),
           }}
         />
         <Tabs.Screen
-          name="trade"
+          name="channels"
           options={{
-            title: "Trade",
+            title: "Channels",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
             headerTransparent: true,
-            headerTitleStyle: {
-              color: "white",
+            headerStyle: {
+              height: 54,
             },
+            header: () => (
+              <Header>
+                <HeaderLeft title="Channels" />
+                <HeaderRight>
+                  <UserGlobalPoints />
+                  <SearchLink />
+                  <PostLink />
+                  <View>
+                    <TradeSharingButton fid={currFid} />
+                  </View>
+                </HeaderRight>
+              </Header>
+            ),
           }}
         />
         <Tabs.Screen
@@ -80,17 +99,29 @@ export default function TabLayout() {
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
             headerTransparent: true,
-            headerTitleStyle: {
-              color: "white",
+            headerStyle: {
+              height: 54,
             },
-            headerRight: () => (
-              <View className="flex-row items-center gap-4 p-4">
-                <UserWallets />
-              </View>
+            header: () => (
+              <Header>
+                <HeaderLeft title="Portfolio" />
+                <HeaderRight>
+                  <UserGlobalPoints />
+                  <SearchLink />
+                  <PostLink />
+                  {currFid && farcasterAccount && <View>
+                    <PortfolioSharingButton
+                      fid={Number(currFid)}
+                      fname={farcasterAccount.username || ""}
+                    />
+                  </View>}
+                </HeaderRight>
+              </Header>
             ),
           }}
         />
       </Tabs>
+      <OnboardingModal />
     </SafeAreaView>
   );
 }

@@ -4,24 +4,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Href, Link, Stack } from "expo-router";
+import { Link, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import Toast, { ToastConfigParams } from "react-native-toast-message";
-
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
-
+import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { Provider as ReduxProvider } from "react-redux";
+import StateUpdateWrapper from "~/components/StateUpdateWrapper";
 import { PortalHost } from "~/components/primitives/portal";
 import { Text } from "~/components/ui/text";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
 import { PRIVY_APP_ID } from "~/constants";
 import { store } from "~/store/store";
-
+import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
-import StateUpdateWrapper from "~/components/StateUpdateWrapper";
 import "../global.css";
+
 dayjs.extend(relativeTime);
 global.Buffer = Buffer; //monkey patch for buffer in react-native
 
@@ -44,23 +43,23 @@ const toastConfig = {
   }>) => (
     <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">Cast created successfully!</Text>
-      <Link href={`/casts/${props.hash}?fid=${props.fid}` as Href<string>}>
+      <Link href={`/casts/${props.hash}?fid=${props.fid}`}>
         <Text className="font-bold text-primary">View</Text>
       </Link>
     </View>
   ),
   success: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className=" z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+    <View className=" z-50 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),
   error: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+    <View className="z-50 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),
   info: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="z-1000 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+    <View className="z-50 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),
@@ -75,6 +74,8 @@ export default function RootLayout() {
       if (Platform.OS === "web") {
         // Adds the background color to the html element to prevent white background on overscroll.
         document.documentElement.classList.add("bg-background");
+        getInstallPrompter();
+        document.getElementById("degencast-loading")?.remove();
       }
     })().finally(() => {
       SplashScreen.hideAsync();
@@ -91,13 +92,16 @@ export default function RootLayout() {
       >
         <QueryClientProvider client={queryClient}>
           <WagmiProvider config={wagmiConfig}>
-            <StateUpdateWrapper>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              </Stack>
-              <PortalHost />
-              <Toast config={toastConfig} />
-            </StateUpdateWrapper>
+            <StateUpdateWrapper />
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <PortalHost />
+            <View
+              id="dialog-container"
+              className="pointer-events-none absolute h-full w-full"
+            />
+            <Toast config={toastConfig} />
           </WagmiProvider>
         </QueryClientProvider>
       </PrivyProvider>

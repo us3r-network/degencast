@@ -9,31 +9,53 @@ import EmbedFrame from "./EmbedFrame";
 export default function EmbedWebpages({
   webpages,
   cast,
+  imgIsFixedRatio,
 }: {
   webpages: Embeds["webpages"];
   cast?: FarCast;
+  imgIsFixedRatio?: boolean;
 }) {
   return (
-    <View>
+    <>
       {webpages.map((item, idx) => {
-        return <EmbedWebpage url={item.url} cast={cast} key={idx} />;
+        return (
+          <EmbedWebpage
+            url={item.url}
+            cast={cast}
+            key={idx}
+            imgIsFixedRatio={imgIsFixedRatio}
+          />
+        );
       })}
-    </View>
+    </>
   );
 }
 
-function EmbedWebpage({ url, cast }: { url: string; cast?: FarCast }) {
+function EmbedWebpage({
+  url,
+  cast,
+  imgIsFixedRatio,
+}: {
+  url: string;
+  cast?: FarCast;
+  imgIsFixedRatio?: boolean;
+}) {
   const { embedFrameMetadata, embedOgMetadata, loadEmbedWebpagesMetadata } =
     useLoadEmbedWebpagesMetadata();
   useEffect(() => {
     loadEmbedWebpagesMetadata([url]);
   }, []);
   return (
-    <View>
+    <>
       {embedFrameMetadata && (
-        <EmbedFrame url={url} data={embedFrameMetadata} cast={cast} />
+        <EmbedFrame
+          url={url}
+          data={embedFrameMetadata}
+          cast={cast}
+          imgIsFixedRatio={imgIsFixedRatio}
+        />
       )}
       {embedOgMetadata && <EmbedOG url={url} data={embedOgMetadata} />}
-    </View>
+    </>
   );
 }

@@ -6,32 +6,45 @@ import {
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 import useSeenCasts from "../user/useSeenCasts";
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
-import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
+import { useAppDispatch } from "~/store/hooks";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
+import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
 const NEXT_PAGE_SIZE = 10;
 
-export default function useLoadExploreCastsWithNaynar() {
-  const { addManyToLikedActions } = useUserCastLikeActionsUtil();
+export default function useLoadExploreCastsWithNaynar(opts: {
+  swipeDataRefValue: any;
+  onViewCastActionSubmited?: () => void;
+}) {
+  const dispatch = useAppDispatch();
+  const { swipeDataRefValue, onViewCastActionSubmited } = opts || {};
+
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
   const [casts, setCasts] = useState<Array<TrendingCastData>>([]);
   const [currentCastIndex, setCurrentCastIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [firstLoading, setFirstLoading] = useState(true);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
-  const pageInfoRef = useRef({
+  const pageInfoRef = useRef<{
+    hasNextPage: boolean;
+    cursor: string;
+    requestFailed?: boolean;
+  }>({
     hasNextPage: true,
     cursor: "",
+    requestFailed: false,
   });
 
   const loadCasts = async (cursor: string, limit: number) => {
-    const { hasNextPage } = pageInfoRef.current;
+    const { hasNextPage, requestFailed } = pageInfoRef.current;
 
-    if (hasNextPage === false) {
+    if (hasNextPage === false || requestFailed) {
       return;
     }
     setLoading(true);
@@ -44,22 +57,14 @@ export default function useLoadExploreCastsWithNaynar() {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      const { casts, farcasterUserData, pageInfo, likeActions } = data;
-      const unlikeActions =
-        likeActions?.filter(
-          (action) => action.action === UserActionName.UnLike,
-        ) || [];
-      const likedActions =
-        likeActions?.filter(
-          (action) =>
-            !unlikeActions.find(
-              (unlikeAction) => unlikeAction.castHash === action.castHash,
-            ),
-        ) || [];
-      addManyToLikedActions(likedActions);
+      const { casts, farcasterUserData, pageInfo } = data;
+      const viewerContexts = viewerContextsFromCasts(
+        casts.map((item) => item.data),
+      );
+      dispatch(upsertManyToReactions(viewerContexts));
       setCasts((pre) => [...pre, ...casts]);
       pageInfoRef.current = pageInfo;
-      console.log("pageInfo", pageInfo);
+      // console.log("pageInfo", pageInfo);
 
       if (farcasterUserData.length > 0) {
         const userDataObj = userDataObjFromArr(farcasterUserData);
@@ -67,8 +72,10 @@ export default function useLoadExploreCastsWithNaynar() {
       }
     } catch (err) {
       console.error(err);
+      pageInfoRef.current["requestFailed"] = true;
     } finally {
       setLoading(false);
+      setFirstLoading(false);
     }
   };
 
@@ -95,16 +102,16 @@ export default function useLoadExploreCastsWithNaynar() {
 
   // load more casts
   useEffect(() => {
-    if (loading) return;
+    if (firstLoading || loading) return;
     const castsLen = casts.length;
-    if (castsLen < FIRST_PAGE_SIZE) {
-      return;
-    }
-    const remainingLen = castsLen - currentCastIndex;
+    // if (castsLen < FIRST_PAGE_SIZE) {
+    //   return;
+    // }
+    const remainingLen = castsLen - (currentCastIndex + 1);
     if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
       loadNextPageCasts();
     }
-  }, [currentCastIndex, casts, loading]);
+  }, [currentCastIndex, casts, loading, firstLoading]);
 
   const watchedCastsRef = useRef<string[]>([]);
   useEffect(() => {
@@ -121,7 +128,7 @@ export default function useLoadExploreCastsWithNaynar() {
     }
   }, [currentCastIndex, casts, submitSeenCast]);
 
-  // 停留两秒再上报用户行为加积分
+  // 停留1秒再上报用户行为加积分
   const submitedViewActionCastsRef = useRef<string[]>([]);
   const currentCastIndexRef = useRef(currentCastIndex);
   useEffect(() => {
@@ -129,18 +136,27 @@ export default function useLoadExploreCastsWithNaynar() {
     const cast = casts?.[currentCastIndex]?.data as FarCast;
     const castHex = cast ? getCastHex(cast) : "";
     const timer = setTimeout(() => {
-      if (castHex && currentCastIndexRef.current === currentCastIndex) {
+      if (
+        currentCastIndexRef.current !== 0 &&
+        castHex &&
+        currentCastIndexRef.current === currentCastIndex
+      ) {
         submitUserAction({
           action: UserActionName.View,
           castHash: castHex,
+          data: {
+            swipeData: swipeDataRefValue,
+          },
         });
         submitedViewActionCastsRef.current.push(castHex);
+        onViewCastActionSubmited && onViewCastActionSubmited();
       }
-    }, 2000);
+    }, 500);
 
     // 如果已经上报过了，就不再上报
     if (!castHex || submitedViewActionCastsRef.current.includes(castHex)) {
       clearTimeout(timer);
+      onViewCastActionSubmited && onViewCastActionSubmited();
     }
 
     return () => {

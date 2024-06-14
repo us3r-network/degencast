@@ -55,7 +55,7 @@ export default function WarpcastChannelPicker({
       <AlertDialogTrigger asChild>
         <Button
           variant={"ghost"}
-          className="rounded-md bg-[#a36efe1a]"
+          className="rounded-md"
           onPress={() => {
             setOpen(true);
           }}

@@ -1,14 +1,17 @@
-import { Link } from "expo-router";
-import { View } from "react-native";
+import { ReactNode } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { Chain, TransactionReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { SHARE_CONTRACT_CHAIN } from "~/hooks/trade/useShareContract";
-import { Check, X } from "../common/Icons";
-import { TransactionReceipt } from "viem";
-import { ReactNode } from "react";
+import { ExternalLink } from "../common/ExternalLink";
+import { Check, ReceiptText, X } from "../common/Icons";
+import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
+const EXPLORE_URL = "https://www.onceupon.xyz";
 export type TransationData = {
-  transactionReceipt: TransactionReceipt;
+  chain: Chain;
+  transactionReceipt?: TransactionReceipt;
   description: ReactNode;
 };
 
@@ -16,41 +19,67 @@ type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   data: TransationData;
   buttonText: string;
   buttonAction?: () => void;
+  navigateToCreatePageAfter?: () => void;
 };
 
-export function TransactionSuccessInfo({
+export function TransactionInfo({
   data,
   buttonText,
   buttonAction,
+  navigateToCreatePageAfter,
 }: TransactionInfoProps) {
-  console.log("TransactionSuccessInfo", data);
+  // console.log("TransactionSuccessInfo", data);
   return (
-    <View className="flex items-center gap-6">
-      <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
-        <Check className="size-8 text-[green]" />
-      </View>
-      <Text className="font-bold">Transaction Completed!</Text>
+    <View className="flex w-full items-center gap-6">
+      {data.transactionReceipt?.transactionHash ? (
+        <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
+          <Check className="size-8 text-[green]" />
+        </View>
+      ) : (
+        <View className="size-16 items-center justify-center rounded-full bg-[white]/40">
+          {/* <Info className="size-8 text-[white]" /> */}
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      )}
+      <Text className="font-medium">
+        {data.transactionReceipt?.transactionHash
+          ? "Transaction Completed!"
+          : "Confirm Transaction!"}
+      </Text>
       {data.description}
-      <View className="w-full flex-row justify-items-stretch gap-4">
-        <Link
-          className="flex-1/2 text-primary-foreground/80"
-          href={`${SHARE_CONTRACT_CHAIN.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
-          target="_blank"
-        >
-          <Button variant="outline" className="w-full border-secondary">
-            <Text className="text-secondary">See Details</Text>
+      {data.transactionReceipt?.transactionHash ? (
+        <View className="w-full flex-row justify-items-stretch gap-2">
+          {data.chain?.blockExplorers && (
+            <ExternalLink
+              className="flex-1/2 text-primary-foreground/80"
+              // href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
+              href={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+              target="_blank"
+            >
+              <Button variant="secondary">
+                {/* <Text>See Details</Text> */}
+                <ReceiptText />
+              </Button>
+            </ExternalLink>
+          )}
+          <Button
+            variant="secondary"
+            className="flex-1"
+            onPress={() => {
+              buttonAction?.();
+            }}
+          >
+            <Text>{buttonText}</Text>
           </Button>
-        </Link>
-        <Button
-          variant="secondary"
-          className="flex-1"
-          onPress={() => {
-            buttonAction?.();
-          }}
-        >
-          <Text>{buttonText}</Text>
-        </Button>
-      </View>
+          <TransactionResultSharingButton
+            type={ONCHAIN_ACTION_TYPE.SWAP}
+            transactionDetailURL={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+            navigateToCreatePageAfter={navigateToCreatePageAfter}
+          />
+        </View>
+      ) : (
+        <Text className="text-sm text-secondary">Proceed in your wallet!</Text>
+      )}
     </View>
   );
 }
@@ -60,13 +89,14 @@ type ErrorInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   buttonText: string;
   buttonAction?: () => void;
 };
+
 export function ErrorInfo({ error, buttonText, buttonAction }: ErrorInfoProps) {
   return (
     <View className="flex items-center gap-6">
       <View className="size-16 items-center justify-center rounded-full bg-[red]/40">
         <X className="size-8 text-[red]" />
       </View>
-      <Text className="font-bold">{error}</Text>
+      <Text className="font-medium">{error}</Text>
       <View className="w-full flex-row justify-items-stretch gap-4">
         <Button
           variant="secondary"

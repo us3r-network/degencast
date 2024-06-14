@@ -5,13 +5,43 @@ import { Text } from "../ui/text";
 import { Button } from "../ui/button";
 import { usePrivy } from "@privy-io/react-auth";
 import PointsRulesModal from "./PointsRulesModal";
-import { useState } from "react";
-import { Pressable } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, Image, View, Animated } from "react-native";
 
 export default function UserGlobalPoints() {
   const { totalPoints } = useUserTotalPoints();
   const { authenticated, ready, login } = usePrivy();
   const [open, setOpen] = useState(false);
+  const pointChangeAnimation = useState(new Animated.Value(0))[0];
+  const totalPointsPrev = useRef(totalPoints);
+  useEffect(() => {
+    if (totalPoints === totalPointsPrev.current) return;
+    totalPointsPrev.current = totalPoints;
+    Animated.timing(pointChangeAnimation, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start(() => {
+      pointChangeAnimation.setValue(0);
+    });
+  }, [totalPoints]);
+
+  const pointAnimationStyle = {
+    transform: [
+      {
+        scale: pointChangeAnimation.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [1, 1.1, 1],
+        }),
+      },
+    ],
+  };
+  const pointAnimationTextStyle = {
+    opacity: pointChangeAnimation.interpolate({
+      inputRange: [0, 0.01, 1],
+      outputRange: [1, 0, 1],
+    }),
+  };
   return (
     <>
       <Pressable
@@ -19,21 +49,37 @@ export default function UserGlobalPoints() {
           setOpen(true);
         }}
       >
-        <Badge className="flex h-6 w-fit flex-row items-center gap-1 bg-[#F41F4C] px-2 py-0">
-          <Atom color="#FFFFFF" className="h-4 w-4" />
-          <Text className=" text-base text-white">{totalPoints}</Text>
-          {ready && !authenticated && totalPoints > 0 && (
-            <Button
-              className=" ml-1 box-border h-4 rounded-full bg-secondary px-1 py-0 text-xs text-white"
-              onPress={(e) => {
-                e.stopPropagation();
-                login();
-              }}
-            >
-              <Text className="text-xs text-white">Claim</Text>
-            </Button>
-          )}
-        </Badge>
+        <Animated.View style={[pointAnimationStyle]}>
+          <Badge className="flex h-6 w-fit flex-row items-center overflow-hidden border-0 bg-[#F2B949] p-0 shadow shadow-black/25 transition-all">
+            {/* <Atom className="size-4 text-white" /> */}
+            <View className="flex h-full flex-row items-center gap-1 px-2 py-0">
+              <Image
+                source={require("~/assets/images/wand-sparkles.png")}
+                style={{
+                  width: 16,
+                  height: 16,
+                  resizeMode: "contain",
+                }}
+              />
+              <Animated.View style={[pointAnimationTextStyle]}>
+                <Text className="text-sm text-primary">{totalPoints}</Text>
+              </Animated.View>
+            </View>
+            {ready && !authenticated && totalPoints > 0 && (
+              <View className="h-full pr-2">
+                <Button
+                  className="my-auto box-border h-[18px] rounded-full bg-secondary"
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    login();
+                  }}
+                >
+                  <Text className=" text-xs font-normal text-white">Claim</Text>
+                </Button>
+              </View>
+            )}
+          </Badge>
+        </Animated.View>
         <PointsRulesModal open={open} onOpenChange={setOpen} />
       </Pressable>
     </>

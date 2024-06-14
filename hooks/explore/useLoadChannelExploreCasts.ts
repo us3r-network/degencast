@@ -6,10 +6,13 @@ import {
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 import useSeenCasts from "../user/useSeenCasts";
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
 import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
+import { useAppDispatch } from "~/store/hooks";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
+import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
@@ -18,9 +21,12 @@ const NEXT_PAGE_SIZE = 10;
 export default function useLoadChannelExploreCasts(params: {
   channelId: string;
   initCast?: ChannelCastData | undefined | null;
+  swipeDataRefValue: any;
+  onViewCastActionSubmited?: () => void;
 }) {
-  const { channelId, initCast } = params || {};
-  const { addManyToLikedActions } = useUserCastLikeActionsUtil();
+  const { channelId, initCast, swipeDataRefValue, onViewCastActionSubmited } =
+    params || {};
+  const dispatch = useAppDispatch();
   const { submitSeenCast } = useSeenCasts();
   const { submitUserAction } = useUserAction();
   const [casts, setCasts] = useState<Array<ChannelCastData>>([]);
@@ -28,16 +34,21 @@ export default function useLoadChannelExploreCasts(params: {
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const channelIdRef = useRef(channelId);
-  const pageInfoRef = useRef({
+  const pageInfoRef = useRef<{
+    hasNextPage: boolean;
+    endIndex: number;
+    requestFailed?: boolean;
+  }>({
     hasNextPage: true,
     endIndex: 0,
+    requestFailed: false,
   });
   const initCastRef = useRef(initCast);
 
   const loadCasts = async (start: number, end: number) => {
-    const { hasNextPage } = pageInfoRef.current;
+    const { hasNextPage, requestFailed } = pageInfoRef.current;
 
-    if (hasNextPage === false) {
+    if (hasNextPage === false || requestFailed) {
       return;
     }
     setLoading(true);
@@ -52,17 +63,7 @@ export default function useLoadChannelExploreCasts(params: {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
-      const { casts, farcasterUserData, pageInfo, likeActions } = data;
-      const unlikeActions = likeActions.filter(
-        (action) => action.action === UserActionName.UnLike,
-      );
-      const likedActions = likeActions.filter(
-        (action) =>
-          !unlikeActions.find(
-            (unlikeAction) => unlikeAction.castHash === action.castHash,
-          ),
-      );
-      addManyToLikedActions(likedActions);
+      const { casts, farcasterUserData, pageInfo } = data;
 
       const initCastData = initCastRef.current;
       const filteredCastHexs = initCastData
@@ -71,6 +72,10 @@ export default function useLoadChannelExploreCasts(params: {
       const newCasts = casts.filter(
         (item) => !filteredCastHexs?.includes(getCastHex(item.data)),
       );
+      const viewerContexts = viewerContextsFromCasts(
+        newCasts.map((item) => item.data),
+      );
+      dispatch(upsertManyToReactions(viewerContexts));
 
       setCasts((pre) => [...pre, ...newCasts]);
       pageInfoRef.current = pageInfo;
@@ -81,6 +86,7 @@ export default function useLoadChannelExploreCasts(params: {
       }
     } catch (err) {
       console.error(err);
+      pageInfoRef.current["requestFailed"] = true;
     } finally {
       setLoading(false);
     }
@@ -120,10 +126,8 @@ export default function useLoadChannelExploreCasts(params: {
     if (castsLen < FIRST_PAGE_SIZE) {
       return;
     }
-    const remainingLen = castsLen - currentCastIndex;
+    const remainingLen = castsLen - (currentCastIndex + 1);
     if (remainingLen <= LOAD_MORE_CRITICAL_NUM) {
-      console.log("currentCastIndex", currentCastIndex);
-      console.log("remainingLen", remainingLen);
       loadNextPageCasts();
     }
   }, [currentCastIndex, casts, loading]);
@@ -143,7 +147,7 @@ export default function useLoadChannelExploreCasts(params: {
     }
   }, [currentCastIndex, casts, submitSeenCast]);
 
-  // 停留两秒再上报用户行为加积分
+  // 停留1秒再上报用户行为加积分
   const submitedViewActionCastsRef = useRef<string[]>([]);
   const currentCastIndexRef = useRef(currentCastIndex);
   useEffect(() => {
@@ -151,18 +155,27 @@ export default function useLoadChannelExploreCasts(params: {
     const cast = casts?.[currentCastIndex]?.data as FarCast;
     const castHex = cast ? getCastHex(cast) : "";
     const timer = setTimeout(() => {
-      if (castHex && currentCastIndexRef.current === currentCastIndex) {
+      if (
+        currentCastIndexRef.current !== 0 &&
+        castHex &&
+        currentCastIndexRef.current === currentCastIndex
+      ) {
         submitUserAction({
           action: UserActionName.View,
           castHash: castHex,
+          data: {
+            swipeData: swipeDataRefValue,
+          },
         });
         submitedViewActionCastsRef.current.push(castHex);
+        onViewCastActionSubmited && onViewCastActionSubmited();
       }
-    }, 2000);
+    }, 500);
 
     // 如果已经上报过了，就不再上报
     if (!castHex || submitedViewActionCastsRef.current.includes(castHex)) {
       clearTimeout(timer);
+      onViewCastActionSubmited && onViewCastActionSubmited();
     }
 
     return () => {

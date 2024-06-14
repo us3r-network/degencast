@@ -1,89 +1,135 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FarCast } from "~/services/farcaster/types";
 import useFarcasterWrite from "./useFarcasterWrite";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import useFarcasterAccount from "./useFarcasterAccount";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import {
+  addRecast,
+  addRecastPending,
+  removeRecast,
+  removeRecastPending,
+  selectCastReactions,
+} from "~/features/cast/castReactionsSlice";
+import { usePrivy } from "@privy-io/react-auth";
+import useFarcasterSigner from "./useFarcasterSigner";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastFid,
+  getCastHex,
+  getCastReactionsCount,
+} from "~/utils/farcaster/cast-utils";
 
 export default function useFarcasterRecastAction({
   cast,
   onRecastSuccess,
   onRemoveRecastSuccess,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   onRecastSuccess?: () => void;
   onRemoveRecastSuccess?: () => void;
 }) {
-  const { recastCast } = useFarcasterWrite();
+  const dispatch = useAppDispatch();
+  const { reactions, recastPendingCastIds } =
+    useAppSelector(selectCastReactions);
+
+  const { authenticated, login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const castHex = getCastHex(cast);
-  const castFid = cast.fid;
+  const { requestSigner, hasSigner } = useFarcasterSigner();
+  const { recastCast, removeRecastCast } = useFarcasterWrite();
 
-  const [recasts, setRecasts] = useState<string[]>(
-    Array.from(new Set(cast.recasts)),
+  const castHex = useMemo(() => getCastHex(cast), [cast]);
+  const castFid = useMemo(() => getCastFid(cast), [cast]);
+
+  const recasted = useMemo(
+    () => !!reactions?.[castHex]?.recasted,
+    [reactions, castHex],
   );
+  const recastPending = useMemo(
+    () => recastPendingCastIds.includes(castHex),
+    [recastPendingCastIds, castHex],
+  );
+
   const [recastCount, setRecastCount] = useState<number>(
-    Number(cast.recast_count || cast.recastsCount || 0),
+    getCastReactionsCount(cast).recastsCount,
   );
-  useEffect(() => {
-    setRecasts(Array.from(new Set(cast.recasts)));
-    setRecastCount(Number(cast.recast_count || cast.recastsCount || 0));
-  }, [cast]);
 
-  const [recastPending, setRecastPending] = useState(false);
-
-  const recast = useCallback(async () => {
+  const recastCastAction = useCallback(async () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (!currFid || !hasSigner) {
+      requestSigner();
+      return;
+    }
     if (recastPending) {
       return;
     }
     try {
-      setRecastPending(true);
-      await recastCast(castHex, Number(castFid));
-      const tmpSet = new Set(recasts);
-      tmpSet.add(`${currFid}`);
-      setRecasts(Array.from(tmpSet));
-      setRecastCount(recastCount + 1);
+      dispatch(addRecastPending(castHex));
+      const res = await recastCast(castHex, Number(castFid));
+      console.log("recastCastAction", res);
+      dispatch(addRecast(castHex));
+      setRecastCount((pre) => pre + 1);
       onRecastSuccess?.();
-      console.log("recast created");
     } catch (error) {
       console.error(error);
     } finally {
-      setRecastPending(false);
+      dispatch(removeRecastPending(castHex));
     }
   }, [
+    authenticated,
+    currFid,
+    hasSigner,
+    recastPending,
     castHex,
     castFid,
-    recastCount,
-    recasts,
-    currFid,
-    recastPending,
+    login,
+    requestSigner,
+    recastCast,
     onRecastSuccess,
   ]);
 
-  const removeRecast = useCallback(async () => {
+  const removeRecastAction = useCallback(async () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (!currFid || !hasSigner) {
+      requestSigner();
+      return;
+    }
     if (recastPending) {
       return;
     }
     try {
-      setRecastPending(true);
-      // TODO remove recast
-      await recastCast(castHex, Number(castFid));
-      const tmpSet = new Set(recasts);
-      tmpSet.delete(`${currFid}`);
-      setRecasts(Array.from(tmpSet));
-      setRecastCount(recastCount - 1);
+      dispatch(addRecastPending(castHex));
+      const res = await removeRecastCast(castHex, Number(castFid));
+      console.log("removeRecastAction", res);
+      dispatch(removeRecast(castHex));
+      setRecastCount((pre) => pre - 1);
       onRemoveRecastSuccess?.();
-      console.log("recast removed");
     } catch (error) {
       console.error(error);
     } finally {
-      setRecastPending(false);
+      dispatch(removeRecastPending(castHex));
     }
-  }, [castHex, castFid, recastCount, recasts, currFid, onRemoveRecastSuccess]);
-  const recasted = recasts.includes(`${currFid}`);
+  }, [
+    authenticated,
+    currFid,
+    hasSigner,
+    recastPending,
+    castHex,
+    castFid,
+    login,
+    requestSigner,
+    removeRecastCast,
+    onRemoveRecastSuccess,
+  ]);
+
   return {
-    recast,
-    removeRecast,
-    recasts,
+    recast: recastCastAction,
+    removeRecast: removeRecastAction,
     recastCount,
     recasted,
     recastPending,

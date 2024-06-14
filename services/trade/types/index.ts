@@ -32,13 +32,9 @@ export type TokenWithTradeInfo = {
   decimals: number | undefined;
   symbol: string | undefined;
   logoURI?: string;
-  channelId?: string;
   tradeInfo?: TradeInfo;
   rawBalance?: BigInt | string;
   balance?: number | string | undefined;
-  //todo: remove this after api is ready
-  contractAddress?: `0x${string}`;
-  logo?: string;
 };
 
 export type ShareInfo = {

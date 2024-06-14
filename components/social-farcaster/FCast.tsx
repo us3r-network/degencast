@@ -2,37 +2,76 @@ import { View, ViewProps } from "react-native";
 import { FarCast } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import FCastText from "./FCastText";
-import UserGlobalPoints from "../point/UserGlobalPoints";
 import { cn } from "~/lib/utils";
 import FCastUserInfo from "./FCastUserInfo";
 import FCastEmbeds from "./FCastEmbeds";
+import { getEmbeds } from "~/utils/farcaster/getEmbeds";
+import { useMemo } from "react";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import NeynarCastText from "./NeynarCastText";
+import NeynarCastUserInfo from "./NeynarCastUserInfo";
+import {
+  getCastFid,
+  getCastHex,
+  isNeynarCast,
+} from "~/utils/farcaster/cast-utils";
 
 export default function FCast({
   cast,
   farcasterUserDataObj,
   className,
-  hidePoints,
+  hidePoints = true,
+  webpageImgIsFixedRatio,
+  viewMoreWordLimits,
   ...props
 }: ViewProps & {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   hidePoints?: boolean;
+  webpageImgIsFixedRatio?: boolean;
+  viewMoreWordLimits?: number;
 }) {
-  const userData = farcasterUserDataObj?.[cast.fid];
+  const castHex = getCastHex(cast);
+  const castFid = getCastFid(cast);
+  const userData = farcasterUserDataObj?.[castFid];
+  const embeds = useMemo(() => getEmbeds(cast), [cast]);
+  const hasEmbeds =
+    embeds.imgs.length > 0 ||
+    embeds.casts.length > 0 ||
+    embeds.videos.length > 0 ||
+    embeds.webpages.length > 0;
+  const isNeynar = isNeynarCast(cast);
   return (
     <View
-      key={cast.id}
+      key={castHex}
       className={cn("flex w-full flex-col gap-5", className)}
       {...props}
     >
       {/* header - user info */}
       <View className="flex flex-row items-center justify-between gap-6">
-        <FCastUserInfo userData={userData!} />
-        {!hidePoints && <UserGlobalPoints />}
+        {isNeynar ? (
+          <NeynarCastUserInfo userData={(cast as NeynarCast).author} />
+        ) : (
+          <FCastUserInfo userData={userData!} />
+        )}
       </View>
       {/* body - text & embed */}
-      <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
-      <FCastEmbeds cast={cast} />
+      {isNeynar ? (
+        <NeynarCastText cast={cast as NeynarCast} />
+      ) : (
+        <FCastText
+          cast={cast as FarCast}
+          farcasterUserDataObj={farcasterUserDataObj}
+          viewMoreWordLimits={hasEmbeds ? viewMoreWordLimits : undefined}
+        />
+      )}
+
+      {hasEmbeds && (
+        <FCastEmbeds
+          cast={cast}
+          webpageImgIsFixedRatio={webpageImgIsFixedRatio}
+        />
+      )}
     </View>
   );
 }

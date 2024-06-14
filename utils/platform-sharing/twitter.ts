@@ -2,6 +2,7 @@ import { Linking, Platform } from "react-native";
 
 export const TWITTER_WEB_HOST = "https://twitter.com";
 export const TWITTER_APP_HOST = "twitter://";
+export const TWITTER_SCREEN_NAME = "realdegencast";
 
 export const checkInstalledTwitterApp = async () => {
   const supported = await Linking.canOpenURL(TWITTER_APP_HOST);

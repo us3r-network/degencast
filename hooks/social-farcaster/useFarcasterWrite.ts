@@ -1,15 +1,14 @@
-import {
-  FarcasterWithMetadata,
-  User,
-  useCreateWallet,
-  useExperimentalFarcasterSigner,
-  useLinkAccount,
-  usePrivy,
-  useWallets,
-} from "@privy-io/react-auth";
-import { useState } from "react";
-import useUserAction from "../user/useUserAction";
-import { UserActionName } from "~/services/user/types";
+import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
+import { HubRestAPIClient } from "@standard-crypto/farcaster-js-hub-rest";
+import axios from "axios";
+import { useCallback, useState } from "react";
+import { FARCASTER_HUB_URL } from "~/constants/farcaster";
+import useFarcasterSigner from "./useFarcasterSigner";
+
+const hubClient = new HubRestAPIClient({
+  hubUrl: FARCASTER_HUB_URL,
+  axiosInstance: axios.create(),
+});
 
 export type SubmitCastBody = {
   mentions?: number[] | undefined;
@@ -53,166 +52,183 @@ export type ReplyCastRes = Promise<
 >;
 
 export default function useFarcasterWrite() {
-  const { submitUserAction } = useUserAction();
   const { user } = usePrivy();
-
-  const { createWallet } = useCreateWallet();
-  const { wallets } = useWallets();
-  const embededWallet = wallets.find(
-    (wallet) => wallet.connectorType === "embedded",
-  );
-
-  const linkHanler = {
-    onSuccess: (user: User) => {
-      console.log("Linked farcaster account", user);
-      prepareWrite();
-    },
-    onError: (error: unknown) => {
-      console.error("Failed to link farcaster account", error);
-    },
-  };
-  const { linkFarcaster } = useLinkAccount(linkHanler);
-
-  const {
-    submitCast,
-    removeCast,
-    likeCast,
-    recastCast,
-    followUser,
-    unfollowUser,
-    requestFarcasterSigner,
-  } = useExperimentalFarcasterSigner();
   const farcasterAccount = user?.linkedAccounts.find(
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
 
-  const [prepareing, setPrepareing] = useState(false);
+  const { requesting, getPrivySigner } = useFarcasterSigner();
+
   const [writing, setWriting] = useState(false);
-  const prepareWrite = async () => {
-    setPrepareing(true);
-    if (!embededWallet) {
-      console.log("Creating embeded wallet");
-      await createWallet();
-    }
-    if (!farcasterAccount) {
-      console.log("Linking farcaster");
-      await linkFarcaster(); // this does not mean linking is done, it just starts the process, the user will have to confirm the linking, then the onSuccess callback will be called
-      return false;
-    } else {
-      if (!farcasterAccount?.signerPublicKey) {
-        console.log("Requesting farcaster signer");
-        await requestFarcasterSigner(); // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
-        submitUserAction({
-          action: UserActionName.ConnectFarcaster,
-        });
-        return false;
-      }
-    }
-    setPrepareing(false);
-    return true;
-  };
-  return {
-    prepareWrite,
-    writing: writing && prepareing,
-    // todo: add more post support!
-    submitCast: async ({
-      text,
-      embeds,
-      channel,
-    }: {
-      text: string;
-      embeds: {
-        url?: string | undefined;
-        castId?:
-          | {
-              fid: number;
-              hash: string;
-            }
-          | undefined;
-      }[];
-      channel: string;
-    }) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) {
+
+  const submitCast = useCallback(
+    async (data: SubmitCastBody) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) return;
+      try {
         setWriting(true);
-        const data = {
-          text,
-          embeds: embeds.length
-            ? embeds.map((embed) => ({
-                url: embed.url,
-              }))
-            : undefined,
-          parentUrl: channel || undefined,
-        };
-        const result = await submitCast(data);
-        setWriting(false);
+        const result = await hubClient.submitCast(
+          {
+            text: data.text,
+            embeds: data.embeds?.map((embed) => ({
+              url: embed.url,
+            })),
+            parentUrl: data.parentUrl,
+            parentCastId: data.parentCastId,
+          },
+          farcasterAccount.fid!,
+          privySigner,
+        );
         return result;
-      }
-    },
-    replayCast: async ({
-      text,
-      embeds,
-      parentCastId,
-    }: {
-      text: string;
-      embeds: {
-        url?: string | undefined;
-        castId?:
-          | {
-              fid: number;
-              hash: string;
-            }
-          | undefined;
-      }[];
-      parentCastId?:
-        | {
-            fid: number;
-            hash: string;
-          }
-        | undefined;
-    }): ReplyCastRes => {
-      const canWrite = await prepareWrite();
-      if (canWrite) {
-        setWriting(true);
-        const data = {
-          text,
-          embeds: embeds.map((embed) => ({
-            url: embed.url,
-          })),
-          parentCastId,
-        };
-        const res = await submitCast(data);
-        setWriting(false);
-        return { ...res, ...data };
-      }
-    },
-    submitCastWithOpts: async (opts: SubmitCastBody) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) {
-        setWriting(true);
-        await submitCast(opts);
+      } catch (e) {
+        console.error(e);
+      } finally {
         setWriting(false);
       }
     },
-    removeCast: async (castHash: string) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await removeCast({ castHash });
+    [farcasterAccount, getPrivySigner],
+  );
+
+  const removeCast = useCallback(
+    async (castHash: string) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) return;
+      try {
+        const result = await hubClient.removeCast(
+          castHash,
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
     },
-    likeCast: async (castHash: string, castAuthorFid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await likeCast({ castHash, castAuthorFid });
+    [farcasterAccount, getPrivySigner],
+  );
+
+  const submitReaction = useCallback(
+    async (
+      type: "like" | "recast",
+      castHash: string,
+      castAuthorFid: number,
+    ) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) {
+        throw new Error("No privy signer");
+      }
+      const result = await hubClient.submitReaction(
+        {
+          type,
+          target: {
+            fid: castAuthorFid,
+            hash: castHash,
+          },
+        },
+        farcasterAccount.fid!,
+        privySigner,
+      );
+      return result;
     },
-    recastCast: async (castHash: string, castAuthorFid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await recastCast({ castHash, castAuthorFid });
+    [farcasterAccount, getPrivySigner],
+  );
+  const removeReaction = useCallback(
+    async (
+      type: "like" | "recast",
+      castHash: string,
+      castAuthorFid: number,
+    ) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) {
+        throw new Error("No privy signer");
+      }
+      const result = await hubClient.removeReaction(
+        {
+          type,
+          target: {
+            fid: castAuthorFid,
+            hash: castHash,
+          },
+        },
+        farcasterAccount.fid!,
+        privySigner,
+      );
+      return result;
     },
-    followUser: async (fid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await followUser({ fid });
+    [farcasterAccount, getPrivySigner],
+  );
+  const likeCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return await submitReaction("like", castHash, castAuthorFid);
     },
-    unfollowUser: async (fid: number) => {
-      const canWrite = await prepareWrite();
-      if (canWrite) await unfollowUser({ fid });
+    [submitReaction],
+  );
+  const removeLikeCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return await removeReaction("like", castHash, castAuthorFid);
     },
+    [removeReaction],
+  );
+  const recastCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return await submitReaction("recast", castHash, castAuthorFid);
+    },
+    [submitReaction],
+  );
+  const removeRecastCast = useCallback(
+    async (castHash: string, castAuthorFid: number) => {
+      return await removeReaction("recast", castHash, castAuthorFid);
+    },
+    [removeReaction],
+  );
+
+  const followUser = useCallback(
+    async (fid: number) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) return;
+      try {
+        const result = await hubClient.followUser(
+          fid,
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [farcasterAccount, getPrivySigner],
+  );
+
+  const unfollowUser = useCallback(
+    async (fid: number) => {
+      const privySigner = await getPrivySigner();
+      if (!privySigner) return;
+      try {
+        const result = await hubClient.unfollowUser(
+          fid,
+          farcasterAccount.fid!,
+          privySigner,
+        );
+        return result;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [farcasterAccount, getPrivySigner],
+  );
+
+  return {
+    writing: writing || requesting,
+    submitCast,
+    replayCast: submitCast,
+    submitCastWithOpts: submitCast,
+    removeCast: removeCast,
+    likeCast: likeCast,
+    removeLikeCast: removeLikeCast,
+    recastCast: recastCast,
+    removeRecastCast: removeRecastCast,
+    followUser: followUser,
+    unfollowUser: unfollowUser,
   };
 }

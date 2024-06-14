@@ -10,7 +10,7 @@ export const UnorderedList = ({ texts }: UnorderedListProps) => {
   return (
     <View className="w-full gap-2">
       {texts.map((item, index) => (
-        <View className="w-full flex-row gap-2">
+        <View key={index} className="w-full flex-row gap-2">
           <Text>{"\u2022"}</Text>
           <TextWithTag>{item}</TextWithTag>
         </View>

@@ -90,10 +90,10 @@ export const RepostButton = ({
     <ActionButton {...props}>
       <Repeat
         size={iconSize}
-        className={cn(" stroke-secondary", reposted && " stroke-primary ")}
+        className={cn(" stroke-secondary", reposted && " stroke-[#00D1A7] ")}
       />
       <ActionText
-        className={cn(" text-secondary", reposted && " text-primary")}
+        className={cn(" text-secondary", reposted && " text-[#00D1A7]")}
       >
         {repostCount || 0}
       </ActionText>
@@ -104,8 +104,10 @@ export const RepostButton = ({
 export const PostCommentActions = ({
   liked,
   likeCount,
+  liking,
   commentCount,
   repostCount,
+  reposting,
   onLike,
   onComment,
   onRepost,
@@ -115,9 +117,11 @@ export const PostCommentActions = ({
 }: ViewProps & {
   liked: boolean;
   likeCount: number;
+  liking?: boolean;
   commentCount: number;
   repostCount: number;
   reposted: boolean;
+  reposting?: boolean;
   onLike: () => void;
   onComment: () => void;
   onRepost: () => void;
@@ -132,8 +136,14 @@ export const PostCommentActions = ({
         onPress={onRepost}
         repostCount={repostCount}
         reposted={reposted}
+        disabled={reposting}
       />
-      <LikeButton liked={liked} likeCount={likeCount} onPress={onLike} />
+      <LikeButton
+        liked={liked}
+        likeCount={likeCount}
+        onPress={onLike}
+        disabled={liking}
+      />
     </View>
   );
 };

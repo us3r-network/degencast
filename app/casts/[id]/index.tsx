@@ -1,180 +1,199 @@
-import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-  useNavigation,
-} from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
-import { Home } from "~/components/common/Icons";
+import GoBackButton from "~/components/common/GoBackButton";
+import GoHomeButton from "~/components/common/GoHomeButton";
 import { Loading } from "~/components/common/Loading";
-import { PostDetailActions } from "~/components/post/PostActions";
 import FCast from "~/components/social-farcaster/FCast";
-import FCastActions, {
-  CreatedFCastActions,
-} from "~/components/social-farcaster/FCastActions";
+import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
 } from "~/components/social-farcaster/FCastCommunity";
-import FCastUserInfo from "~/components/social-farcaster/FCastUserInfo";
-import NeynarEmbeds from "~/components/social-farcaster/NeynarEmbeds";
-import NeynarText from "~/components/social-farcaster/NeynarText";
-import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
+import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import useLoadCastComments from "~/hooks/social-farcaster/useLoadCastComments";
 import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
+import useLoadNeynarCastComments from "~/hooks/social-farcaster/useLoadNeynarCastComments";
 import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
 import { CommunityInfo } from "~/services/community/types/community";
 
 import { FarCast } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastHex,
+  getCastParentUrl,
+  getCastRepliesCount,
+  isNeynarCast,
+} from "~/utils/farcaster/cast-utils";
 import { UserData } from "~/utils/farcaster/user-data";
 
 export default function CastDetail() {
-  const params = useLocalSearchParams<{ id: string; fid?: string }>();
-  const { id, fid } = params;
+  const params = useLocalSearchParams();
+  const { id, fid } = params as { id: string; fid?: string };
   const { castDetailData } = useCastPage();
   const data = castDetailData?.[id as string];
   const { cast } = data || {};
   if (cast) {
+    const isNeynar = isNeynarCast(cast);
+    if (isNeynar) {
+      return <CachedNeynarCastDetail />;
+    }
     return <CachedCastDetail />;
-  }
-  if (fid) {
-    return <FetchedNeynarCastDetail hash={id} fid={fid} />;
   }
   return <FetchedCastDetail />;
 }
 
 function CachedCastDetail() {
   const params = useLocalSearchParams();
-  const { id } = params;
+  const { id } = params as { id: string };
   const { castDetailData } = useCastPage();
   const data = castDetailData?.[id as string];
-  const { origin, cast, farcasterUserDataObj, community } = data;
+  const {
+    cast: cachedCast,
+    farcasterUserDataObj: cachedFarcasterUserDataObj,
+    community: cachedCommunity,
+  } = data;
+
+  // get cast info
+  const {
+    cast: fetchedCast,
+    farcasterUserDataObj: fetchedFarcasterUserDataObj,
+    loading: castLoading,
+    loadCastDetail,
+  } = useLoadCastDetail();
+  useEffect(() => {
+    if (id) {
+      loadCastDetail(id as string);
+    }
+  }, [id, loadCastDetail]);
+
+  // get community info
+  const parentUrl = getCastParentUrl(cachedCast);
+  const { warpcastChannels } = useWarpcastChannels();
+  const channel = useMemo(() => {
+    return warpcastChannels.find((item) => item.url === parentUrl);
+  }, [warpcastChannels, parentUrl]);
+  const channelId = channel?.id;
+
+  const {
+    communityDetail,
+    communityBasic,
+    loading: communityLoading,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId!);
+
+  const cast = { ...cachedCast, repliesCount: fetchedCast?.repliesCount || "" };
+  const farcasterUserDataObj =
+    fetchedFarcasterUserDataObj || cachedFarcasterUserDataObj;
+  const community = communityDetail || communityBasic || cachedCommunity;
+
+  useEffect(() => {
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
   return (
     <CastDetailWithData
       castLoading={false}
-      cast={cast!}
+      cast={cast}
       farcasterUserDataObj={farcasterUserDataObj}
-      community={community!}
+      community={community}
     />
   );
 }
 
-function FetchedNeynarCastDetail({ hash, fid }: { hash: string; fid: string }) {
-  const navigation = useNavigation();
-  const { cast, loading, loadNeynarCastDetail } = useLoadNeynarCastDetail();
-  useEffect(() => {
-    loadNeynarCastDetail(hash);
-  }, [hash]);
+function CachedNeynarCastDetail() {
+  const params = useLocalSearchParams();
+  const { id } = params as { id: string };
+  const { castDetailData } = useCastPage();
+  const data = castDetailData?.[id as string];
+  const { community: cachedCommunity } = data;
+  const cachedCast = data.cast as NeynarCast;
 
+  const {
+    cast: fetchedNeynarCast,
+    loading: neynarCastLoading,
+    loadNeynarCastDetail,
+  } = useLoadNeynarCastDetail();
+  useEffect(() => {
+    if (id) {
+      loadNeynarCastDetail(id as string);
+    }
+  }, [id, loadNeynarCastDetail]);
+
+  // get community info
+  const parentUrl = getCastParentUrl(cachedCast);
+  const { warpcastChannels } = useWarpcastChannels();
+  const channel = useMemo(() => {
+    return warpcastChannels.find((item) => item.url === parentUrl);
+  }, [warpcastChannels, parentUrl]);
+  const channelId = channel?.id;
+
+  const {
+    communityDetail,
+    communityBasic,
+    loading: communityLoading,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId!);
+
+  const cast = { ...cachedCast, ...fetchedNeynarCast };
+  const community = communityDetail || communityBasic || cachedCommunity;
+
+  useEffect(() => {
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-white">
-      <Stack.Screen
-        options={{
-          header: () => (
-            <View className="flex flex-row items-center justify-between bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit flex-row items-center gap-3 p-3 ">
-                  <Button
-                    className="rounded-full bg-[#a36efe1a]"
-                    size={"icon"}
-                    variant={"ghost"}
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                  >
-                    <BackArrowIcon />
-                  </Button>
-                  <Button
-                    className="rounded-full bg-[#a36efe1a]"
-                    size={"icon"}
-                    variant={"ghost"}
-                    onPress={() => {
-                      navigation.navigate("index" as never);
-                    }}
-                  >
-                    <Home
-                      className=" stroke-primary"
-                      size={16}
-                      strokeWidth={3}
-                    />
-                  </Button>
-                </View>
-              </View>
-            </View>
-          ),
-        }}
-      />
-      <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 flex-col gap-7 px-5">
-          <FlatList
-            ListHeaderComponent={() => {
-              if (loading) {
-                return (
-                  <View className="flex h-full w-full items-center justify-center">
-                    <Loading />
-                  </View>
-                );
-              }
-              if (!cast) {
-                return null;
-              }
-              return (
-                <View className="mt-5 gap-6">
-                  <FCastUserInfo
-                    userData={{
-                      fid: cast.author.fid + "",
-                      pfp: cast.author.pfp_url,
-                      display: cast.author.display_name,
-                      userName: cast.author.username,
-                      bio: "",
-                      url: "",
-                    }}
-                  />
-                  <NeynarText text={cast.text} />
-                  <NeynarEmbeds embeds={cast.embeds} />
-                </View>
-              );
-            }}
-            data={[]}
-            ItemSeparatorComponent={() => <Separator className=" my-3" />}
-            renderItem={({ item }) => {
-              return null;
-            }}
-            onEndReached={() => {
-              return;
-            }}
-            onEndReachedThreshold={1}
-            ListFooterComponent={() => {
-              return <View className="mb-10" />;
-            }}
-          />
-        </View>
-      </View>
-    </SafeAreaView>
+    <CastDetailWithData castLoading={false} cast={cast} community={community} />
   );
 }
 
 function FetchedCastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params;
-  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
-    useLoadCastDetail();
+  const params = useLocalSearchParams<{ id: string }>();
+  const { id } = params as { id: string };
+
+  // get cast info
+  const {
+    cast: fetchedNeynarCast,
+    loading: neynarCastLoading,
+    loadNeynarCastDetail,
+  } = useLoadNeynarCastDetail();
   useEffect(() => {
-    loadCastDetail(id as string);
-  }, [id]);
-  // TODO - community info
-  const community = null;
+    if (id) {
+      loadNeynarCastDetail(id as string);
+    }
+  }, [id, loadNeynarCastDetail]);
+
+  // get community info
+  const parentUrl = getCastParentUrl(fetchedNeynarCast!);
+  const { warpcastChannels } = useWarpcastChannels();
+  const channel = useMemo(() => {
+    return warpcastChannels.find((item) => item.url === parentUrl);
+  }, [warpcastChannels, parentUrl]);
+  const channelId = channel?.id;
+
+  const {
+    communityDetail,
+    communityBasic,
+    loading: communityLoading,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId!);
+  const community = communityDetail || communityBasic;
+
+  useEffect(() => {
+    if (!communityDetail) {
+      loadCommunityDetail();
+    }
+  }, [communityDetail, loadCommunityDetail]);
 
   return (
     <CastDetailWithData
-      castLoading={loading}
-      cast={cast!}
-      farcasterUserDataObj={farcasterUserDataObj}
+      castLoading={neynarCastLoading}
+      cast={fetchedNeynarCast!}
       community={community!}
     />
   );
@@ -187,35 +206,30 @@ function CastDetailWithData({
   community,
 }: {
   castLoading: boolean;
-  cast: FarCast;
-  farcasterUserDataObj: {
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: {
     [key: string]: UserData;
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail, castDetailData } = useCastPage();
+  const { navigateToCastDetail } = useCastPage();
   const navigation = useNavigation();
   const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params;
+  const { id } = params as { id: string };
 
   const {
     comments,
-    farcasterUserDataObj: commentsFarcasterUserDataObj,
     loading: commentsLoading,
-    firstLoaded: commentsFirstLoaded,
     loadCastComments,
-  } = useLoadCastComments();
+  } = useLoadNeynarCastComments(id);
 
   useEffect(() => {
-    loadCastComments(id);
-  }, [id]);
+    loadCastComments();
+  }, [loadCastComments]);
 
-  const channelPageData = castDetailData?.[id];
-  const { origin: castPageOrigin } = channelPageData || {};
-
-  const showGoHomeBtn = ![CastDetailDataOrigin.Explore].includes(
-    castPageOrigin,
-  );
+  const routes = navigation.getState()?.routes;
+  const prevRoute = routes[routes.length - 2];
+  const showGoHomeBtn = prevRoute?.name !== "(tabs)";
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -223,42 +237,32 @@ function CastDetailWithData({
         options={{
           contentStyle: { backgroundColor: "white" },
           header: () => (
-            <View className="flex flex-row items-center justify-between bg-white">
-              <View className="flex flex-row items-center">
-                <View className="w-fit flex-row items-center gap-3 p-3 ">
-                  <Button
-                    className="rounded-full bg-[#a36efe1a]"
-                    size={"icon"}
-                    variant={"ghost"}
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                  >
-                    <BackArrowIcon />
-                  </Button>
-                  {showGoHomeBtn && (
-                    <Button
-                      className="rounded-full bg-[#a36efe1a]"
-                      size={"icon"}
-                      variant={"ghost"}
-                      onPress={() => {
-                        navigation.navigate("index" as never);
-                      }}
-                    >
-                      <Home
-                        className=" stroke-primary"
-                        size={16}
-                        strokeWidth={3}
-                      />
-                    </Button>
-                  )}
-                </View>
-              </View>
+            <View
+              className="flex flex-row items-center justify-between bg-white"
+              style={{
+                height: 70,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
               <View className="flex flex-row items-center gap-3">
+                <GoBackButton
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                />
+                {showGoHomeBtn && (
+                  <GoHomeButton
+                    onPress={() => {
+                      navigation.navigate("index" as never);
+                    }}
+                  />
+                )}
+              </View>
+              <View>
                 {cast && (
-                  <FCastActions
+                  <FCastDetailActions
                     cast={cast!}
-                    isDetail={true}
                     farcasterUserDataObj={farcasterUserDataObj}
                     communityInfo={community}
                   />
@@ -269,8 +273,11 @@ function CastDetailWithData({
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 flex-col gap-7 px-5">
+        <View className="w-full flex-1 px-4">
           <FlatList
+            style={{
+              flex: 1,
+            }}
             showsHorizontalScrollIndicator={false}
             ListHeaderComponent={() => {
               if (castLoading) {
@@ -290,27 +297,27 @@ function CastDetailWithData({
                     farcasterUserDataObj={farcasterUserDataObj}
                     hidePoints
                   />
-                  <Separator className=" my-5" />
+                  <Separator className=" my-5 bg-primary/10" />
                   <View className="mb-5 w-full">
                     <Text className=" text-base font-medium">
-                      Comments (
-                      {Number(cast?.comment_count || cast?.repliesCount || 0)})
+                      Comments ({getCastRepliesCount(cast)})
                     </Text>
                   </View>
                 </View>
               );
             }}
             data={comments}
-            ItemSeparatorComponent={() => <Separator className=" my-3" />}
+            ItemSeparatorComponent={() => (
+              <Separator className=" my-3 bg-primary/10" />
+            )}
             renderItem={({ item }) => {
               return (
                 <Pressable
                   onPress={() => {
-                    const castHex = getCastHex(cast);
+                    const castHex = getCastHex(item);
                     navigateToCastDetail(castHex, {
                       origin: CastDetailDataOrigin.Comments,
-                      cast: item.data,
-                      farcasterUserDataObj: commentsFarcasterUserDataObj,
+                      cast: item,
                       community: community,
                     });
                     // router.push(`/casts/${castHex}`);
@@ -318,27 +325,28 @@ function CastDetailWithData({
                 >
                   <FCastComment
                     className="flex-1"
-                    cast={item.data}
-                    farcasterUserDataObj={commentsFarcasterUserDataObj}
+                    cast={item}
                     communityInfo={community}
                   />
                 </Pressable>
               );
             }}
-            keyExtractor={({ data }) => data.id}
+            keyExtractor={(item, index) => index.toString()}
             onEndReached={() => {
-              return;
-              // TODO 没有分页，暂时不用加载更多
               // if (
               //   !cast ||
               //   commentsLoading ||
-              //   (commentsFirstLoaded && comments?.length === 0)
+              //   (!commentsLoading && comments?.length === 0)
               // )
               //   return;
-              // loadCastComments(id as string);
+              // loadCastComments();
+              return;
             }}
-            onEndReachedThreshold={1}
+            onEndReachedThreshold={0.1}
             ListFooterComponent={() => {
+              if (!castLoading && commentsLoading) {
+                return <Loading />;
+              }
               return <View className="mb-10" />;
             }}
           />
@@ -354,22 +362,5 @@ function CastDetailWithData({
         )}
       </View>
     </SafeAreaView>
-  );
-}
-
-function BackArrowIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
-      <path
-        d="M2.10347 8.88054C1.61698 8.39405 1.61698 7.60586 2.10347 7.11937L7.88572 1.33713C8.11914 1.10371 8.43573 0.972572 8.76583 0.972572C9.09594 0.972572 9.41252 1.10371 9.64594 1.33713C9.87936 1.57055 10.0105 1.88713 10.0105 2.21724C10.0105 2.54734 9.87936 2.86393 9.64594 3.09735L4.74334 7.99996L9.64594 12.9026C9.87936 13.136 10.0105 13.4526 10.0105 13.7827C10.0105 14.1128 9.87936 14.4294 9.64594 14.6628C9.41252 14.8962 9.09594 15.0273 8.76583 15.0273C8.43573 15.0273 8.11914 14.8962 7.88572 14.6628L2.10347 8.88054Z"
-        fill="#4C2896"
-      />
-    </svg>
   );
 }

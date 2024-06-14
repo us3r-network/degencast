@@ -24,12 +24,14 @@ export function login(params?: {
   });
 }
 
-export function postUserActions(actions: UserActionData[]) {
+export function postUserActions(actions: UserActionData[], hmac: string) {
+  const hmacBase64 = Buffer.from(hmac).toString("base64");
   return request({
     url: `/degencast-users/actions`,
     method: "post",
     headers: {
       needToken: true,
+      "X-HMAC-SIGNATURE": hmacBase64,
     },
     data: actions,
   });

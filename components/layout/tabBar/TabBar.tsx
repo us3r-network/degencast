@@ -1,9 +1,5 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import {
-  Platform,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, Pressable, TouchableOpacity, View } from "react-native";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
@@ -12,8 +8,8 @@ function MobileTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
 
   return (
-    <View className="flex items-center justify-evenly bg-background p-4">
-      <Card className="w-full max-w-screen-sm flex-row items-center justify-evenly rounded-full p-2">
+    <View className="flex items-center justify-evenly border-t-0 bg-background p-4">
+      <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-between rounded-[20px] px-10 py-3">
         {state.routes.map((route, index: number) => {
           const { options } = descriptors[route.key];
           const label =
@@ -45,14 +41,14 @@ function MobileTabBar(props: BottomTabBarProps) {
           };
 
           return (
-            <TouchableOpacity
-              className="flex h-12 items-center justify-center gap-2"
+            <Pressable
+              key={route.key}
+              className=" flex h-fit w-fit min-w-[60px] items-center justify-center gap-1"
               accessibilityRole={Platform.OS === "web" ? "link" : "button"}
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={options.tabBarAccessibilityLabel}
               onPress={onPress}
               onLongPress={onLongPress}
-              style={{ flex: 1 }}
             >
               {options.tabBarIcon &&
                 options.tabBarIcon({
@@ -62,13 +58,13 @@ function MobileTabBar(props: BottomTabBarProps) {
                 })}
               <Text
                 className={cn(
-                  "text-xs font-bold",
+                  "text-xs font-medium",
                   isFocused ? "text-secondary" : "text-primary",
                 )}
               >
                 {label as string}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </Card>

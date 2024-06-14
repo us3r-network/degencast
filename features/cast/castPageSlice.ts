@@ -3,6 +3,7 @@ import type { RootState } from "../../store/store";
 import { FarCast } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export enum CastDetailDataOrigin {
   Explore,
@@ -14,17 +15,17 @@ export enum CastDetailDataOrigin {
 }
 
 export type CastDetailData = {
-  origin: CastDetailDataOrigin;
-  cast: FarCast;
-  farcasterUserDataObj: {
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: {
     [key: string]: UserData;
   };
   community?: CommunityInfo | null | undefined;
+  origin?: CastDetailDataOrigin;
 };
 
 export type CastReplayData = {
-  cast: FarCast;
-  farcasterUserDataObj: {
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: {
     [key: string]: UserData;
   };
   community?: CommunityInfo;

@@ -4,6 +4,8 @@ import { View, TouchableOpacity, Linking } from "react-native";
 import { Text } from "../ui/text";
 import { Link } from "expo-router";
 import isURL from "validator/lib/isURL";
+import { useMemo } from "react";
+import { getEmbeds } from "~/utils/farcaster/getEmbeds";
 
 const BIOLINK_FARCASTER_SUFFIX = "fcast";
 const farcasterHandleToBioLinkHandle = (handle: string) => {
@@ -15,42 +17,48 @@ const farcasterHandleToBioLinkHandle = (handle: string) => {
 export default function FCastText({
   cast,
   farcasterUserDataObj,
+  viewMoreWordLimits,
 }: {
   cast: FarCast;
   farcasterUserDataObj: { [key: string]: UserData } | undefined;
+  viewMoreWordLimits?: number;
 }) {
   const { text, mentions, mentionsPositions: indices } = cast;
+  const embeds = useMemo(() => getEmbeds(cast), [cast]);
+  const embedWebpages = embeds.webpages;
   const segments = splitAndInsert(
     text,
     indices || [],
     (mentions || []).map((mention, index) => {
       const mentionData = farcasterUserDataObj?.[mention];
       if (!mentionData) return null;
-      const profileIdentity = mentionData.userName.endsWith(".eth")
-        ? mentionData.userName
-        : farcasterHandleToBioLinkHandle(mentionData.userName);
-
       return (
-        <Text
-          key={index}
-          className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline"
-        >{`@${mentionData.userName}`}</Text>
+        <Link href={`/u/${mentionData.fid}`} key={index}>
+          <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
+            {`@${mentionData.userName}`}
+          </Text>
+        </Link>
       );
-      // TODO
-      // return (
-      //   <Link
-      //     href={`/portfolio/${profileIdentity}`}
-      //     key={index}
-      //     className="inline text-[#A36EFE] hover:cursor-pointer hover:underline"
-      //   >
-      //     {`@${mentionData.userName}`}
-      //   </Link>
-      // );
     }),
     (s, index) => {
       return (
         <Text className="inline" key={index}>
           {s.split(/(\s|\n)/).map((part, index_) => {
+            if (viewMoreWordLimits) {
+              if (index_ === viewMoreWordLimits) {
+                return (
+                  <Text key={index_}>
+                    <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
+                      {" "}
+                      ... view more
+                    </Text>
+                  </Text>
+                );
+              }
+              if (index_ > viewMoreWordLimits) {
+                return null;
+              }
+            }
             if (isURL(part, { require_protocol: false })) {
               const link = !(
                 part.toLowerCase().startsWith("https://") ||
@@ -58,6 +66,11 @@ export default function FCastText({
               )
                 ? `https://${part}`
                 : part;
+              const findWebpage = embedWebpages.find((item) => {
+                return item.url.includes(part);
+              });
+              if (findWebpage) return null;
+
               return (
                 <TouchableOpacity
                   key={index_}
@@ -65,7 +78,7 @@ export default function FCastText({
                     Linking.openURL(link);
                   }}
                 >
-                  <Text className="inline-block break-all text-[#A36EFE] hover:cursor-pointer hover:underline">
+                  <Text className="inline-block break-all text-secondary hover:cursor-pointer hover:underline">
                     {part}
                   </Text>
                 </TouchableOpacity>
@@ -75,7 +88,7 @@ export default function FCastText({
               const channelId = part.slice(1);
               return (
                 <Link key={index_} href={`/communities/${channelId}`}>
-                  <Text className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline">
+                  <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
                     {part}
                   </Text>
                 </Link>

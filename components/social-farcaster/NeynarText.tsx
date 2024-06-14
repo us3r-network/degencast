@@ -1,7 +1,7 @@
 import { Text } from "../ui/text";
 
 import { View, TouchableOpacity, Linking } from "react-native";
-import { Href, Link } from "expo-router";
+import { Link } from "expo-router";
 import isURL from "validator/lib/isURL";
 
 export default function NeynarText({ text }: { text: string }) {
@@ -11,15 +11,15 @@ export default function NeynarText({ text }: { text: string }) {
       return (
         <Text
           key={index}
-          className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline"
+          className="inline-block text-secondary hover:cursor-pointer hover:underline"
         >{`${part}`}</Text>
       );
     }
     if (part.startsWith("/")) {
       const channelId = part.slice(1);
       return (
-        <Link key={index} href={`/communities/${channelId}` as Href<string>}>
-          <Text className="inline-block text-[#A36EFE] hover:cursor-pointer hover:underline">
+        <Link key={index} href={`/communities/${channelId}`}>
+          <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
             {part}
           </Text>
         </Link>
@@ -38,7 +38,7 @@ export default function NeynarText({ text }: { text: string }) {
           onPress={() => Linking.openURL(link)}
           className="inline text-primary hover:underline"
         >
-          <Text className="inline-block break-all text-[#A36EFE] hover:cursor-pointer hover:underline">
+          <Text className="inline-block break-all text-secondary hover:cursor-pointer hover:underline">
             {part}
           </Text>
         </TouchableOpacity>

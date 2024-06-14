@@ -70,6 +70,16 @@ import {
   Edit,
   Home,
   Download,
+  CirclePlus,
+  CircleCheck,
+  Image,
+  UserRoundCheck,
+  UserRoundPlus,
+  Chrome,
+  Globe,
+  Settings,
+  ReceiptText,
+  DollarSign,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -155,6 +165,16 @@ interopIcon(Edit);
 interopIcon(ArrowUpDown);
 interopIcon(Home);
 interopIcon(Download);
+interopIcon(CirclePlus);
+interopIcon(CircleCheck);
+interopIcon(Image);
+interopIcon(UserRoundPlus);
+interopIcon(UserRoundCheck);
+interopIcon(Chrome);
+interopIcon(Globe);
+interopIcon(Settings);
+interopIcon(ReceiptText);
+interopIcon(DollarSign);
 export {
   Activity,
   Airplay,
@@ -226,4 +246,14 @@ export {
   Edit,
   Home,
   Download,
+  CirclePlus,
+  CircleCheck,
+  Image,
+  UserRoundCheck,
+  UserRoundPlus,
+  Chrome,
+  Globe,
+  Settings,
+  ReceiptText,
+  DollarSign,
 };

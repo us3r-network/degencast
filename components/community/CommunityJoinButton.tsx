@@ -3,7 +3,8 @@ import { Button, ButtonProps } from "../ui/button";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { CommunityInfo } from "~/services/community/types/community";
 import { cn } from "~/lib/utils";
-import { TextProps } from "react-native";
+import { TextProps, View } from "react-native";
+import { CircleCheck, CirclePlus, MinusCircle, Plus } from "../common/Icons";
 
 export default function CommunityJoinButton({
   communityInfo,
@@ -18,7 +19,11 @@ export default function CommunityJoinButton({
     useJoinCommunityAction(communityInfo);
   return (
     <Button
-      className={cn("w-14 bg-secondary", className)}
+      variant={joined ? "outline" : "secondary"}
+      className={cn(
+        "min-w-14 rounded-[0.625rem] px-0 text-xs font-medium",
+        className,
+      )}
       size="sm"
       onPress={(e) => {
         e.stopPropagation();
@@ -40,6 +45,42 @@ export default function CommunityJoinButton({
           return "Join";
         })()}
       </Text>
+    </Button>
+  );
+}
+
+export function CommunityJoinIconButton({
+  communityInfo,
+  className,
+  textProps,
+  ...props
+}: ButtonProps & {
+  communityInfo: CommunityInfo;
+  textProps?: TextProps;
+}) {
+  const { joined, isPending, joinChangeAction } = useJoinCommunityAction(
+    communityInfo,
+    {
+      showToast: true,
+    },
+  );
+  return (
+    <Button
+      className={cn("bg-transparent p-0", className)}
+      disabled={isPending}
+      onPress={(e) => {
+        e.stopPropagation();
+        joinChangeAction();
+      }}
+      {...props}
+    >
+      {joined ? (
+        <MinusCircle strokeWidth={1} className="size-10 stroke-secondary" />
+      ) : (
+        <View className="flex size-10 items-center justify-center rounded-full bg-secondary">
+          <Plus className=" size-6 stroke-primary" />
+        </View>
+      )}
     </Button>
   );
 }

@@ -27,7 +27,7 @@ export default function Share({ address }: { address: `0x${string}` }) {
     >
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold">
+          <Text className="text-sm font-medium text-secondary">
             Channel Share {loading ? "" : `(${items.length})`}
           </Text>
           <InfoButton title={SHARE_TITLE} info={SHARE_INFO} />

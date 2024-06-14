@@ -27,11 +27,7 @@ const SelectTrigger = React.forwardRef<
     {...props}
   >
     <>{children}</>
-    <ChevronDown
-      size={16}
-      aria-hidden={true}
-      className="text-foreground opacity-50"
-    />
+    <ChevronDown size={16} aria-hidden={true} className="text-white" />
   </SelectPrimitive.Trigger>
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
@@ -54,7 +50,7 @@ const SelectScrollUpButton = ({
       )}
       {...props}
     >
-      <ChevronUp size={14} className="text-foreground" />
+      <ChevronUp size={14} className="text-primary-foreground" />
     </SelectPrimitive.ScrollUpButton>
   );
 };
@@ -77,19 +73,21 @@ const SelectScrollDownButton = ({
       )}
       {...props}
     >
-      <ChevronDown size={14} className="text-foreground" />
+      <ChevronDown size={14} className="text-primary-foreground" />
     </SelectPrimitive.ScrollDownButton>
   );
 };
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
+    portalHost?: string;
+  }
+>(({ className, children, position = "popper", portalHost, ...props }, ref) => {
   const { open } = SelectPrimitive.useRootContext();
 
   return (
-    <SelectPrimitive.Portal>
+    <SelectPrimitive.Portal hostName={portalHost}>
       <SelectPrimitive.Overlay
         style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
       >

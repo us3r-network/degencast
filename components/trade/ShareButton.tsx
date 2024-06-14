@@ -1,7 +1,8 @@
-import React, { ReactNode, forwardRef, useEffect, useState } from "react";
+import { useConnectWallet } from "@privy-io/react-auth";
+import React, { forwardRef, useEffect, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import NumberField from "~/components/common/NumberField";
 import { COMING_SOON_TAG } from "~/components/common/TextWithTag";
@@ -27,14 +28,14 @@ import {
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
-import ActiveWallet from "./ActiveWallet";
+import { TokenWithValue } from "../common/TokenInfo";
+import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import {
   ErrorInfo,
-  TransactionSuccessInfo,
+  TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
 import ToeknSelect from "./UserTokenSelect";
-import { TokenWithValue } from "../common/TokenInfo";
 
 export function SellButton({
   logo,
@@ -47,59 +48,78 @@ export function SellButton({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className={cn("w-14")} size="sm" variant={"secondary"}>
-          <Text>Sell</Text>
-        </Button>
-      </DialogTrigger>
-      {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Sell</DialogTitle>
-            <ActiveWallet />
-          </DialogHeader>
-          <SellShare
-            logo={logo}
-            name={name}
-            sharesSubject={sharesSubject}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Sell more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Sell</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setTransationData(undefined);
+          setError("");
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button className={cn("w-14")} size="sm" variant={"secondary"}>
+            <Text>Sell</Text>
+          </Button>
+        </DialogTrigger>
+        {!transationData && !error && (
+          <DialogContent className="w-screen">
+            <DialogHeader
+              className={cn("mr-4 flex-row items-center justify-between gap-2")}
+            >
+              <DialogTitle>Sell</DialogTitle>
+            </DialogHeader>
+            <View className="flex-row items-center justify-between gap-2">
+              <Text>Active Wallet</Text>
+              <UserWalletSelect />
+            </View>
+            <SellShare
+              logo={logo}
+              name={name}
+              sharesSubject={sharesSubject}
+              onSuccess={setTransationData}
+              onError={setError}
+            />
+          </DialogContent>
+        )}
+        {transationData && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Transaction</DialogTitle>
+            </DialogHeader>
+            <TransactionInfo
+              data={transationData}
+              buttonText="Sell more"
+              buttonAction={() => setTransationData(undefined)}
+            />
+          </DialogContent>
+        )}
+        {error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Error</DialogTitle>
+            </DialogHeader>
+            <ErrorInfo
+              error={error}
+              buttonText="Try Again"
+              buttonAction={() => setError("")}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
+    );
 }
 
 const SellShare = forwardRef<
@@ -117,6 +137,8 @@ const SellShare = forwardRef<
     ref,
   ) => {
     const account = useAccount();
+    const chainId = useChainId();
+    const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
     const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
@@ -135,6 +157,7 @@ const SellShare = forwardRef<
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && price) {
         const transationData = {
+          chain: SHARE_CONTRACT_CHAIN,
           transactionReceipt,
           description: (
             <View className="flex-row items-center gap-2">
@@ -171,7 +194,7 @@ const SellShare = forwardRef<
         />
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-lg font-bold">Quantity</Text>
+            <Text className="text-lg font-medium">Quantity</Text>
             {price && amount && token && token.decimals ? (
               <Text className="text-xs">
                 {formatUnits(price / BigInt(amount), token.decimals)}
@@ -189,7 +212,7 @@ const SellShare = forwardRef<
           />
         </View>
         <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-bold">Receive:</Text>
+          <Text className="text-lg font-medium">Receive:</Text>
           {price && amount && token && token.decimals ? (
             <Text className="text-md">
               {formatUnits(price, token.decimals)} {token.symbol}
@@ -198,14 +221,27 @@ const SellShare = forwardRef<
             <Text className="text-md">fetching price...</Text>
           )}
         </View>
-        <Button
-          variant={"secondary"}
-          className="w-full"
-          disabled={!account || waiting || writing || balance <= 0}
-          onPress={() => sell(amount)}
-        >
-          <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
-        </Button>
+        {chainId === token?.chainId ? (
+          <Button
+            variant={"secondary"}
+            className="w-full"
+            disabled={!account || waiting || writing || balance <= 0}
+            onPress={() => sell(amount)}
+          >
+            <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={switchChainStatus === "pending"}
+            onPress={async () => {
+              await switchChain({ chainId: SHARE_CONTRACT_CHAIN.id });
+            }}
+          >
+            <Text>Switch to {SHARE_CONTRACT_CHAIN.name}</Text>
+          </Button>
+        )}
       </View>
     );
   },
@@ -224,67 +260,85 @@ export function BuyButton({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-
-  return (
-    <Dialog
-      onOpenChange={() => {
-        setTransationData(undefined);
-        setError("");
-      }}
-    >
-      <DialogTrigger asChild>
-        {renderButton ? (
-          renderButton()
-        ) : (
-          <Button className={cn("w-14")} size="sm" variant={"secondary"}>
-            <Text>Buy</Text>
-          </Button>
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+  if (!account.address)
+    return (
+      <Button
+        className={cn("w-14")}
+        size="sm"
+        variant={"secondary"}
+        onPress={connectWallet}
+      >
+        <Text>Buy</Text>
+      </Button>
+    );
+  else
+    return (
+      <Dialog
+        onOpenChange={() => {
+          setTransationData(undefined);
+          setError("");
+        }}
+      >
+        <DialogTrigger asChild>
+          {renderButton ? (
+            renderButton()
+          ) : (
+            <Button className={cn("w-14")} size="sm" variant={"secondary"}>
+              <Text>Buy</Text>
+            </Button>
+          )}
+        </DialogTrigger>
+        {!transationData && !error && (
+          <DialogContent className="w-screen">
+            <DialogHeader
+              className={cn("mr-4 flex-row items-center justify-between gap-2")}
+            >
+              <DialogTitle>Buy Shares & get allowance</DialogTitle>
+            </DialogHeader>
+            <View className="flex-row items-center justify-between gap-2">
+              <Text>Active Wallet</Text>
+              <UserWalletSelect />
+            </View>
+            <BuyShare
+              logo={logo}
+              name={name}
+              sharesSubject={sharesSubject}
+              onSuccess={setTransationData}
+              onError={setError}
+            />
+            <DialogFooter>
+              <About title={SHARE_TITLE} info={SHARE_INFO} />
+            </DialogFooter>
+          </DialogContent>
         )}
-      </DialogTrigger>
-      {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Buy Shares & get allowance</DialogTitle>
-            <ActiveWallet />
-          </DialogHeader>
-          <BuyShare
-            logo={logo}
-            name={name}
-            sharesSubject={sharesSubject}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-          <DialogFooter>
-            <About title={SHARE_TITLE} info={SHARE_INFO} />
-          </DialogFooter>
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionSuccessInfo
-            data={transationData}
-            buttonText="Buy more"
-            buttonAction={() => setTransationData(undefined)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
+        {transationData && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Transaction</DialogTitle>
+            </DialogHeader>
+            <TransactionInfo
+              data={transationData}
+              buttonText="Buy more"
+              buttonAction={() => setTransationData(undefined)}
+            />
+          </DialogContent>
+        )}
+        {error && (
+          <DialogContent className="w-screen">
+            <DialogHeader className={cn("flex gap-2")}>
+              <DialogTitle>Error</DialogTitle>
+            </DialogHeader>
+            <ErrorInfo
+              error={error}
+              buttonText="Try Again"
+              buttonAction={() => setError("")}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
+    );
 }
 
 const BuyShare = forwardRef<
@@ -302,6 +356,8 @@ const BuyShare = forwardRef<
     ref,
   ) => {
     const account = useAccount();
+    const chainId = useChainId();
+    const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
     const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
@@ -329,6 +385,7 @@ const BuyShare = forwardRef<
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && price) {
         const transationData = {
+          chain: SHARE_CONTRACT_CHAIN,
           transactionReceipt,
           description: (
             <View className="flex-row items-center gap-2">
@@ -361,7 +418,7 @@ const BuyShare = forwardRef<
         />
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-lg font-bold">Quantity</Text>
+            <Text className="text-lg font-medium">Quantity</Text>
             {fetchedPrice ? (
               <Text className="text-xs">
                 {perSharePrice}
@@ -376,7 +433,7 @@ const BuyShare = forwardRef<
           <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
         </View>
         <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-bold">Total Cost</Text>
+          <Text className="text-lg font-medium">Total Cost</Text>
           {fetchedPrice ? (
             <Text>
               {formatUnits(price, token.decimals!)} {token.symbol}
@@ -385,19 +442,32 @@ const BuyShare = forwardRef<
             <Text>fetching price...</Text>
           )}
         </View>
-        <Button
-          variant={"secondary"}
-          className="w-full"
-          disabled={
-            !account ||
-            waiting ||
-            writing ||
-            Number(token?.rawBalance) < Number(price)
-          }
-          onPress={() => buy(amount, price)}
-        >
-          <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
-        </Button>
+        {chainId === token?.chainId ? (
+          <Button
+            variant={"secondary"}
+            className="w-full"
+            disabled={
+              !account ||
+              waiting ||
+              writing ||
+              Number(token?.rawBalance) < Number(price)
+            }
+            onPress={() => buy(amount, price)}
+          >
+            <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={switchChainStatus === "pending"}
+            onPress={async () => {
+              await switchChain({ chainId: SHARE_CONTRACT_CHAIN.id });
+            }}
+          >
+            <Text>Switch to {SHARE_CONTRACT_CHAIN.name}</Text>
+          </Button>
+        )}
       </View>
     );
   },
@@ -406,7 +476,7 @@ const BuyShare = forwardRef<
 export const SHARE_TITLE = "About Channel Share";
 export const SHARE_INFO = [
   `Share holders could claim airdrops after channel token launch ${COMING_SOON_TAG}`,
-  `Share holders could receive channel allowance (same as your Degen allowance) ${COMING_SOON_TAG}`,
+  `Share holders could receive channel allowance (same as your DEGEN allowance) ${COMING_SOON_TAG}`,
   "The price of channel shares will increase after each buy",
   "4% of each trade goes into capital pool to support channel rewards, and Degencast takes a 1% commission",
 ];
@@ -465,10 +535,7 @@ export const BuyButtonWithPrice = ({
   const symbol = token?.symbol || "";
 
   return (
-    <Button
-      variant={"secondary"}
-      className={cn(" flex-col items-center ")}
-    >
+    <Button variant={"secondary"} className={cn(" flex-col items-center ")}>
       {fetchedPrice ? (
         <>
           <Text>Buy with </Text>

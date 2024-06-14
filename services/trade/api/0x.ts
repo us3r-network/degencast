@@ -2,13 +2,16 @@ import axios from "axios";
 import { ZERO_X_API_KEY } from "~/constants";
 
 const ZERO_X_API_ENDPOINT = "https://base.api.0x.org/swap/v1";
-
+const INTEGRATOR_WALLET_ADDRESS =
+  process.env.EXPO_PUBLIC_ZERO_X_INTEGRATOR_WALLET_ADDRESS;
+export const BUY_TOKEN_PERCENTAGE_FEE = 0.0015;
 type SwapParams = {
   sellToken?: string;
   buyToken?: string;
   sellAmount?: string;
   buyAmount?: string;
   takerAddress?: string;
+  skipValidation?: boolean;
 };
 
 export async function getQuote({
@@ -16,6 +19,7 @@ export async function getQuote({
   buyToken,
   sellAmount,
   takerAddress,
+  skipValidation,
 }: SwapParams) {
   if (!Number(sellAmount)) {
     return;
@@ -29,6 +33,9 @@ export async function getQuote({
         buyToken: buyToken || "ETH",
         sellAmount,
         takerAddress,
+        feeRecipient: INTEGRATOR_WALLET_ADDRESS,
+        buyTokenPercentageFee: BUY_TOKEN_PERCENTAGE_FEE,
+        skipValidation,
       },
       headers: {
         "0x-api-key": ZERO_X_API_KEY,
@@ -59,6 +66,8 @@ export async function getPrice({
         buyToken: buyToken || "ETH",
         sellAmount,
         buyAmount,
+        feeRecipient: INTEGRATOR_WALLET_ADDRESS,
+        buyTokenPercentageFee: BUY_TOKEN_PERCENTAGE_FEE,
       },
       headers: {
         "0x-api-key": ZERO_X_API_KEY,

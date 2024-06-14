@@ -1,5 +1,5 @@
 import { useConnectWallet } from "@privy-io/react-auth";
-import { Wallet } from "lucide-react-native";
+import { Wallet } from "~/components/common/Icons";
 import { View } from "react-native";
 import { useAccount } from "wagmi";
 import { shortPubKey } from "~/utils/shortPubKey";
@@ -12,30 +12,30 @@ export default function ActiveWallet() {
   if (account.address)
     return (
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-bold text-secondary">
+        <Text className="text-xs font-medium text-secondary">
           {shortPubKey(account.address)}
         </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
           onPress={connectWallet}
         >
-          <Wallet className="font-bold text-secondary" />
-          <Text className="text-xs font-bold text-secondary">Switch</Text>
+          <Wallet className="font-medium text-secondary" />
+          <Text className="text-xs font-medium text-secondary">Switch</Text>
         </Button>
       </View>
     );
   else
     return (
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs font-bold text-secondary">
+        <Text className="text-xs font-medium text-secondary">
           No Active Wallet
-        </Text>{" "}
+        </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
           onPress={connectWallet}
         >
-          <Wallet className="font-bold text-secondary" />
-          <Text className="text-xs font-bold text-secondary">Connect</Text>
+          <Wallet className="font-medium text-secondary" />
+          <Text className="text-xs font-medium text-secondary">Connect</Text>
         </Button>
       </View>
     );

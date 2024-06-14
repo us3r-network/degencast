@@ -1,16 +1,18 @@
 import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
-import { Heart, Share2 } from "../common/Icons";
+import { DollarSign, Heart, Plus, Repeat, Share2, X } from "../common/Icons";
 import { Text } from "../ui/text";
-import { TextProps, View, ViewProps } from "react-native";
+import { Animated, Easing, TextProps, View, ViewProps } from "react-native";
 import { Image } from "react-native";
 import { CommentIcon2 } from "../common/SvgIcons";
+import { useCallback, useEffect, useState } from "react";
+import { Image as ImageIcon } from "~/components/common/Icons";
 
 export function ActionButton({ className, ...props }: ButtonProps) {
   return (
     <Button
       className={cn(
-        " h-[60px] w-[60px] flex-col rounded-full bg-white p-0",
+        " h-[50px] w-[50px] flex-col rounded-full bg-white p-0 active:bg-white active:opacity-100 web:hover:opacity-100",
         className,
       )}
       {...props}
@@ -35,7 +37,13 @@ export const LikeButton = ({
 }) => {
   return (
     <ActionButton
-      className={cn("", liked && " bg-[#F41F4C]", className)}
+      className={cn(
+        "",
+        liked
+          ? " bg-[#F41F4C] active:bg-[#F41F4C] web:hover:bg-[#F41F4C]"
+          : " bg-white active:bg-white web:hover:bg-white",
+        className,
+      )}
       {...props}
     >
       <Heart
@@ -54,6 +62,24 @@ export const LikeButton = ({
   );
 };
 
+export const RepostButton = ({
+  iconSize = 24,
+  reposted,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+  reposted?: boolean;
+}) => {
+  return (
+    <ActionButton {...props}>
+      <Repeat
+        size={iconSize}
+        className={cn(" stroke-primary", reposted && " stroke-[#00D1A7] ")}
+      />
+    </ActionButton>
+  );
+};
+
 export const GiftButton = ({
   iconSize = 24,
   ...props
@@ -62,11 +88,7 @@ export const GiftButton = ({
 }) => {
   return (
     <ActionButton {...props}>
-      <Image
-        source={require("~/assets/images/degen-icon.png")}
-        resizeMode="contain"
-        style={{ width: iconSize, height: iconSize }}
-      />
+      <DollarSign size={iconSize} className={cn("stroke-primary")} />
       {/* <ActionText>{giftCount || 0}</ActionText> */}
     </ActionButton>
   );
@@ -90,7 +112,7 @@ export const CommentButton = ({
 };
 
 export const ShareButton = ({
-  iconSize,
+  iconSize = 24,
   ...props
 }: ButtonProps & {
   iconSize?: number;
@@ -102,34 +124,205 @@ export const ShareButton = ({
   );
 };
 
+export const MintButton = ({
+  iconSize = 24,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionButton {...props}>
+      <ImageIcon size={iconSize} className={cn("stroke-primary")} />
+    </ActionButton>
+  );
+};
+
+function ActionMenuItem({
+  scaleAnimatedValue,
+  translateYAnimatedValue,
+  showMenu,
+  index,
+  children,
+}: {
+  children: React.ReactNode;
+  scaleAnimatedValue: Animated.Value;
+  translateYAnimatedValue: Animated.Value;
+  showMenu: boolean;
+  index: number;
+}) {
+  useEffect(() => {
+    Animated.timing(scaleAnimatedValue, {
+      toValue: showMenu ? 1 : 0,
+      duration: 200 * index,
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(translateYAnimatedValue, {
+      toValue: showMenu ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [showMenu]);
+  const actionStyle = {
+    position: "absolute" as "absolute",
+    zIndex: index,
+
+    opacity: scaleAnimatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    }),
+    transform: [
+      {
+        scale: scaleAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+      },
+      {
+        translateY: translateYAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -(70 * index)],
+        }),
+      },
+    ],
+  };
+  return <Animated.View style={[actionStyle]}>{children}</Animated.View>;
+}
+
 export const ExplorePostActions = ({
   liked,
   likeCount,
+  liking,
+  reposted,
+  reposting,
+  showActions,
+  showActionsChange,
   onLike,
   onGift,
   onShare,
   onComment,
+  onMint,
+  onRepost,
+
   className,
   ...props
 }: ViewProps & {
   liked: boolean;
   likeCount?: number;
+  liking?: boolean;
+  reposted?: boolean;
+  reposting?: boolean;
+  showActions: boolean;
+  showActionsChange: (showActions: boolean) => void;
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
   onComment?: () => void;
+  onMint?: () => void;
+  onRepost?: () => void;
 }) => {
+  const toggleBtnAnimation = useState(new Animated.Value(0))[0];
+  const toggleActions = useCallback(() => {
+    showActionsChange(!showActions);
+  }, [showActions, showActionsChange]);
+  useEffect(() => {
+    Animated.timing(toggleBtnAnimation, {
+      toValue: showActions ? 1 : 0,
+      duration: 150,
+      easing: Easing.ease,
+      useNativeDriver: true,
+    }).start();
+  }, [showActions]);
+  const scaleAnimatedValue = useState(new Animated.Value(0))[0];
+  const translateYAnimatedValue = useState(new Animated.Value(0))[0];
+
   return (
-    <View className={cn(" flex w-fit flex-col gap-3", className)} {...props}>
-      <LikeButton
-        className=" shadow-md"
-        liked={liked}
-        likeCount={likeCount}
-        onPress={onLike}
-      />
-      <GiftButton className=" shadow-md" onPress={onGift} />
-      <CommentButton className=" shadow-md" onPress={onComment} />
-      <ShareButton className=" shadow-md" onPress={onShare} />
+    <View
+      className={cn(
+        " relative z-0 flex w-fit flex-col items-center",
+        className,
+      )}
+      {...props}
+    >
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={5}
+      >
+        <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={4}
+      >
+        <CommentButton
+          className=" shadow-md shadow-primary"
+          onPress={onComment}
+        />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={3}
+      >
+        <MintButton className=" shadow-md shadow-primary" onPress={onMint} />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={2}
+      >
+        {/* <ShareButton className=" shadow-md shadow-primary" onPress={onShare} /> */}
+        <RepostButton
+          className=" shadow-md shadow-primary"
+          disabled={reposting}
+          reposted={reposted}
+          onPress={onRepost}
+        />
+      </ActionMenuItem>
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={1}
+      >
+        <LikeButton
+          className=" shadow-md shadow-primary"
+          disabled={liking}
+          liked={liked}
+          likeCount={likeCount}
+          onPress={onLike}
+        />
+      </ActionMenuItem>
+      <ActionButton
+        className=" z-10 h-[60px] w-[60px] shadow-md shadow-primary"
+        onPress={toggleActions}
+      >
+        <Animated.View
+          style={[
+            {
+              transform: [
+                {
+                  rotate: toggleBtnAnimation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0deg", "180deg"],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <Image
+            source={require("~/assets/images/degen-icon.png")}
+            resizeMode="contain"
+            style={{ width: 30, height: 30 }}
+          />
+        </Animated.View>
+      </ActionButton>
     </View>
   );
 };
@@ -137,10 +330,15 @@ export const ExplorePostActions = ({
 export const PostDetailActions = ({
   liked = false,
   likeCount,
+  liking,
+  reposted,
+  reposting,
   onLike,
   onGift,
   onShare,
   onComment,
+  onMint,
+  onRepost,
   hideLike,
   hideGift,
   hideShare,
@@ -150,10 +348,15 @@ export const PostDetailActions = ({
 }: ViewProps & {
   liked?: boolean;
   likeCount?: number;
+  liking?: boolean;
+  reposted?: boolean;
+  reposting?: boolean;
   onLike?: () => void;
   onGift?: () => void;
   onShare?: () => void;
   onComment?: () => void;
+  onMint?: () => void;
+  onRepost?: () => void;
   hideLike?: boolean;
   hideGift?: boolean;
   hideShare?: boolean;
@@ -161,17 +364,6 @@ export const PostDetailActions = ({
 }) => {
   return (
     <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
-      {!hideLike && (
-        <LikeButton
-          className={cn(" h-10 w-10", liked && " border-none")}
-          variant={"outline"}
-          iconSize={15}
-          liked={liked}
-          likeCount={likeCount}
-          onPress={onLike}
-        />
-      )}
-
       {!hideGift && (
         <GiftButton
           variant={"outline"}
@@ -190,12 +382,40 @@ export const PostDetailActions = ({
         />
       )}
 
-      {!hideShare && (
+      <MintButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        onPress={onMint}
+      />
+
+      {/* {!hideShare && (
         <ShareButton
           variant={"outline"}
           iconSize={15}
           className=" h-10 w-10"
           onPress={onShare}
+        />
+      )} */}
+
+      <RepostButton
+        variant={"outline"}
+        iconSize={15}
+        className=" h-10 w-10"
+        reposted={reposted}
+        onPress={onRepost}
+        disabled={reposting}
+      />
+
+      {!hideLike && (
+        <LikeButton
+          className={cn(" h-10 w-10 ", liked && " border-none")}
+          variant={liked ? "default" : "outline"}
+          disabled={liking}
+          iconSize={15}
+          liked={liked}
+          likeCount={likeCount}
+          onPress={onLike}
         />
       )}
     </View>

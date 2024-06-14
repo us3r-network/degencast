@@ -8,6 +8,7 @@ import { useCommunityCtx } from "./_layout";
 import CommunityBuyShareButton from "~/components/community/CommunityBuyShareButton";
 import useLoadCommunityShareStatistics from "~/hooks/community/useLoadCommunityShareStatistics";
 import { Image } from "react-native";
+import { Loading } from "~/components/common/Loading";
 
 export default function SharesScreen() {
   const { community } = useCommunityCtx();
@@ -68,7 +69,7 @@ function HasSubjectAddress() {
           ListFooterComponent={() => {
             return loading ? (
               <View className="flex items-center justify-center p-5">
-                <Text>Loading ...</Text>
+                <Loading />
               </View>
             ) : null;
           }}
@@ -100,17 +101,16 @@ function HasSubjectAddress() {
 
 function NoSubjectAddress() {
   return (
-    <View className=" mx-auto h-full max-w-72 flex-col items-center justify-center gap-8">
+    <View className=" mx-auto h-full w-full flex-col items-center justify-center gap-8">
       <Image
         source={require("~/assets/images/no-shares.png")}
         style={{ width: 280, height: 280 }}
       />
-      <Text className=" text-center text-xl font-bold text-primary">
+      <Text className=" text-center text-xl font-medium text-primary">
         Coming Soon
       </Text>
       <Text className="text-center text-base leading-8 text-secondary">
-        Channel NFT & Channel fan tokens Voting rights in channel casts Every
-        trade incurs a 4% fee to encourage creators
+        {`Channel NFT & Channel fan tokens \n Voting rights in channel casts \n Every trade incurs a 4% fee to encourage creators`}
       </Text>
     </View>
   );

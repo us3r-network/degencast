@@ -24,17 +24,15 @@ export default function About({
       open={open}
       onOpenChange={setOpen}
     >
-      <CollapsibleTrigger
-        className={cn("w-full")}
-      >
+      <CollapsibleTrigger className={cn("w-full")}>
         <View className="w-full flex-row items-center justify-between">
-        <Text className="font-bold">{title}</Text>
-        <View>
-          {open ? (
-            <ChevronUp color={"white"} />
-          ) : (
-            <ChevronDown color={"white"} />
-          )}
+          <Text className="font-medium">{title}</Text>
+          <View>
+            {open ? (
+              <ChevronUp color={"white"} />
+            ) : (
+              <ChevronDown color={"white"} />
+            )}
           </View>
         </View>
       </CollapsibleTrigger>

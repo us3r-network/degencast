@@ -12,6 +12,13 @@ import EmbedCasts from "../embed/EmbedCasts";
 import EmbedWebpages from "../embed/EmbedWebpages";
 import EmbedVideo from "../embed/EmbedVideo";
 import { Card } from "~/components/ui/card";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastFid,
+  getCastHex,
+  isNeynarCast,
+} from "~/utils/farcaster/cast-utils";
+import NeynarEmbedWebpages from "../embed/NeynarEmbedWebpages";
 
 export default function FcastMiniCard({
   cast,
@@ -19,10 +26,12 @@ export default function FcastMiniCard({
   className,
   ...props
 }: ViewProps & {
-  cast: FarCast;
-  farcasterUserDataObj: { [key: string]: UserData } | undefined;
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
 }) {
-  const userData = farcasterUserDataObj?.[cast.fid];
+  const castHex = getCastHex(cast);
+  const castFid = getCastFid(cast);
+  const userData = farcasterUserDataObj?.[castFid];
 
   // embed
   const embeds = useMemo(() => getEmbeds(cast), [cast]);
@@ -31,49 +40,74 @@ export default function FcastMiniCard({
   const embedVideos = embeds.videos;
   const embedWebpages = embeds.webpages;
 
+  const isNeynar = isNeynarCast(cast);
+
+  const userInfo = {
+    pfp: isNeynar ? (cast as NeynarCast).author.pfp_url : userData?.pfp,
+    username: isNeynar
+      ? (cast as NeynarCast).author.username
+      : userData?.userName,
+    display: isNeynar
+      ? (cast as NeynarCast).author.display_name
+      : userData?.display,
+  };
   return (
     <Card
-      key={cast.id}
+      key={castHex}
       className={cn(
-        "relative flex min-h-36 flex-col gap-5 overflow-hidden",
+        "relative flex min-h-36 flex-col gap-5 overflow-hidden border-secondary/10",
+        " sm:min-h-64",
         className,
       )}
       {...props}
     >
       {/* user info */}
-      <View className=" absolute bottom-0 left-0 w-full flex-row items-center gap-1 p-2">
+      <View className=" absolute bottom-0 left-0 z-20 w-full flex-row items-center gap-1 p-2">
         <Avatar alt={"Avatar"} className=" h-4 w-4 rounded-full object-cover">
-          <AvatarImage source={{ uri: userData?.pfp }} />
+          <AvatarImage source={{ uri: userInfo.pfp }} />
           <AvatarFallback>
-            <Text>{userData?.userName}</Text>
+            <Text>{userInfo.username}</Text>
           </AvatarFallback>
         </Avatar>
         <Text className="line-clamp-1 text-xs font-medium">
-          {userData?.display}
+          {userInfo.display}
         </Text>
       </View>
       {/* body - text & embed */}
-      {!!cast.text && (
+      {embedImgs.length === 0 && !!cast.text && (
         <View className="p-2 pb-6">
           {/* <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} /> */}
-          <Text className=" line-clamp-4 text-xs leading-6">{cast.text}</Text>
+          <Text
+            className={cn(
+              " line-clamp-4 text-xs leading-6",
+              embedImgs.length === 0 && " sm:line-clamp-6",
+            )}
+          >
+            {cast.text}
+          </Text>
         </View>
       )}
       {embedImgs.length > 0 && (
         <Image
-          className="h-full w-full object-cover"
+          className="z-10 h-full w-full object-contain"
           source={{ uri: embedImgs[0].url }}
         />
       )}
 
       {!cast.text && (
-        <View className="flex flex-col gap-5 overflow-hidden">
+        <View className="z-10 flex flex-col gap-5 overflow-hidden">
           {/* {embedImgs.length > 0 && <EmbedImgs imgs={embedImgs} />} */}
 
           {embedCasts.length > 0 && <EmbedCasts casts={embedCasts} />}
-          {embedWebpages.length > 0 && (
-            <EmbedWebpages webpages={embedWebpages} cast={cast} />
-          )}
+          {embedWebpages.length > 0 &&
+            (isNeynar ? (
+              <NeynarEmbedWebpages
+                webpages={embedWebpages}
+                cast={cast as NeynarCast}
+              />
+            ) : (
+              <EmbedWebpages webpages={embedWebpages} cast={cast as FarCast} />
+            ))}
           {embedVideos.length > 0 && <EmbedVideo uri={embedVideos[0]?.url} />}
         </View>
       )}

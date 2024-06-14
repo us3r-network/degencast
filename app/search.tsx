@@ -1,5 +1,5 @@
 import { Text, TextInput, View, ScrollView } from "react-native";
-import { Stack, useNavigation, Link, Href } from "expo-router";
+import { Stack, useNavigation, Link } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
@@ -13,6 +13,7 @@ import { getSearchResult } from "~/services/farcaster/api";
 
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
+import GoBackButton from "~/components/common/GoBackButton";
 
 type Community = {
   name: string;
@@ -88,7 +89,7 @@ export default function SearchScreen() {
   }, [trendingCommunities]);
 
   return (
-    <ScrollView>
+    <ScrollView className=" bg-primary ">
       <Stack.Screen
         options={{
           header: () => (
@@ -107,7 +108,7 @@ export default function SearchScreen() {
       />
       {loading && (
         <View className="flex items-center justify-center">
-          <Text>Loading...</Text>
+          <Text className=" text-primary-foreground ">Loading...</Text>
         </View>
       )}
 
@@ -119,7 +120,7 @@ export default function SearchScreen() {
               return (
                 <Link
                   key={i}
-                  href={`/communities/${item.channelId}` as Href<string>}
+                  href={`/communities/${item.channelId}`}
                   onPress={() => {
                     saveHistory(item);
                     setRecommend([]);
@@ -143,10 +144,7 @@ export default function SearchScreen() {
           <View className="flex flex-row flex-wrap gap-2">
             {history.map((item, i) => {
               return (
-                <Link
-                  key={i}
-                  href={`/communities/${item.channelId}` as Href<string>}
-                >
+                <Link key={i} href={`/communities/${item.channelId}`}>
                   <SearchItem icon={item.logo} name={item.name} />
                 </Link>
               );
@@ -206,10 +204,7 @@ function CommunityGroup({
       <View className="flex flex-row flex-wrap gap-2">
         {communities.map((item, i) => {
           return (
-            <Link
-              key={i}
-              href={`/communities/${item.channelId}` as Href<string>}
-            >
+            <Link key={i} href={`/communities/${item.channelId}`}>
               <SearchItem icon={item.logo} name={item.name} />
             </Link>
           );
@@ -221,12 +216,12 @@ function CommunityGroup({
 
 function SearchItem({ icon, name }: { icon: string; name: String }) {
   return (
-    <View className="inline-flex w-fit flex-row items-center gap-2 rounded-lg bg-[#a36efe1a] p-2.5 text-sm">
+    <View className="inline-flex w-fit flex-row items-center gap-2 rounded-lg bg-[#ffffff66] p-2.5 text-sm">
       <Avatar alt="" className="h-6 w-6">
         <AvatarImage source={{ uri: icon }} />
       </Avatar>
 
-      <Text>{name}</Text>
+      <Text className="text-primary-foreground">{name}</Text>
     </View>
   );
 }
@@ -238,13 +233,13 @@ function RecommendItem({ icon, name }: { icon: string; name: String }) {
         <AvatarImage source={{ uri: icon }} />
       </Avatar>
 
-      <Text>{name}</Text>
+      <Text className="text-primary-foreground">{name}</Text>
     </View>
   );
 }
 
 function SearchTitle({ title }: { title: string }) {
-  return <Text className="text-base">{title}</Text>;
+  return <Text className="text-primary-foreground">{title}</Text>;
 }
 
 function SearchHeader({
@@ -259,18 +254,14 @@ function SearchHeader({
   const navigation = useNavigation();
   const searchInputRef = useRef<TextInput>(null);
   return (
-    <View className="flex w-full flex-row items-center">
+    <View className="flex w-full flex-row items-center bg-primary">
       <View className="w-fit p-3 ">
-        <Button
-          className="rounded-full bg-[#a36efe1a]"
-          size={"icon"}
-          variant={"ghost"}
+        <GoBackButton
+          className="bg-[#ffffff66]"
           onPress={() => {
             navigation.goBack();
           }}
-        >
-          <BackArrowIcon />
-        </Button>
+        />
       </View>
 
       <View className="hidden flex-grow md:block" />
@@ -278,7 +269,8 @@ function SearchHeader({
       <View className="relative flex-grow md:w-96 md:flex-grow-0">
         <Input
           className={cn(
-            "border-0 bg-[#a36efe1a] text-[12px] text-sm color-[#4c2896] placeholder:color-[#4c2896]",
+            "color-primary-foreground",
+            "border-0 bg-[#ffffff66] text-[12px] text-sm  placeholder:color-[#4c2896]",
             "w-full rounded-full  px-4  outline-none md:w-96",
             "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
           )}
@@ -288,17 +280,6 @@ function SearchHeader({
           autoFocus={true}
           onChangeText={(text) => setValue(text)}
         />
-
-        <Button
-          className="absolute bottom-0 right-1 top-0 flex items-center justify-center"
-          size={"icon"}
-          variant={null}
-          onPress={() => {
-            setValue("");
-          }}
-        >
-          <CrossIcon />
-        </Button>
       </View>
       <View className="w-fit p-3 ">
         <Button
@@ -313,23 +294,6 @@ function SearchHeader({
         </Button>
       </View>
     </View>
-  );
-}
-
-function BackArrowIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
-      <path
-        d="M2.10347 8.88054C1.61698 8.39405 1.61698 7.60586 2.10347 7.11937L7.88572 1.33713C8.11914 1.10371 8.43573 0.972572 8.76583 0.972572C9.09594 0.972572 9.41252 1.10371 9.64594 1.33713C9.87936 1.57055 10.0105 1.88713 10.0105 2.21724C10.0105 2.54734 9.87936 2.86393 9.64594 3.09735L4.74334 7.99996L9.64594 12.9026C9.87936 13.136 10.0105 13.4526 10.0105 13.7827C10.0105 14.1128 9.87936 14.4294 9.64594 14.6628C9.41252 14.8962 9.09594 15.0273 8.76583 15.0273C8.43573 15.0273 8.11914 14.8962 7.88572 14.6628L2.10347 8.88054Z"
-        fill="#4C2896"
-      />
-    </svg>
   );
 }
 

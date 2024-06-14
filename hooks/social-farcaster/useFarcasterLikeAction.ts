@@ -1,134 +1,152 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FarCast } from "~/services/farcaster/types";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterWrite from "./useFarcasterWrite";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import useFarcasterAccount from "./useFarcasterAccount";
 import useUserAction from "../user/useUserAction";
 import { UserActionName } from "~/services/user/types";
-import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import {
+  addLike,
+  addLikePending,
+  removeLike,
+  removeLikePending,
+  selectCastReactions,
+} from "~/features/cast/castReactionsSlice";
+import useFarcasterSigner from "./useFarcasterSigner";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import {
+  getCastFid,
+  getCastHex,
+  getCastReactionsCount,
+} from "~/utils/farcaster/cast-utils";
 
 export default function useFarcasterLikeAction({
   cast,
   onLikeSuccess,
   onRemoveLikeSuccess,
 }: {
-  cast: FarCast;
+  cast: FarCast | NeynarCast;
   onLikeSuccess?: () => void;
   onRemoveLikeSuccess?: () => void;
 }) {
-  const { user, authenticated } = usePrivy();
-  const { signerPublicKey } = useFarcasterAccount();
+  const dispatch = useAppDispatch();
+  const { reactions, likePendingCastIds } = useAppSelector(selectCastReactions);
 
+  const { authenticated, login } = usePrivy();
+  const { currFid } = useFarcasterAccount();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { submitUserAction } = useUserAction();
-  const { likeCast: likeCastAction } = useFarcasterWrite();
+  const { likeCast, removeLikeCast } = useFarcasterWrite();
 
-  const castHex = getCastHex(cast);
-  const castFid = cast.fid;
-  const currFid = user?.farcaster?.fid;
+  const castHex = useMemo(() => getCastHex(cast), [cast]);
+  const castFid = useMemo(() => getCastFid(cast), [cast]);
 
-  const { validateLiked, validateLikeActionsPending, fetchCastLikeActions } =
-    useUserCastLikeActionsUtil();
-
-  const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)));
-  const [likeCount, setLikeCount] = useState<number>(
-    Number(cast.like_count || cast.likesCount || 0),
+  const liked = useMemo(
+    () => !!reactions?.[castHex]?.liked,
+    [reactions, castHex],
   );
-  const [likePending, setLikePending] = useState(false);
+  const likePending = useMemo(
+    () => likePendingCastIds.includes(castHex),
+    [likePendingCastIds, castHex],
+  );
 
-  useEffect(() => {
-    setLikes(Array.from(new Set(cast.likes)));
-    setLikeCount(Number(cast.like_count || cast.likesCount || 0));
-  }, [cast]);
+  const [likeCount, setLikeCount] = useState<number>(
+    getCastReactionsCount(cast).likesCount,
+  );
 
-  useEffect(() => {
-    if (authenticated && castHex) {
-      fetchCastLikeActions(castHex);
+  const likeCastAction = useCallback(async () => {
+    if (!authenticated) {
+      login();
+      return;
     }
-  }, [authenticated, castHex]);
-
-  const likeCast = useCallback(async () => {
+    if (!currFid || !hasSigner) {
+      requestSigner();
+      return;
+    }
     if (likePending) {
       return;
     }
     try {
-      setLikePending(true);
+      dispatch(addLikePending(castHex));
+      const res = await likeCast(castHex, Number(castFid));
+      console.log("likeCastAction", res);
+
+      dispatch(addLike(castHex));
       await submitUserAction({
         action: UserActionName.Like,
         castHash: castHex,
       });
-      if (signerPublicKey) {
-        await likeCastAction(castHex, Number(castFid));
-      }
-
-      const tmpSet = new Set(likes);
-      tmpSet.add(`${currFid}`);
-      setLikes(Array.from(tmpSet));
-      setLikeCount(likeCount + 1);
+      setLikeCount((pre) => pre + 1);
       onLikeSuccess?.();
     } catch (error) {
       console.error(error);
     } finally {
-      setLikePending(false);
+      dispatch(removeLikePending(castHex));
     }
   }, [
+    authenticated,
+    currFid,
+    hasSigner,
+    likePending,
     castHex,
     castFid,
-    likeCount,
-    likes,
-    currFid,
-    likePending,
-    signerPublicKey,
+    login,
+    requestSigner,
+    likeCast,
     submitUserAction,
-    likeCastAction,
     onLikeSuccess,
   ]);
 
-  const removeLikeCast = useCallback(async () => {
+  const removeLikeCastAction = useCallback(async () => {
+    if (!authenticated) {
+      login();
+      return;
+    }
+    if (!currFid || !hasSigner) {
+      requestSigner();
+      return;
+    }
     if (likePending) {
       return;
     }
     try {
-      setLikePending(true);
+      dispatch(addLikePending(castHex));
+      const res = await removeLikeCast(castHex, Number(castFid));
+      console.log("removeLikeCastAction", res);
+      dispatch(removeLike(castHex));
       await submitUserAction({
         action: UserActionName.UnLike,
         castHash: castHex,
       });
-      if (signerPublicKey) {
-        await likeCastAction(castHex, Number(castFid));
-      }
 
-      const tmpSet = new Set(likes);
-      tmpSet.delete(`${currFid}`);
-      setLikes(Array.from(tmpSet));
-      setLikeCount(likeCount - 1);
+      setLikeCount((pre) => pre - 1);
       onRemoveLikeSuccess?.();
     } catch (error) {
       console.error(error);
     } finally {
-      setLikePending(false);
+      dispatch(removeLikePending(castHex));
     }
   }, [
+    authenticated,
+    currFid,
+    hasSigner,
+    likePending,
     castHex,
     castFid,
-    likeCount,
-    likes,
-    currFid,
-    likePending,
+    login,
+    requestSigner,
     submitUserAction,
-    likeCastAction,
+    removeLikeCast,
     onRemoveLikeSuccess,
   ]);
 
-  // const liked = likes.includes(`${currFid}`);
-  const liked = validateLiked(castHex);
-  const fetchLikeActionsPending = validateLikeActionsPending(castHex);
+  const fetchLikeActionsPending = true;
 
   return {
-    likes,
+    likeCast: likeCastAction,
+    removeLikeCast: removeLikeCastAction,
     likeCount,
-    likeCast,
-    removeLikeCast,
     liked,
     likePending,
     fetchLikeActionsPending,

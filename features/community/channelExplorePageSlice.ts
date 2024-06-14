@@ -3,6 +3,7 @@ import type { RootState } from "../../store/store";
 import { FarCast } from "~/services/farcaster/types";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export enum ChannelExploreDataOrigin {
   Explore,
@@ -14,8 +15,8 @@ export enum ChannelExploreDataOrigin {
 
 export type ChannelExploreData = {
   origin: ChannelExploreDataOrigin;
-  cast: FarCast;
-  farcasterUserDataObj: {
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: {
     [fid: string]: UserData;
   };
   community?: CommunityInfo;

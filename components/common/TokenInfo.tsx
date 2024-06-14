@@ -12,9 +12,10 @@ type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   mc?: number;
   balance?: string;
   symbol?: string;
+  textClassName?: string;
 };
 
-export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
+export function TokenInfo({ name, logo, symbol, mc, textClassName }: TokenInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
       <Avatar
@@ -23,13 +24,15 @@ export function TokenInfo({ name, logo, mc }: TokenInfoProps) {
       >
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback className="bg-secondary">
-          <Text className="text-sm font-bold">
+          <Text className="text-sm font-medium">
             {upperFirst(name?.slice(0, 2))}
           </Text>
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("line-clamp-1 font-bold")}>{name}</Text>
+        <Text className={cn("line-clamp-1 text-sm font-medium", textClassName)}>
+          {symbol}
+        </Text>
         {mc && mc > 0 && (
           <Text className="text-xs text-secondary">
             {new Intl.NumberFormat("en-US", {
@@ -50,24 +53,30 @@ type TokenWithValueProps = React.ComponentPropsWithoutRef<typeof View> & {
 };
 
 export function TokenWithValue({ token, value }: TokenWithValueProps) {
+  if (typeof value === "bigint") {
+    value = formatUnits(value, token.decimals || 18);
+  }
+  const displayValue = new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 6,
+    notation: "compact",
+  }).format(Number(value));
+
   return (
-    <View className="flex-1 flex-row items-center gap-2">
+    <View className="flex-row items-center gap-2">
       <Avatar
         alt={token.name || ""}
         className={cn("size-8 border-2 border-secondary/10")}
       >
         <AvatarImage source={{ uri: token.logoURI || "" }} />
         <AvatarFallback className="bg-secondary">
-          <Text className="text-sm font-bold">
+          <Text className="text-sm font-medium">
             {upperFirst(token.name?.slice(0, 2))}
           </Text>
         </AvatarFallback>
       </Avatar>
       <View>
-        <Text className={cn("line-clamp-1 font-bold")}>
-          {typeof value === "number" || typeof value === "string"
-            ? `${value}  ${token.symbol}`
-            : `${formatUnits(value, token.decimals || 18)} ${token.symbol}`}
+        <Text className={cn("line-clamp-1 font-medium")}>
+          {`${displayValue} ${token.symbol}`}
         </Text>
       </View>
     </View>

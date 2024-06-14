@@ -17,14 +17,19 @@ import { CommunityInfo } from "~/services/community/types/community";
 import useAuth from "../user/useAuth";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
-import useFarcasterWrite from "../social-farcaster/useFarcasterWrite";
+import useFarcasterSigner from "../social-farcaster/useFarcasterSigner";
+import Toast from "react-native-toast-message";
 
-export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
+export default function useJoinCommunityAction(
+  communityInfo: CommunityInfo,
+  opts?: { showToast?: boolean },
+) {
+  const { showToast } = opts || {};
   const communityId = communityInfo?.id;
   const dispatch = useAppDispatch();
   const { login } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { prepareWrite: farcasterPrepareWrite } = useFarcasterWrite();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
   const { authenticated } = useAuth();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);
@@ -47,8 +52,8 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
       login();
       return;
     }
-    if (!currFid) {
-      farcasterPrepareWrite();
+    if (!currFid || !hasSigner) {
+      requestSigner();
       return;
     }
     if (isPending) return;
@@ -58,11 +63,23 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
         dispatch(addOneToJoinedCommunities(communityInfo));
+        // if (showToast) {
+        //   Toast.show({
+        //     type: "success",
+        //     text1: "Joined",
+        //   });
+        // }
       } else {
         throw new Error(msg);
       }
     } catch (error) {
       console.error(error);
+      if (showToast) {
+        Toast.show({
+          type: "error",
+          text1: "Failed to join",
+        });
+      }
     } finally {
       dispatch(removeOneFromJoinActionPendingIds(communityId));
     }
@@ -74,7 +91,8 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
     authenticated,
     login,
     currFid,
-    farcasterPrepareWrite,
+    hasSigner,
+    showToast,
   ]);
 
   const unjoiningAction = useCallback(async () => {
@@ -89,15 +107,27 @@ export default function useJoinCommunityAction(communityInfo: CommunityInfo) {
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
         dispatch(removeOneFromJoinedCommunities(communityId));
+        // if (showToast) {
+        //   Toast.show({
+        //     type: "success",
+        //     text1: "Unjoined",
+        //   });
+        // }
       } else {
         throw new Error(msg);
       }
     } catch (error) {
       console.error(error);
+      if (showToast) {
+        Toast.show({
+          type: "error",
+          text1: "Failed to unjoin",
+        });
+      }
     } finally {
       dispatch(removeOneFromJoinActionPendingIds(communityId));
     }
-  }, [dispatch, isPending, communityId, authenticated, login]);
+  }, [dispatch, isPending, communityId, authenticated, login, showToast]);
 
   const joinChangeAction = useCallback(() => {
     if (joined) {

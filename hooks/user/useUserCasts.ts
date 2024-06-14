@@ -10,7 +10,7 @@ import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 
 const PAGE_SIZE = 30;
 
-export default function useUseCasts() {
+export default function useUserCasts() {
   const [casts, setCasts] = useState<Array<ProfileFeedsDataItem>>([]);
   const [loading, setLoading] = useState(false);
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});

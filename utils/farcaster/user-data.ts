@@ -1,4 +1,5 @@
 import { UserDataType } from "@external-types/farcaster";
+import { FarcasterUserData } from "~/services/farcaster/types";
 
 export type UserData = {
   fid: string;
@@ -9,13 +10,7 @@ export type UserData = {
   url: string;
 };
 
-export function userDataObjFromArr(
-  dataArr: {
-    fid: string;
-    type: number;
-    value: string;
-  }[],
-) {
+export function userDataObjFromArr(dataArr: Array<FarcasterUserData>) {
   const temp: { [key: string]: UserData } = {};
   (dataArr || []).forEach((item) => {
     let pfp = "";

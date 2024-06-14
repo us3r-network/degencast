@@ -4,13 +4,19 @@ import type { PrivyClientConfig } from '@privy-io/react-auth';
 export const privyConfig: PrivyClientConfig = {
     // Customize Privy's appearance in your app
     appearance: {
-        accentColor: "#676FFF",
-        logo: "https://u3.xyz/logo192.png",
+        accentColor: "#4C2896",
+        logo: "/logo192.png",
     },
     // Create embedded wallets for users who don't have a wallet
     embeddedWallets: {
         createOnLogin: "users-without-wallets",
     },
+    externalWallets: { 
+        coinbaseWallet: { 
+          // Valid connection options include 'eoaOnly' (default), 'smartWalletOnly', or 'all'
+          connectionOptions: 'smartWalletOnly', 
+        }, 
+      }, 
     fiatOnRamp:{
         useSandbox:true
     },
@@ -21,7 +27,6 @@ export const privyConfig: PrivyClientConfig = {
             "metamask",
             "detected_wallets",
             "coinbase_wallet",
-            "rainbow",
         ],
     },
 }
