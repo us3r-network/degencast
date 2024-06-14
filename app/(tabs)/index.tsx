@@ -52,39 +52,37 @@ export default function ExploreLayout() {
           onValueChange={(value) => {
             setActiveScreen(value);
           }}
-          className="h-full w-full"
+          className="flex h-full w-full flex-col gap-4"
         >
-          <View className="absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2 px-4">
-            <TabsList className="flex-row rounded-full bg-white shadow-lg">
-              {TABS.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  className={cn("flex-1 flex-row rounded-full")}
-                  value={tab.value}
+          <TabsList className="m-0 h-auto flex-row justify-start gap-[30px] p-0">
+            {TABS.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="m-0 h-auto p-0"
+              >
+                <Text
+                  className={cn(
+                    "text-base font-bold leading-[20px] text-secondary",
+                    activeScreen === tab.value && " text-secondary-foreground",
+                  )}
                 >
-                  <Text
-                    className={cn(
-                      "whitespace-nowrap font-medium text-primary",
-                      activeScreen === tab.value && "text-primary-foreground",
-                    )}
-                  >
-                    {tab.label}
-                  </Text>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </View>
-          {TABS.map((tab) => (
-            <TabsContent
-              key={tab.value}
-              value={tab.value}
-              className="h-full w-full pt-5"
-            >
-              <Card className="box-border h-full w-full overflow-hidden rounded-[20px] border-none">
+                  {tab.label}
+                </Text>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <View className="w-full flex-1">
+            {TABS.map((tab) => (
+              <TabsContent
+                key={tab.value}
+                value={tab.value}
+                className="h-full w-full"
+              >
                 {tab.screenComponent}
-              </Card>
-            </TabsContent>
-          ))}
+              </TabsContent>
+            ))}
+          </View>
         </Tabs>
       </View>
     </SafeAreaView>
