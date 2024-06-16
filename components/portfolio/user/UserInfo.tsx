@@ -26,7 +26,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
   const walletAccount = getUserWallets(user)[0];
   fid = fid || farcasterAccount?.fid || undefined;
   useUserChannels(fid); //preload channels
-  useUserCasts(fid, farcasterAccount.fid || undefined); //preload casts
+  useUserCasts(fid, farcasterAccount?.fid || undefined); //preload casts
   const { userInfo, load } = useUserBulk(farcasterAccount?.fid || undefined);
   useEffect(() => {
     if (fid) load(fid);
