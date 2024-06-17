@@ -1,27 +1,26 @@
-import type { PublicClient, TransactionReceipt, WalletClient } from "viem";
 import {
   create1155CreatorClient,
   getTokenIdFromCreateReceipt,
 } from "@zoralabs/protocol-sdk";
-import { usePublicClient, useWalletClient } from "wagmi";
-import { FarCast } from "~/services/farcaster/types";
-import { storeNFT } from "~/services/shared/api/nftStorage";
+import { cloneDeepWith } from "lodash";
 import { useState } from "react";
+import type { PublicClient, TransactionReceipt, WalletClient } from "viem";
+import { usePublicClient, useWalletClient } from "wagmi";
+import { DEGENCAST_WEB_HOST } from "~/constants";
 import { ZORA_CREATE_REFERRAL } from "~/constants/zora";
-import useCastCollection from "./useCastCollection";
+import { FarCast } from "~/services/farcaster/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { storeNFT } from "~/services/shared/api/nftStorage";
 import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { imgLinkToBlob } from "~/utils/image";
-import { UserData } from "~/utils/farcaster/user-data";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
-import useUserAction from "~/hooks/user/useUserAction";
-import { UserActionName } from "~/services/user/types";
-import { cloneDeepWith } from "lodash";
+import useCastCollection from "./useCastCollection";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
-const CAST_TOKEN_EXTERNAL_URL = "https://degencast.xyz?nft_link=cast";
+export const CAST_TOKEN_EXTERNAL_URL = DEGENCAST_WEB_HOST + "?nft_link=cast";
 
 const getCreateAt = () => {
   return Math.floor(Date.now() / 1000);
@@ -36,7 +35,7 @@ const getCastCollectionMetadata = async ({
   const imageBlob = await imgLinkToBlob(imgUrl);
   return {
     name: `${currUserDisplayName}'s Degencast`,
-    description: `${currUserDisplayName}'s Zora mint with degencast.xyz`,
+    description: `${currUserDisplayName}'s Zora mint with degencast.wtf`,
     external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
@@ -55,14 +54,16 @@ const getCastTokenMetadata = async ({
   channelId,
 }: {
   imgUrl: string;
-  cast: FarCast;
-  castUserData: UserData;
+  cast: FarCast | NeynarCast;
+  castUserData?: {
+    display: string;
+  };
   channelId: string;
 }) => {
   const imageBlob = await imgLinkToBlob(imgUrl);
   const text = cast.text;
   const textPreview = text.length > 100 ? text.slice(0, 100) + "..." : text;
-  const userDisplayName = castUserData.display;
+  const userDisplayName = castUserData?.display || "";
   const castHex = getCastHex(cast);
   return {
     name: `${userDisplayName}: ${textPreview}`,
@@ -147,8 +148,10 @@ export default function useCreateNew1155Token({
   currUserDisplayName,
   onCreateTokenSuccess,
 }: {
-  cast: FarCast;
-  castUserData: UserData;
+  cast: FarCast | NeynarCast;
+  castUserData?: {
+    display: string;
+  };
   imgUrl: string;
   channelId: string;
   currUserDisplayName: string;

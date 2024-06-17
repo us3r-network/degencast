@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash";
 import { fetchUserChannels } from "~/services/farcaster/api";
 import { fetchUserActiveChannels } from "~/services/farcaster/neynar/farcaster";
-import { Channel } from "~/services/farcaster/types/neynar";
+import { Channel } from "~/services/farcaster/types";
+import { PageInfo } from "~/services/farcaster/types/neynar";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
@@ -11,9 +12,7 @@ type UserChannelsState = {
   // cache: Map<number, NeynarChannelsResp>;
   fid?: number;
   items: Channel[];
-  next: {
-    cursor: string | null;
-  };
+  next: PageInfo;
   status: AsyncRequestStatus;
   error: string | undefined;
 };
@@ -34,18 +33,6 @@ export const fetchItems = createAsyncThunk(
     const { userChannels } = thunkAPI.getState() as {
       userChannels: UserChannelsState;
     };
-    if (
-      userChannels.fid === fid &&
-      userChannels.items.length > 0 &&
-      !userChannels.next.cursor
-    ) {
-      return {
-        channels: [],
-        next: {
-          cursor: null,
-        },
-      };
-    }
 
     let priorityChannels: Channel[] = [];
     if (userChannels.fid !== fid) {

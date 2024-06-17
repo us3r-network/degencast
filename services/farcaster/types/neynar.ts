@@ -1,5 +1,3 @@
-import { TokenWithTradeInfo } from "~/services/trade/types";
-
 export type NeynarCast = {
   object: "cast";
   hash: string;
@@ -16,7 +14,34 @@ export type NeynarCast = {
   embeds: any[];
   reactions: Reactions;
   replies: Replies;
-  mentioned_profiles: any[];
+  mentioned_profiles: Author[];
+  frames?: NeynarFrame[];
+  viewer_context?: {
+    liked: boolean;
+    recasted: boolean;
+  };
+};
+
+export type NeynarFrame = {
+  version: string;
+  title: string;
+  image: string;
+  image_aspect_ratio: string;
+  buttons: Array<{
+    index: number;
+    title?: string;
+    action_type: string;
+    target?: string;
+    post_url?: string;
+  }>;
+  input: {
+    text?: string;
+  };
+  state: {
+    serialized?: string;
+  };
+  post_url: string;
+  frames_url: string;
 };
 
 export type Author = {
@@ -56,15 +81,15 @@ export interface VerifiedAddresses {
 export interface Reactions {
   likes_count: number;
   recasts_count: number;
-  likes: any[];
-  recasts: any[];
+  likes: Array<{ fid: number; fname: string }>;
+  recasts: Array<{ fid: number; fname: string }>;
 }
 
 export interface Replies {
   count: number;
 }
 
-export type Channel = {
+export type NeynarChannel = {
   id: string;
   url: string;
   name: string;
@@ -73,15 +98,23 @@ export type Channel = {
   image_url: string;
   object: string;
   parent_url: string;
-  hosts:Author[];
-  tokenInfo?: TokenWithTradeInfo;
+  hosts: Author[];
 };
 
 export type PageInfo = {
-    cursor: string | null;
-}
+  cursor: string | null;
+};
 
 export type NeynarChannelsResp = {
-  channels: Channel[];
+  channels: NeynarChannel[];
   next: PageInfo;
-}
+};
+
+export type ConversationCast = NeynarCast & {
+  direct_replies: Array<ConversationCast>;
+};
+
+export type NeynarCastsResp = {
+  casts: NeynarCast[];
+  next: PageInfo;
+};

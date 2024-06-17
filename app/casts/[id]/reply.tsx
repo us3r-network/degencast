@@ -9,15 +9,16 @@ import { WarpcastChannel } from "~/services/community/api/community";
 import Editor from "~/components/social-farcaster/Editor";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { useLocalSearchParams } from "expo-router";
-import getCastHex from "~/utils/farcaster/getCastHex";
 import { FarCast } from "~/services/farcaster/types";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import { Card, CardContent } from "~/components/ui/card";
 import FCast from "~/components/social-farcaster/FCast";
 import { UserData } from "~/utils/farcaster/user-data";
 import { CommunityInfo } from "~/services/community/types/community";
-import useLoadCastDetail from "~/hooks/social-farcaster/useLoadCastDetail";
 import GoBackButton from "~/components/common/GoBackButton";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
 
 const HomeChanel = {
   id: "",
@@ -55,19 +56,24 @@ function CachedCastReply() {
 function FetchedCastReply() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { cast, farcasterUserDataObj, loading, loadCastDetail } =
-    useLoadCastDetail();
+
+  const {
+    cast: fetchedNeynarCast,
+    loading: neynarCastLoading,
+    loadNeynarCastDetail,
+  } = useLoadNeynarCastDetail();
   useEffect(() => {
-    loadCastDetail(id as string);
-  }, [id]);
+    if (id) {
+      loadNeynarCastDetail(id as string);
+    }
+  }, [id, loadNeynarCastDetail]);
   // TODO - community info
   const community = null;
 
   return (
     <CastReplyWithData
-      castLoading={loading}
-      cast={cast!}
-      farcasterUserDataObj={farcasterUserDataObj}
+      castLoading={neynarCastLoading}
+      cast={fetchedNeynarCast!}
       community={community!}
     />
   );
@@ -80,8 +86,8 @@ function CastReplyWithData({
   community,
 }: {
   castLoading: boolean;
-  cast: FarCast;
-  farcasterUserDataObj: {
+  cast: FarCast | NeynarCast;
+  farcasterUserDataObj?: {
     [key: string]: UserData;
   };
   community: CommunityInfo;
@@ -141,7 +147,7 @@ function CastReplyWithData({
                       }),
                       parentCastId: {
                         hash: getCastHex(cast),
-                        fid: Number(cast.fid),
+                        fid: Number(getCastFid(cast)),
                       },
                     }).then((res) => {
                       console.log("res", res);

@@ -2,21 +2,19 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 import {
-  ChannelCastData,
-  ChannelTrendingCastData,
-  getFarcasterTrendingWithChannelId,
+  NaynarChannelCastsFeedData,
+  getNaynarChannelCastsFeed,
 } from "~/services/farcaster/api";
-import { UserData, userDataObjFromArr } from "~/utils/farcaster/user-data";
 import { cloneDeep } from "lodash";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 type CommunityDetailCastsState = {
   [channelId: string]: {
-    items: Array<ChannelCastData>;
+    items: Array<NeynarCast>;
     pageInfo: {
       hasNextPage: boolean;
-      endIndex: number;
+      cursor: string;
     };
-    farcasterUserDataObj: Record<string, UserData>;
     status: AsyncRequestStatus;
     errorMsg: string;
   };
@@ -26,9 +24,8 @@ export const groupDataDefault = {
   items: [],
   pageInfo: {
     hasNextPage: true,
-    endIndex: 0,
+    cursor: "",
   },
-  farcasterUserDataObj: {},
   status: AsyncRequestStatus.IDLE,
   errorMsg: "",
 };
@@ -36,7 +33,7 @@ const communityDetailCastsState: CommunityDetailCastsState = {};
 
 const PAGE_SIZE = 20;
 export const fetchItems = createAsyncThunk<
-  ChannelTrendingCastData,
+  NaynarChannelCastsFeedData,
   {
     channelId: string;
   }
@@ -46,10 +43,10 @@ export const fetchItems = createAsyncThunk<
     const state = getState() as RootState;
     const { communityDetailCasts } = state;
     const data = communityDetailCasts[channelId];
-    const endIndex = data?.pageInfo?.endIndex || 0;
-    const resp = await getFarcasterTrendingWithChannelId({
-      start: endIndex === 0 ? 0 : endIndex + 1,
-      end: endIndex === 0 ? PAGE_SIZE - 1 : endIndex + PAGE_SIZE,
+    const cursor = data?.pageInfo?.cursor || "";
+    const resp = await getNaynarChannelCastsFeed({
+      cursor,
+      limit: PAGE_SIZE,
       channelId,
     });
     if (resp.data.code === ApiRespCode.SUCCESS) {
@@ -94,16 +91,9 @@ export const communityDetailCastsSlice = createSlice({
       .addCase(fetchItems.fulfilled, (state, action) => {
         const { channelId } = action.meta.arg;
         state[channelId].status = AsyncRequestStatus.FULFILLED;
-        const { casts: newItems, farcasterUserData, pageInfo } = action.payload;
+        const { casts: newItems, pageInfo } = action.payload;
         state[channelId].items.push(...newItems);
         state[channelId].pageInfo = { ...pageInfo };
-        if (farcasterUserData.length > 0) {
-          const userDataObj = userDataObjFromArr(farcasterUserData);
-          state[channelId].farcasterUserDataObj = {
-            ...state[channelId].farcasterUserDataObj,
-            ...userDataObj,
-          };
-        }
       })
       .addCase(fetchItems.rejected, (state, action) => {
         const { channelId } = action.meta.arg;

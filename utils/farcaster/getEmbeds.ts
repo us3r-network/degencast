@@ -1,4 +1,5 @@
 import { FarCast } from "~/services/farcaster/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export function isImg(url?: string) {
   if (!url) return false;
@@ -37,7 +38,9 @@ export type Embeds = {
   }>;
 };
 
-export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
+export function formatEmbeds(
+  embeds: FarCast["embeds"] | NeynarCast["embeds"],
+): Embeds {
   const imgs = [];
   const videos = [];
   const webpages = [];
@@ -47,7 +50,21 @@ export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
     if (embed?.cast_id) {
       casts.push(embed);
     } else if (embed?.castId) {
-      casts.push(embed);
+      casts.push({
+        ...embed,
+        castId: {
+          ...embed.castId,
+          hash: Buffer.from(embed?.castId.hash).toString("hex"),
+        },
+      });
+    } else if (embed?.cast_id) {
+      casts.push({
+        ...embed,
+        cast_id: {
+          ...embed.cast_id,
+          hash: Buffer.from(embed?.cast_id.hash).toString("hex"),
+        },
+      });
     } else if (embed?.url) {
       if (isImg(embed.url)) {
         imgs.push({
@@ -67,6 +84,6 @@ export function formatEmbeds(embeds: FarCast["embeds"]): Embeds {
   return { imgs, webpages, casts, videos };
 }
 
-export function getEmbeds(cast: FarCast): Embeds {
+export function getEmbeds(cast: FarCast | NeynarCast): Embeds {
   return formatEmbeds(cast.embeds);
 }

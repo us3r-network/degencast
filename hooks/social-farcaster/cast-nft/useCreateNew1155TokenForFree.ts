@@ -1,17 +1,15 @@
-import type { PublicClient, WalletClient } from "viem";
 import {
-  create1155CreatorClient,
-  createPremintClient,
-  getTokenIdFromCreateReceipt,
+  createPremintClient
 } from "@zoralabs/protocol-sdk";
+import { useState } from "react";
+import type { PublicClient, WalletClient } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { FarCast } from "~/services/farcaster/types";
 import { getImage, storeNFT } from "~/services/shared/api/nftStorage";
-import { useState } from "react";
-import { ZORA_CREATE_REFERRAL } from "~/constants/zora";
-import useCastCollection from "./useCastCollection";
 import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
+import useCastCollection from "./useCastCollection";
+import { CAST_TOKEN_EXTERNAL_URL } from "./useCreateNew1155Token";
 
 const CAST_COLLECTION_NAME = "Degencast Cast Collection";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast Collection";
@@ -24,7 +22,7 @@ const getCastCollectionMetadata = async ({ imgUrl }: { imgUrl: string }) => {
   return {
     name: CAST_COLLECTION_NAME,
     description: CAST_COLLECTION_DESCRIPTION,
-    external_url: "https://degencast.xyz?nft_link=cast",
+    external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
       imageOriginUrl: imgUrl,
@@ -48,7 +46,7 @@ const getCastTokenMetadata = async ({
   return {
     name: CAST_TOKEN_NAME,
     description: CAST_TOKEN_DESCRIPTION,
-    external_url: "https://degencast.xyz?nft_link=cast",
+    external_url: CAST_TOKEN_EXTERNAL_URL,
     image: imageBlob,
     properties: {
       imageOriginUrl: imgUrl,

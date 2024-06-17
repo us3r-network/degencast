@@ -17,7 +17,7 @@ import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import useUserChannels from "~/hooks/user/useUserChannels";
 import { cn } from "~/lib/utils";
-import { Channel } from "~/services/farcaster/types/neynar";
+import { Channel } from "~/services/farcaster/types";
 
 export default function ChannelList({ fid }: { fid: number }) {
   const { loading, items, hasNext, loadMore } = useUserChannels(fid);

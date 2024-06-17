@@ -1,40 +1,33 @@
-import { Pressable, View, ViewProps } from "react-native";
-import { FarCast } from "~/services/farcaster/types";
-import { UserData } from "~/utils/farcaster/user-data";
-import FCastText from "./FCastText";
+import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
-import FCastUserInfo from "./FCastUserInfo";
 import FCastEmbeds from "./FCastEmbeds";
 import FCastCommentActions from "./FCastCommentActions";
-import { useRouter } from "expo-router";
 import { CommunityInfo } from "~/services/community/types/community";
+import { ConversationCast } from "~/services/farcaster/types/neynar";
+import NeynarCastUserInfo from "./NeynarCastUserInfo";
+import NeynarCastText from "./NeynarCastText";
 
 export default function FCastComment({
   cast,
-  farcasterUserDataObj,
   communityInfo,
   className,
   ...props
 }: ViewProps & {
-  cast: FarCast;
-  farcasterUserDataObj: { [key: string]: UserData } | undefined;
+  cast: ConversationCast;
   communityInfo: CommunityInfo;
 }) {
-  // const router = useRouter();
-  const userData = farcasterUserDataObj?.[cast.fid];
   return (
     <View className={cn("flex w-full flex-col gap-3", className)} {...props}>
       {/* header - user info */}
       <View className="flex flex-row items-center justify-between gap-6">
-        <FCastUserInfo userData={userData!} />
+        <NeynarCastUserInfo userData={cast.author} />
       </View>
       {/* body - text & embed */}
-      <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
+      <NeynarCastText cast={cast} />
       <FCastEmbeds className="gap-3" cast={cast} />
       <FCastCommentActions
         className=" ml-auto"
         cast={cast}
-        farcasterUserDataObj={farcasterUserDataObj!}
         communityInfo={communityInfo}
       />
     </View>

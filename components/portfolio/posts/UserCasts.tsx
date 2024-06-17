@@ -1,19 +1,23 @@
-import { useEffect } from "react";
+import { usePrivy } from "@privy-io/react-auth";
 import { FlatList, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
-import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
-import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useUserCasts from "~/hooks/user/useUserCasts";
-import { ProfileFeedsGroups } from "~/services/farcaster/types";
-import getCastHex from "~/utils/farcaster/getCastHex";
+import { cn } from "~/lib/utils";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
+import { getUserFarcasterAccount } from "~/utils/privy";
 
 export function CastList({ fid }: { fid: number }) {
-  const { casts, farcasterUserDataObj, loading, loadCasts } = useUserCasts();
-  const { navigateToChannelExplore } = useChannelExplorePage();
-  useEffect(() => {
-    if (fid) loadCasts({ fid: String(fid), group: ProfileFeedsGroups.POSTS });
-  }, [fid]);
+  const { user } = usePrivy();
+  const farcasterAccount = getUserFarcasterAccount(user);
+  const {
+    items: casts,
+    loading,
+    loadMore,
+  } = useUserCasts(fid, farcasterAccount?.fid || undefined);
+  const { navigateToCastDetail } = useCastPage();
   return (
     <View className="container h-full">
       {loading && casts.length === 0 ? (
@@ -22,43 +26,44 @@ export function CastList({ fid }: { fid: number }) {
         <View className="flex-1">
           {casts.length > 0 && (
             <FlatList
-              showsVerticalScrollIndicator={false}
               data={casts}
               numColumns={2}
               columnWrapperStyle={{ gap: 5 }}
+              showsHorizontalScrollIndicator={false}
               ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-              renderItem={({ item }) => {
-                const { data, platform } = item;
+              renderItem={({ item, index }) => {
+                const isLastItem = index === casts.length - 1;
+                const isOdd = index % 2 === 0;
                 return (
                   <Pressable
-                    className="flex-1"
+                    className={cn(
+                      "flex-1",
+                      isLastItem && isOdd && " w-1/2 flex-none pr-[5px]",
+                    )}
                     onPress={() => {
-                      const castHex = getCastHex(data);
-                      navigateToChannelExplore(data.rootParentUrl || "home", {
-                        origin: ChannelExploreDataOrigin.Protfolio,
-                        cast: data,
-                        farcasterUserDataObj: farcasterUserDataObj,
+                      const castHex = getCastHex(item);
+                      navigateToCastDetail(castHex, {
+                        origin: CastDetailDataOrigin.Protfolio,
+                        cast: item,
                       });
                     }}
                   >
-                    <FcastMiniCard
-                      cast={data}
-                      farcasterUserDataObj={farcasterUserDataObj}
-                    />
+                    <FcastMiniCard className="flex-1" cast={item} />
                   </Pressable>
                 );
               }}
-              keyExtractor={({ data, platform }) => data.id}
+              keyExtractor={(item) => item.hash}
               onEndReached={() => {
                 if (loading) return;
-                loadCasts({
-                  fid: String(fid),
-                  group: ProfileFeedsGroups.POSTS,
-                });
+                loadMore();
               }}
               onEndReachedThreshold={1}
               ListFooterComponent={() => {
-                return loading ? <Loading /> : null;
+                return loading ? (
+                  <View className="flex items-center justify-center p-5">
+                    <Loading />
+                  </View>
+                ) : null;
               }}
             />
           )}
