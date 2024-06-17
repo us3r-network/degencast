@@ -21,7 +21,7 @@ import { shortPubKey } from "~/utils/shortPubKey";
 import useUserCasts from "~/hooks/user/useUserCasts";
 
 export default function UserInfo({ fid }: { fid?: number }) {
-  const { ready, authenticated, user } = usePrivy();
+  const { user } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
   const walletAccount = getUserWallets(user)[0];
   fid = fid || farcasterAccount?.fid || undefined;
@@ -50,9 +50,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
   //   userDisplayName,
   //   username,
   // );
-  if (!ready || !authenticated) {
-    return null;
-  } else if (userInfo)
+  if (userInfo)
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
