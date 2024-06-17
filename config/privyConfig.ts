@@ -1,32 +1,42 @@
-import type { PrivyClientConfig } from '@privy-io/react-auth';
+import type { PrivyClientConfig } from "@privy-io/react-auth";
 
-// Replace this with your Privy config
 export const privyConfig: PrivyClientConfig = {
-    // Customize Privy's appearance in your app
-    appearance: {
-        accentColor: "#4C2896",
-        logo: "/logo192.png",
+  // Customize Privy's appearance in your app
+  appearance: {
+    accentColor: "#4C2896",
+    logo: "/logo192.png",
+    showWalletLoginFirst: false,
+    walletList: [
+      "metamask",
+      "detected_wallets",
+      "coinbase_wallet",
+      "rainbow",
+      "wallet_connect",
+    ],
+  },
+  // Create embedded wallets for users who don't have a wallet
+  embeddedWallets: {
+    createOnLogin: "users-without-wallets",
+  },
+  externalWallets: {
+    coinbaseWallet: {
+      // Valid connection options include 'eoaOnly' (default), 'smartWalletOnly', or 'all'
+      connectionOptions: "all",
     },
-    // Create embedded wallets for users who don't have a wallet
-    embeddedWallets: {
-        createOnLogin: "users-without-wallets",
-    },
-    externalWallets: { 
-        coinbaseWallet: { 
-          // Valid connection options include 'eoaOnly' (default), 'smartWalletOnly', or 'all'
-          connectionOptions: 'all', 
-        }, 
-      }, 
-    fiatOnRamp:{
-        useSandbox:true
-    },
-    loginMethodsAndOrder: {
-        primary: [
-            "farcaster",
-            // "twitter",
-            "metamask",
-            "detected_wallets",
-            "coinbase_wallet",
-        ],
-    },
-}
+  },
+  fiatOnRamp: {
+    useSandbox: true,
+  },
+  loginMethods: ["wallet", "farcaster"],
+//   loginMethodsAndOrder: {
+//     primary: [
+//       "farcaster",
+//       // "twitter",
+//       "metamask",
+//       "detected_wallets",
+//       "coinbase_wallet",
+//       "rainbow",
+//       "wallet_connect",
+//     ],
+//   },
+};
