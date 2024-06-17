@@ -1,24 +1,12 @@
 import {
   Dimensions,
-  Pressable,
   View,
   ScrollView,
   Platform,
-  SafeAreaView,
   PanResponder,
 } from "react-native";
-import FCast from "~/components/social-farcaster/FCast";
-import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
-
-import { Card } from "~/components/ui/card";
-import FCastCommunity, {
-  FCastCommunityDefault,
-} from "~/components/social-farcaster/FCastCommunity";
 import { cn } from "~/lib/utils";
-import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
-import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
-import useLoadExploreCastsWithNaynar from "~/hooks/explore/useLoadExploreCastsWithNaynar";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
@@ -29,6 +17,7 @@ import {
   defaultSwipeData,
 } from "~/utils/userActionEvent";
 import ChannelCard from "./channel-card/ChannelCard";
+import useLoadTrendingChannels from "~/hooks/explore/useLoadTrendingChannels";
 
 const headerHeight = DEFAULT_HEADER_HEIGHT;
 const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -41,20 +30,21 @@ const itemHeight =
   tabsListHeight;
 
 export default function TrendingChannels() {
-  const { navigateToChannelExplore } = useChannelExplorePage();
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
-  const { casts, currentCastIndex, farcasterUserDataObj, setCurrentCastIndex } =
-    useLoadExploreCastsWithNaynar({
-      swipeDataRefValue: swipeData.current,
-      onViewCastActionSubmited: () => {
-        swipeData.current = { ...defaultSwipeData };
-      },
-    });
-  const indexedCasts = casts.map((cast, index) => ({ ...cast, index }));
+  const { items, currentIndex, setCurrentIndex } = useLoadTrendingChannels({
+    swipeDataRefValue: swipeData.current,
+    onViewCastActionSubmited: () => {
+      swipeData.current = { ...defaultSwipeData };
+    },
+  });
+  const indexedItems = items.map((cast, index) => ({
+    ...cast,
+    index,
+  }));
   // 只渲染三个
-  const renderCasts = indexedCasts.slice(
-    Math.max(0, currentCastIndex - 1),
-    Math.min(indexedCasts.length, currentCastIndex + 2),
+  const renderItems = indexedItems.slice(
+    Math.max(0, currentIndex - 1),
+    Math.min(indexedItems.length, currentIndex + 2),
   );
 
   const offsetRemainderPrev = useRef(-1);
@@ -87,7 +77,7 @@ export default function TrendingChannels() {
   );
 
   return (
-    <View style={{ flex: 1 }} className="bg-background">
+    <View style={{ flex: 1 }} className="relative bg-background">
       <View
         className={cn("w-full")}
         style={{ height: itemHeight }}
@@ -122,8 +112,8 @@ export default function TrendingChannels() {
               if (timer.current) clearTimeout(timer.current);
               timer.current = setTimeout(() => {
                 if (offsetRemainderPrev.current === 0) {
-                  const castIndex = renderCasts[index].index;
-                  setCurrentCastIndex(castIndex);
+                  const cIndex = renderItems[index].index;
+                  setCurrentIndex(cIndex);
                 }
               }, 50);
             }
@@ -131,17 +121,17 @@ export default function TrendingChannels() {
           onMomentumScrollEnd={(event) => {
             const offsetY = event.nativeEvent.contentOffset.y;
             const index = Math.round(offsetY / itemHeight);
-            const castIndex = renderCasts[index].index;
-            setCurrentCastIndex(castIndex);
+            const cIndex = renderItems[index].index;
+            setCurrentIndex(cIndex);
           }}
           onScrollEndDrag={(event) => {
             const offsetY = event.nativeEvent.contentOffset.y;
             const index = Math.round(offsetY / itemHeight);
-            const castIndex = renderCasts[index].index;
-            setCurrentCastIndex(castIndex);
+            const cIndex = renderItems[index].index;
+            setCurrentIndex(cIndex);
           }}
         >
-          {renderCasts.map(({ data, platform, community, index }) => {
+          {renderItems.map(({ cast, index, ...community }) => {
             return (
               <View
                 key={index.toString()}
@@ -162,19 +152,15 @@ export default function TrendingChannels() {
                     height: itemHeight - itemPaddingTop,
                   }}
                 >
-                  <ChannelCard
-                    communityInfo={community}
-                    cast={data}
-                    farcasterUserDataObj={farcasterUserDataObj}
-                  />
+                  <ChannelCard communityInfo={community} cast={cast} />
                 </View>
               </View>
             );
           })}
         </ScrollView>
       </View>
-      {casts.length === 0 && (
-        <ScreenLoading className=" fixed left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
+      {items.length === 0 && (
+        <ScreenLoading className=" absolute left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
       )}
     </View>
   );

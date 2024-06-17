@@ -6,6 +6,7 @@ import {
 } from "../types/community";
 import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
+import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 
 export type CommunityTypesData = Array<CommunityTypeEntity>;
 export function fetchCommunityTypes(): RequestPromise<
@@ -189,5 +190,79 @@ export function fetchCoverChannels(
     url: `/topics/channels/trending`,
     method: "get",
     params,
+  });
+}
+
+export type ExploreTrendingChannels = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type ExploreTrendingChannelsData = Array<
+  CommunityEntity &
+    CommunityStatistics & {
+      hosts: Array<Author>;
+      cast?: NeynarCast | null;
+    }
+>;
+export function getExploreTrendingChannels(
+  params: ExploreTrendingChannels,
+): RequestPromise<ApiResp<ExploreTrendingChannelsData>> {
+  return request({
+    url: `/topics/channels/discover`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type ExploreFollowingChannels = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type ExploreFollowingChannelsData = Array<
+  CommunityEntity &
+    CommunityStatistics & {
+      hosts: Array<Author>;
+      cast?: NeynarCast | null;
+    }
+>;
+export function getExploreFollowingChannels(
+  params: ExploreFollowingChannels,
+): RequestPromise<ApiResp<ExploreFollowingChannelsData>> {
+  // TODO following channels api
+  return request({
+    url: `/topics/channels/discover`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type ExploreHostingChannels = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type ExploreHostingChannelsData = Array<
+  CommunityEntity &
+    CommunityStatistics & {
+      hosts: Array<Author>;
+      cast?: NeynarCast | null;
+    }
+>;
+export function getExploreHostingChannels(
+  params: ExploreHostingChannels,
+): RequestPromise<ApiResp<ExploreHostingChannelsData>> {
+  // TODO hosting channels api
+  return request({
+    url: `/topics/channels/discover`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
   });
 }

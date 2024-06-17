@@ -12,8 +12,11 @@ import { AsyncRequestStatus } from "~/services/shared/types";
 export default function useSeenCasts() {
   const dispatch = useAppDispatch();
   const { authenticated } = usePrivy();
-  const { unreportedViewCastsSubmitStatus, unreportedViewCasts } =
-    useAppSelector(selectUserAction);
+  const {
+    unreportedViewCastsSubmitStatus,
+    unreportedViewCasts,
+    reportedViewCasts,
+  } = useAppSelector(selectUserAction);
 
   const postSeenCast = async (castHex: string) => {
     if (authenticated) {
@@ -31,5 +34,7 @@ export default function useSeenCasts() {
   return {
     submitSeenCast: postSeenCast,
     submitUnreportedViewCasts: postUnreportedViewCasts,
+    reportedViewCasts,
+    unreportedViewCasts,
   };
 }

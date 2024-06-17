@@ -19,6 +19,7 @@ export default function useUserAction() {
   const {
     actionPointConfig,
     actionPointConfigRequestStatus,
+    reportedActions,
     unreportedActions,
     unreportedActionsSubmitStatus,
   } = useAppSelector(selectUserAction);
@@ -61,6 +62,7 @@ export default function useUserAction() {
   return {
     actionPointConfigRequestStatus,
     actionPointConfig,
+    reportedActions,
     unreportedActions,
     unreportedActionsSubmitStatus,
     fetchUserActionConfig: getUserActionConfig,

@@ -6,6 +6,8 @@ import { cn } from "~/lib/utils";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 import { Link } from "expo-router";
+import { Author } from "~/services/farcaster/types/neynar";
+import useCommunityPage from "~/hooks/community/useCommunityPage";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -18,76 +20,64 @@ export default function CommunityMetaInfo({
   className,
   ...props
 }: ViewProps & {
-  communityInfo: CommunityData;
+  communityInfo: CommunityData & {
+    hosts?: Array<Author>;
+  };
 }) {
-  const { name, logo, description, memberInfo } = communityInfo;
+  const { navigateToCommunityDetail } = useCommunityPage();
+  const { name, logo, description, memberInfo, channelId } = communityInfo;
+  const hosts = communityInfo?.hosts || [];
   // const hostUserData = communityInfo?.hostUserData || [];
 
   // TODO remove this mock data
-  const hostUserData = [
-    {
-      fid: "528",
-      type: 6,
-      value: "999999999",
-    },
-    {
-      fid: "528",
-      type: 2,
-      value: "999999999 🎩",
-    },
-    {
-      fid: "528",
-      type: 1,
-      value:
-        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/254e8cd6-7e4d-47b9-8aeb-49bebf2dbf00/original",
-    },
-    {
-      fid: "528",
-      type: 3,
-      value:
-        "icebreaker.xyz/0xen |\nhttps://gallery.so/Oxen/galleries | https://opensea.io/collection/farcats",
-    },
-  ];
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const fid = hostUserData?.[0]?.fid;
-  const hostUserDataObjArr = hostUserData?.length
-    ? userDataObjFromArr(hostUserData)
-    : null;
-  const hostUserDataObj = hostUserDataObjArr
-    ? hostUserDataObjArr[fid as string]
-    : null;
 
-  const hosts = hostUserDataObj ? [hostUserDataObj] : [];
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
-      <View className={cn("w-full flex-row gap-3")}>
-        <Avatar
-          alt={name || ""}
-          className=" size-[50px] border border-secondary"
+      <Link
+        className="w-full"
+        href={`/communities/${communityInfo.channelId}`}
+        asChild
+      >
+        <Pressable
+          className="w-full flex-col gap-4"
+          onPress={(e) => {
+            e.stopPropagation();
+            if (!channelId) return;
+            navigateToCommunityDetail(channelId, communityInfo);
+          }}
         >
-          <AvatarImage source={{ uri: logo || "" }} />
-          <AvatarFallback className="border-primary bg-secondary">
-            <Text className="text-sm font-bold">{name}</Text>
-          </AvatarFallback>
-        </Avatar>
-        <View className="flex-1 flex-col justify-between">
-          <Text className="text-base font-bold leading-none">{name}</Text>
-          <View className="flex-row items-end gap-3">
-            <Text className="text-sm font-normal leading-none text-secondary">
-              {displayValue(totalNumber || 0)} Members
-            </Text>
-            <Text className="text-sm font-normal leading-none text-secondary">
-              {displayValue(newPostNumber || 0)} New Casts
-            </Text>
+          <View className={cn("w-full flex-row gap-3")}>
+            <Avatar
+              alt={name || ""}
+              className=" size-[50px] border border-secondary"
+            >
+              <AvatarImage source={{ uri: logo || "" }} />
+              <AvatarFallback className="border-primary bg-secondary">
+                <Text className="text-sm font-bold">{name}</Text>
+              </AvatarFallback>
+            </Avatar>
+            <View className="flex-1 flex-col justify-between">
+              <Text className="text-base font-bold leading-none">{name}</Text>
+              <View className="flex-row items-end gap-3">
+                <Text className="text-sm font-normal leading-none text-secondary">
+                  {displayValue(totalNumber || 0)} Members
+                </Text>
+                <Text className="text-sm font-normal leading-none text-secondary">
+                  {displayValue(newPostNumber || 0)} New Casts
+                </Text>
+              </View>
+            </View>
+            <View className=" flex h-[50px] flex-col justify-center">
+              <CommunityJoinButton communityInfo={communityInfo} />
+            </View>
           </View>
-        </View>
-        <View className=" flex h-[50px] flex-col justify-center">
-          <CommunityJoinButton communityInfo={communityInfo} />
-        </View>
-      </View>
-      <Text className="line-clamp-2 text-sm font-normal leading-6">
-        {description}
-      </Text>
+          <Text className="line-clamp-2 text-sm font-normal leading-6">
+            {description}
+          </Text>
+        </Pressable>
+      </Link>
+
       {hosts.length > 0 && (
         <>
           <Text className=" text-base font-bold">Hosts</Text>
@@ -98,9 +88,9 @@ export default function CommunityMetaInfo({
                   key={host.fid}
                   data={{
                     fid: host.fid,
-                    avatar: host.pfp,
-                    username: host.userName,
-                    displayName: host.display,
+                    avatar: host.pfp_url,
+                    username: host.username,
+                    displayName: host.display_name,
                   }}
                 />
               );
