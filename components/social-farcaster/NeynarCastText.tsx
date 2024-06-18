@@ -38,7 +38,7 @@ export default function NeynarCastText({
       );
       if (mentionData) {
         return (
-          <Link href={`/u/${mentionData.fid}`} key={index}>
+          <Link href={`/u/${mentionData.fid}/tokens`} key={index}>
             <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
               {part}
             </Text>

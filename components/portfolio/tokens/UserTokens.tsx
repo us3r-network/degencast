@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { Address } from "viem";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import {
   ERC20TokenBalance,
@@ -7,7 +8,7 @@ import {
 import { TextClassContext } from "~/components/ui/text";
 import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 
-export default function UserTokens({ address }: { address: `0x${string}` }) {
+export default function UserTokens({ address }: { address: Address }) {
   return (
     <TextClassContext.Provider value="text-foreground">
       <View className="w-full flex-row gap-2">
