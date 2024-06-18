@@ -33,7 +33,7 @@ export default function FCastText({
       const mentionData = farcasterUserDataObj?.[mention];
       if (!mentionData) return null;
       return (
-        <Link href={`/u/${mentionData.fid}`} key={index}>
+        <Link href={`/u/${mentionData.fid}/tokens`} key={index}>
           <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
             {`@${mentionData.userName}`}
           </Text>

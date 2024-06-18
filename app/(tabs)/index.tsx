@@ -1,20 +1,17 @@
 import { usePrivy } from "@privy-io/react-auth";
-import { useRouter, useGlobalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView } from "react-native";
+import { View, SafeAreaView } from "react-native";
+import {
+  ConnectFarcasterCard,
+  headerHeight,
+  itemHeight,
+  itemPaddingTop,
+} from "~/components/explore/ExploreStyled";
 import FollowingScreen from "~/components/explore/following";
 import HostingScreen from "~/components/explore/hosting";
 import TrendingScreen from "~/components/explore/trending";
-import { Button } from "~/components/ui/button";
-import { Card } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
-import useUserHostChannels from "~/hooks/user/useUserHostChannels";
-import { cn } from "~/lib/utils";
-
-const initialRouteName = "trending";
+import useAppSettings from "~/hooks/useAppSettings";
 
 const TABS = [
   { label: "Trending", value: "trending", screenComponent: <TrendingScreen /> },
@@ -25,38 +22,26 @@ const TABS = [
   },
   { label: "Hosting", value: "hosting", screenComponent: <HostingScreen /> },
 ];
-const itemPaddingTop = 15;
 
 export default function ExploreLayout() {
-  const headerHeight = DEFAULT_HEADER_HEIGHT;
-  const globalParams = useGlobalSearchParams<{ tab?: string }>();
-  const { tab } = globalParams || {};
-  const [activeScreen, setActiveScreen] = useState(initialRouteName);
-  useEffect(() => {
-    if (tab) {
-      setActiveScreen(tab);
-    }
-  }, [tab]);
-  const { authenticated, login } = usePrivy();
+  const { authenticated } = usePrivy();
   const { currFid } = useFarcasterAccount();
-  const { requestSigner, hasSigner } = useFarcasterSigner();
-  const { channels } = useUserHostChannels(Number(currFid));
-  const showHosting =
-    authenticated && currFid && hasSigner && channels.length > 0;
+
+  const { exploreActivatedViewName } = useAppSettings();
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: headerHeight }}
+      style={{ flex: 1, paddingTop: headerHeight - itemPaddingTop }}
       className="bg-background"
     >
       <View className=" m-auto w-full flex-1 max-sm:px-4 sm:w-full sm:max-w-screen-sm">
         <Tabs
-          value={activeScreen}
+          value={exploreActivatedViewName}
           onValueChange={(value) => {
-            setActiveScreen(value);
+            // setExploreActivatedViewName(value);
           }}
           className="flex h-full w-full flex-col"
         >
-          <TabsList className="m-0 h-auto flex-row justify-start gap-[30px] p-0">
+          {/* <TabsList className="m-0 h-auto flex-row justify-start gap-[30px] p-0">
             {TABS.map((tab) => {
               if (tab.value === "hosting" && !showHosting) {
                 return null;
@@ -79,65 +64,32 @@ export default function ExploreLayout() {
                 </TabsTrigger>
               );
             })}
-          </TabsList>
+          </TabsList> */}
           <View className="w-full flex-1">
             {TABS.map((tab) => {
-              if (tab.value === "hosting" && !showHosting) {
-                return null;
-              }
-              if (
-                tab.value === "following" &&
-                (!authenticated || !currFid || !hasSigner)
-              ) {
-                return (
-                  <TabsContent
-                    key={tab.value}
-                    value={tab.value}
-                    className="h-full w-full"
-                  >
-                    <View
-                      className="h-full w-full"
-                      style={{
-                        paddingTop: itemPaddingTop,
-                      }}
-                    >
-                      <Card className="box-border h-full w-full flex-col items-center justify-center gap-4 rounded-[20px] border-none">
-                        <Button
-                          className="rounded-lg bg-primary"
-                          onPress={() => {
-                            if (!authenticated) {
-                              login();
-                              return;
-                            }
-                            if (!currFid || !hasSigner) {
-                              requestSigner();
-                              return;
-                            }
-                          }}
-                        >
-                          <Text className="text-primary-foreground">
-                            {(() => {
-                              if (!authenticated) {
-                                return "Log in";
-                              }
-                              if (!currFid || !hasSigner) {
-                                return "Link Farcaster";
-                              }
-                            })()}
-                          </Text>
-                        </Button>
-                      </Card>
-                    </View>
-                  </TabsContent>
-                );
-              }
               return (
                 <TabsContent
                   key={tab.value}
                   value={tab.value}
                   className="h-full w-full"
                 >
-                  {tab.screenComponent}
+                  {(() => {
+                    if (tab.value === "hosting" || tab.value === "following") {
+                      if (!authenticated || !currFid) {
+                        return (
+                          <View
+                            style={{
+                              height: itemHeight,
+                              paddingTop: itemPaddingTop,
+                            }}
+                          >
+                            <ConnectFarcasterCard />
+                          </View>
+                        );
+                      }
+                    }
+                    return tab.screenComponent;
+                  })()}
                 </TabsContent>
               );
             })}

@@ -18,16 +18,7 @@ import {
 } from "~/utils/userActionEvent";
 import ChannelCard from "./channel-card/ChannelCard";
 import useLoadTrendingChannels from "~/hooks/explore/useLoadTrendingChannels";
-
-const headerHeight = DEFAULT_HEADER_HEIGHT;
-const footerHeight = DEFAULT_TABBAR_HEIGHT;
-const tabsListHeight = 20;
-const itemPaddingTop = 15;
-const itemHeight =
-  Dimensions.get("window").height -
-  headerHeight -
-  footerHeight -
-  tabsListHeight;
+import { ExploreSwipeItem, itemHeight } from "./ExploreStyled";
 
 export default function HostingChannels() {
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
@@ -133,28 +124,9 @@ export default function HostingChannels() {
         >
           {renderItems.map(({ cast, index, ...community }) => {
             return (
-              <View
-                key={index.toString()}
-                className={cn(
-                  "flex w-full px-4 sm:max-w-screen-sm sm:px-0",
-                  isDesktop && " w-screen",
-                )}
-                style={{
-                  ...(!isDesktop
-                    ? { width: Dimensions.get("window").width }
-                    : {}),
-                  height: itemHeight,
-                  paddingTop: itemPaddingTop,
-                }}
-              >
-                <View
-                  style={{
-                    height: itemHeight - itemPaddingTop,
-                  }}
-                >
-                  <ChannelCard communityInfo={community} cast={cast} />
-                </View>
-              </View>
+              <ExploreSwipeItem key={index.toString()}>
+                <ChannelCard communityInfo={community} cast={cast} />
+              </ExploreSwipeItem>
             );
           })}
         </ScrollView>

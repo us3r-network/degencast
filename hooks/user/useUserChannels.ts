@@ -31,7 +31,7 @@ export default function useUserChannels(fid?: number) {
     items,
     loading: status === AsyncRequestStatus.PENDING,
     error,
-    hasNext: next.cursor !== undefined,
+    hasNext: !!next.cursor,
     loadMore,
   };
 }

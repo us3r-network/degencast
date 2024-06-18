@@ -18,18 +18,17 @@ export default function UserPortfolioScreen() {
   const segments = useSegments();
   const navigation = useNavigation();
   const { fid } = useLocalSearchParams<{ fid: string }>();
-  const { items: userItems, load } = useUserBulk();
+  const { userInfo, load } = useUserBulk();
 
   useEffect(() => {
     if (Number(fid)) load(Number(fid));
   }, [fid]);
 
   const username = useMemo(() => {
-    if (!userItems || userItems.length === 0) return undefined;
-    const user = userItems[0];
-    if (user?.username) return user.username;
+    if (!userInfo) return undefined;
+    if (userInfo?.username) return userInfo.username;
     return "User Portfolio";
-  }, [userItems]);
+  }, [userInfo]);
 
   if (Number(fid))
     return (

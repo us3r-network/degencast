@@ -17,7 +17,7 @@ export default function FCastUserInfo({
     <Pressable
       onPress={(e) => {
         e.preventDefault();
-        router.push(`/u/${userData.fid}`);
+        router.push(`/u/${userData.fid}/tokens`);
       }}
     >
       <View

@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -7,6 +7,7 @@ import {
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
+import ExploreViewSelect from "~/components/explore/ExploreSelect";
 import {
   Header,
   HeaderLeft,
@@ -25,6 +26,7 @@ import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCommunityRank from "~/hooks/trade/useCommunityRank";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import { logGA } from "~/utils/firebase/analytics.web";
 
 export default function TabLayout() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
@@ -32,7 +34,9 @@ export default function TabLayout() {
   useCommunityTokens();
   // useCommunityShares();
   useCommunityRank();
-
+  useEffect(() => {
+    logGA("app_open", {});
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
@@ -54,14 +58,15 @@ export default function TabLayout() {
             headerTransparent: true,
             header: () => (
               <Header>
-                <HeaderLeft />
+                {/* <HeaderLeft /> */}
+                <ExploreViewSelect />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
-                  <PostLink />
+                  {/* <PostLink />
                   <View>
                     <ExploreSharingButton fid={currFid} />
-                  </View>
+                  </View> */}
                 </HeaderRight>
               </Header>
             ),

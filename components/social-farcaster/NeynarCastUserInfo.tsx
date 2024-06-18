@@ -17,7 +17,7 @@ export default function NeynarCastUserInfo({
     <Pressable
       onPress={(e) => {
         e.preventDefault();
-        router.push(`/u/${userData.fid}`);
+        router.push(`/u/${userData.fid}/tokens`);
       }}
     >
       <View
