@@ -6,16 +6,8 @@ import { Loading } from "../common/Loading";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { cn } from "~/lib/utils";
 import TrendingChannels from "./TrendingChannels";
+import { itemHeight, itemPaddingTop } from "./ExploreStyled";
 
-const headerHeight = DEFAULT_HEADER_HEIGHT;
-const footerHeight = DEFAULT_TABBAR_HEIGHT;
-const tabsListHeight = 20;
-const itemPaddingTop = 15;
-const itemHeight =
-  Dimensions.get("window").height -
-  headerHeight -
-  footerHeight -
-  tabsListHeight;
 export default function TrendingScreen() {
   const {
     coverChannels,

@@ -7,6 +7,7 @@ import {
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
+import ExploreViewSelect from "~/components/explore/ExploreSelect";
 import {
   Header,
   HeaderLeft,
@@ -57,14 +58,15 @@ export default function TabLayout() {
             headerTransparent: true,
             header: () => (
               <Header>
-                <HeaderLeft />
+                {/* <HeaderLeft /> */}
+                <ExploreViewSelect />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
-                  <PostLink />
+                  {/* <PostLink />
                   <View>
                     <ExploreSharingButton fid={currFid} />
-                  </View>
+                  </View> */}
                 </HeaderRight>
               </Header>
             ),
