@@ -6,6 +6,16 @@ import { Channel } from "~/services/farcaster/types";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
+export type OrderParams = {
+  order: "ASC" | "DESC";
+  orderBy: CommunityRankOrderBy;
+};
+
+export const DEFAULT_ORDER_PARAMS: OrderParams = {
+  order: "DESC",
+  orderBy: CommunityRankOrderBy.MARKET_CAP,
+};
+
 type CommunityRankState = {
   items: Channel[];
   orderBy: CommunityRankOrderBy;
@@ -31,7 +41,7 @@ export const fetchItems = createAsyncThunk(
     {
       order,
       orderBy,
-    }: { order: "ASC" | "DESC"; orderBy: CommunityRankOrderBy },
+    }: OrderParams,
     thunkAPI,
   ) => {
     const { communityRank } = thunkAPI.getState() as {
