@@ -22,13 +22,15 @@ import {
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import OnboardingModal from "~/components/portfolio/user/Onboarding";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { logGA } from "~/utils/firebase/analytics.web";
 
 export default function TabLayout() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
-  // preload rank data
+  // preload data
+  useCommunityTokens();
   useCommunityRank();
   useEffect(() => {
     logGA("app_open", {});

@@ -19,7 +19,7 @@ const fundButtonVariants = cva(
         icon:
           "rounded-full",
         text:
-          "bg-secondary",
+          "",
       },
     },
     defaultVariants: {
@@ -32,7 +32,7 @@ const fundButtonTextVariants = cva("text-xs font-semibold ", {
   variants: {
     variant: {
       icon: "",
-      text: "text-secondary-foreground",
+      text: "text-sm native:text-base",
     },
   },
   defaultVariants: {
@@ -88,6 +88,7 @@ export default function FundButton({
     case "text":
       return (
         <Button
+          variant="secondary"
           className={cn(fundButtonVariants({ variant }),className)}
           onPress={buy}
           {...props}
