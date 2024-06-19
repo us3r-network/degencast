@@ -5,7 +5,6 @@ import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { Link } from "expo-router";
 import { Card } from "../ui/card";
-import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { TrendingDown, TrendingUp } from "../common/Icons";
 
 export default function CoverChannels({ data }: { data: CoverChannelsData }) {
@@ -39,18 +38,10 @@ export default function CoverChannels({ data }: { data: CoverChannelsData }) {
 }
 
 function CoverChannelItem({ data: channel }: { data: CoverChannelsData[0] }) {
-  const channelId = channel.id;
-  const { loading: communityTokensLoading, items: communityTokens } =
-    useCommunityTokens();
-  const communityToken = communityTokens.find(
-    (item) => item.tradeInfo?.channel && item.tradeInfo.channel === channelId,
-  );
-  const priceChange24 =
-    communityToken?.tradeInfo?.stats.price_change_percentage?.h24;
+  const symbol = channel?.tokenSymbol;
+  const priceChange24 = channel?.tokenPriceChangePercentag?.h24;
   const priceChange = Number(priceChange24);
   const showPriceChange = priceChange24 !== undefined && priceChange24 !== null;
-
-  const casts = 9999999;
   return (
     <Link className="h-full w-full" href={`/communities/${channel.id}`} asChild>
       <Pressable className="flex h-full w-full flex-col">
@@ -65,11 +56,11 @@ function CoverChannelItem({ data: channel }: { data: CoverChannelsData[0] }) {
         </Avatar>
         <View className="w-full flex-1 flex-col justify-between bg-[#1E293B] p-1">
           <Text className=" text-xs font-medium text-[#718096]">
-            {casts.toLocaleString("en-US")} casts
+            {channel.name}
           </Text>
           <View className=" flex-col gap-1">
             <Text className=" line-clamp-1 text-base font-bold text-white">
-              {communityToken?.symbol}
+              {symbol}
             </Text>
             {showPriceChange && (
               <View className=" flex-row items-center justify-between">

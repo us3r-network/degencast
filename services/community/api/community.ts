@@ -7,6 +7,7 @@ import {
 import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
+import { PriceChangePercentage } from "../types/trade";
 
 export type CommunityTypesData = Array<CommunityTypeEntity>;
 export function fetchCommunityTypes(): RequestPromise<
@@ -182,6 +183,8 @@ export type CoverChannelsData = Array<{
   leadFid: number;
   hostFids: number[];
   followerCount: number;
+  tokenSymbol?: string;
+  tokenPriceChangePercentag?: PriceChangePercentage;
 }>;
 export function fetchCoverChannels(
   params: CoverChannelsParams,

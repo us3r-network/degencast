@@ -5,6 +5,13 @@ export type TradeTransactionStats = {
   sellers: number;
 };
 
+export type PriceChangePercentage = {
+  m5: string;
+  h1: string;
+  h6: string;
+  h24: string;
+};
+
 export type TradeInfo = {
   chain: string;
   chain_id: number;
@@ -25,12 +32,7 @@ export type TradeInfo = {
     token_price_usd: string;
     fdv_usd: string;
     market_cap_usd: string;
-    price_change_percentage: {
-      m5: string;
-      h1: string;
-      h6: string;
-      h24: string;
-    };
+    price_change_percentage: PriceChangePercentage;
     transactions: {
       m5: TradeTransactionStats;
       m15: TradeTransactionStats;
