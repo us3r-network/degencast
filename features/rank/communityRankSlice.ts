@@ -48,8 +48,8 @@ export const fetchItems = createAsyncThunk(
       communityRank: CommunityRankState;
     };
     const response = await fetchRankCommunities({
-      orderBy: communityRank.orderBy || CommunityRankOrderBy.MARKET_CAP,
-      order: communityRank.order || "DESC",
+      orderBy: orderBy || CommunityRankOrderBy.MARKET_CAP,
+      order: order || "DESC",
       pageSize: PAGE_SIZE,
       pageNumber: communityRank.nextPageNumber || 1,
     });
@@ -72,6 +72,7 @@ export const communityRankSlice = createSlice({
           state.items = [];
           state.order = action.meta.arg.order;
           state.orderBy = action.meta.arg.orderBy;
+          state.nextPageNumber = 1;
         }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {

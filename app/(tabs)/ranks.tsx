@@ -186,7 +186,7 @@ function Item({
           }).format(Number(price));
         else return "-";
       case CommunityRankOrderBy.NEW_CASTS:
-        return item.new_casts_count || "-";
+        return item.newCastCount || "-";
       case CommunityRankOrderBy.MEMBERS:
         return item.follower_count || "-";
       case CommunityRankOrderBy.CREATED_DATE:

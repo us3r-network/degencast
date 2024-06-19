@@ -4,15 +4,21 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   DEFAULT_ORDER_PARAMS,
   fetchItems,
-  selectCommunityRank
+  selectCommunityRank,
 } from "~/features/rank/communityRankSlice";
 import { CommunityRankOrderBy } from "~/services/community/types/rank";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useCommunityRank() {
   const dispatch = useDispatch();
-  const { items, status, error, nextPageNumber } =
-    useSelector(selectCommunityRank);
+  const {
+    items,
+    status,
+    error,
+    nextPageNumber,
+    order: currentOrder,
+    orderBy: currentOrderBy,
+  } = useSelector(selectCommunityRank);
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE) {
@@ -27,7 +33,12 @@ export default function useCommunityRank() {
     order: "ASC" | "DESC";
     orderBy: CommunityRankOrderBy;
   }) => {
-    if (status === AsyncRequestStatus.PENDING) return;
+    if (
+      currentOrder === order &&
+      currentOrderBy === orderBy &&
+      status === AsyncRequestStatus.PENDING
+    )
+      return;
     dispatch(
       fetchItems({
         order,

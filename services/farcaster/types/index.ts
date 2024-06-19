@@ -233,5 +233,5 @@ export type FarcasterUserData = {
 
 export type Channel = NeynarChannel & {
   tokenInfo?: TokenWithTradeInfo;
-  new_casts_count?:number;
+  newCastCount?:number;
 };
