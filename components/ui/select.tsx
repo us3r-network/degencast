@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Check, ChevronDown, ChevronUp } from "~/components/common/Icons";
 import * as SelectPrimitive from "~/components/primitives/select";
@@ -7,7 +7,54 @@ import { cn } from "~/lib/utils";
 
 type Option = SelectPrimitive.Option;
 
-const Select = SelectPrimitive.Root;
+// const Select = SelectPrimitive.Root;
+const Select = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>
+>(({ children, open: openSelect, onOpenChange, className, ...props }, ref) => {
+  const [open, setOpen] = React.useState(openSelect);
+  React.useEffect(() => {
+    if (openSelect !== undefined) {
+      setOpen(openSelect);
+    }
+  }, [openSelect]);
+
+  const zIndex = className?.match(/z-(\d+)/)?.[1];
+  return (
+    <>
+      {open && (
+        <Pressable
+          className={cn(
+            " fixed right-0 top-0 h-screen w-screen",
+            zIndex ? `z-${Number(zIndex) - 1}` : "z-[49]",
+          )}
+          onPress={(e) => {
+            if (openSelect !== undefined && onOpenChange) {
+              onOpenChange(false);
+            } else {
+              setOpen(false);
+            }
+          }}
+        />
+      )}
+      <SelectPrimitive.Root
+        className={cn("z-50", className)}
+        open={open}
+        onOpenChange={(o) => {
+          if (openSelect !== undefined && onOpenChange) {
+            onOpenChange(o);
+          } else {
+            setOpen(o);
+          }
+        }}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </SelectPrimitive.Root>
+    </>
+  );
+});
 
 const SelectGroup = SelectPrimitive.Group;
 
