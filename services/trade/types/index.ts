@@ -22,6 +22,12 @@ export type TradeInfo = {
       h24: string;
       m5: string;
     };
+    transactions: {
+      h24: {
+        buys: number;
+        sells: number;
+      };
+    };
   };
 };
 
@@ -47,8 +53,8 @@ export type ShareInfo = {
   amount?: number;
 };
 
-export type TipsInfo = {
-  name?: string | undefined;
-  logo?: string;
-  amount: number;
-};
+// export type TipsInfo = {
+//   name?: string | undefined;
+//   logo?: string;
+//   amount: number;
+// };

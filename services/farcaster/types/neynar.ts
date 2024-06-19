@@ -99,6 +99,7 @@ export type NeynarChannel = {
   object: string;
   parent_url: string;
   hosts: Author[];
+  created_at: string;
 };
 
 export type PageInfo = {

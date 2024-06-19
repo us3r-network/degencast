@@ -1,13 +1,13 @@
 import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 import {
-  TokenTradeInfo,
+  TokenWithTradeInfo,
   ShareInfo,
-  TipsInfo,
+  // TipsInfo,
 } from "../types";
 
 export function communityTokens(): RequestPromise<
-  ApiResp<TokenTradeInfo[]>
+  ApiResp<TokenWithTradeInfo[]>
 > {
   return request({
     url: `topics/trade-tokens`,
@@ -28,14 +28,14 @@ export function communityShares(): RequestPromise<
     },
   });
 }
-export function communityTips(): RequestPromise<
-  ApiResp<TipsInfo[]>
-> {
-  return request({
-    url: `topics/trade-tips`,
-    method: "get",
-    headers: {
-      needToken: true,
-    },
-  });
-}
+// export function communityTips(): RequestPromise<
+//   ApiResp<TipsInfo[]>
+// > {
+//   return request({
+//     url: `topics/trade-tips`,
+//     method: "get",
+//     headers: {
+//       needToken: true,
+//     },
+//   });
+// }
