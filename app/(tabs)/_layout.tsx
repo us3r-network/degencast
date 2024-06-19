@@ -23,7 +23,7 @@ import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import OnboardingModal from "~/components/portfolio/user/Onboarding";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useCommunityRank from "~/hooks/trade/useCommunityRank";
+import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import { logGA } from "~/utils/firebase/analytics.web";
 
 export default function TabLayout() {

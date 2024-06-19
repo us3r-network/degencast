@@ -53,8 +53,8 @@ export type ShareInfo = {
   amount?: number;
 };
 
-export type TipsInfo = {
-  name?: string | undefined;
-  logo?: string;
-  amount: number;
-};
+// export type TipsInfo = {
+//   name?: string | undefined;
+//   logo?: string;
+//   amount: number;
+// };

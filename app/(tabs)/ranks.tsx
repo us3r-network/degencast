@@ -8,8 +8,9 @@ import { TradeButton } from "~/components/trade/TradeButton";
 import { Card, CardContent } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
-import useCommunityRank from "~/hooks/trade/useCommunityRank";
-import { Channel, CommunityRankOrderBy } from "~/services/farcaster/types";
+import useCommunityRank from "~/hooks/rank/useCommunityRank";
+import { CommunityRankOrderBy } from "~/services/community/types/rank";
+import { Channel } from "~/services/farcaster/types";
 
 export default function Ranks() {
   const { loading, items, load, hasMore } = useCommunityRank();

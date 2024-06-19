@@ -6,7 +6,6 @@ import { UserActionData } from "~/services/user/types";
 import {
   ApiResp,
   Channel,
-  CommunityRankOrderBy,
   FarCast,
   FarCastEmbedMetaV2,
   SocialPlatform
@@ -332,22 +331,5 @@ export function fetchUserHostChannels({
   return request({
     url: `/topics/host-channels?fid=${fid}`,
     method: "get",
-  });
-}
-
-type RankCommunitiesParams = {
-  orderBy: CommunityRankOrderBy;
-  order: "ASC" | "DESC";
-  pageSize?: number;
-  pageNumber?: number;
-};
-
-export function fetchRankCommunities(
-  params: RankCommunitiesParams,
-): RequestPromise<ApiResp<Channel[]>> {
-  return request({
-    url: `/topics/channels/rank`,
-    method: "get",
-    params,
   });
 }
