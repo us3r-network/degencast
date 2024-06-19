@@ -1,19 +1,23 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AsyncRequestStatus } from "~/services/shared/types";
-import { fetchTrendingCommunities } from "~/services/community/api/community";
 import type { RootState } from "../../store/store";
-import { CommunityInfo } from "~/services/community/types/community";
 import uniqBy from "lodash/uniqBy";
+import { Channel, CommunityRankOrderBy } from "~/services/farcaster/types";
+import { fetchRankCommunities } from "~/services/farcaster/api";
 
-type CommunityShareState = {
-  items: CommunityInfo[];
+type CommunityRankState = {
+  items: Channel[];
+  orderBy: CommunityRankOrderBy;
+  order: "ASC" | "DESC";
   nextPageNumber: number;
   status: AsyncRequestStatus;
   error: string | undefined;
 };
 
-const communityShareState: CommunityShareState = {
+const communityRankState: CommunityRankState = {
   items: [],
+  orderBy: CommunityRankOrderBy.MARKET_CAP,
+  order: "DESC",
   nextPageNumber: 1,
   status: AsyncRequestStatus.IDLE,
   error: undefined,
@@ -22,14 +26,21 @@ const communityShareState: CommunityShareState = {
 const PAGE_SIZE = 30;
 export const fetchItems = createAsyncThunk(
   "communityRank/fetchItems",
-  async (arg, thunkAPI) => {
+  async (
+    {
+      order,
+      orderBy,
+    }: { order: "ASC" | "DESC"; orderBy: CommunityRankOrderBy },
+    thunkAPI,
+  ) => {
     const { communityRank } = thunkAPI.getState() as {
-      communityRank: CommunityShareState;
+      communityRank: CommunityRankState;
     };
-    const response = await fetchTrendingCommunities({
+    const response = await fetchRankCommunities({
+      orderBy: communityRank.orderBy || CommunityRankOrderBy.MARKET_CAP,
+      order: communityRank.order || "DESC",
       pageSize: PAGE_SIZE,
-      pageNumber: communityRank.nextPageNumber,
-      type: undefined,
+      pageNumber: communityRank.nextPageNumber || 1,
     });
     return response.data;
   },
@@ -37,17 +48,25 @@ export const fetchItems = createAsyncThunk(
 
 export const communityRankSlice = createSlice({
   name: "communityRank",
-  initialState: communityShareState,
+  initialState: communityRankState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addCase(fetchItems.pending, (state, action) => {
         state.status = AsyncRequestStatus.PENDING;
+        if (
+          state.order !== action.meta.arg.order ||
+          state.orderBy !== action.meta.arg.orderBy
+        ) {
+          state.items = [];
+          state.order = action.meta.arg.order;
+          state.orderBy = action.meta.arg.orderBy;
+        }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
         const newItems = action.payload.data;
-        state.items = uniqBy(state.items.concat(newItems), "channelId");
+        state.items = uniqBy(state.items.concat(newItems), "id");
         if (newItems.length >= PAGE_SIZE) {
           state.nextPageNumber += 1;
         } else {

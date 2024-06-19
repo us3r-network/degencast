@@ -1,18 +1,16 @@
 import axios, { AxiosPromise } from "axios";
 import { API_BASE_URL } from "~/constants";
+import { CommunityInfo } from "~/services/community/types/community";
 import request, { RequestPromise } from "~/services/shared/api/request";
+import { UserActionData } from "~/services/user/types";
 import {
   ApiResp,
   Channel,
+  CommunityRankOrderBy,
   FarCast,
   FarCastEmbedMetaV2,
-  ProfileFeedsDataItem,
-  ProfileFeedsGroups,
-  ProfileFeedsPageInfo,
-  SocialPlatform,
+  SocialPlatform
 } from "../types";
-import { CommunityInfo } from "~/services/community/types/community";
-import { UserActionData } from "~/services/user/types";
 import { NeynarCast } from "../types/neynar";
 
 export type FarcasterPageInfo = {
@@ -334,5 +332,22 @@ export function fetchUserHostChannels({
   return request({
     url: `/topics/host-channels?fid=${fid}`,
     method: "get",
+  });
+}
+
+type RankCommunitiesParams = {
+  orderBy: CommunityRankOrderBy;
+  order: "ASC" | "DESC";
+  pageSize?: number;
+  pageNumber?: number;
+};
+
+export function fetchRankCommunities(
+  params: RankCommunitiesParams,
+): RequestPromise<ApiResp<Channel[]>> {
+  return request({
+    url: `/topics/channels/rank`,
+    method: "get",
+    params,
   });
 }

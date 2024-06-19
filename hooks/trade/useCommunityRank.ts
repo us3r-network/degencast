@@ -5,6 +5,7 @@ import {
   fetchItems,
   selectCommunityRank,
 } from "~/features/trade/communityRankSlice";
+import { CommunityRankOrderBy } from "~/services/farcaster/types";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useCommunityRank() {
@@ -14,20 +15,36 @@ export default function useCommunityRank() {
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE) {
-      dispatch(fetchItems() as unknown as UnknownAction);
+      dispatch(
+        fetchItems({
+          order: "DESC",
+          orderBy: CommunityRankOrderBy.MARKET_CAP,
+        }) as unknown as UnknownAction,
+      );
     }
-  }, [status, dispatch]);
+  }, []);
 
-  const loadMore = () => {
+  const load = ({
+    order,
+    orderBy,
+  }: {
+    order: "ASC" | "DESC";
+    orderBy: CommunityRankOrderBy;
+  }) => {
     if (status === AsyncRequestStatus.PENDING) return;
-    dispatch(fetchItems() as unknown as UnknownAction);
-  }
+    dispatch(
+      fetchItems({
+        order,
+        orderBy,
+      }) as unknown as UnknownAction,
+    );
+  };
 
   return {
     items,
-    nextPageNumber,
+    hasMore: nextPageNumber > 0,
     loading: status === AsyncRequestStatus.PENDING,
-    loadMore,
+    load,
     error,
   };
 }
