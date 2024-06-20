@@ -1,12 +1,8 @@
-import { usePrivy } from "@privy-io/react-auth";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { Text } from "../ui/text";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { Dimensions, View, ViewProps } from "react-native";
 import { isDesktop } from "react-device-detect";
 import { cn } from "~/lib/utils";
+import { Card } from "../ui/card";
 
 export const headerHeight = DEFAULT_HEADER_HEIGHT;
 export const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -42,35 +38,14 @@ export function ExploreSwipeItem({ children, className, ...props }: ViewProps) {
   );
 }
 
-export function ConnectFarcasterCard() {
-  const { authenticated, login, linkFarcaster } = usePrivy();
-  const { currFid } = useFarcasterAccount();
+export function ExploreCard({ className, ...props }: ViewProps) {
   return (
-    <Card className="box-border h-full w-full flex-col items-center justify-center gap-4 rounded-[20px] border-none">
-      <Button
-        className="rounded-lg bg-primary"
-        onPress={() => {
-          if (!authenticated) {
-            login();
-            return;
-          }
-          if (!currFid) {
-            linkFarcaster();
-            return;
-          }
-        }}
-      >
-        <Text className="text-primary-foreground">
-          {(() => {
-            if (!authenticated) {
-              return "Log in";
-            }
-            if (!currFid) {
-              return "Link Farcaster";
-            }
-          })()}
-        </Text>
-      </Button>
-    </Card>
+    <Card
+      className={cn(
+        "box-border h-full w-full flex-col gap-4 rounded-[20px] border-none p-3 pt-[30px]",
+        className,
+      )}
+      {...props}
+    />
   );
 }

@@ -1,16 +1,12 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { View, SafeAreaView } from "react-native";
 import {
-  ConnectFarcasterCard,
   headerHeight,
-  itemHeight,
   itemPaddingTop,
 } from "~/components/explore/ExploreStyled";
 import FollowingScreen from "~/components/explore/following";
 import HostingScreen from "~/components/explore/hosting";
 import TrendingScreen from "~/components/explore/trending";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import { Tabs, TabsContent } from "~/components/ui/tabs";
 import useAppSettings from "~/hooks/useAppSettings";
 
 const TABS = [
@@ -24,9 +20,6 @@ const TABS = [
 ];
 
 export default function ExploreLayout() {
-  const { authenticated } = usePrivy();
-  const { currFid } = useFarcasterAccount();
-
   const { exploreActivatedViewName } = useAppSettings();
   return (
     <SafeAreaView
@@ -73,23 +66,7 @@ export default function ExploreLayout() {
                   value={tab.value}
                   className="h-full w-full"
                 >
-                  {(() => {
-                    if (tab.value === "hosting" || tab.value === "following") {
-                      if (!authenticated || !currFid) {
-                        return (
-                          <View
-                            style={{
-                              height: itemHeight,
-                              paddingTop: itemPaddingTop,
-                            }}
-                          >
-                            <ConnectFarcasterCard />
-                          </View>
-                        );
-                      }
-                    }
-                    return tab.screenComponent;
-                  })()}
+                  {tab.screenComponent}
                 </TabsContent>
               );
             })}

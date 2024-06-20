@@ -216,6 +216,7 @@ export function FCastExploreActions({
   return (
     <>
       <ExplorePostActions
+        channelId={channelId}
         liked={liked}
         likeCount={likeCount}
         liking={likePending}

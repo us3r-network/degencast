@@ -61,7 +61,10 @@ export const fetchItems = createAsyncThunk<ExploreTrendingChannelsData>(
       const state = getState() as RootState;
       const { exploreTrendingChannels } = state;
       const { status, pageInfo } = exploreTrendingChannels;
-      if (status === AsyncRequestStatus.PENDING) {
+      if (
+        status === AsyncRequestStatus.PENDING ||
+        status === AsyncRequestStatus.REJECTED
+      ) {
         return false;
       }
       if (!pageInfo.hasNextPage) {

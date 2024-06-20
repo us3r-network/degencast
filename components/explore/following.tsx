@@ -10,17 +10,24 @@ import {
   defaultSwipeData,
 } from "~/utils/userActionEvent";
 import ChannelCard from "./channel-card/ChannelCard";
-import useLoadTrendingChannels from "~/hooks/explore/useLoadTrendingChannels";
-import { ExploreSwipeItem, itemHeight } from "./ExploreStyled";
+import { ExploreSwipeItem, itemHeight, itemPaddingTop } from "./ExploreStyled";
+import { usePrivy } from "@privy-io/react-auth";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useLoadFollowingChannels from "~/hooks/explore/useLoadFollowingChannels";
+import { ConnectFarcasterCard } from "./ConnectFarcasterCard";
+import { FollowingEmptyListCard } from "./EmptyListCard";
 
 export default function FollowingChannels() {
+  const { authenticated } = usePrivy();
+  const { currFid } = useFarcasterAccount();
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
-  const { items, currentIndex, setCurrentIndex } = useLoadTrendingChannels({
-    swipeDataRefValue: swipeData.current,
-    onViewCastActionSubmited: () => {
-      swipeData.current = { ...defaultSwipeData };
-    },
-  });
+  const { items, currentIndex, setCurrentIndex, loading } =
+    useLoadFollowingChannels({
+      swipeDataRefValue: swipeData.current,
+      onViewCastActionSubmited: () => {
+        swipeData.current = { ...defaultSwipeData };
+      },
+    });
   const indexedItems = items.map((cast, index) => ({
     ...cast,
     index,
@@ -59,6 +66,44 @@ export default function FollowingChannels() {
       },
     }),
   );
+
+  if (!authenticated || !currFid) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <ConnectFarcasterCard />
+      </View>
+    );
+  }
+
+  if (loading && items.length === 0) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <ScreenLoading />
+      </View>
+    );
+  }
+  if (!loading && items.length === 0) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <FollowingEmptyListCard />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }} className="relative bg-background">
@@ -124,9 +169,6 @@ export default function FollowingChannels() {
           })}
         </ScrollView>
       </View>
-      {items.length === 0 && (
-        <ScreenLoading className=" absolute left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
-      )}
     </View>
   );
 }
