@@ -8,10 +8,10 @@ export const privyConfig: PrivyClientConfig = {
     showWalletLoginFirst: false,
     walletList: [
       "metamask",
-      "detected_wallets",
       "coinbase_wallet",
-      "rainbow",
       "wallet_connect",
+      "detected_wallets",
+      "rainbow",
     ],
   },
   // Create embedded wallets for users who don't have a wallet
@@ -28,15 +28,15 @@ export const privyConfig: PrivyClientConfig = {
     useSandbox: true,
   },
   loginMethods: ["wallet", "farcaster"],
-//   loginMethodsAndOrder: {
-//     primary: [
-//       "farcaster",
-//       // "twitter",
-//       "metamask",
-//       "detected_wallets",
-//       "coinbase_wallet",
-//       "rainbow",
-//       "wallet_connect",
-//     ],
-//   },
+  loginMethodsAndOrder: {
+    primary: [
+      "farcaster",
+      // "twitter",
+      "metamask",
+      "coinbase_wallet",
+      "wallet_connect",
+      "detected_wallets",
+      "rainbow",
+    ],
+  },
 };

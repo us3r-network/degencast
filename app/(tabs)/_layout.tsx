@@ -23,16 +23,15 @@ import {
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import OnboardingModal from "~/components/portfolio/user/Onboarding";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
+import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useCommunityRank from "~/hooks/trade/useCommunityRank";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { logGA } from "~/utils/firebase/analytics.web";
 
 export default function TabLayout() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
-  // preload trade data
+  // preload data
   useCommunityTokens();
-  // useCommunityShares();
   useCommunityRank();
   useEffect(() => {
     logGA("app_open", {});
@@ -73,9 +72,9 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="channels"
+          name="ranks"
           options={{
-            title: "Channels",
+            title: "Ranks",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
             headerTransparent: true,

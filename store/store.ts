@@ -10,7 +10,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
-import communityRank from "~/features/trade/communityRankSlice";
+import communityRank from "~/features/rank/communityRankSlice";
 import communityShares from "~/features/trade/communitySharesSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
 import userChannels from "~/features/user/userChannelsSlice";

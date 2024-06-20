@@ -9,7 +9,13 @@ import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useUserChannels(fid?: number) {
   const dispatch = useDispatch();
-  const { items, status, error, next } = useSelector(selectUserChannels);
+  const {
+    items,
+    status,
+    error,
+    next,
+    fid: currentFid,
+  } = useSelector(selectUserChannels);
 
   // useEffect(() => {
   //   if (status === AsyncRequestStatus.IDLE && fid) {
@@ -22,9 +28,8 @@ export default function useUserChannels(fid?: number) {
   }, [fid]);
 
   const loadMore = () => {
-    if (status !== AsyncRequestStatus.PENDING && fid) {
-      dispatch(fetchItems(fid) as unknown as UnknownAction);
-    }
+    if (status === AsyncRequestStatus.PENDING && fid === currentFid) return;
+    if (fid) dispatch(fetchItems(fid) as unknown as UnknownAction);
   };
 
   return {

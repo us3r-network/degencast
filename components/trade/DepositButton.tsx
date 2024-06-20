@@ -78,7 +78,7 @@ export default function DepositButton() {
                 <Copy className="size-4 text-white" />
               </Button>
             </View>
-            <Text>
+            <Text className="text-xs">
               Copy the wallet address and paste it into your crypto wallet to
               transfer. Only sending on Base.
             </Text>
