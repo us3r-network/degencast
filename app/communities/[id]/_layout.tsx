@@ -56,7 +56,7 @@ export default function CommunityDetail() {
   const headerHeight = DEFAULT_HEADER_HEIGHT;
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-  const { id } = params as { id: string };
+  const { id: channelId } = params as { id: string };
   const segments = useSegments();
   const [activeScreen, setActiveScreen] = useState(initialRouteName);
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function CommunityDetail() {
   }, [segments]);
   const router = useRouter();
   const { communityDetail, communityBasic, loading, loadCommunityDetail } =
-    useLoadCommunityDetail(id);
+    useLoadCommunityDetail(channelId);
 
   const community = communityDetail || communityBasic;
 
@@ -76,9 +76,10 @@ export default function CommunityDetail() {
     }
   }, [communityDetail, loadCommunityDetail]);
 
-  const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(id);
-  const { membersShare, loadMembersShare } = useLoadCommunityMembersShare(id);
-  const { casts, loadCasts } = useLoadCommunityCasts(id);
+  const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(channelId);
+  const { membersShare, loadMembersShare } =
+    useLoadCommunityMembersShare(channelId);
+  const { casts, loadCasts } = useLoadCommunityCasts(channelId);
 
   useEffect(() => {
     if (tipsRank.length === 0) {
@@ -132,7 +133,10 @@ export default function CommunityDetail() {
                     <Search className=" h-6 w-6 cursor-pointer stroke-white" />
                   </Button>
                 </Link>
-                <Link href="/create" asChild>
+                <Link
+                  href={`/create${channelId ? "?channelId=" + channelId : ""}`}
+                  asChild
+                >
                   <Button variant={"link"} className="m-0 p-0">
                     <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
                   </Button>
@@ -140,7 +144,7 @@ export default function CommunityDetail() {
                 <View>
                   <CommunitySharingButton
                     name={community?.name || ""}
-                    channelId={id || ""}
+                    channelId={channelId || ""}
                     currFid={currFid}
                   />
                 </View>
@@ -158,7 +162,7 @@ export default function CommunityDetail() {
                 value={activeScreen}
                 onValueChange={(value) => {
                   setActiveScreen(value);
-                  router.push(`/communities/${id}/${value}` as any);
+                  router.push(`/communities/${channelId}/${value}` as any);
                 }}
                 className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2 px-4"
               >

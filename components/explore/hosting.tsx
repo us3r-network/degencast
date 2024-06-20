@@ -1,13 +1,6 @@
-import {
-  Dimensions,
-  View,
-  ScrollView,
-  Platform,
-  PanResponder,
-} from "react-native";
+import { View, ScrollView, Platform, PanResponder } from "react-native";
 import { cn } from "~/lib/utils";
 import { useRef } from "react";
-import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { isDesktop } from "react-device-detect";
 import { ScreenLoading } from "~/components/common/Loading";
 import { cloneDeep } from "lodash";
@@ -17,17 +10,24 @@ import {
   defaultSwipeData,
 } from "~/utils/userActionEvent";
 import ChannelCard from "./channel-card/ChannelCard";
-import useLoadTrendingChannels from "~/hooks/explore/useLoadTrendingChannels";
-import { ExploreSwipeItem, itemHeight } from "./ExploreStyled";
+import { ExploreSwipeItem, itemHeight, itemPaddingTop } from "./ExploreStyled";
+import { usePrivy } from "@privy-io/react-auth";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useLoadHostingChannels from "~/hooks/explore/useLoadHostingChannels";
+import { ConnectFarcasterCard } from "./ConnectFarcasterCard";
+import { HostingEmptyListCard } from "./EmptyListCard";
 
 export default function HostingChannels() {
+  const { authenticated } = usePrivy();
+  const { currFid } = useFarcasterAccount();
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
-  const { items, currentIndex, setCurrentIndex } = useLoadTrendingChannels({
-    swipeDataRefValue: swipeData.current,
-    onViewCastActionSubmited: () => {
-      swipeData.current = { ...defaultSwipeData };
-    },
-  });
+  const { items, currentIndex, setCurrentIndex, loading } =
+    useLoadHostingChannels({
+      swipeDataRefValue: swipeData.current,
+      onViewCastActionSubmited: () => {
+        swipeData.current = { ...defaultSwipeData };
+      },
+    });
   const indexedItems = items.map((cast, index) => ({
     ...cast,
     index,
@@ -66,6 +66,44 @@ export default function HostingChannels() {
       },
     }),
   );
+
+  if (!authenticated || !currFid) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <ConnectFarcasterCard />
+      </View>
+    );
+  }
+
+  if (loading && items.length === 0) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <ScreenLoading />
+      </View>
+    );
+  }
+  if (!loading && items.length === 0) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <HostingEmptyListCard />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }} className="relative bg-background">
@@ -131,9 +169,6 @@ export default function HostingChannels() {
           })}
         </ScrollView>
       </View>
-      {items.length === 0 && (
-        <ScreenLoading className=" absolute left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
-      )}
     </View>
   );
 }

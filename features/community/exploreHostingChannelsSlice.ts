@@ -60,7 +60,10 @@ export const fetchItems = createAsyncThunk<ExploreHostingChannelsData>(
       const state = getState() as RootState;
       const { exploreHostingChannels } = state;
       const { status, pageInfo } = exploreHostingChannels;
-      if (status === AsyncRequestStatus.PENDING) {
+      if (
+        status === AsyncRequestStatus.PENDING ||
+        status === AsyncRequestStatus.REJECTED
+      ) {
         return false;
       }
       if (!pageInfo.hasNextPage) {

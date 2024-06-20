@@ -234,9 +234,8 @@ export type ExploreFollowingChannelsData = Array<
 export function getExploreFollowingChannels(
   params: ExploreFollowingChannels,
 ): RequestPromise<ApiResp<ExploreFollowingChannelsData>> {
-  // TODO following channels api
   return request({
-    url: `/topics/channels/discover`,
+    url: `/topics/channels/following`,
     method: "get",
     params,
     headers: {
@@ -259,9 +258,8 @@ export type ExploreHostingChannelsData = Array<
 export function getExploreHostingChannels(
   params: ExploreHostingChannels,
 ): RequestPromise<ApiResp<ExploreHostingChannelsData>> {
-  // TODO hosting channels api
   return request({
-    url: `/topics/channels/discover`,
+    url: `/topics/channels/hosting`,
     method: "get",
     params,
     headers: {

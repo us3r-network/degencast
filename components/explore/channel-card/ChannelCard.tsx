@@ -25,6 +25,7 @@ import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import ApplyLaunchButton, {
   ExploreApplyLaunchButton,
 } from "~/components/common/ApplyLaunchButton";
+import { ExploreCard } from "../ExploreStyled";
 
 export default function ChannelCard({
   communityInfo,
@@ -56,13 +57,7 @@ export default function ChannelCard({
     !!channelId && !!channels.find((channel) => channel.id === channelId);
 
   return (
-    <Card
-      className={cn(
-        "box-border h-full w-full flex-col gap-4 rounded-[20px] border-none bg-[#F5F0FE] p-3 pt-[30px]",
-        className,
-      )}
-      {...props}
-    >
+    <ExploreCard className={cn("bg-[#F5F0FE]", className)} {...props}>
       <View className={cn("w-full flex-1 flex-col gap-4")}>
         <CommunityMetaInfo communityInfo={communityInfo} />
 
@@ -93,7 +88,7 @@ export default function ChannelCard({
                 />
               </Pressable>
             </Card>
-            <View className=" absolute bottom-4 right-1 z-20">
+            <View className=" absolute bottom-1 right-1 z-20">
               <FCastExploreActions
                 cast={cast}
                 farcasterUserDataObj={farcasterUserDataObj}
@@ -111,6 +106,6 @@ export default function ChannelCard({
       {channelId && !communityToken && isChannelHost && (
         <ExploreApplyLaunchButton channelId={channelId} />
       )}
-    </Card>
+    </ExploreCard>
   );
 }
