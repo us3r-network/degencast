@@ -81,6 +81,8 @@ import {
   ReceiptText,
   DollarSign,
   SquarePen,
+  ArrowDownNarrowWide,
+  ArrowUpNarrowWide,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -177,6 +179,8 @@ interopIcon(Settings);
 interopIcon(ReceiptText);
 interopIcon(DollarSign);
 interopIcon(SquarePen);
+interopIcon(ArrowDownNarrowWide);
+interopIcon(ArrowUpNarrowWide);
 export {
   Activity,
   Airplay,
@@ -259,4 +263,6 @@ export {
   ReceiptText,
   DollarSign,
   SquarePen,
+  ArrowDownNarrowWide,
+  ArrowUpNarrowWide,
 };

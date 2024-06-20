@@ -10,7 +10,7 @@ export function FollowingEmptyListCard() {
   return (
     <ExploreCard>
       <View className="flex h-full w-full flex-col items-center justify-center ">
-        <View className="flex h-full w-72 flex-col items-center justify-center gap-8">
+        <View className="flex h-full w-72 flex-col items-center justify-center gap-8 max-sm:gap-3">
           <Image
             source={require("~/assets/images/default-search.png")}
             contentFit="fill"
@@ -41,7 +41,7 @@ export function HostingEmptyListCard() {
   return (
     <ExploreCard>
       <View className="flex h-full w-full flex-col items-center justify-center ">
-        <View className="flex h-full w-72 flex-col items-center justify-center gap-8">
+        <View className="flex h-full w-72 flex-col items-center justify-center gap-8 max-sm:gap-3">
           <Image
             source={require("~/assets/images/default-search.png")}
             contentFit="fill"
