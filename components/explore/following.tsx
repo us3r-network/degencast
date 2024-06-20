@@ -17,9 +17,25 @@ import useLoadFollowingChannels from "~/hooks/explore/useLoadFollowingChannels";
 import { ConnectFarcasterCard } from "./ConnectFarcasterCard";
 import { FollowingEmptyListCard } from "./EmptyListCard";
 
-export default function FollowingChannels() {
+export default function FollowingChannelsScreen() {
   const { authenticated } = usePrivy();
   const { currFid } = useFarcasterAccount();
+  if (!authenticated || !currFid) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <ConnectFarcasterCard />
+      </View>
+    );
+  }
+  return <FollowingChannels />;
+}
+
+function FollowingChannels() {
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
   const { items, currentIndex, setCurrentIndex, loading } =
     useLoadFollowingChannels({
@@ -66,19 +82,6 @@ export default function FollowingChannels() {
       },
     }),
   );
-
-  if (!authenticated || !currFid) {
-    return (
-      <View
-        style={{
-          height: itemHeight,
-          paddingTop: itemPaddingTop,
-        }}
-      >
-        <ConnectFarcasterCard />
-      </View>
-    );
-  }
 
   if (loading && items.length === 0) {
     return (

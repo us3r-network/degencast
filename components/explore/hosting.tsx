@@ -17,9 +17,25 @@ import useLoadHostingChannels from "~/hooks/explore/useLoadHostingChannels";
 import { ConnectFarcasterCard } from "./ConnectFarcasterCard";
 import { HostingEmptyListCard } from "./EmptyListCard";
 
-export default function HostingChannels() {
+export default function HostingChannelsScreen() {
   const { authenticated } = usePrivy();
   const { currFid } = useFarcasterAccount();
+  if (!authenticated || !currFid) {
+    return (
+      <View
+        style={{
+          height: itemHeight,
+          paddingTop: itemPaddingTop,
+        }}
+      >
+        <ConnectFarcasterCard />
+      </View>
+    );
+  }
+  return <HostingChannels />;
+}
+
+function HostingChannels() {
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
   const { items, currentIndex, setCurrentIndex, loading } =
     useLoadHostingChannels({
@@ -66,19 +82,6 @@ export default function HostingChannels() {
       },
     }),
   );
-
-  if (!authenticated || !currFid) {
-    return (
-      <View
-        style={{
-          height: itemHeight,
-          paddingTop: itemPaddingTop,
-        }}
-      >
-        <ConnectFarcasterCard />
-      </View>
-    );
-  }
 
   if (loading && items.length === 0) {
     return (
