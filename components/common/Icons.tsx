@@ -80,6 +80,7 @@ import {
   Settings,
   ReceiptText,
   DollarSign,
+  SquarePen,
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
 } from "lucide-react-native";
@@ -177,6 +178,7 @@ interopIcon(Globe);
 interopIcon(Settings);
 interopIcon(ReceiptText);
 interopIcon(DollarSign);
+interopIcon(SquarePen);
 interopIcon(ArrowDownNarrowWide);
 interopIcon(ArrowUpNarrowWide);
 export {
@@ -260,6 +262,7 @@ export {
   Settings,
   ReceiptText,
   DollarSign,
+  SquarePen,
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
 };

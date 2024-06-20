@@ -27,6 +27,7 @@ export default function CommunityJoinButton({
       size="sm"
       onPress={(e) => {
         e.stopPropagation();
+        e.preventDefault();
         joinChangeAction();
       }}
       {...props}

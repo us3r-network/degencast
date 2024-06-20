@@ -126,7 +126,89 @@ export function ExploreTradeButton({
     );
 }
 
+export function ChannelExploreTradeButton({
+  token1 = NATIVE_TOKEN_METADATA,
+  token2 = NATIVE_TOKEN_METADATA,
+  ...props
+}: ButtonProps & {
+  token1?: TokenWithTradeInfo;
+  token2?: TokenWithTradeInfo;
+}) {
+  const account = useAccount();
+  const { connectWallet } = useConnectWallet();
+
+  const symbol = token2?.symbol || "";
+  const logo = token2?.logoURI || "";
+  if (!account.address)
+    return (
+      <ChannelExploreTradeStyledButton
+        name={symbol}
+        logo={logo}
+        onPress={connectWallet}
+        {...props}
+      />
+    );
+  else
+    return (
+      <TradeModal
+        token1={token1}
+        token2={token2}
+        triggerButton={
+          <ChannelExploreTradeStyledButton
+            name={symbol}
+            logo={logo}
+            disabled={
+              (!token1 && !token2) ||
+              token1.chainId !== base.id ||
+              token2.chainId !== base.id
+            }
+            {...props}
+          />
+        }
+      />
+    );
+}
+
 const ExploreTradeStyledButton = forwardRef(function (
+  {
+    name,
+    logo,
+    className,
+    ...props
+  }: ButtonProps & {
+    name: string;
+    logo: string;
+  },
+  ref: LegacyRef<View>,
+) {
+  return (
+    <Button
+      className={cn(
+        "h-[60px] flex-row items-center gap-1 rounded-[20px] bg-secondary px-[12px] py-[6px]",
+        className,
+      )}
+      ref={ref}
+      {...props}
+    >
+      <Text className=" text-2xl font-bold">Trade</Text>
+      {logo && (
+        <Avatar alt={name || ""} className={cn(" size-6")}>
+          <AvatarImage source={{ uri: logo || "" }} />
+          <AvatarFallback className="bg-secondary">
+            <Text className="text-sm font-medium">
+              {upperFirst(name?.slice(0, 2))}
+            </Text>
+          </AvatarFallback>
+        </Avatar>
+      )}
+      {name && (
+        <Text className={cn("line-clamp-1 text-2xl font-bold")}>{name}</Text>
+      )}
+    </Button>
+  );
+});
+
+const ChannelExploreTradeStyledButton = forwardRef(function (
   {
     name,
     logo,

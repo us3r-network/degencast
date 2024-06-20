@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
 import useCommunityPage from "~/hooks/community/useCommunityPage";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
-import { ExploreTradeButton } from "../trade/TradeButton";
+import { ChannelExploreTradeButton } from "../trade/TradeButton";
 
 export default function FCastCommunity({
   communityInfo,
@@ -66,7 +66,12 @@ export default function FCastCommunity({
       <Text className="line-clamp-2 flex-1 text-base text-white">
         {communityInfo.name}
       </Text>
-      {communityToken && <ExploreTradeButton token2={communityToken} />}
+      {communityToken && (
+        <ChannelExploreTradeButton
+          token2={communityToken}
+          className="rounded-[10px] bg-primary"
+        />
+      )}
       {/* {communityInfo?.shares?.[0]?.subjectAddress && (
         <CommunityBuyShareButton
           className="bg-secondary font-bold"

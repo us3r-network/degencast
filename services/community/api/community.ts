@@ -6,6 +6,8 @@ import {
 } from "../types/community";
 import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
+import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
+import { PriceChangePercentage } from "../types/trade";
 
 export type CommunityTypesData = Array<CommunityTypeEntity>;
 export function fetchCommunityTypes(): RequestPromise<
@@ -164,5 +166,104 @@ export function fetchWarpcastChannels(): RequestPromise<
   return request({
     url: `/topics/warpcast-channels`,
     method: "get",
+  });
+}
+
+export type CoverChannelsParams = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type CoverChannelsData = Array<{
+  id: string;
+  url: string;
+  name: string;
+  imageUrl: string;
+  description: string;
+  createdAt: number;
+  leadFid: number;
+  hostFids: number[];
+  followerCount: number;
+  tokenSymbol?: string;
+  tokenPriceChangePercentag?: PriceChangePercentage;
+}>;
+export function fetchCoverChannels(
+  params: CoverChannelsParams,
+): RequestPromise<ApiResp<CoverChannelsData>> {
+  return request({
+    url: `/topics/channels/trending`,
+    method: "get",
+    params,
+  });
+}
+
+export type ExploreTrendingChannels = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type ExploreTrendingChannelsData = Array<
+  CommunityEntity &
+    CommunityStatistics & {
+      hosts: Array<Author>;
+      cast?: NeynarCast | null;
+    }
+>;
+export function getExploreTrendingChannels(
+  params: ExploreTrendingChannels,
+): RequestPromise<ApiResp<ExploreTrendingChannelsData>> {
+  return request({
+    url: `/topics/channels/discover`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type ExploreFollowingChannels = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type ExploreFollowingChannelsData = Array<
+  CommunityEntity &
+    CommunityStatistics & {
+      hosts: Array<Author>;
+      cast?: NeynarCast | null;
+    }
+>;
+export function getExploreFollowingChannels(
+  params: ExploreFollowingChannels,
+): RequestPromise<ApiResp<ExploreFollowingChannelsData>> {
+  return request({
+    url: `/topics/channels/following`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type ExploreHostingChannels = {
+  pageSize?: number;
+  pageNumber?: number;
+};
+export type ExploreHostingChannelsData = Array<
+  CommunityEntity &
+    CommunityStatistics & {
+      hosts: Array<Author>;
+      cast?: NeynarCast | null;
+    }
+>;
+export function getExploreHostingChannels(
+  params: ExploreHostingChannels,
+): RequestPromise<ApiResp<ExploreHostingChannelsData>> {
+  return request({
+    url: `/topics/channels/hosting`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
   });
 }
