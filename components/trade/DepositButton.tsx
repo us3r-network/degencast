@@ -53,7 +53,7 @@ export default function DepositButton() {
     // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
     if (!connectedWallets?.length) return undefined;
     const currentWallet = connectedWallets.find(
-      (wallet) => wallet.connectorType !== "embedded",
+      (wallet) => wallet.connectorType !== "embedded" && wallet.connectorType !== "coinbase_wallet",
     );
     if (currentWallet) return currentWallet;
   }, [connectedWallets]);
@@ -162,6 +162,7 @@ function TransferFromExternalWallet({
         chain: DEFAULT_CHAIN,
         transport: custom(provider),
       });
+      // console.log("client", client, fromWallet, toWallet, value)
       if (client.chain.id !== DEFAULT_CHAIN.id)
         await client.switchChain(DEFAULT_CHAIN);
       const hash = await client.sendTransaction({
@@ -175,10 +176,10 @@ function TransferFromExternalWallet({
         // text2: `Transaction Hash: ${hash}`,
       });
     } catch (e: any) {
+      console.log("error", e);
       Toast.show({
         type: "error",
         text1: "Failed to transfer",
-        // text1: e.message,
       });
     }
   };
