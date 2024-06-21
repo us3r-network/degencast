@@ -1,4 +1,5 @@
-import { PrivyProvider } from "@privy-io/react-auth";
+// import { PrivyProvider } from "@privy-io/react-auth";
+import { PrivyProvider } from "@privy-io/expo";
 import { WagmiProvider } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
