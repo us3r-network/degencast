@@ -1,7 +1,13 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
@@ -154,47 +160,52 @@ export default function CreateScreen() {
           ),
         }}
       />
-      <View
-        className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
-        id="create-view"
-      >
-        {(!fid && (
-          <View className="flex-1 p-4 pt-16">
-            <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
-              <Text className="text-primary-foreground">
-                Log in with farcaster
-              </Text>
-            </Button>
-          </View>
-        )) || (
-          <View className="h-full w-full" id="ad">
-            <View className="mb-5 flex flex-row items-center gap-1">
-              {user?.farcaster?.pfp && (
-                <Avatar alt="" className="h-5 w-5">
-                  <AvatarImage source={{ uri: user?.farcaster?.pfp }} />
-                </Avatar>
-              )}
-              <Text className="text-sm font-medium" id="textareaLabel">
-                {user?.farcaster?.displayName}
-              </Text>
-              <Text className="text-xs text-secondary" id="textareaLabel">
-                @{user?.farcaster?.username}
-              </Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
+          id="create-view"
+        >
+          {(!fid && (
+            <View className="flex-1 p-4 pt-16">
+              <Button
+                className="rounded-lg bg-primary px-6 py-3"
+                onPress={login}
+              >
+                <Text className="text-primary-foreground">
+                  Log in with farcaster
+                </Text>
+              </Button>
             </View>
-            <Editor
-              text={value}
-              setText={setValue}
-              images={images}
-              setImages={setImages}
-              channel={channel}
-              setChannel={setChannel}
-              previewComponent={
-                embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
-              }
-            />
-          </View>
-        )}
-      </View>
+          )) || (
+            <View className="h-full w-full" id="ad">
+              <View className="mb-5 flex flex-row items-center gap-1">
+                {user?.farcaster?.pfp && (
+                  <Avatar alt="" className="h-5 w-5">
+                    <AvatarImage source={{ uri: user?.farcaster?.pfp }} />
+                  </Avatar>
+                )}
+                <Text className="text-sm font-medium" id="textareaLabel">
+                  {user?.farcaster?.displayName}
+                </Text>
+                <Text className="text-xs text-secondary" id="textareaLabel">
+                  @{user?.farcaster?.username}
+                </Text>
+              </View>
+              <Editor
+                text={value}
+                setText={setValue}
+                images={images}
+                setImages={setImages}
+                channel={channel}
+                setChannel={setChannel}
+                previewComponent={
+                  embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
+                }
+              />
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -33,7 +33,7 @@ export default function PlatformSharingButton({
   twitterText,
   warpcastText,
   websiteLink,
-  frameLink,
+  warpcastEmbeds,
   className,
   navigateToCreatePageAfter,
   ...props
@@ -61,7 +61,7 @@ export default function PlatformSharingButton({
         twitterText={twitterText}
         warpcastText={warpcastText}
         websiteLink={websiteLink}
-        frameLink={frameLink}
+        warpcastEmbeds={warpcastEmbeds}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>
@@ -76,9 +76,11 @@ export function ExploreSharingButton({ fid }: { fid: string | number }) {
       websiteLink={getAppWebsiteLink({
         fid,
       })}
-      frameLink={getAppFrameLink({
-        fid,
-      })}
+      warpcastEmbeds={[
+        getAppFrameLink({
+          fid,
+        }),
+      ]}
     />
   );
 }
@@ -91,9 +93,11 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
       websiteLink={getTradePageWebsiteLink({
         fid,
       })}
-      frameLink={getTradePageFrameLink({
-        fid,
-      })}
+      warpcastEmbeds={[
+        getTradePageFrameLink({
+          fid,
+        }),
+      ]}
     />
   );
 }
@@ -114,10 +118,12 @@ export function PortfolioSharingButton({
         fid,
         inviteFid: Number(currFid),
       })}
-      frameLink={getPortfolioFrameLink({
-        fid,
-        fname,
-      })}
+      warpcastEmbeds={[
+        getPortfolioFrameLink({
+          fid,
+          fname,
+        }),
+      ]}
     />
   );
 }
@@ -138,9 +144,11 @@ export function CommunitySharingButton({
       websiteLink={getCommunityWebsiteLink(channelId, {
         fid: currFid,
       })}
-      frameLink={getCommunityFrameLink(channelId, {
-        fid: currFid,
-      })}
+      warpcastEmbeds={[
+        getCommunityFrameLink(channelId, {
+          fid: currFid,
+        }),
+      ]}
     />
   );
 }
@@ -157,7 +165,7 @@ export function TransactionResultSharingButton({
   twitterText,
   warpcastText,
   websiteLink,
-  frameLink,
+  warpcastEmbeds,
   className,
   navigateToCreatePageAfter,
   ...props
@@ -192,9 +200,11 @@ export function TransactionResultSharingButton({
         websiteLink={getTradePageWebsiteLink({
           fid: currFid,
         })}
-        frameLink={getTradePageFrameLink({
-          fid: currFid,
-        })}
+        warpcastEmbeds={[
+          getTradePageFrameLink({
+            fid: currFid,
+          }),
+        ]}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>

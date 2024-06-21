@@ -16,9 +16,9 @@ export type ShareProps = {
   text?: string;
   twitterText?: string;
   warpcastText?: string;
+  warpcastEmbeds?: string[]; // share to warpcast
   warpcastChannelId?: string;
-  websiteLink?: string;
-  frameLink?: string;
+  websiteLink?: string; // share to twitter & copy
   navigateToCreatePageAfter?: () => void;
 };
 
@@ -28,7 +28,7 @@ export default function PlatformSharingModal({
   warpcastText,
   websiteLink,
   warpcastChannelId,
-  frameLink,
+  warpcastEmbeds = [],
   open,
   hideWarpcastPoints,
   hideTwitterPoints,
@@ -49,7 +49,7 @@ export default function PlatformSharingModal({
   const onCreateCast = async () => {
     const createText = warpcastText || text || "";
     if (!signerPublicKey) {
-      openWarpcastCreateCast(createText, frameLink);
+      openWarpcastCreateCast(createText, warpcastEmbeds);
     } else {
       onOpenChange(false);
       navigation.navigate(
@@ -57,7 +57,7 @@ export default function PlatformSharingModal({
           "create",
           {
             text: createText,
-            embeds: [frameLink],
+            embeds: warpcastEmbeds,
             channelId: warpcastChannelId || "",
           },
         ] as never),
