@@ -77,9 +77,7 @@ export default function FCastMintNftModal({
     if (currFid) load(Number(currFid));
   }, [currFid]);
 
-  const currUserDisplayName = userInfo
-    ? userInfo.display_name
-    : "";
+  const currUserDisplayName = userInfo ? userInfo.display_name : "";
   const {
     createNewToken,
     createNewCollection,
@@ -204,7 +202,7 @@ export default function FCastMintNftModal({
           warpcastText={getMintCastTextWithWarpcast()}
           warpcastChannelId="zora"
           websiteLink={getMintCastWebsiteLink(createdTokenInfo!)}
-          frameLink={getMintCastFrameLink(createdTokenInfo!)}
+          warpcastEmbeds={[getMintCastFrameLink(createdTokenInfo!)]}
           navigateToCreatePageAfter={() => {
             setSharingCastMint({
               castHex,

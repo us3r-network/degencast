@@ -9,12 +9,20 @@ export const checkInstalledWarpcastApp = async () => {
   return supported;
 };
 
-export const openWarpcastCreateCast = async (text: string, url?: string) => {
-  const tweetText = text + (url ? `&embeds[]=${url}` : "");
-  const warpcastAppUrl = encodeURI(
-    `${WARPCAST_APP_HOST}/~/compose?text=${tweetText}`,
-  );
-  const webUrl = encodeURI(`${WARPCAST_WEB_HOST}/~/compose?text=${tweetText}`);
+export const embedsToQueryParams = (embeds?: string[]) => {
+  return embeds && embeds.length > 0
+    ? embeds.map((embed) => `embeds[]=${embed}`).join("&")
+    : "";
+};
+
+export const openWarpcastCreateCast = async (
+  text: string,
+  embeds?: string[],
+) => {
+  const embedsString = embedsToQueryParams(embeds);
+  const params = `text=${text}${embedsString ? `&${embedsString}` : ""}`;
+  const warpcastAppUrl = encodeURI(`${WARPCAST_APP_HOST}/~/compose?${params}`);
+  const webUrl = encodeURI(`${WARPCAST_WEB_HOST}/~/compose?${params}`);
 
   if (Platform.OS === "web") {
     return Linking.openURL(webUrl);
