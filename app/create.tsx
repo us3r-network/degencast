@@ -106,7 +106,7 @@ export default function CreateScreen() {
                               return { url: item };
                             }),
                           ],
-                          channel: channel.url,
+                          parentUrl: channel.url,
                         };
 
                         const result = await submitCast(data);

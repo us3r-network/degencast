@@ -34,6 +34,7 @@ export default function PlatformSharingButton({
   warpcastText,
   websiteLink,
   warpcastEmbeds,
+  warpcastChannelId,
   className,
   navigateToCreatePageAfter,
   ...props
@@ -62,6 +63,7 @@ export default function PlatformSharingButton({
         warpcastText={warpcastText}
         websiteLink={websiteLink}
         warpcastEmbeds={warpcastEmbeds}
+        warpcastChannelId={warpcastChannelId}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>
@@ -149,6 +151,7 @@ export function CommunitySharingButton({
           fid: currFid,
         }),
       ]}
+      warpcastChannelId={channelId}
     />
   );
 }
