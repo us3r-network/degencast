@@ -15,6 +15,7 @@ export default function FCastUserInfo({
   const router = useRouter();
   return (
     <Pressable
+      className="flex-1"
       onPress={(e) => {
         e.preventDefault();
         router.push(`/u/${userData.fid}/tokens`);

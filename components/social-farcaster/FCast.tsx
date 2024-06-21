@@ -11,10 +11,13 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import NeynarCastText from "./NeynarCastText";
 import NeynarCastUserInfo from "./NeynarCastUserInfo";
 import {
+  getCastCreateAtTimestamp,
   getCastFid,
   getCastHex,
   isNeynarCast,
 } from "~/utils/farcaster/cast-utils";
+import { Text } from "../ui/text";
+import dayjs from "dayjs";
 
 export default function FCast({
   cast,
@@ -48,12 +51,16 @@ export default function FCast({
       {...props}
     >
       {/* header - user info */}
-      <View className="flex flex-row items-center justify-between gap-6">
+      <View className="flex flex-row items-center">
         {isNeynar ? (
           <NeynarCastUserInfo userData={(cast as NeynarCast).author} />
         ) : (
           <FCastUserInfo userData={userData!} />
         )}
+        <Text className=" text-xs font-normal text-secondary">
+          {" "}
+          · {dayjs(getCastCreateAtTimestamp(cast)).fromNow(true)}
+        </Text>
       </View>
       {/* body - text & embed */}
       {isNeynar ? (

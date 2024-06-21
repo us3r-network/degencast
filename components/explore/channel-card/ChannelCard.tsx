@@ -63,7 +63,7 @@ export default function ChannelCard({
 
         {cast && (
           <>
-            <Text className=" text-base font-bold">Hot Cast</Text>
+            {/* <Text className=" text-base font-bold">Hot Cast</Text> */}
             <Card
               className={cn(
                 "z-10 box-border w-full flex-1 overflow-hidden rounded-[20px] border-none p-4 pb-0",

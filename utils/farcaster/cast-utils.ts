@@ -64,3 +64,10 @@ export function getCastViewerContext(cast: FarCast | NeynarCast) {
   }
   return (cast as FarCast)?.viewerContext;
 }
+
+export function getCastCreateAtTimestamp(cast: FarCast | NeynarCast) {
+  if (isNeynarCast(cast)) {
+    return (cast as NeynarCast)?.timestamp;
+  }
+  return (cast as FarCast)?.createdAt;
+}

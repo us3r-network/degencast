@@ -26,10 +26,7 @@ export default function CommunityMetaInfo({
 }) {
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, description, memberInfo, channelId } = communityInfo;
-  const hosts = communityInfo?.hosts || [];
-  // const hostUserData = communityInfo?.hostUserData || [];
-
-  // TODO remove this mock data
+  const moderators = communityInfo?.moderators || [];
   const { totalNumber, newPostNumber } = memberInfo || {};
 
   return (
@@ -60,10 +57,10 @@ export default function CommunityMetaInfo({
             <View className="flex-1 flex-col justify-between">
               <Text className="text-base font-bold leading-none">{name}</Text>
               <View className="flex-row items-end gap-3">
-                <Text className="text-sm font-normal leading-none text-secondary">
+                <Text className="text-sm font-normal leading-none">
                   {displayValue(totalNumber || 0)} Members
                 </Text>
-                <Text className="text-sm font-normal leading-none text-secondary">
+                <Text className="text-sm font-normal leading-none">
                   {displayValue(newPostNumber || 0)} New Casts
                 </Text>
               </View>
@@ -72,32 +69,50 @@ export default function CommunityMetaInfo({
               <CommunityJoinButton communityInfo={communityInfo} />
             </View>
           </View>
+          {moderators.length > 0 && (
+            <View className=" inline-block">
+              {moderators.map((item, idx) => {
+                return (
+                  <Avatar
+                    key={idx.toString()}
+                    alt={item.username || ""}
+                    className={cn(
+                      " inline-block size-[20px] align-middle",
+                      idx > 0 ? " -ml-1" : "",
+                    )}
+                  >
+                    <AvatarImage source={{ uri: item.pfp_url || "" }} />
+                    <AvatarFallback className="bg-secondary">
+                      <Text className="text-sm font-bold">{item.username}</Text>
+                    </AvatarFallback>
+                  </Avatar>
+                );
+              })}
+              <Text className=" ml-1 inline align-middle text-sm font-normal">
+                Moderated by
+              </Text>
+
+              {moderators.map((item, idx) => {
+                return (
+                  <Link
+                    asChild
+                    href={`/u/${item.fid}/tokens`}
+                    key={idx.toString()}
+                  >
+                    <Text className="ml-1 inline align-middle text-sm font-normal text-secondary hover:cursor-pointer hover:underline">
+                      {`@${item.username}`}
+                    </Text>
+                  </Link>
+                );
+              })}
+            </View>
+          )}
+
           <Text className="line-clamp-2 text-sm font-normal leading-6">
             {description}
           </Text>
         </Pressable>
       </Link>
-
-      {hosts.length > 0 && (
-        <>
-          <Text className=" text-base font-bold">Hosts</Text>
-          <View className="grid w-full grid-cols-2 gap-4">
-            {hosts.map((host) => {
-              return (
-                <HostUserInfo
-                  key={host.fid}
-                  data={{
-                    fid: host.fid,
-                    avatar: host.pfp_url,
-                    username: host.username,
-                    displayName: host.display_name,
-                  }}
-                />
-              );
-            })}
-          </View>
-        </>
-      )}
     </View>
   );
 }

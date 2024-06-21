@@ -42,7 +42,7 @@ export function ExploreCard({ className, ...props }: ViewProps) {
   return (
     <Card
       className={cn(
-        "box-border h-full w-full flex-col gap-4 rounded-[20px] border-none p-3 pt-[30px]",
+        "box-border h-full w-full flex-col gap-4 rounded-[20px] border-none p-3",
         className,
       )}
       {...props}
