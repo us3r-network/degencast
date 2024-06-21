@@ -11,6 +11,8 @@ import ExploreViewSelect from "~/components/explore/ExploreSelect";
 import {
   Header,
   HeaderLeft,
+  HeaderLeftDefault,
+  HeaderLogo,
   HeaderRight,
 } from "~/components/layout/header/Header";
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
@@ -57,8 +59,11 @@ export default function TabLayout() {
             headerTransparent: true,
             header: () => (
               <Header>
-                {/* <HeaderLeft /> */}
-                <ExploreViewSelect />
+                <HeaderLeft>
+                  <HeaderLogo />
+                  <ExploreViewSelect />
+                </HeaderLeft>
+
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
@@ -83,7 +88,7 @@ export default function TabLayout() {
             },
             header: () => (
               <Header>
-                <HeaderLeft />
+                <HeaderLeftDefault title="Ranks" />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
@@ -108,7 +113,7 @@ export default function TabLayout() {
             },
             header: () => (
               <Header>
-                <HeaderLeft />
+                <HeaderLeftDefault title="Portfolio" />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
