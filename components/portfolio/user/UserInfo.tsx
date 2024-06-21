@@ -1,24 +1,24 @@
 import { usePrivy } from "@privy-io/react-auth";
-import React, { useEffect, useMemo } from "react";
+import { Image } from "expo-image";
+import React, { useEffect } from "react";
 import { View } from "react-native";
-import { Minus, Plus, User } from "~/components/common/Icons";
+import Toast from "react-native-toast-message";
 import { ExternalLink } from "~/components/common/ExternalLink";
+import { User, UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
+import { Loading } from "~/components/common/Loading";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { WARRPCAST } from "~/constants/farcaster";
-import useUserBulk from "~/hooks/user/useUserBulk";
-import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import DegenTipsStats from "./DegenTipsStats";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import Toast from "react-native-toast-message";
-import { Author } from "~/services/farcaster/types/neynar";
-import { Loading } from "~/components/common/Loading";
-import UserSettings from "./UserSettings";
-import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
-import useUserChannels from "~/hooks/user/useUserChannels";
-import { shortPubKey } from "~/utils/shortPubKey";
+import useUserBulk from "~/hooks/user/useUserBulk";
 import useUserCasts from "~/hooks/user/useUserCasts";
+import useUserChannels from "~/hooks/user/useUserChannels";
+import { Author } from "~/services/farcaster/types/neynar";
+import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
+import { shortPubKey } from "~/utils/shortPubKey";
+import DegenTipsStats from "./DegenTipsStats";
+import UserSettings from "./UserSettings";
 
 export default function UserInfo({ fid }: { fid?: number }) {
   const { user } = usePrivy();
@@ -64,7 +64,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
             </AvatarFallback>
           </Avatar>
           <View className="absolute bottom-0 right-0 size-6">
-            {userInfo && farcasterAccount?.fid !== userInfo.fid ? (
+            {farcasterAccount?.fid !== userInfo.fid ? (
               <FollowUserButton farcasterUserInfo={userInfo} />
             ) : (
               <UserSettings />
@@ -73,17 +73,25 @@ export default function UserInfo({ fid }: { fid?: number }) {
         </View>
         <View className="flex w-full gap-1">
           <View className="w-full space-y-0">
-            {userDisplayName && (
-              <Text className="line-clamp-1 font-bold text-white">
-                {userDisplayName}
-              </Text>
-            )}
+            <View className="flex-row items-center gap-1">
+              {userDisplayName && (
+                <Text className="line-clamp-1 font-bold text-white">
+                  {userDisplayName}
+                </Text>
+              )}
+              {userInfo.power_badge && (
+                <Image
+                  source={require("~/assets/images/active-badge.webp")}
+                  style={{ width: 16, height: 16 }}
+                />
+              )}
+            </View>
             {username && (
               <Text className="line-clamp-1 text-secondary">@{username}</Text>
             )}
           </View>
           <View className="w-full flex-row gap-4">
-            {userInfo?.following_count && (
+            {userInfo.following_count && (
               <ExternalLink
                 href={`${WARRPCAST}/${username}/following`}
                 target="_blank"
@@ -101,7 +109,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
                 </Button>
               </ExternalLink>
             )}
-            {userInfo?.follower_count && (
+            {userInfo.follower_count && (
               <ExternalLink
                 href={`${WARRPCAST}/${username}/followers`}
                 target="_blank"
