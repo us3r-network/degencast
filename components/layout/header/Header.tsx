@@ -20,25 +20,39 @@ export function Header({ className, ...props }: ViewProps) {
   );
 }
 
+export function HeaderLogo({ className, ...props }: ViewProps) {
+  return (
+    <Image
+      source={require("~/assets/images/degencast-logo.png")}
+      style={{
+        width: 24,
+        height: 24,
+        resizeMode: "contain",
+      }}
+    />
+  );
+}
+
 export function HeaderLeft({
-  title,
   className,
   ...props
 }: ViewProps & { title?: string }) {
   return (
-    <View className={cn("flex-row items-center gap-5", className)} {...props}>
+    <View className={cn("flex-row items-center gap-4", className)} {...props} />
+  );
+}
+
+export function HeaderLeftDefault({
+  title,
+  ...props
+}: ViewProps & { title?: string }) {
+  return (
+    <HeaderLeft {...props}>
       <View>
-        <Image
-          source={require("~/assets/images/degencast-logo.png")}
-          style={{
-            width: 24,
-            height: 24,
-            resizeMode: "contain",
-          }}
-        />
+        <HeaderLogo />
       </View>
       {title && <Text className=" text-xl text-white">{title}</Text>}
-    </View>
+    </HeaderLeft>
   );
 }
 
