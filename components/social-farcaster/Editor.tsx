@@ -1,5 +1,5 @@
 import * as ImagePicker from "expo-image-picker";
-import { Image, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 import WarpcastChannelPicker from "~/components/social-farcaster/WarpcastChannelPicker";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
@@ -34,40 +34,45 @@ export default function Editor({
   placeholder?: string;
 }) {
   return (
-    <View className="flex w-full flex-grow gap-5 border-secondary">
-      <View className="flex-grow items-center">
-        <Textarea
-          autoFocus={true}
-          className={cn(
-            "h-full",
-            "border-0 bg-[#fff] text-[12px] text-sm ",
-            "w-full rounded-md p-0  outline-none",
-            "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
-          )}
-          placeholder={placeholder}
-          value={text}
-          onChangeText={setText}
-          aria-labelledby="textareaLabel"
-        />
-      </View>
+    <View className="flex h-full w-full flex-col gap-5 border-secondary">
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        className="flex w-full flex-1  gap-5 "
+      >
+        <View className="items-center">
+          <Textarea
+            autoFocus={true}
+            className={cn(
+              "h-full",
+              "border-0 bg-[#fff] text-[12px] text-sm ",
+              "w-full rounded-md p-0  outline-none",
+              "web:ring-0 web:ring-offset-0 web:focus:ring-0 web:focus:ring-offset-0 web:focus-visible:ring-0  web:focus-visible:ring-offset-0",
+            )}
+            placeholder={placeholder}
+            value={text}
+            onChangeText={setText}
+            aria-labelledby="textareaLabel"
+          />
+        </View>
+        <View className="flex flex-col gap-5">
+          {images.map((url, i) => {
+            return (
+              <Image
+                resizeMode="contain"
+                className="rounded-xl"
+                style={{ height: 200, width: "100%" }}
+                key={i}
+                source={{
+                  uri: url,
+                }}
+              />
+            );
+          })}
+        </View>
 
-      <View className="flex flex-col gap-5">
-        {images.map((url, i) => {
-          return (
-            <Image
-              resizeMode="contain"
-              className="rounded-xl"
-              style={{ height: 200, width: "100%" }}
-              key={i}
-              source={{
-                uri: url,
-              }}
-            />
-          );
-        })}
-      </View>
-
-      {previewComponent && <View>{previewComponent}</View>}
+        {previewComponent && <View>{previewComponent}</View>}
+      </ScrollView>
 
       <View className="flex flex-row">
         <WarpcastChannelPicker channel={channel} setChannel={setChannel} />
