@@ -87,10 +87,10 @@ export default function TabLayout() {
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
-                  <PostLink />
+                  {/* <PostLink />
                   <View>
                     <TradeSharingButton fid={currFid} />
-                  </View>
+                  </View> */}
                 </HeaderRight>
               </Header>
             ),
@@ -112,7 +112,7 @@ export default function TabLayout() {
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
-                  <PostLink />
+                  {/* <PostLink />
                   {currFid && farcasterAccount && (
                     <View>
                       <PortfolioSharingButton
@@ -120,7 +120,7 @@ export default function TabLayout() {
                         fname={farcasterAccount.username || ""}
                       />
                     </View>
-                  )}
+                  )} */}
                 </HeaderRight>
               </Header>
             ),
