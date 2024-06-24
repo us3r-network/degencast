@@ -26,9 +26,7 @@ export default function CommunityMetaInfo({
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, description, memberInfo, channelId } = communityInfo;
   const hosts = communityInfo?.hosts || [];
-  // const hostUserData = communityInfo?.hostUserData || [];
-
-  // TODO remove this mock data
+  const host = hosts[0];
   const { totalNumber, newPostNumber } = memberInfo || {};
 
   return (
@@ -57,46 +55,37 @@ export default function CommunityMetaInfo({
               </AvatarFallback>
             </Avatar>
             <View className="flex-1 flex-col justify-between">
-              <Text className="text-base font-bold leading-none">{name}</Text>
-              <View className="flex-row items-end gap-3">
-                <Text className="text-sm font-normal leading-none text-secondary">
-                  {displayValue(totalNumber || 0)} Members
-                </Text>
-                <Text className="text-sm font-normal leading-none text-secondary">
-                  {displayValue(newPostNumber || 0)} New Casts
-                </Text>
-              </View>
-            </View>
-            <View className=" flex h-[50px] flex-col justify-center">
-              <CommunityJoinButton channelId={communityInfo?.channelId || ""} />
+              <Text className="text-xl font-bold leading-none">{name}</Text>
+              <HostUserInfo
+                key={host.fid}
+                data={{
+                  fid: host.fid,
+                  avatar: host.pfp_url,
+                  username: host.username,
+                  displayName: host.display_name,
+                }}
+              />
             </View>
           </View>
           <Text className="line-clamp-2 text-sm font-normal leading-6">
             {description}
           </Text>
+          <View className="flex-row items-center gap-3">
+            <Text className="text-sm font-normal leading-none text-secondary">
+              {displayValue(totalNumber || 0)}{" "}
+              <Text className="text-sm font-normal leading-none">
+                Followers
+              </Text>
+            </Text>
+            <Text className="text-sm font-normal leading-none text-secondary">
+              {displayValue(newPostNumber || 0)}{" "}
+              <Text className="text-sm font-normal leading-none">
+                New Casts
+              </Text>
+            </Text>
+          </View>
         </Pressable>
       </Link>
-
-      {hosts.length > 0 && (
-        <>
-          <Text className=" text-base font-bold">Hosts</Text>
-          <View className="grid w-full grid-cols-2 gap-4">
-            {hosts.map((host) => {
-              return (
-                <HostUserInfo
-                  key={host.fid}
-                  data={{
-                    fid: host.fid,
-                    avatar: host.pfp_url,
-                    username: host.username,
-                    displayName: host.display_name,
-                  }}
-                />
-              );
-            })}
-          </View>
-        </>
-      )}
     </View>
   );
 }
@@ -115,26 +104,15 @@ function HostUserInfo({
 }) {
   const { fid, avatar, username, displayName } = data;
   return (
-    <Link className={cn("w-full", className)} href={`/u/${fid}`} asChild>
-      <Pressable className="w-full">
-        <View className={cn("w-full flex-row gap-1")}>
-          <Avatar
-            alt={displayName || ""}
-            className=" size-[40px] border border-secondary"
-          >
-            <AvatarImage source={{ uri: avatar || "" }} />
-            <AvatarFallback className="border-primary bg-secondary">
-              <Text className="text-sm font-bold">{displayName}</Text>
-            </AvatarFallback>
-          </Avatar>
-          <View className="flex-1 flex-col gap-3">
-            <Text className="line-clamp-1 text-base font-medium leading-none">
-              {displayName}
-            </Text>
-            <Text className="text-sm font-medium leading-none text-secondary">
-              @{username}
-            </Text>
-          </View>
+    <Link className={cn(" w-fit", className)} href={`/u/${fid}`} asChild>
+      <Pressable className="w-fit">
+        <View className={cn("flex-row items-center gap-1")}>
+          <Text className="line-clamp-1 text-sm font-normal leading-none">
+            {displayName}
+          </Text>
+          <Text className="text-sm font-normal leading-none text-secondary">
+            @{username}
+          </Text>
         </View>
       </Pressable>
     </Link>

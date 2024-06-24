@@ -362,14 +362,14 @@ export const ExplorePostActions = ({
           />
         </Animated.View>
       </ActionButton>
-      <Link
+      {/* <Link
         href={`/create${channelId ? "?channelId=" + channelId : ""}`}
         asChild
       >
         <ActionButton className="z-10 mt-3 h-[50px] w-[50px] shadow-md shadow-primary">
           <SquarePen size={20} strokeWidth={2} className="stroke-primary" />
         </ActionButton>
-      </Link>
+      </Link> */}
     </View>
   );
 };

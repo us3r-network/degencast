@@ -24,6 +24,7 @@ export default function CommunityJoinButton({
         className,
       )}
       size="sm"
+      disabled={isPending}
       onPress={(e) => {
         e.stopPropagation();
         e.preventDefault();

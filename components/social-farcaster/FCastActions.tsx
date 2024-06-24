@@ -16,7 +16,11 @@ import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
 import FCastShareModal from "./FCastShareModal";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
+import {
+  getCastFid,
+  getCastHex,
+  isNeynarCast,
+} from "~/utils/farcaster/cast-utils";
 
 export function FCastDetailActions({
   cast,
@@ -30,7 +34,11 @@ export function FCastDetailActions({
   isDetail?: boolean;
 }) {
   const castFid = getCastFid(cast);
-  const castUserData = farcasterUserDataObj?.[castFid];
+  const castUserData = isNeynarCast(cast)
+    ? {
+        display: (cast as NeynarCast)?.author?.display_name,
+      }
+    : farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();

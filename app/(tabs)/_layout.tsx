@@ -53,7 +53,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Explore",
+            title: "Channels",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
             headerTransparent: true,
