@@ -7,6 +7,7 @@ import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useUserInviteCode from "~/hooks/user/useUserInviteCode";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
+import OnboardingModal from "./portfolio/user/Onboarding";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { authenticated, checkDegencastLogin } = useAuth();
@@ -73,5 +74,10 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
     fetchCastCollections();
   }, [fetchCastCollections]);
 
-  return children;
+  return (
+    <>
+      {children}
+      <OnboardingModal />
+    </>
+  );
 }
