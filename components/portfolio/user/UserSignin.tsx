@@ -5,6 +5,7 @@ import Toast from "react-native-toast-message";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
+import { INVITE_ONLY } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 
 enum SigninStatus {
@@ -42,7 +43,11 @@ export default function UserSignin({
           setStatus(SigninStatus.SUCCESS);
           onSuccess();
         } else {
-          setStatus(SigninStatus.NO_DEGENCAST_ID);
+          if (INVITE_ONLY) {
+            setStatus(SigninStatus.NO_DEGENCAST_ID);
+          } else {
+            signup();
+          }
         }
       });
     },
