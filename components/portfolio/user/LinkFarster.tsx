@@ -3,9 +3,11 @@ import { Image } from "expo-image";
 import { View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import useAuth from "~/hooks/user/useAuth";
 
 export function LinkFarcaster() {
-    const { ready, authenticated, linkFarcaster } = usePrivy();
+    const { ready, linkFarcaster } = usePrivy();
+    const { authenticated } = useAuth();
     if (ready && authenticated) {
       return (
         <View className="flex-1 items-center justify-center gap-6">

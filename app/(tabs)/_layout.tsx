@@ -23,7 +23,6 @@ import {
   TradeSharingButton,
 } from "~/components/platform-sharing/PlatformSharingButton";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
-import OnboardingModal from "~/components/portfolio/user/Onboarding";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
@@ -132,7 +131,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <OnboardingModal />
     </SafeAreaView>
   );
 }
