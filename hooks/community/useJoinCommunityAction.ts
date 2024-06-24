@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from "react";
 import {
-  fetchJoiningCommunity,
-  fetchUnjoiningCommunity,
+  fetchCommunity,
+  fetchJoiningChannel,
+  fetchUnjoiningChannel,
 } from "~/services/community/api/community";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 // import useLogin from '../shared/useLogin';
@@ -9,11 +10,10 @@ import {
   addOneToJoinActionPendingIds,
   addOneToJoinedCommunities,
   removeOneFromJoinActionPendingIds,
-  removeOneFromJoinedCommunities,
+  removeOneFromJoinedCommunitiesByChannelId,
   selectJoinCommunity,
 } from "~/features/community/joinCommunitySlice";
 import { ApiRespCode } from "~/services/shared/types";
-import { CommunityInfo } from "~/services/community/types/community";
 import useAuth from "../user/useAuth";
 import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
@@ -21,11 +21,10 @@ import useFarcasterSigner from "../social-farcaster/useFarcasterSigner";
 import Toast from "react-native-toast-message";
 
 export default function useJoinCommunityAction(
-  communityInfo: CommunityInfo,
+  channelId: string,
   opts?: { showToast?: boolean },
 ) {
   const { showToast } = opts || {};
-  const communityId = communityInfo?.id;
   const dispatch = useAppDispatch();
   const { login } = usePrivy();
   const { currFid } = useFarcasterAccount();
@@ -35,19 +34,22 @@ export default function useJoinCommunityAction(
     useAppSelector(selectJoinCommunity);
 
   const joined = useMemo(
-    () => joinedCommunities.some((item) => item.id === communityId),
-    [joinedCommunities, communityId],
+    () =>
+      !!channelId &&
+      joinedCommunities.some((item) => item?.channelId === channelId),
+    [joinedCommunities, channelId],
   );
   const isPending = useMemo(
-    () => joinActionPendingIds.includes(communityId),
-    [joinActionPendingIds, communityId],
+    () => !!channelId && joinActionPendingIds.includes(channelId),
+    [joinActionPendingIds, channelId],
   );
   const isDisabled = useMemo(
-    () => !communityId || isPending || joinedCommunitiesPending,
-    [communityId, isPending, joinedCommunitiesPending],
+    () => !channelId || isPending || joinedCommunitiesPending,
+    [channelId, isPending, joinedCommunitiesPending],
   );
 
   const joiningAction = useCallback(async () => {
+    if (!channelId) return;
     if (!authenticated) {
       login();
       return;
@@ -58,11 +60,16 @@ export default function useJoinCommunityAction(
     }
     if (isPending) return;
     try {
-      dispatch(addOneToJoinActionPendingIds(communityId));
-      const response = await fetchJoiningCommunity(communityId);
+      dispatch(addOneToJoinActionPendingIds(channelId));
+      // const response = await fetchJoiningCommunity(channelId);
+      const response = await fetchJoiningChannel(channelId);
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
-        dispatch(addOneToJoinedCommunities(communityInfo));
+        const communityRes = await fetchCommunity(channelId);
+        const { data, code } = communityRes.data;
+        if (code === ApiRespCode.SUCCESS) {
+          dispatch(addOneToJoinedCommunities(data));
+        }
         // if (showToast) {
         //   Toast.show({
         //     type: "success",
@@ -81,12 +88,11 @@ export default function useJoinCommunityAction(
         });
       }
     } finally {
-      dispatch(removeOneFromJoinActionPendingIds(communityId));
+      dispatch(removeOneFromJoinActionPendingIds(channelId));
     }
   }, [
     dispatch,
-    communityId,
-    communityInfo,
+    channelId,
     isPending,
     authenticated,
     login,
@@ -96,17 +102,19 @@ export default function useJoinCommunityAction(
   ]);
 
   const unjoiningAction = useCallback(async () => {
+    if (!channelId) return;
     if (!authenticated) {
       login();
       return;
     }
     if (isPending) return;
     try {
-      dispatch(addOneToJoinActionPendingIds(communityId));
-      const response = await fetchUnjoiningCommunity(communityId);
+      dispatch(addOneToJoinActionPendingIds(channelId));
+      // const response = await fetchUnjoiningCommunity(channelId);
+      const response = await fetchUnjoiningChannel(channelId);
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
-        dispatch(removeOneFromJoinedCommunities(communityId));
+        dispatch(removeOneFromJoinedCommunitiesByChannelId(channelId));
         // if (showToast) {
         //   Toast.show({
         //     type: "success",
@@ -125,9 +133,9 @@ export default function useJoinCommunityAction(
         });
       }
     } finally {
-      dispatch(removeOneFromJoinActionPendingIds(communityId));
+      dispatch(removeOneFromJoinActionPendingIds(channelId));
     }
-  }, [dispatch, isPending, communityId, authenticated, login, showToast]);
+  }, [dispatch, isPending, channelId, authenticated, login, showToast]);
 
   const joinChangeAction = useCallback(() => {
     if (joined) {
