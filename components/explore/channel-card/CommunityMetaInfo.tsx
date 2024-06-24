@@ -4,7 +4,6 @@ import { CommunityData } from "~/services/community/api/community";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { cn } from "~/lib/utils";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
-import { userDataObjFromArr } from "~/utils/farcaster/user-data";
 import { Link } from "expo-router";
 import { Author } from "~/services/farcaster/types/neynar";
 import useCommunityPage from "~/hooks/community/useCommunityPage";
@@ -69,7 +68,7 @@ export default function CommunityMetaInfo({
               </View>
             </View>
             <View className=" flex h-[50px] flex-col justify-center">
-              <CommunityJoinButton communityInfo={communityInfo} />
+              <CommunityJoinButton channelId={communityInfo?.channelId || ""} />
             </View>
           </View>
           <Text className="line-clamp-2 text-sm font-normal leading-6">

@@ -1,22 +1,21 @@
 import { Text } from "~/components/ui/text";
 import { Button, ButtonProps } from "../ui/button";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
-import { CommunityInfo } from "~/services/community/types/community";
 import { cn } from "~/lib/utils";
 import { TextProps, View } from "react-native";
 import { CircleCheck, CirclePlus, MinusCircle, Plus } from "../common/Icons";
 
 export default function CommunityJoinButton({
-  communityInfo,
+  channelId,
   className,
   textProps,
   ...props
 }: ButtonProps & {
-  communityInfo: CommunityInfo;
+  channelId: string;
   textProps?: TextProps;
 }) {
   const { joined, isPending, joinChangeAction } =
-    useJoinCommunityAction(communityInfo);
+    useJoinCommunityAction(channelId);
   return (
     <Button
       variant={joined ? "outline" : "secondary"}
@@ -51,16 +50,16 @@ export default function CommunityJoinButton({
 }
 
 export function CommunityJoinIconButton({
-  communityInfo,
+  channelId,
   className,
   textProps,
   ...props
 }: ButtonProps & {
-  communityInfo: CommunityInfo;
+  channelId: string;
   textProps?: TextProps;
 }) {
   const { joined, isPending, joinChangeAction } = useJoinCommunityAction(
-    communityInfo,
+    channelId,
     {
       showToast: true,
     },

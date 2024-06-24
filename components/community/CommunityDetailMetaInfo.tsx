@@ -75,7 +75,7 @@ export default function CommunityDetailMetaInfo({
         </Text>
       </View>
       <View className=" flex h-20 flex-col justify-center">
-        <CommunityJoinIconButton communityInfo={communityInfo} />
+        <CommunityJoinIconButton channelId={communityInfo?.channelId || ""} />
       </View>
     </View>
   );
