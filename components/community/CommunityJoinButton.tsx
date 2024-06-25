@@ -2,8 +2,8 @@ import { Text } from "~/components/ui/text";
 import { Button, ButtonProps } from "../ui/button";
 import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { cn } from "~/lib/utils";
-import { TextProps, View } from "react-native";
-import { CircleCheck, CirclePlus, MinusCircle, Plus } from "../common/Icons";
+import { ActivityIndicator, TextProps, View } from "react-native";
+import { MinusCircle, Plus, PlusCircle } from "../common/Icons";
 
 export default function CommunityJoinButton({
   channelId,
@@ -24,6 +24,7 @@ export default function CommunityJoinButton({
         className,
       )}
       size="sm"
+      disabled={isPending}
       onPress={(e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -74,12 +75,62 @@ export function CommunityJoinIconButton({
       }}
       {...props}
     >
-      {joined ? (
+      {isPending ? (
+        <ActivityIndicator size={40} color={"#A36EFE"} />
+      ) : joined ? (
         <MinusCircle strokeWidth={1} className="size-10 stroke-secondary" />
       ) : (
         <View className="flex size-10 items-center justify-center rounded-full bg-secondary">
           <Plus className=" size-6 stroke-primary" />
         </View>
+      )}
+    </Button>
+  );
+}
+
+export function CommunityAvatarJoinIconButton({
+  channelId,
+  className,
+  textProps,
+  ...props
+}: ButtonProps & {
+  channelId: string;
+  textProps?: TextProps;
+}) {
+  const { joined, isPending, joinChangeAction } = useJoinCommunityAction(
+    channelId,
+    {
+      showToast: true,
+    },
+  );
+  return (
+    <Button
+      className={cn(
+        "m-0 h-fit w-fit rounded-full bg-transparent p-0",
+        className,
+      )}
+      disabled={isPending}
+      onPress={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        joinChangeAction();
+      }}
+      {...props}
+    >
+      {isPending ? (
+        <ActivityIndicator size={25} color={"#4C2896"} />
+      ) : joined ? (
+        <MinusCircle
+          strokeWidth={1}
+          size={25}
+          className="fill-secondary stroke-secondary-foreground"
+        />
+      ) : (
+        <PlusCircle
+          strokeWidth={1}
+          size={25}
+          className="fill-secondary stroke-secondary-foreground"
+        />
       )}
     </Button>
   );

@@ -110,3 +110,25 @@ export const BackArrowIcon = (props: SvgProps) => {
     </Svg>
   );
 };
+
+export const MintIcon = (props: SvgProps) => {
+  return (
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <Path
+        d="M14 8L8 14V8V2L14 8Z"
+        fill="#4C2896"
+        stroke="#4C2896"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M8 14L2 8L8 2"
+        stroke="#4C2896"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+};

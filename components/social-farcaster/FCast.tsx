@@ -50,7 +50,10 @@ export default function FCast({
       {/* header - user info */}
       <View className="flex flex-row items-center justify-between gap-6">
         {isNeynar ? (
-          <NeynarCastUserInfo userData={(cast as NeynarCast).author} />
+          <NeynarCastUserInfo
+            userData={(cast as NeynarCast).author}
+            timestamp={(cast as NeynarCast).timestamp}
+          />
         ) : (
           <FCastUserInfo userData={userData!} />
         )}
