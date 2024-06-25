@@ -1,11 +1,8 @@
 import {
   ConnectedWallet,
   User,
-  useCreateWallet,
   useLinkAccount,
-  useLogin,
   usePrivy,
-  useWallets,
 } from "@privy-io/react-auth";
 import { useMemo, useState } from "react";
 import { Dimensions, Image, View } from "react-native";
@@ -15,6 +12,8 @@ import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { cn } from "~/lib/utils";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
+import UserSignin from "./UserSignin";
+import { X } from "~/components/common/Icons";
 
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
 // console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
@@ -22,12 +21,7 @@ const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
 export default function SignUp({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
-  const { user } = usePrivy();
-  const { createWallet } = useCreateWallet();
-  const { wallets } = useWallets();
-  const embededWallet = wallets.find(
-    (wallet) => wallet.connectorType === "embedded",
-  );
+  const { user, logout } = usePrivy();
 
   const nextStep = (newUser?: User) => {
     const u = newUser || user;
@@ -49,40 +43,26 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
     }
   };
 
-  const toStep = (step: number = 0) => {
-    if (!user?.farcaster?.fid && step <= 1) {
+  const toStep = (s: number = 0) => {
+    console.log("to step", s, "from", step)
+    if (!user?.farcaster?.fid && s <= 1) {
       setStep(1);
     } else if (
       !user?.linkedAccounts.find(
         (account) =>
           account.type === "wallet" && account.connectorType !== "embedded",
       ) &&
-      step <= 2
+      s <= 2
     ) {
       setStep(2);
-    } else if (!user?.farcaster?.signerPublicKey && step <= 3) {
+    } else if (user?.farcaster && !user?.farcaster?.signerPublicKey && s <= 3) {
       setStep(3);
-    } else if (!isInstalled && isSupported && step <= 4) {
+    } else if (!isInstalled && isSupported && s <= 4) {
       setStep(4);
     } else {
       onComplete();
     }
   };
-
-  const loginHanler = {
-    onComplete: (
-      user: User,
-      isNewUser: boolean,
-      wasAlreadyAuthenticated: boolean,
-    ) => {
-      console.log("login", user, isNewUser, wasAlreadyAuthenticated);
-      nextStep(user);
-    },
-    onError: (error: unknown) => {
-      console.error("Failed to login with farcaster account", error);
-    },
-  };
-  const { login } = useLogin(loginHanler);
 
   const linkAccountHanler = {
     onSuccess: (user: User, linkMethod: string) => {
@@ -103,12 +83,25 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
       ) as unknown as ConnectedWallet,
     [user],
   );
-
+  const CloseButton = (
+    <Button
+      variant="default"
+      className="absolute right-4 top-4 h-6 bg-transparent p-0"
+      onPress={() => {
+        logout();
+        onComplete();
+      }}
+    >
+      <Text>
+        <X />
+      </Text>
+    </Button>
+  );
   const SkipButton = (
     <Button
       variant="default"
       className="absolute right-4 top-4 h-6 bg-transparent p-0"
-      onPress={() => onComplete()}
+      onPress={() => toStep(step + 1)}
     >
       <Text>Skip</Text>
     </Button>
@@ -131,15 +124,18 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
           <StepImage step="0" />
           <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
             <StepIndicator stepNum={5} stepNo={step} />
-            <Button
-              variant="secondary"
-              className="w-1/2 rounded-full"
-              onPress={() => login()}
-            >
-              <Text>Sign in</Text>
-            </Button>
+            <UserSignin
+              showCancelButton={false}
+              onSuccess={() => {
+                console.log("signup successful!");
+                nextStep();
+              }}
+              onFail={(error: unknown) => {
+                console.log("Failed to login", error);
+              }}
+            />
           </View>
-          {SkipButton}
+          {CloseButton}
         </View>
       )}
       {step === 1 &&
@@ -172,6 +168,7 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
                 <Text>Connect Farcaster</Text>
               </Button>
             </View>
+            {SkipButton}
           </View>
         ))}
       {step === 2 &&

@@ -5,7 +5,6 @@ import {
   fetchUnjoiningChannel,
 } from "~/services/community/api/community";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-// import useLogin from '../shared/useLogin';
 import {
   addOneToJoinActionPendingIds,
   addOneToJoinedCommunities,
