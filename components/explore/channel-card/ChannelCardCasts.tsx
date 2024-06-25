@@ -26,6 +26,7 @@ export default function ChannelCardCasts({
   const layoutHeight = layout?.height || 0;
   const itemWidth = layoutWidth ? layoutWidth - 30 : 0;
   const itemHeight = layoutHeight;
+  const showCasts = casts.slice(0, 10);
 
   return (
     <View
@@ -38,7 +39,7 @@ export default function ChannelCardCasts({
       }}
     >
       <FlatList
-        data={casts}
+        data={showCasts}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         pagingEnabled={true}
