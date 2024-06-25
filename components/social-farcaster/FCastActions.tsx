@@ -1,7 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
 import { ViewProps } from "react-native";
-import Toast from "react-native-toast-message";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
@@ -149,15 +148,11 @@ export function FCastExploreActions({
   cast,
   farcasterUserDataObj,
   communityInfo,
-  showActions,
-  showActionsChange,
   ...props
 }: ViewProps & {
   cast: FarCast | NeynarCast;
   farcasterUserDataObj?: { [key: string]: UserData };
   communityInfo: CommunityInfo;
-  showActions: boolean;
-  showActionsChange: (showActions: boolean) => void;
 }) {
   const castFid = getCastFid(cast);
   const castUserData = farcasterUserDataObj?.[castFid];
@@ -242,8 +237,6 @@ export function FCastExploreActions({
           }
           setOpenMintNftModal(true);
         }}
-        showActions={showActions}
-        showActionsChange={showActionsChange}
         {...props}
       />
 

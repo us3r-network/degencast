@@ -82,7 +82,7 @@ export const communityDetailCastsSlice = createSlice({
     builder
       .addCase(fetchItems.pending, (state, action) => {
         const { channelId } = action.meta.arg;
-        if (!state[channelId]) {
+        if (!state?.[channelId]?.items) {
           state[channelId] = cloneDeep(groupDataDefault);
         }
         state[channelId].errorMsg = "";
@@ -90,6 +90,9 @@ export const communityDetailCastsSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         const { channelId } = action.meta.arg;
+        if (!state?.[channelId]?.items) {
+          state[channelId] = cloneDeep(groupDataDefault);
+        }
         state[channelId].status = AsyncRequestStatus.FULFILLED;
         const { casts: newItems, pageInfo } = action.payload;
         state[channelId].items.push(...newItems);
