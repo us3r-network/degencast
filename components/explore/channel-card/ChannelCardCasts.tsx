@@ -27,10 +27,29 @@ export default function ChannelCardCasts({
   const itemWidth = layoutWidth ? layoutWidth - 30 : 0;
   const itemHeight = layoutHeight;
   const showCasts = casts.slice(0, 10);
+  const showViewMore =
+    !loading && showCasts.length > 0 && pageInfo?.hasNextPage;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentCast = showCasts[currentIndex];
+
+  const viewabilityConfigCallbackPairs = useRef([
+    {
+      viewabilityConfig: {
+        viewAreaCoveragePercentThreshold: 80,
+      },
+      onViewableItemsChanged: ({ viewableItems, changed }: any) => {
+        const viewableIndex = viewableItems?.[0]?.index || 0;
+
+        if (viewableItems.length === 1) {
+          setCurrentIndex(viewableIndex);
+        }
+      },
+    },
+  ]);
 
   return (
     <View
-      className="h-full w-full"
+      className="relative h-full w-full"
       onLayout={(e) => {
         if (!layoutRef.current) {
           setLayout(e.nativeEvent.layout);
@@ -38,13 +57,49 @@ export default function ChannelCardCasts({
         }
       }}
     >
+      <View className=" absolute bottom-4 right-[30px] z-20">
+        {currentCast && (
+          <FCastExploreActions
+            cast={currentCast}
+            communityInfo={communityInfo}
+          />
+        )}
+      </View>
+
       <FlatList
         data={showCasts}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         pagingEnabled={true}
+        keyExtractor={(item, index) => index.toString()}
+        onEndReached={() => {
+          return;
+          // if (casts.length === 0 || loading) return;
+          // loadCasts();
+        }}
+        onEndReachedThreshold={0.5}
         ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
         style={{ flex: 1 }}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+        onScroll={(e) => {
+          // Hide cast menu when swiping to view more cards
+          const hideCastMenuIndex = 9999;
+          if (!showViewMore || currentIndex === hideCastMenuIndex) return;
+          if (
+            e.nativeEvent.contentOffset.x +
+              e.nativeEvent.layoutMeasurement.width >=
+            e.nativeEvent.contentSize.width - itemWidth / 2
+          ) {
+            setCurrentIndex(hideCastMenuIndex);
+          }
+        }}
+        getItemLayout={(item, index) => {
+          return {
+            length: itemWidth,
+            offset: itemWidth * index,
+            index,
+          };
+        }}
         renderItem={({ item: cast, index }) => {
           return (
             <View
@@ -80,23 +135,10 @@ export default function ChannelCardCasts({
                     <FCast cast={cast} webpageImgIsFixedRatio={true} />
                   </Pressable>
                 </Card>
-                <View className=" absolute bottom-4 right-4 z-20">
-                  <FCastExploreActions
-                    cast={cast}
-                    communityInfo={communityInfo}
-                  />
-                </View>
               </View>
             </View>
           );
         }}
-        keyExtractor={(item, index) => index.toString()}
-        onEndReached={() => {
-          return;
-          // if (casts.length === 0 || loading) return;
-          // loadCasts();
-        }}
-        onEndReachedThreshold={0.5}
         ListFooterComponent={() => {
           return loading ? (
             <View
@@ -108,7 +150,7 @@ export default function ChannelCardCasts({
             >
               <Loading />
             </View>
-          ) : pageInfo?.hasNextPage ? (
+          ) : showViewMore ? (
             <View
               style={{
                 height: itemHeight,
