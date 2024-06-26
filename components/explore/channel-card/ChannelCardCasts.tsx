@@ -30,11 +30,11 @@ export default function ChannelCardCasts({
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCast = showCasts[currentIndex];
 
-  const showViewMore =
-    !loading &&
-    showCasts.length > 0 &&
-    pageInfo?.hasNextPage &&
-    currentIndex > 0;
+  // const showViewMore =
+  //   !loading &&
+  //   showCasts.length > 0 &&
+  //   pageInfo?.hasNextPage &&
+  //   currentIndex > 0;
 
   const viewabilityConfigCallbackPairs = useRef([
     {
@@ -85,18 +85,18 @@ export default function ChannelCardCasts({
         ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
         style={{ flex: 1 }}
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-        onScroll={(e) => {
-          // Hide cast menu when swiping to view more cards
-          const hideCastMenuIndex = 9999;
-          if (!showViewMore || currentIndex === hideCastMenuIndex) return;
-          if (
-            e.nativeEvent.contentOffset.x +
-              e.nativeEvent.layoutMeasurement.width >=
-            e.nativeEvent.contentSize.width - itemWidth / 2
-          ) {
-            setCurrentIndex(hideCastMenuIndex);
-          }
-        }}
+        // onScroll={(e) => {
+        //   // Hide cast menu when swiping to view more cards
+        //   const hideCastMenuIndex = 9999;
+        //   if (!showViewMore || currentIndex === hideCastMenuIndex) return;
+        //   if (
+        //     e.nativeEvent.contentOffset.x +
+        //       e.nativeEvent.layoutMeasurement.width >=
+        //     e.nativeEvent.contentSize.width - itemWidth / 2
+        //   ) {
+        //     setCurrentIndex(hideCastMenuIndex);
+        //   }
+        // }}
         getItemLayout={(item, index) => {
           return {
             length: itemWidth,
@@ -105,18 +105,20 @@ export default function ChannelCardCasts({
           };
         }}
         renderItem={({ item: cast, index }) => {
+          const isLastItem = index === showCasts.length - 1;
           return (
             <View
               key={getCastHex(cast)}
               className="h-full"
               style={{
                 height: itemHeight,
-                width: itemWidth,
+                width: isLastItem ? layoutWidth + 5 : itemWidth,
               }}
             >
               <View
                 className="relative h-full w-full"
                 style={{
+                  width: itemWidth,
                   marginLeft: 15,
                 }}
               >
@@ -144,54 +146,60 @@ export default function ChannelCardCasts({
           );
         }}
         ListFooterComponent={() => {
-          return loading ? (
-            <View
-              className="flex items-center justify-center p-5"
-              style={{
-                height: itemHeight,
-                width: layoutWidth + 5,
-              }}
-            >
-              <Loading />
-            </View>
-          ) : showViewMore ? (
-            <View
-              style={{
-                height: itemHeight,
-                width: layoutWidth + 5,
-              }}
-            >
+          if (loading) {
+            return (
               <View
-                className="relative h-full w-full"
+                className="flex items-center justify-center p-5"
                 style={{
-                  width: itemWidth,
-                  marginLeft: 20,
+                  height: itemHeight,
+                  width: layoutWidth + 5,
                 }}
               >
-                <Pressable
-                  className={cn(" h-full w-full")}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    navigateToCommunityDetail(
-                      channelId,
-                      communityInfo,
-                      "casts",
-                    );
-                  }}
-                >
-                  <Card
-                    className={cn(
-                      "z-10 box-border flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] border-none p-4 pb-0",
-                    )}
-                  >
-                    <Text className=" text-center text-xl font-bold text-secondary">
-                      View More
-                    </Text>
-                  </Card>
-                </Pressable>
+                <Loading />
               </View>
-            </View>
-          ) : null;
+            );
+          }
+          // if (showViewMore) {
+          //   return (
+          //     <View
+          //       style={{
+          //         height: itemHeight,
+          //         width: layoutWidth + 5,
+          //       }}
+          //     >
+          //       <View
+          //         className="relative h-full w-full"
+          //         style={{
+          //           width: itemWidth,
+          //           marginLeft: 20,
+          //         }}
+          //       >
+          //         <Pressable
+          //           className={cn(" h-full w-full")}
+          //           onPress={(e) => {
+          //             e.stopPropagation();
+          //             navigateToCommunityDetail(
+          //               channelId,
+          //               communityInfo,
+          //               "casts",
+          //             );
+          //           }}
+          //         >
+          //           <Card
+          //             className={cn(
+          //               "z-10 box-border flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] border-none p-4 pb-0",
+          //             )}
+          //           >
+          //             <Text className=" text-center text-xl font-bold text-secondary">
+          //               View More
+          //             </Text>
+          //           </Card>
+          //         </Pressable>
+          //       </View>
+          //     </View>
+          //   );
+          // }
+          return null;
         }}
         ListEmptyComponent={() => {
           return null;
