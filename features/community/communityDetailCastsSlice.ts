@@ -95,7 +95,7 @@ export const communityDetailCastsSlice = createSlice({
         }
         state[channelId].status = AsyncRequestStatus.FULFILLED;
         const { casts: newItems, pageInfo } = action.payload;
-        state[channelId].items.push(...newItems);
+        state[channelId].items.push(...(newItems || []));
         state[channelId].pageInfo = { ...pageInfo };
       })
       .addCase(fetchItems.rejected, (state, action) => {
