@@ -7,7 +7,7 @@ const defaultReactions = {
   likesCount: 0,
   recastsCount: 0,
 };
-type ReactionItem = {
+type Reactions = {
   liked: boolean;
   recasted: boolean;
   likesCount: number;
@@ -15,7 +15,7 @@ type ReactionItem = {
 };
 export type CastReactionsState = {
   reactions: {
-    [castHex: string]: ReactionItem;
+    [castHex: string]: Reactions;
   };
   likePendingCastIds: Array<string>;
   recastPendingCastIds: Array<string>;
@@ -74,7 +74,7 @@ export const castReactionsSlice = createSlice({
     upsertManyToReactions: (
       state,
       action: PayloadAction<{
-        [castHex: string]: ReactionItem;
+        [castHex: string]: Reactions;
       }>,
     ) => {
       state.reactions = {
