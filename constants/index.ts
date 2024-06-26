@@ -1,10 +1,9 @@
 import { base } from "viem/chains";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
-
 export const DEGENCAST_WEB_HOST = process.env.EXPO_PUBLIC_DEGENCAST_WEB_HOST;
 export const DEGENCAST_FRAME_HOST =
-  process.env.EXPO_PUBLIC_DEGENCAST_FRAME_HOST;
+  process.env.EXPO_PUBLIC_DEGENCAST_FRAME_HOST || "";
 export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || "";
@@ -39,3 +38,4 @@ export const DEFAULT_HEADER_HEIGHT = 54;
 export const DEFAULT_TABBAR_HEIGHT = 90;
 
 export const HTTP_HMAC_KEY = process.env.EXPO_PUBLIC_HTTP_HMAC_KEY || "";
+export const INVITE_ONLY = process.env.EXPO_PUBLIC_INVITE_ONLY;

@@ -178,9 +178,11 @@ export function PointsRules({
         websiteLink={getAppWebsiteLink({
           fid: currFid,
         })}
-        frameLink={getAppFrameLink({
-          fid: currFid,
-        })}
+        warpcastEmbeds={[
+          getAppFrameLink({
+            fid: currFid,
+          }),
+        ]}
         navigateToCreatePageAfter={() => {
           onOpenChange?.(false);
         }}

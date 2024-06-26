@@ -33,24 +33,23 @@ import { UserData } from "~/utils/farcaster/user-data";
 export default function CastDetail() {
   const params = useLocalSearchParams();
   const { id, fid } = params as { id: string; fid?: string };
+  const castHash = id.startsWith("0x") ? id.slice(2) : id;
   const { castDetailData } = useCastPage();
-  const data = castDetailData?.[id as string];
+  const data = castDetailData?.[castHash as string];
   const { cast } = data || {};
   if (cast) {
     const isNeynar = isNeynarCast(cast);
     if (isNeynar) {
-      return <CachedNeynarCastDetail />;
+      return <CachedNeynarCastDetail castHash={castHash} />;
     }
-    return <CachedCastDetail />;
+    return <CachedCastDetail castHash={castHash} />;
   }
-  return <FetchedCastDetail />;
+  return <FetchedCastDetail castHash={castHash} />;
 }
 
-function CachedCastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params as { id: string };
+function CachedCastDetail({ castHash }: { castHash: string }) {
   const { castDetailData } = useCastPage();
-  const data = castDetailData?.[id as string];
+  const data = castDetailData?.[castHash as string];
   const {
     cast: cachedCast,
     farcasterUserDataObj: cachedFarcasterUserDataObj,
@@ -65,10 +64,10 @@ function CachedCastDetail() {
     loadCastDetail,
   } = useLoadCastDetail();
   useEffect(() => {
-    if (id) {
-      loadCastDetail(id as string);
+    if (castHash) {
+      loadCastDetail(castHash as string);
     }
-  }, [id, loadCastDetail]);
+  }, [castHash, loadCastDetail]);
 
   // get community info
   const parentUrl = getCastParentUrl(cachedCast);
@@ -105,11 +104,9 @@ function CachedCastDetail() {
   );
 }
 
-function CachedNeynarCastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params as { id: string };
+function CachedNeynarCastDetail({ castHash }: { castHash: string }) {
   const { castDetailData } = useCastPage();
-  const data = castDetailData?.[id as string];
+  const data = castDetailData?.[castHash as string];
   const { community: cachedCommunity } = data;
   const cachedCast = data.cast as NeynarCast;
 
@@ -119,10 +116,10 @@ function CachedNeynarCastDetail() {
     loadNeynarCastDetail,
   } = useLoadNeynarCastDetail();
   useEffect(() => {
-    if (id) {
-      loadNeynarCastDetail(id as string);
+    if (castHash) {
+      loadNeynarCastDetail(castHash as string);
     }
-  }, [id, loadNeynarCastDetail]);
+  }, [castHash, loadNeynarCastDetail]);
 
   // get community info
   const parentUrl = getCastParentUrl(cachedCast);
@@ -152,10 +149,7 @@ function CachedNeynarCastDetail() {
   );
 }
 
-function FetchedCastDetail() {
-  const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params as { id: string };
-
+function FetchedCastDetail({ castHash }: { castHash: string }) {
   // get cast info
   const {
     cast: fetchedNeynarCast,
@@ -163,10 +157,10 @@ function FetchedCastDetail() {
     loadNeynarCastDetail,
   } = useLoadNeynarCastDetail();
   useEffect(() => {
-    if (id) {
-      loadNeynarCastDetail(id as string);
+    if (castHash) {
+      loadNeynarCastDetail(castHash as string);
     }
-  }, [id, loadNeynarCastDetail]);
+  }, [castHash, loadNeynarCastDetail]);
 
   // get community info
   const parentUrl = getCastParentUrl(fetchedNeynarCast!);
@@ -214,14 +208,12 @@ function CastDetailWithData({
 }) {
   const { navigateToCastDetail } = useCastPage();
   const navigation = useNavigation();
-  const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params as { id: string };
-
+  const castHash = getCastHex(cast);
   const {
     comments,
     loading: commentsLoading,
     loadCastComments,
-  } = useLoadNeynarCastComments(id);
+  } = useLoadNeynarCastComments(castHash);
 
   useEffect(() => {
     loadCastComments();

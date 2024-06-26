@@ -106,7 +106,7 @@ export default function CreateScreen() {
                               return { url: item };
                             }),
                           ],
-                          channel: channel.url,
+                          parentUrl: channel.url,
                         };
 
                         const result = await submitCast(data);
@@ -154,6 +154,7 @@ export default function CreateScreen() {
           ),
         }}
       />
+
       <View
         className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
         id="create-view"
@@ -181,17 +182,19 @@ export default function CreateScreen() {
                 @{user?.farcaster?.username}
               </Text>
             </View>
-            <Editor
-              text={value}
-              setText={setValue}
-              images={images}
-              setImages={setImages}
-              channel={channel}
-              setChannel={setChannel}
-              previewComponent={
-                embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
-              }
-            />
+            <View className="w-full flex-1">
+              <Editor
+                text={value}
+                setText={setValue}
+                images={images}
+                setImages={setImages}
+                channel={channel}
+                setChannel={setChannel}
+                previewComponent={
+                  embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
+                }
+              />
+            </View>
           </View>
         )}
       </View>

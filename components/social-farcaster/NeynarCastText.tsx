@@ -97,5 +97,5 @@ export default function NeynarCastText({
 }
 
 function isMention(part: string) {
-  return part.startsWith("@");
+  return !!part && part.startsWith("@");
 }

@@ -93,12 +93,6 @@ export default function CommunityDetail() {
     }
   }, [membersShare]);
 
-  useEffect(() => {
-    if (casts.length === 0) {
-      loadCasts();
-    }
-  }, [casts]);
-
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}

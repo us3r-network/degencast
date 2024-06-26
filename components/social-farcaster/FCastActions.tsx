@@ -1,7 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
 import { ViewProps } from "react-native";
-import Toast from "react-native-toast-message";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
@@ -16,7 +15,11 @@ import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
 import FCastShareModal from "./FCastShareModal";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
+import {
+  getCastFid,
+  getCastHex,
+  isNeynarCast,
+} from "~/utils/farcaster/cast-utils";
 
 export function FCastDetailActions({
   cast,
@@ -30,7 +33,11 @@ export function FCastDetailActions({
   isDetail?: boolean;
 }) {
   const castFid = getCastFid(cast);
-  const castUserData = farcasterUserDataObj?.[castFid];
+  const castUserData = isNeynarCast(cast)
+    ? {
+        display: (cast as NeynarCast)?.author?.display_name,
+      }
+    : farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
   const { authenticated, login } = usePrivy();
@@ -141,15 +148,11 @@ export function FCastExploreActions({
   cast,
   farcasterUserDataObj,
   communityInfo,
-  showActions,
-  showActionsChange,
   ...props
 }: ViewProps & {
   cast: FarCast | NeynarCast;
   farcasterUserDataObj?: { [key: string]: UserData };
   communityInfo: CommunityInfo;
-  showActions: boolean;
-  showActionsChange: (showActions: boolean) => void;
 }) {
   const castFid = getCastFid(cast);
   const castUserData = farcasterUserDataObj?.[castFid];
@@ -234,8 +237,6 @@ export function FCastExploreActions({
           }
           setOpenMintNftModal(true);
         }}
-        showActions={showActions}
-        showActionsChange={showActionsChange}
         {...props}
       />
 

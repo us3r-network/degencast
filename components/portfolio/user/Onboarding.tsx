@@ -1,32 +1,32 @@
 import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/user/ApplyLaunch";
 import SignUp from "~/components/portfolio/user/Signup";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
+import useAuth from "~/hooks/user/useAuth";
 
 const OnboardingModal = React.forwardRef<
   React.ElementRef<typeof Dialog>,
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
   const [open, setOpen] = useState(false);
-  const { ready, authenticated: privyAuthenticated } = usePrivy();
+  const { ready } = usePrivy();
+  const { authenticated } = useAuth();
   useEffect(() => {
     const goOnboarding = async () => {
       const skipOnboardingDate =
         await AsyncStorage.getItem(SKIP_ONBOARDING_KEY);
       if (
         ready &&
-        !privyAuthenticated &&
+        !authenticated &&
         (!skipOnboardingDate || new Date(skipOnboardingDate) < new Date())
       )
         setOpen(true);
     };
     goOnboarding();
-  }, [ready, privyAuthenticated]);
+  }, [ready, authenticated]);
 
   return (
     <Dialog open={open} ref={ref}>

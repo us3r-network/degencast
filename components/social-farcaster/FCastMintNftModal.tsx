@@ -29,6 +29,7 @@ import useUserBulk from "~/hooks/user/useUserBulk";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
+import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
 // import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
@@ -67,19 +68,9 @@ export default function FCastMintNftModal({
     return findCollectionWithCache(address, chainId);
   }, [address, chainId, findCollectionWithCache]);
 
-  const { currFid } = useFarcasterAccount();
-  const {
-    userInfo,
-    load,
-    loading: currUserDataLoading,
-  } = useUserBulk(Number(currFid) || undefined);
-  useEffect(() => {
-    if (currFid) load(Number(currFid));
-  }, [currFid]);
+  const { currUserInfo, loading: currUserDataLoading } = useCurrUserInfo();
 
-  const currUserDisplayName = userInfo
-    ? userInfo.display_name
-    : "";
+  const currUserDisplayName = currUserInfo ? currUserInfo.display_name : "";
   const {
     createNewToken,
     createNewCollection,
@@ -204,7 +195,7 @@ export default function FCastMintNftModal({
           warpcastText={getMintCastTextWithWarpcast()}
           warpcastChannelId="zora"
           websiteLink={getMintCastWebsiteLink(createdTokenInfo!)}
-          frameLink={getMintCastFrameLink(createdTokenInfo!)}
+          warpcastEmbeds={[getMintCastFrameLink(createdTokenInfo!)]}
           navigateToCreatePageAfter={() => {
             setSharingCastMint({
               castHex,

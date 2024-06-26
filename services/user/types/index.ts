@@ -1,5 +1,12 @@
 export type LoginRespEntity = {
   id: number;
+  createdAt: string;
+  lastModifiedAt: string;
+};
+
+export type InvitationCodeRespEntity = {
+  code: string;
+  isUsed: boolean;
 };
 
 export enum UserActionName {

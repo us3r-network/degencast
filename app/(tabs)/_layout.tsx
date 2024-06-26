@@ -11,6 +11,8 @@ import ExploreViewSelect from "~/components/explore/ExploreSelect";
 import {
   Header,
   HeaderLeft,
+  HeaderLeftDefault,
+  HeaderLogo,
   HeaderRight,
 } from "~/components/layout/header/Header";
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
@@ -21,7 +23,6 @@ import {
   TradeSharingButton,
 } from "~/components/platform-sharing/PlatformSharingButton";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
-import OnboardingModal from "~/components/portfolio/user/Onboarding";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
@@ -51,14 +52,17 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Explore",
+            title: "Channels",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
             headerTransparent: true,
             header: () => (
               <Header>
-                {/* <HeaderLeft /> */}
-                <ExploreViewSelect />
+                <HeaderLeft>
+                  <HeaderLogo />
+                  <ExploreViewSelect />
+                </HeaderLeft>
+
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
@@ -83,14 +87,14 @@ export default function TabLayout() {
             },
             header: () => (
               <Header>
-                <HeaderLeft />
+                <HeaderLeftDefault title="Ranks" />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
-                  <PostLink />
+                  {/* <PostLink />
                   <View>
                     <TradeSharingButton fid={currFid} />
-                  </View>
+                  </View> */}
                 </HeaderRight>
               </Header>
             ),
@@ -108,11 +112,11 @@ export default function TabLayout() {
             },
             header: () => (
               <Header>
-                <HeaderLeft />
+                <HeaderLeftDefault title="Portfolio" />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />
-                  <PostLink />
+                  {/* <PostLink />
                   {currFid && farcasterAccount && (
                     <View>
                       <PortfolioSharingButton
@@ -120,14 +124,13 @@ export default function TabLayout() {
                         fname={farcasterAccount.username || ""}
                       />
                     </View>
-                  )}
+                  )} */}
                 </HeaderRight>
               </Header>
             ),
           }}
         />
       </Tabs>
-      <OnboardingModal />
     </SafeAreaView>
   );
 }

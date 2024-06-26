@@ -8,6 +8,7 @@ export function isNeynarCast(cast: FarCast | NeynarCast) {
 }
 
 export function getCastHex(cast: FarCast | NeynarCast) {
+  if (!cast) return "";
   if (isNeynarCast(cast)) {
     return (cast as NeynarCast)?.hash.slice(2);
   } else {
