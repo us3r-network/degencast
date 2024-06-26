@@ -44,14 +44,18 @@ export default function useFarcasterRecastAction({
     () => !!reactions?.[castHex]?.recasted,
     [reactions, castHex],
   );
+  const recastCount = useMemo(
+    () => reactions?.[castHex]?.recastsCount || 0,
+    [reactions, castHex],
+  );
   const recastPending = useMemo(
     () => recastPendingCastIds.includes(castHex),
     [recastPendingCastIds, castHex],
   );
 
-  const [recastCount, setRecastCount] = useState<number>(
-    getCastReactionsCount(cast).recastsCount,
-  );
+  // const [recastCount, setRecastCount] = useState<number>(
+  //   getCastReactionsCount(cast).recastsCount,
+  // );
 
   const recastCastAction = useCallback(async () => {
     if (!authenticated) {
@@ -70,7 +74,7 @@ export default function useFarcasterRecastAction({
       const res = await recastCast(castHex, Number(castFid));
       console.log("recastCastAction", res);
       dispatch(addRecast(castHex));
-      setRecastCount((pre) => pre + 1);
+      // setRecastCount((pre) => pre + 1);
       onRecastSuccess?.();
     } catch (error) {
       console.error(error);
@@ -107,7 +111,7 @@ export default function useFarcasterRecastAction({
       const res = await removeRecastCast(castHex, Number(castFid));
       console.log("removeRecastAction", res);
       dispatch(removeRecast(castHex));
-      setRecastCount((pre) => pre - 1);
+      // setRecastCount((pre) => pre - 1);
       onRemoveRecastSuccess?.();
     } catch (error) {
       console.error(error);

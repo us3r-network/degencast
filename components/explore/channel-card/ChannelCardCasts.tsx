@@ -73,6 +73,7 @@ export default function ChannelCardCasts({
       <FlatList
         data={showCasts}
         horizontal={true}
+        inverted={false}
         showsHorizontalScrollIndicator={false}
         pagingEnabled={true}
         keyExtractor={(item, index) => index.toString()}

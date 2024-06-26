@@ -10,8 +10,8 @@ import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
 import { useAppDispatch } from "~/store/hooks";
 import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
@@ -58,10 +58,10 @@ export default function useLoadExploreCastsWithNaynar(opts: {
       }
       const { data } = resp.data;
       const { casts, farcasterUserData, pageInfo } = data;
-      const viewerContexts = viewerContextsFromCasts(
+      const reactions = getReactionsCountAndViewerContexts(
         casts.map((item) => item.data),
       );
-      dispatch(upsertManyToReactions(viewerContexts));
+      dispatch(upsertManyToReactions(reactions));
       setCasts((pre) => [...pre, ...casts]);
       pageInfoRef.current = pageInfo;
       // console.log("pageInfo", pageInfo);

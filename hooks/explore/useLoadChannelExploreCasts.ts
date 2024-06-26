@@ -11,8 +11,8 @@ import useUserAction from "../user/useUserAction";
 import useUserCastLikeActionsUtil from "../user/useUserCastLikeActionsUtil";
 import { useAppDispatch } from "~/store/hooks";
 import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
@@ -72,10 +72,10 @@ export default function useLoadChannelExploreCasts(params: {
       const newCasts = casts.filter(
         (item) => !filteredCastHexs?.includes(getCastHex(item.data)),
       );
-      const viewerContexts = viewerContextsFromCasts(
+      const reactions = getReactionsCountAndViewerContexts(
         newCasts.map((item) => item.data),
       );
-      dispatch(upsertManyToReactions(viewerContexts));
+      dispatch(upsertManyToReactions(reactions));
 
       setCasts((pre) => [...pre, ...newCasts]);
       pageInfoRef.current = pageInfo;
