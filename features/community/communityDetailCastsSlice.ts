@@ -31,7 +31,7 @@ export const groupDataDefault = {
 };
 const communityDetailCastsState: CommunityDetailCastsState = {};
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 export const fetchItems = createAsyncThunk<
   NaynarChannelCastsFeedData,
   {
