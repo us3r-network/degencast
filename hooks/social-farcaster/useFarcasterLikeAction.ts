@@ -46,14 +46,18 @@ export default function useFarcasterLikeAction({
     () => !!reactions?.[castHex]?.liked,
     [reactions, castHex],
   );
+  const likeCount = useMemo(
+    () => reactions?.[castHex]?.likesCount || 0,
+    [reactions, castHex],
+  );
   const likePending = useMemo(
     () => likePendingCastIds.includes(castHex),
     [likePendingCastIds, castHex],
   );
 
-  const [likeCount, setLikeCount] = useState<number>(
-    getCastReactionsCount(cast).likesCount,
-  );
+  // const [likeCount, setLikeCount] = useState<number>(
+  //   getCastReactionsCount(cast).likesCount,
+  // );
 
   const likeCastAction = useCallback(async () => {
     if (!authenticated) {
@@ -77,7 +81,7 @@ export default function useFarcasterLikeAction({
         action: UserActionName.Like,
         castHash: castHex,
       });
-      setLikeCount((pre) => pre + 1);
+      // setLikeCount((pre) => pre + 1);
       onLikeSuccess?.();
     } catch (error) {
       console.error(error);
@@ -120,7 +124,7 @@ export default function useFarcasterLikeAction({
         castHash: castHex,
       });
 
-      setLikeCount((pre) => pre - 1);
+      // setLikeCount((pre) => pre - 1);
       onRemoveLikeSuccess?.();
     } catch (error) {
       console.error(error);

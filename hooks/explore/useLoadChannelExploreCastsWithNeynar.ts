@@ -6,9 +6,9 @@ import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
 import { useAppDispatch } from "~/store/hooks";
 import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const FIRST_PAGE_SIZE = 3;
 const LOAD_MORE_CRITICAL_NUM = 10;
@@ -67,8 +67,8 @@ export default function useLoadChannelExploreCastsWithNeynar(params: {
       const newCasts = casts.filter(
         (item) => !filteredCastHexs?.includes(getCastHex(item)),
       );
-      const viewerContexts = viewerContextsFromCasts(newCasts);
-      dispatch(upsertManyToReactions(viewerContexts));
+      const reactions = getReactionsCountAndViewerContexts(newCasts);
+      dispatch(upsertManyToReactions(reactions));
 
       setCasts((pre) => [...pre, ...newCasts]);
       pageInfoRef.current = pageInfo;

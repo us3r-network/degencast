@@ -4,8 +4,8 @@ import { getFarcasterCastInfo } from "~/services/farcaster/api";
 import { FarCast } from "~/services/farcaster/types";
 import { ApiRespCode } from "~/services/shared/types";
 import { useAppDispatch } from "~/store/hooks";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 
 export default function useLoadCastDetail() {
   const dispatch = useAppDispatch();
@@ -26,8 +26,8 @@ export default function useLoadCastDetail() {
       const { code, data, msg } = res.data;
       if (code === ApiRespCode.SUCCESS) {
         const { farcasterUserData: farcasterUserDataTmp, cast: castTmp } = data;
-        const viewerContexts = viewerContextsFromCasts([castTmp]);
-        dispatch(upsertManyToReactions(viewerContexts));
+        const reactions = getReactionsCountAndViewerContexts([castTmp]);
+        dispatch(upsertManyToReactions(reactions));
 
         const userDataObj = userDataObjFromArr(farcasterUserDataTmp);
         setCast(castTmp);
