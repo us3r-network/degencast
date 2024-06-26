@@ -34,7 +34,7 @@ export default function ChannelCardCasts({
     !loading &&
     showCasts.length > 0 &&
     pageInfo?.hasNextPage &&
-    currentIndex > 1;
+    currentIndex > 0;
 
   const viewabilityConfigCallbackPairs = useRef([
     {
