@@ -27,10 +27,14 @@ export default function ChannelCardCasts({
   const itemWidth = layoutWidth ? layoutWidth - 30 : 0;
   const itemHeight = layoutHeight;
   const showCasts = casts.slice(0, 10);
-  const showViewMore =
-    !loading && showCasts.length > 0 && pageInfo?.hasNextPage;
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCast = showCasts[currentIndex];
+
+  const showViewMore =
+    !loading &&
+    showCasts.length > 0 &&
+    pageInfo?.hasNextPage &&
+    currentIndex > 1;
 
   const viewabilityConfigCallbackPairs = useRef([
     {
