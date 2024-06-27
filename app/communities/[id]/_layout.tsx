@@ -11,7 +11,9 @@ import { View, Text, SafeAreaView } from "react-native";
 import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
 import { Search } from "~/components/common/Icons";
 import { EditIcon } from "~/components/common/SvgIcons";
-import CommunityDetailMetaInfo from "~/components/community/CommunityDetailMetaInfo";
+import CommunityDetailMetaInfo, {
+  CommunityDetailMetaInfoDropdown,
+} from "~/components/community/CommunityDetailMetaInfo";
 import { CommunitySharingButton } from "~/components/platform-sharing/PlatformSharingButton";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import { Button } from "~/components/ui/button";
@@ -116,9 +118,14 @@ export default function CommunityDetail() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" text-xl font-bold text-primary-foreground">
+                <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
                   Channel
                 </Text>
+                <View className=" sm:hidden">
+                  {community && (
+                    <CommunityDetailMetaInfoDropdown community={community} />
+                  )}
+                </View>
               </View>
               <View className="flex flex-row items-center gap-[10px]">
                 <UserGlobalPoints />
@@ -150,7 +157,10 @@ export default function CommunityDetail() {
       <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
         {community && (
           <>
-            <CommunityDetailMetaInfo communityInfo={community} />
+            <CommunityDetailMetaInfo
+              communityInfo={community}
+              className=" max-sm:hidden "
+            />
             <View className="box-border w-full flex-1 pt-5">
               <Tabs
                 value={activeScreen}
