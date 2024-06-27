@@ -9,20 +9,20 @@ import {
 const MAX_ALLOWANCE = BigInt(2) ** BigInt(256) - BigInt(1);
 
 export function useERC20Approve({
-  takerAddress,
+  owner,
   tokenAddress,
-  allowanceTarget,
+  spender,
 }: {
-  takerAddress: Address;
+  owner: Address;
   tokenAddress: Address;
-  allowanceTarget: Address;
+  spender: Address;
 }) {
   // 1. Read from ERC20 contract. Does spender (0x Exchange Proxy) have an allowance?
   const { data: allowance, refetch } = useReadContract({
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "allowance",
-    args: [takerAddress, allowanceTarget],
+    args: [owner, spender],
   });
 
   // 2. (Only if no allowance): Write to ERC20, approve 0x Exchange Proxy to spend max integer
@@ -49,7 +49,7 @@ export function useERC20Approve({
       address: tokenAddress,
       abi: erc20Abi,
       functionName: "approve",
-      args: [allowanceTarget, value || MAX_ALLOWANCE],
+      args: [spender, value || MAX_ALLOWANCE],
     });
   };
 
