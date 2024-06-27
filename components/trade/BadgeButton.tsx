@@ -1,11 +1,10 @@
 import { useConnectWallet } from "@privy-io/react-auth";
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
-import { formatUnits } from "viem";
+import { Address, formatUnits, parseUnits } from "viem";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import NumberField from "~/components/common/NumberField";
-import { COMING_SOON_TAG } from "~/components/common/TextWithTag";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -16,15 +15,17 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { NATIVE_TOKEN_METADATA } from "~/constants";
 import {
-  SHARE_ACTION,
-  SHARE_CONTRACT_CHAIN,
-  SHARE_SUPPORT_TOKENS,
-  useShareContractBuy,
-  useShareContractInfo,
-  useShareContractSell,
-} from "~/hooks/trade/useShareContract";
+  ATT_CONTRACT_CHAIN,
+  ATT_FACTORY_CONTRACT_ADDRESS,
+  BADGE_PAYMENT_TOKEN,
+} from "~/constants/att";
+import { useATTContractInfo } from "~/hooks/trade/useATTContract";
+import {
+  useATTFactoryContractBuy,
+  useATTFactoryContractInfo,
+  useATTFactoryContractSell,
+} from "~/hooks/trade/useATTFactoryContract";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
@@ -35,16 +36,16 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import ToeknSelect from "./UserTokenSelect";
+import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 
 export function SellButton({
   logo,
   name,
-  sharesSubject,
+  tokenAddress,
 }: {
   logo?: string;
   name?: string;
-  sharesSubject: `0x${string}`;
+  tokenAddress: Address;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -85,10 +86,10 @@ export function SellButton({
               <Text>Active Wallet</Text>
               <UserWalletSelect />
             </View>
-            <SellShare
+            <SellBadge
               logo={logo}
               name={name}
-              sharesSubject={sharesSubject}
+              tokenAddress={tokenAddress}
               onSuccess={setTransationData}
               onError={setError}
             />
@@ -122,27 +123,28 @@ export function SellButton({
     );
 }
 
-const SellShare = forwardRef<
+const SellBadge = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
     logo?: string;
     name?: string;
-    sharesSubject: `0x${string}`;
+    tokenAddress: Address;
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
 >(
   (
-    { className, logo, name, sharesSubject, onSuccess, onError, ...props },
+    { className, logo, name, tokenAddress, onSuccess, onError, ...props },
     ref,
   ) => {
     const account = useAccount();
     const chainId = useChainId();
     const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
-    const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
+    const [token, setToken] = useState<TokenWithTradeInfo>(BADGE_PAYMENT_TOKEN);
 
-    const { getBalance, getPrice } = useShareContractInfo(sharesSubject);
+    const { balanceOf, UNIT } = useATTContractInfo(tokenAddress);
+    const { getBurnNFTPriceAfterFee } = useATTFactoryContractInfo(tokenAddress);
     const {
       sell,
       transactionReceipt,
@@ -152,19 +154,19 @@ const SellShare = forwardRef<
       waiting,
       writing,
       isSuccess,
-    } = useShareContractSell(sharesSubject);
+    } = useATTFactoryContractSell(tokenAddress);
 
     useEffect(() => {
-      if (isSuccess && transactionReceipt && token && price) {
+      if (isSuccess && transactionReceipt && token && nftPrice) {
         const transationData = {
-          chain: SHARE_CONTRACT_CHAIN,
+          chain: ATT_CONTRACT_CHAIN,
           transactionReceipt,
           description: (
             <View className="flex-row items-center gap-2">
               <Text className="text-white">
-                Sell {amount} shares and receive
+                Sell {amount} badges and receive
               </Text>
-              <TokenWithValue token={token} value={price} />
+              <TokenWithValue token={token} value={nftPrice} />
             </View>
           ),
         };
@@ -174,31 +176,32 @@ const SellShare = forwardRef<
 
     useEffect(() => {
       if (writeError || transationError) {
-        onError?.("Something Wrong!");
+        onError?.(
+          writeError?.message || transationError?.message || "Something Wrong!",
+        );
       }
     }, [writeError, transationError]);
 
-    const { data: balance } = getBalance(account?.address);
-    const { data: price } = getPrice(SHARE_ACTION.SELL, amount, true);
+    const { data: rawBalance } = balanceOf(account?.address);
+    const { data: badgeUnit } = UNIT();
+    const balance = useMemo(
+      () => (rawBalance && badgeUnit ? Number(rawBalance / badgeUnit) : 0),
+      [rawBalance, badgeUnit],
+    );
+    const { nftPrice } = getBurnNFTPriceAfterFee(amount);
     return (
       <View className="flex gap-4">
         <View className="flex-row items-center justify-between">
           <CommunityInfo name={name} logo={logo} />
-          <Text className="text-sm">{Number(balance)} shares</Text>
+          <Text className="text-sm">{balance} badges</Text>
         </View>
-        <ToeknSelect
-          hidden
-          chain={SHARE_CONTRACT_CHAIN}
-          supportTokenKeys={SHARE_SUPPORT_TOKENS}
-          selectToken={setToken}
-        />
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-lg font-medium">Quantity</Text>
-            {price && amount && token && token.decimals ? (
+            {nftPrice && amount && token && token.decimals ? (
               <Text className="text-xs">
-                {formatUnits(price / BigInt(amount), token.decimals)}
-                {token?.symbol} per share
+                {formatUnits(nftPrice / BigInt(amount), token.decimals)}
+                {token?.symbol} per badge
               </Text>
             ) : (
               <Text className="text-xs">calculating price...</Text>
@@ -207,41 +210,35 @@ const SellShare = forwardRef<
           <NumberField
             defaultValue={1}
             minValue={1}
-            maxValue={Number(balance)}
+            maxValue={balance}
             onChange={setAmount}
           />
         </View>
         <View className="flex-row items-center justify-between">
           <Text className="text-lg font-medium">Receive:</Text>
-          {price && amount && token && token.decimals ? (
+          {nftPrice && amount && token && token.decimals ? (
             <Text className="text-md">
-              {formatUnits(price, token.decimals)} {token.symbol}
+              {formatUnits(nftPrice, token.decimals)} {token.symbol}
             </Text>
           ) : (
             <Text className="text-md">fetching price...</Text>
           )}
         </View>
-        {chainId === token?.chainId ? (
-          <Button
-            variant={"secondary"}
-            className="w-full"
-            disabled={!account || waiting || writing || balance <= 0}
-            onPress={() => sell(amount)}
-          >
-            <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
-          </Button>
-        ) : (
-          <Button
-            variant="secondary"
-            className="w-full"
-            disabled={switchChainStatus === "pending"}
-            onPress={async () => {
-              await switchChain({ chainId: SHARE_CONTRACT_CHAIN.id });
-            }}
-          >
-            <Text>Switch to {SHARE_CONTRACT_CHAIN.name}</Text>
-          </Button>
-        )}
+        <OnChainActionButtonWarper
+          variant="secondary"
+          className="w-full"
+          targetChainId={ATT_CONTRACT_CHAIN.id}
+          warpedButton={
+            <Button
+              variant="secondary"
+              className="w-full"
+              disabled={!account || waiting || writing || balance <= 0}
+              onPress={() => sell(amount)}
+            >
+              <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
+            </Button>
+          }
+        />
       </View>
     );
   },
@@ -250,12 +247,12 @@ const SellShare = forwardRef<
 export function BuyButton({
   logo,
   name,
-  sharesSubject,
+  tokenAddress,
   renderButton,
 }: {
   logo?: string;
   name?: string;
-  sharesSubject: `0x${string}`;
+  tokenAddress: Address;
   renderButton?: () => React.ReactElement;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -295,16 +292,16 @@ export function BuyButton({
             <DialogHeader
               className={cn("mr-4 flex-row items-center justify-between gap-2")}
             >
-              <DialogTitle>Buy Shares & get allowance</DialogTitle>
+              <DialogTitle>Buy Badges & get allowance</DialogTitle>
             </DialogHeader>
             <View className="flex-row items-center justify-between gap-2">
               <Text>Active Wallet</Text>
               <UserWalletSelect />
             </View>
-            <BuyShare
+            <BuyBadge
               logo={logo}
               name={name}
-              sharesSubject={sharesSubject}
+              tokenAddress={tokenAddress}
               onSuccess={setTransationData}
               onError={setError}
             />
@@ -341,27 +338,26 @@ export function BuyButton({
     );
 }
 
-const BuyShare = forwardRef<
+const BuyBadge = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
     logo?: string;
     name?: string;
-    sharesSubject: `0x${string}`;
+    tokenAddress: Address;
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
 >(
   (
-    { className, logo, name, sharesSubject, onSuccess, onError, ...props },
+    { className, logo, name, tokenAddress, onSuccess, onError, ...props },
     ref,
   ) => {
     const account = useAccount();
-    const chainId = useChainId();
-    const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
-    const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
+    const [token, setToken] = useState<TokenWithTradeInfo>(BADGE_PAYMENT_TOKEN);
 
-    const { getPrice, getSupply } = useShareContractInfo(sharesSubject);
+    const { balanceOf, UNIT } = useATTContractInfo(tokenAddress);
+    const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo(tokenAddress);
     const {
       buy,
       transactionReceipt,
@@ -371,26 +367,31 @@ const BuyShare = forwardRef<
       waiting,
       writing,
       isSuccess,
-    } = useShareContractBuy(sharesSubject);
+    } = useATTFactoryContractBuy(tokenAddress);
 
-    const { data: supply } = getSupply();
-    const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
+    const { data: rawBalance } = balanceOf(account?.address);
+    const { data: badgeUnit } = UNIT();
+    const balance = useMemo(
+      () => (rawBalance && badgeUnit ? Number(rawBalance / badgeUnit) : 0),
+      [rawBalance, badgeUnit],
+    );
 
-    const fetchedPrice = !!(price && amount && token && token.decimals);
-    const perSharePrice = fetchedPrice
-      ? formatUnits(price / BigInt(amount), token.decimals!)
+    const { nftPrice, adminFee } = getMintNFTPriceAfterFee(amount);
+    const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
+    const perBadgePrice = fetchedPrice
+      ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
       : "";
     const symbol = token?.symbol || "";
 
     useEffect(() => {
-      if (isSuccess && transactionReceipt && token && price) {
+      if (isSuccess && transactionReceipt && token && nftPrice) {
         const transationData = {
-          chain: SHARE_CONTRACT_CHAIN,
+          chain: ATT_CONTRACT_CHAIN,
           transactionReceipt,
           description: (
             <View className="flex-row items-center gap-2">
-              <Text>Buy {amount} shares and cost</Text>
-              <TokenWithValue token={token} value={price} />
+              <Text>Buy {amount} badges and cost</Text>
+              <TokenWithValue token={token} value={nftPrice} />
             </View>
           ),
         };
@@ -400,29 +401,34 @@ const BuyShare = forwardRef<
 
     useEffect(() => {
       if (writeError || transationError) {
-        onError?.("Something Wrong!");
+        onError?.(
+          writeError?.message || transationError?.message || "Something Wrong!",
+        );
       }
     }, [writeError, transationError]);
 
+    const allowanceParams =
+      account?.address && nftPrice && adminFee !== undefined
+        ? {
+            owner: account.address,
+            tokenAddress: BADGE_PAYMENT_TOKEN.address,
+            spender: ATT_FACTORY_CONTRACT_ADDRESS,
+            value: nftPrice + adminFee,
+          }
+        : undefined;
     return (
       <View className="flex gap-4">
         <View className="flex-row items-center justify-between">
           <CommunityInfo name={name} logo={logo} />
-          <Text>Capital Pool: {Number(supply)}</Text>
+          <Text>{balance}</Text>
         </View>
-        <ToeknSelect
-          hidden
-          chain={SHARE_CONTRACT_CHAIN}
-          supportTokenKeys={SHARE_SUPPORT_TOKENS}
-          selectToken={setToken}
-        />
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-lg font-medium">Quantity</Text>
             {fetchedPrice ? (
               <Text className="text-xs">
-                {perSharePrice}
-                {symbol} per share
+                {perBadgePrice}
+                {symbol} per badge
               </Text>
             ) : (
               <Text className="text-xs text-secondary">
@@ -434,118 +440,48 @@ const BuyShare = forwardRef<
         </View>
         <View className="flex-row items-center justify-between">
           <Text className="text-lg font-medium">Total Cost</Text>
-          {fetchedPrice ? (
+          {fetchedPrice && nftPrice && adminFee !== undefined ? (
             <Text>
-              {formatUnits(price, token.decimals!)} {token.symbol}
+              {formatUnits(nftPrice + adminFee, token.decimals!)} {token.symbol}
             </Text>
           ) : (
             <Text>fetching price...</Text>
           )}
         </View>
-        {chainId === token?.chainId ? (
-          <Button
-            variant={"secondary"}
-            className="w-full"
-            disabled={
-              !account ||
-              waiting ||
-              writing ||
-              Number(token?.rawBalance) < Number(price)
-            }
-            onPress={() => buy(amount, price)}
-          >
-            <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
-          </Button>
-        ) : (
-          <Button
-            variant="secondary"
-            className="w-full"
-            disabled={switchChainStatus === "pending"}
-            onPress={async () => {
-              await switchChain({ chainId: SHARE_CONTRACT_CHAIN.id });
-            }}
-          >
-            <Text>Switch to {SHARE_CONTRACT_CHAIN.name}</Text>
-          </Button>
-        )}
+        <OnChainActionButtonWarper
+          variant="secondary"
+          className="w-full"
+          targetChainId={ATT_CONTRACT_CHAIN.id}
+          allowanceParams={allowanceParams}
+          warpedButton={
+            <Button
+              variant="secondary"
+              className="w-full"
+              disabled={
+                !account ||
+                !nftPrice ||
+                waiting ||
+                writing ||
+                Number(token?.rawBalance) < Number(nftPrice)
+              }
+              onPress={() => {
+                if (nftPrice && adminFee !== undefined)
+                  buy(amount, nftPrice + adminFee);
+              }}
+            >
+              <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
+            </Button>
+          }
+        />
       </View>
     );
   },
 );
 
-export const SHARE_TITLE = "About Channel Share";
+export const SHARE_TITLE = "About channel badge";
 export const SHARE_INFO = [
-  `Share holders could claim airdrops after channel token launch ${COMING_SOON_TAG}`,
-  `Share holders could receive channel allowance (same as your DEGEN allowance) ${COMING_SOON_TAG}`,
-  "The price of channel shares will increase after each buy",
-  "4% of each trade goes into capital pool to support channel rewards, and Degencast takes a 1% commission",
+  "When the channel badge bounding curve reaches a market cap of $42,069, all the liquidity will be deposited into Uniswap v3",
+  "4% of each trade goes into channel reward pool to support channel rewards, and Degencast takes a 1% commission",
+  "Badge holders could claim airdrops after channel token launch",
+  "Buy channel badges to earn 500 $CAST point",
 ];
-
-// export const BuyButtonWithPrice = forwardRef<
-//   React.ElementRef<typeof Button>,
-//   React.ComponentPropsWithoutRef<typeof Button> & {
-//     token?: TokenWithTradeInfo;
-//     amount?: number;
-//     sharesSubject: `0x${string}`;
-//   }
-// >(({ sharesSubject, token = NATIVE_TOKEN_METADATA, amount = 1 }, ref) => {
-//   const { getPrice } = useShareContractInfo(sharesSubject);
-//   const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
-//   const fetchedPrice = !!(price && amount && token && token.decimals);
-//   const perSharePrice = fetchedPrice
-//     ? formatUnits(price / BigInt(amount), token.decimals!)
-//     : "";
-//   const symbol = token?.symbol || "";
-
-//   return (
-//     <Button
-//       variant={"secondary"}
-//       className={cn(" flex-col items-center ")}
-//       ref={ref}
-//     >
-//       {fetchedPrice ? (
-//         <>
-//           <Text>Buy with </Text>
-//           <Text>
-//             {perSharePrice} {symbol}
-//           </Text>
-//         </>
-//       ) : (
-//         <Text> Fetching Price... </Text>
-//       )}
-//     </Button>
-//   );
-// });
-
-export const BuyButtonWithPrice = ({
-  sharesSubject,
-  token = NATIVE_TOKEN_METADATA,
-  amount = 1,
-}: {
-  sharesSubject: `0x${string}`;
-  token?: TokenWithTradeInfo;
-  amount?: number;
-}) => {
-  const { getPrice } = useShareContractInfo(sharesSubject);
-  const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
-  const fetchedPrice = !!(price && amount && token && token.decimals);
-  const perSharePrice = fetchedPrice
-    ? formatUnits(price / BigInt(amount), token.decimals!)
-    : "";
-  const symbol = token?.symbol || "";
-
-  return (
-    <Button variant={"secondary"} className={cn(" flex-col items-center ")}>
-      {fetchedPrice ? (
-        <>
-          <Text>Buy with </Text>
-          <Text>
-            {perSharePrice} {symbol}
-          </Text>
-        </>
-      ) : (
-        <Text> Fetching Price... </Text>
-      )}
-    </Button>
-  );
-};
