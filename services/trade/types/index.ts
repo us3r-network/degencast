@@ -44,12 +44,11 @@ export type TokenWithTradeInfo = {
 };
 
 export type ShareInfo = {
+  tokenAddress: `0x${string}`;
   name?: string | undefined;
   channelId: string;
   logo?: string;
   priceETH?: string;
-  sharesSubject: `0x${string}`;
-  trend: number;
   amount?: number;
 };
 

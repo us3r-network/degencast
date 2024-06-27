@@ -41,7 +41,7 @@ export function TransactionInfo({
           <ActivityIndicator size="large" color="white" />
         </View>
       )}
-      <Text className="font-medium">
+      <Text className="max-w-full font-medium">
         {data.transactionReceipt?.transactionHash
           ? "Transaction Completed!"
           : "Confirm Transaction!"}
@@ -96,7 +96,7 @@ export function ErrorInfo({ error, buttonText, buttonAction }: ErrorInfoProps) {
       <View className="size-16 items-center justify-center rounded-full bg-[red]/40">
         <X className="size-8 text-[red]" />
       </View>
-      <Text className="font-medium">{error}</Text>
+      <Text className="max-w-full font-medium">{error}</Text>
       <View className="w-full flex-row justify-items-stretch gap-4">
         <Button
           variant="secondary"
