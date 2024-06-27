@@ -1,5 +1,4 @@
 import { Address } from "viem";
-import { base } from "viem/chains";
 import { useChainId, useChains, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -14,25 +13,13 @@ type OnChainActionButtonWarperProps = React.ComponentPropsWithoutRef<
 
 export default function OnChainActionButtonWarper({
   warpedButton,
-  takerAddress,
-  tokenAddress,
-  allowanceTarget,
-  allowanceValue,
   targetChainId,
+  allowanceParams,
   ...props
 }: OnChainActionButtonWarperProps & {
-  takerAddress?: Address;
-  tokenAddress?: Address;
-  allowanceTarget?: Address;
-  allowanceValue?: bigint;
+  allowanceParams?: AllowanceProps;
 } & SwitchChainButtonProps) {
-  if (
-    !takerAddress ||
-    !tokenAddress ||
-    !allowanceTarget ||
-    !allowanceValue ||
-    tokenAddress === NATIVE_TOKEN_ADDRESS
-  )
+  if (!allowanceParams || allowanceParams.tokenAddress === NATIVE_TOKEN_ADDRESS)
     return (
       <SwitchChainButtonWarper
         targetChainId={targetChainId}
@@ -42,10 +29,7 @@ export default function OnChainActionButtonWarper({
     );
   return (
     <ApproveButtonWarper
-      takerAddress={takerAddress}
-      tokenAddress={tokenAddress}
-      allowanceTarget={allowanceTarget}
-      allowanceValue={allowanceValue}
+      allowanceParams={allowanceParams}
       warpedButton={
         <SwitchChainButtonWarper
           targetChainId={targetChainId}
@@ -59,32 +43,34 @@ export default function OnChainActionButtonWarper({
 }
 
 type ApproveButtonProps = {
-  takerAddress: Address;
+  allowanceParams: AllowanceProps;
+};
+
+type AllowanceProps = {
+  owner: Address;
   tokenAddress: Address;
-  allowanceTarget: Address;
-  allowanceValue: bigint;
+  spender: Address;
+  value: bigint;
 };
 
 function ApproveButtonWarper({
   warpedButton,
-  takerAddress,
-  tokenAddress,
-  allowanceTarget,
-  allowanceValue,
+  allowanceParams,
   ...props
 }: OnChainActionButtonWarperProps & ApproveButtonProps) {
+  const { owner, tokenAddress, spender, value } = allowanceParams;
   const { allowance, approve, waiting, writing } = useERC20Approve({
-    takerAddress,
+    owner,
     tokenAddress,
-    allowanceTarget,
+    spender,
   });
   console.log("allowance", allowance);
-  if (allowance === 0n || (!!allowance && allowance < allowanceValue))
+  if (allowance === 0n || (!!allowance && allowance < value))
     return (
       <Button
         disabled={waiting || writing}
         onPress={async () => {
-          await approve(allowanceValue);
+          await approve(value);
         }}
         {...props}
       >
