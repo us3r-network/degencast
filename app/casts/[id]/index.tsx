@@ -5,7 +5,10 @@ import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { Loading } from "~/components/common/Loading";
 import FCast from "~/components/social-farcaster/FCast";
-import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
+import {
+  FCastDetailActions,
+  FCastExploreActions,
+} from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
@@ -250,8 +253,9 @@ function CastDetailWithData({
                     }}
                   />
                 )}
+                <Text className=" text-base font-bold sm:text-xl">Cast</Text>
               </View>
-              <View>
+              {/* <View>
                 {cast && (
                   <FCastDetailActions
                     cast={cast!}
@@ -259,13 +263,18 @@ function CastDetailWithData({
                     communityInfo={community}
                   />
                 )}
-              </View>
+              </View> */}
             </View>
           ),
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 px-4">
+        <View className="relative w-full flex-1 px-4">
+          <View className=" absolute bottom-4 right-4 z-20">
+            {cast && community && (
+              <FCastExploreActions cast={cast} communityInfo={community} />
+            )}
+          </View>
           <FlatList
             style={{
               flex: 1,

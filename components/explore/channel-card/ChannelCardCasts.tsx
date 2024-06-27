@@ -123,25 +123,25 @@ export default function ChannelCardCasts({
                   marginLeft: 15,
                 }}
               >
-                <Card
-                  className={cn(
-                    "z-10 box-border h-full w-full overflow-hidden rounded-[20px] border-none p-4 pb-0",
-                  )}
+                <Pressable
+                  className={cn(" h-full w-full ")}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    navigateToCommunityDetail(
+                      channelId,
+                      communityInfo,
+                      "casts",
+                    );
+                  }}
                 >
-                  <Pressable
-                    className={cn(" w-full ")}
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      navigateToCommunityDetail(
-                        channelId,
-                        communityInfo,
-                        "casts",
-                      );
-                    }}
+                  <Card
+                    className={cn(
+                      "z-10 box-border h-full w-full overflow-hidden rounded-[20px] border-none p-4 pb-0",
+                    )}
                   >
                     <FCast cast={cast} webpageImgIsFixedRatio={true} />
-                  </Pressable>
-                </Card>
+                  </Card>
+                </Pressable>
               </View>
             </View>
           );

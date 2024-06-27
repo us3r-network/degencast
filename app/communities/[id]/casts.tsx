@@ -38,20 +38,12 @@ export default function CastsScreen() {
                   isLastItem && isOdd && " w-1/2 flex-none pr-[5px]",
                 )}
                 onPress={() => {
-                  if (community?.channelId) {
-                    navigateToChannelExplore(community.channelId, {
-                      origin: ChannelExploreDataOrigin.Community,
-                      cast: item,
-                      community,
-                    });
-                  } else {
-                    const castHex = getCastHex(item);
-                    navigateToCastDetail(castHex, {
-                      origin: CastDetailDataOrigin.Community,
-                      cast: item,
-                      community,
-                    });
-                  }
+                  const castHex = getCastHex(item);
+                  navigateToCastDetail(castHex, {
+                    origin: CastDetailDataOrigin.Community,
+                    cast: item,
+                    community,
+                  });
                 }}
               >
                 <FcastMiniCard className="flex-1" cast={item} />
