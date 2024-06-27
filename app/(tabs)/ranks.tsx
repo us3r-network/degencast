@@ -8,22 +8,18 @@ import {
 } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import { BuyButton } from "~/components/trade/BadgeButton";
 import { TradeButton } from "~/components/trade/TradeButton";
 import { Card, CardContent } from "~/components/ui/card";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
-import {
-  ToggleGroup,
-  ToggleGroupIcon,
-  ToggleGroupItem,
-} from "~/components/ui/toggle-group";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
+import { BADGE_TEST_TOKEN_ADDRESS } from "~/constants/att";
 import {
   DEFAULT_ORDER_PARAMS,
   OrderParams,
 } from "~/features/rank/communityRankSlice";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
-import { cn } from "~/lib/utils";
 import { CommunityRankOrderBy } from "~/services/community/types/rank";
 import { Channel } from "~/services/farcaster/types";
 
@@ -132,7 +128,7 @@ function OrderSelect({
       <RadioGroup
         value={orderBy}
         onValueChange={(v: any) => setOrderBy(v)}
-        className="flex-1 overflow-x-auto no-scrollbar"
+        className="no-scrollbar flex-1 overflow-x-auto"
       >
         <View className="flex-row items-center gap-2">
           {RankOrderByList.map((item) => (
@@ -208,6 +204,28 @@ function Item({
         return "";
     }
   }, [item, orderBy]);
+  const button = useMemo(() => {
+    switch (orderBy) {
+      case CommunityRankOrderBy.MARKET_CAP:
+      case CommunityRankOrderBy.TOKEN_PRICE:
+      case CommunityRankOrderBy.NUMBER_OF_TRADE:
+      case CommunityRankOrderBy.GROWTH_RATE:
+        if (item.tokenInfo) return <TradeButton token2={item.tokenInfo} />;
+      case CommunityRankOrderBy.NEW_CASTS:
+      case CommunityRankOrderBy.MEMBERS:
+        return (
+          <BuyButton
+            name={item.name}
+            logo={item.image_url}
+            tokenAddress={BADGE_TEST_TOKEN_ADDRESS}
+          />
+        );
+      case CommunityRankOrderBy.CREATED_DATE:
+        return <CommunityJoinButton channelId={item.id} />;
+      default:
+        return <CommunityJoinButton channelId={item.id} />;
+    }
+  }, [item, orderBy]);
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
@@ -220,8 +238,7 @@ function Item({
       </View>
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">{data}</Text>
-        {item.tokenInfo && <TradeButton token2={item.tokenInfo} />}
-        {/* <CommunityJoinButton communityInfo={{item}} /> */}
+        {button}
       </View>
     </View>
   );

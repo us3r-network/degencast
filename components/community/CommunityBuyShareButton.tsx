@@ -1,13 +1,10 @@
 import { formatUnits } from "viem";
 import { Text } from "~/components/ui/text";
-import { NATIVE_TOKEN_METADATA } from "~/constants";
-import {
-  SHARE_ACTION,
-  useShareContractInfo,
-} from "~/hooks/trade/useShareContract";
+import { BADGE_PAYMENT_TOKEN } from "~/constants/att";
+import { useATTFactoryContractInfo } from "~/hooks/trade/useATTFactoryContract";
 import { cn } from "~/lib/utils";
 import { CommunityInfo } from "~/services/community/types/community";
-import { BuyButton } from "../trade/ShareButton";
+import { BuyButton } from "../trade/BadgeButton";
 import { Button, ButtonProps } from "../ui/button";
 
 export default function CommunityBuyShareButton({
@@ -17,24 +14,23 @@ export default function CommunityBuyShareButton({
 }: ButtonProps & {
   communityInfo: CommunityInfo;
 }) {
-  if (!communityInfo?.shares?.[0]?.subjectAddress) {
+  const badgeTokenAddress = communityInfo?.badgeTokenAddress;
+  if (!badgeTokenAddress) {
     return null;
   }
   return (
     <BuyButton
-      sharesSubject={communityInfo?.shares?.[0]?.subjectAddress}
+      tokenAddress={badgeTokenAddress}
       logo={communityInfo.logo}
       name={communityInfo.name}
       renderButton={() => {
-        const token = NATIVE_TOKEN_METADATA;
+        const token = BADGE_PAYMENT_TOKEN;
         const amount = 1;
-        const sharesSubject = communityInfo?.shares?.[0]
-          ?.subjectAddress as `0x${string}`;
-        const { getPrice } = useShareContractInfo(sharesSubject);
-        const { data: price } = getPrice(SHARE_ACTION.BUY, amount, true);
-        const fetchedPrice = !!(price && amount && token && token.decimals);
+        const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo(badgeTokenAddress);
+        const { nftPrice } = getMintNFTPriceAfterFee(amount);
+        const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
         const perSharePrice = fetchedPrice
-          ? formatUnits(price / BigInt(amount), token.decimals!)
+          ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
           : "";
         const symbol = token?.symbol || "";
 
