@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  ActivityIcon,
   ExploreIcon,
   PortfolioIcon,
   TradeIcon,
@@ -88,6 +89,31 @@ export default function TabLayout() {
             header: () => (
               <Header>
                 <HeaderLeftDefault title="Ranks" />
+                <HeaderRight>
+                  <UserGlobalPoints />
+                  <SearchLink />
+                  {/* <PostLink />
+                  <View>
+                    <TradeSharingButton fid={currFid} />
+                  </View> */}
+                </HeaderRight>
+              </Header>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="activities"
+          options={{
+            title: "Activities",
+            tabBarLabelPosition: "below-icon",
+            tabBarIcon: ({ color }) => <ActivityIcon stroke={color} />,
+            headerTransparent: true,
+            headerStyle: {
+              height: 54,
+            },
+            header: () => (
+              <Header>
+                <HeaderLeftDefault title="Activities" />
                 <HeaderRight>
                   <UserGlobalPoints />
                   <SearchLink />

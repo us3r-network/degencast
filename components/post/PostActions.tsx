@@ -20,11 +20,14 @@ import {
 } from "react-native";
 import { Image } from "react-native";
 import { CommentIcon2, EditIcon, MintIcon } from "../common/SvgIcons";
-import { useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { Link } from "expo-router";
 import useAppSettings from "~/hooks/useAppSettings";
 
-export function ActionButton({ className, ...props }: ButtonProps) {
+export const ActionButton = forwardRef(function ({
+  className,
+  ...props
+}: ButtonProps) {
   return (
     <Button
       className={cn(
@@ -34,7 +37,7 @@ export function ActionButton({ className, ...props }: ButtonProps) {
       {...props}
     />
   );
-}
+});
 
 export function ActionText({ className, ...props }: TextProps) {
   return <Text className={cn("text-xs text-primary", className)} {...props} />;

@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { Dimensions, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import useLoadCoverChannels from "~/hooks/community/useLoadCoverChannels";
 import CoverChannels from "./CoverChannels";
 import { Loading } from "../common/Loading";
-import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { cn } from "~/lib/utils";
 import TrendingChannels from "./TrendingChannels";
 import { itemHeight, itemPaddingTop } from "./ExploreStyled";
