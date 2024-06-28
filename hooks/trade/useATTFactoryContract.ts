@@ -10,29 +10,29 @@ import {
 } from "~/constants/att";
 import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
 
-const address = ATT_FACTORY_CONTRACT_ADDRESS;
-const chainId = ATT_CONTRACT_CHAIN.id;
-const abi = ATT_FACTORY_CONTRACT_ABI_JSON.abi;
+const contract = {
+  abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
+  address: ATT_FACTORY_CONTRACT_ADDRESS,
+  chainId: ATT_CONTRACT_CHAIN.id,
+};
 
 export function useATTFactoryContractInfo(tokenAddress: Address) {
+  
   const getMintNFTPriceAfterFee = (amount: number = 1) => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "getMintNFTPriceAfterFee",
       args: [tokenAddress, BigInt(amount)],
     });
-    console.log("getMintNFTPriceAfterFee", data, status);
+    // console.log("getMintNFTPriceAfterFee", data, status);
     const nftPrice = data ? (data as bigint[])[0] : undefined;
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
   };
+
   const getBurnNFTPriceAfterFee = (amount: number = 1) => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "getMintNFTPriceAfterFee",
       args: [tokenAddress, BigInt(amount)],
     });
@@ -40,22 +40,20 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
   };
-  const getTokenInfo = (amount: number = 1) => {
+  const getPaymentToken = (owner?:Address) => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "tokens",
-      args: [tokenAddress, BigInt(amount)],
+      args: [tokenAddress],
     });
-    const paymentToken = data ? (data as bigint[])[1] : undefined;
+    const paymentToken = data ? ((data as unknown[])[1] as Address) : undefined;
     return { paymentToken, status };
   };
 
   return {
     getMintNFTPriceAfterFee,
     getBurnNFTPriceAfterFee,
-    getTokenInfo,
+    getPaymentToken,
   };
 }
 
@@ -78,9 +76,7 @@ export function useATTFactoryContractBuy(tokenAddress: Address) {
   const buy = async (amount: number, maxPayment: bigint) => {
     console.log("buy", tokenAddress, amount, maxPayment);
     writeContract({
-      address,
-      abi,
-      chainId,
+      ...contract,
       functionName: "mintNFT",
       args: [tokenAddress, BigInt(amount), maxPayment],
     });
@@ -109,9 +105,7 @@ export function useATTFactoryContractSell(tokenAddress: Address) {
   const sell = async (amount: number) => {
     console.log("sell", tokenAddress, amount);
     writeContract({
-      address,
-      abi,
-      chainId,
+      ...contract,
       functionName: "burnNFT",
       args: [tokenAddress, BigInt(amount)],
     });

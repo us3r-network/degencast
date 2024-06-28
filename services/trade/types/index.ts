@@ -39,7 +39,7 @@ export type TokenWithTradeInfo = {
   symbol: string | undefined;
   logoURI?: string;
   tradeInfo?: TradeInfo;
-  rawBalance?: BigInt | string;
+  rawBalance?: bigint | string;
   balance?: number | string | undefined;
 };
 

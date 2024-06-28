@@ -37,6 +37,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
+import { useUserToken } from "~/hooks/user/useUserTokens";
 
 export function SellButton({
   logo,
@@ -138,13 +139,8 @@ const SellBadge = forwardRef<
     ref,
   ) => {
     const account = useAccount();
-    const chainId = useChainId();
-    const { switchChain, status: switchChainStatus } = useSwitchChain();
     const [amount, setAmount] = useState(1);
-    const [token, setToken] = useState<TokenWithTradeInfo>(BADGE_PAYMENT_TOKEN);
 
-    const { balanceOf, UNIT } = useATTContractInfo(tokenAddress);
-    const { getBurnNFTPriceAfterFee } = useATTFactoryContractInfo(tokenAddress);
     const {
       sell,
       transactionReceipt,
@@ -182,12 +178,15 @@ const SellBadge = forwardRef<
       }
     }, [writeError, transationError]);
 
-    const { data: rawBalance } = balanceOf(account?.address);
-    const { data: badgeUnit } = UNIT();
-    const balance = useMemo(
-      () => (rawBalance && badgeUnit ? Number(rawBalance / badgeUnit) : 0),
-      [rawBalance, badgeUnit],
-    );
+    const { getNFTBalance } = useATTContractInfo(tokenAddress);
+    const { data: balance } = getNFTBalance(account?.address);
+
+    const { getBurnNFTPriceAfterFee, getPaymentToken } =
+      useATTFactoryContractInfo(tokenAddress);
+
+    // const { paymentTokenInfo: token } = getPaymentToken();
+    const token = BADGE_PAYMENT_TOKEN;
+
     const { nftPrice } = getBurnNFTPriceAfterFee(amount);
     return (
       <View className="flex gap-4">
@@ -232,7 +231,7 @@ const SellBadge = forwardRef<
             <Button
               variant="secondary"
               className="w-full"
-              disabled={!account || waiting || writing || balance <= 0}
+              disabled={!account || waiting || writing || !balance}
               onPress={() => sell(amount)}
             >
               <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
@@ -354,10 +353,6 @@ const BuyBadge = forwardRef<
   ) => {
     const account = useAccount();
     const [amount, setAmount] = useState(1);
-    const [token, setToken] = useState<TokenWithTradeInfo>(BADGE_PAYMENT_TOKEN);
-
-    const { balanceOf, UNIT } = useATTContractInfo(tokenAddress);
-    const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo(tokenAddress);
     const {
       buy,
       transactionReceipt,
@@ -369,11 +364,17 @@ const BuyBadge = forwardRef<
       isSuccess,
     } = useATTFactoryContractBuy(tokenAddress);
 
-    const { data: rawBalance } = balanceOf(account?.address);
-    const { data: badgeUnit } = UNIT();
-    const balance = useMemo(
-      () => (rawBalance && badgeUnit ? Number(rawBalance / badgeUnit) : 0),
-      [rawBalance, badgeUnit],
+    const { getNFTBalance } = useATTContractInfo(tokenAddress);
+    const { data: balance } = getNFTBalance(account?.address);
+
+    const { getMintNFTPriceAfterFee, getPaymentToken } =
+      useATTFactoryContractInfo(tokenAddress);
+
+    // const { paymentToken } = getPaymentToken();
+    const token = useUserToken(
+      account?.address,
+      BADGE_PAYMENT_TOKEN.address,
+      ATT_CONTRACT_CHAIN.id,
     );
 
     const { nftPrice, adminFee } = getMintNFTPriceAfterFee(amount);
@@ -381,7 +382,6 @@ const BuyBadge = forwardRef<
     const perBadgePrice = fetchedPrice
       ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
       : "";
-    const symbol = token?.symbol || "";
 
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && nftPrice) {
@@ -408,10 +408,10 @@ const BuyBadge = forwardRef<
     }, [writeError, transationError]);
 
     const allowanceParams =
-      account?.address && nftPrice && adminFee !== undefined
+      account?.address && token?.address && nftPrice && adminFee !== undefined
         ? {
             owner: account.address,
-            tokenAddress: BADGE_PAYMENT_TOKEN.address,
+            tokenAddress: token?.address,
             spender: ATT_FACTORY_CONTRACT_ADDRESS,
             value: nftPrice + adminFee,
           }
@@ -428,7 +428,7 @@ const BuyBadge = forwardRef<
             {fetchedPrice ? (
               <Text className="text-xs">
                 {perBadgePrice}
-                {symbol} per badge
+                {token?.symbol} per badge
               </Text>
             ) : (
               <Text className="text-xs text-secondary">
@@ -462,7 +462,7 @@ const BuyBadge = forwardRef<
                 !nftPrice ||
                 waiting ||
                 writing ||
-                Number(token?.rawBalance) < Number(nftPrice)
+                Number(token?.rawBalance || 0) < Number(nftPrice)
               }
               onPress={() => {
                 if (nftPrice && adminFee !== undefined)

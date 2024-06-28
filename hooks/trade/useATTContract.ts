@@ -1,23 +1,24 @@
 import { Address } from "viem";
-import {
-  useReadContract
-} from "wagmi";
+import { useReadContract, useReadContracts } from "wagmi";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import ATT_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionToken.json";
+import { ReadContractReturnType } from "./types";
 
 const chainId = ATT_CONTRACT_CHAIN.id;
 const abi = ATT_CONTRACT_ABI_JSON.abi;
 
 export function useATTContractInfo(tokenAddress: Address) {
-  const address = tokenAddress;
-  const balanceOf = (owner: `0x${string}` | undefined) => {
+  const contract = {
+    abi,
+    address: tokenAddress,
+    chainId,
+  };
+  const balanceOf = (owner: Address | undefined) => {
     if (!owner) {
       return { data: 0n, status: "error" };
     }
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "balanceOf",
       args: [owner],
     });
@@ -26,9 +27,7 @@ export function useATTContractInfo(tokenAddress: Address) {
 
   const getTotalNFTSupply = () => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "getTotalNFTSupply",
     });
     return { data: data as bigint, status };
@@ -36,9 +35,7 @@ export function useATTContractInfo(tokenAddress: Address) {
 
   const totalSupply = () => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "totalSupply",
     });
     return { data: data as bigint, status };
@@ -46,9 +43,7 @@ export function useATTContractInfo(tokenAddress: Address) {
 
   const MAX_SUPPLY = () => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "MAX_SUPPLY",
     });
     return { data: data as bigint, status };
@@ -56,19 +51,43 @@ export function useATTContractInfo(tokenAddress: Address) {
 
   const UNIT = () => {
     const { data, status } = useReadContract({
-      abi,
-      address,
-      chainId,
+      ...contract,
       functionName: "UNIT",
     });
     return { data: data as bigint, status };
   };
 
+  const getNFTBalance = (owner: Address | undefined) => {
+    if (!owner) {
+      return { data: undefined, status: "error" };
+    }
+    const { data, status } = useReadContracts({
+      contracts: [
+        {
+          ...contract,
+          functionName: "balanceOf",
+          args: [owner],
+        },
+        {
+          ...contract,
+          functionName: "UNIT",
+        },
+      ],
+      // query: { enabled: true },
+    });
+    // console.log("getBalance", data);
+    const rawBalance = (data as ReadContractReturnType[])?.[0].result as bigint;
+    const unit = (data as ReadContractReturnType[])?.[1].result as bigint;
+    const balance = rawBalance && unit ? Number(rawBalance / unit) : undefined;
+    return { data: balance, status };
+  };
+
   return {
-    balanceOf,
-    totalSupply,
-    MAX_SUPPLY,
-    UNIT,
-    getTotalNFTSupply,
+    // balanceOf,
+    getNFTBalance,
+    // totalSupply,
+    // MAX_SUPPLY,
+    // UNIT,
+    // getTotalNFTSupply,
   };
 }
