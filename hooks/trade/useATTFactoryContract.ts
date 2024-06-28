@@ -1,15 +1,14 @@
-import { baseSepolia } from "viem/chains";
+import { Address } from "viem";
 import {
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
 } from "~/constants/att";
-import { Address } from "viem";
+import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
 
 const address = ATT_FACTORY_CONTRACT_ADDRESS;
 const chainId = ATT_CONTRACT_CHAIN.id;
@@ -41,10 +40,22 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
   };
+  const getTokenInfo = (amount: number = 1) => {
+    const { data, status } = useReadContract({
+      abi,
+      address,
+      chainId,
+      functionName: "tokens",
+      args: [tokenAddress, BigInt(amount)],
+    });
+    const paymentToken = data ? (data as bigint[])[1] : undefined;
+    return { paymentToken, status };
+  };
 
   return {
     getMintNFTPriceAfterFee,
     getBurnNFTPriceAfterFee,
+    getTokenInfo,
   };
 }
 
