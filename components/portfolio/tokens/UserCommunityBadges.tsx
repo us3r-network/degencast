@@ -1,5 +1,5 @@
 import { round } from "lodash";
-import React from "react";
+import React, { useMemo } from "react";
 import { Pressable, View } from "react-native";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
@@ -11,9 +11,16 @@ import {
 import { Text } from "~/components/ui/text";
 import useUserCommunityShares from "~/hooks/user/useUserCommunityShares";
 import { ShareInfo } from "~/services/trade/types";
-import { SHARE_INFO, SHARE_TITLE, SellButton } from "../../trade/BadgeButton";
+import {
+  BuyButton,
+  SHARE_INFO,
+  SHARE_TITLE,
+  SellButton,
+} from "../../trade/BadgeButton";
 import { Link } from "expo-router";
 import { InfoButton } from "~/components/common/InfoButton";
+import { useATTContractInfo } from "~/hooks/trade/useATTContract";
+import { useAccount } from "wagmi";
 
 // const DEFAULT_ITEMS_NUM = 3;
 // export default function CommunityBadges({
@@ -56,6 +63,14 @@ import { InfoButton } from "~/components/common/InfoButton";
 // }
 
 export function CommunityBadge({ badge }: { badge: ShareInfo }) {
+  const account = useAccount();
+  const { balanceOf, UNIT } = useATTContractInfo(badge.tokenAddress);
+  const { data: rawBalance } = balanceOf(account?.address);
+  const { data: badgeUnit } = UNIT();
+  const balance = useMemo(
+    () => (rawBalance && badgeUnit ? Number(rawBalance / badgeUnit) : 0),
+    [rawBalance, badgeUnit],
+  );
   return (
     <View className="flex-row items-center justify-between">
       <Link href={`/communities/${badge.channelId}/shares`} asChild>
@@ -64,12 +79,20 @@ export function CommunityBadge({ badge }: { badge: ShareInfo }) {
         </Pressable>
       </Link>
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm">{round(Number(badge.amount), 2)}</Text>
-        <SellButton
-          logo={badge.logo}
-          name={badge.name}
-          tokenAddress={badge.tokenAddress}
-        />
+        <Text className="text-sm">{balance}</Text>
+        {balance > 0 ? (
+          <SellButton
+            logo={badge.logo}
+            name={badge.name}
+            tokenAddress={badge.tokenAddress}
+          />
+        ) : (
+          <BuyButton
+            logo={badge.logo}
+            name={badge.name}
+            tokenAddress={badge.tokenAddress}
+          />
+        )}
       </View>
     </View>
   );

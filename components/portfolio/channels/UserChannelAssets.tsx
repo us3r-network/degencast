@@ -67,7 +67,6 @@ export default function UserChannelAssets({
                 name: channel.name,
                 channelId: channel.id,
                 logo: channel.image_url,
-                amount: 1,
             }} />
           {/* )} */}
           <MyPoints />
