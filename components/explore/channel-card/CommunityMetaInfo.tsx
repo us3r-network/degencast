@@ -60,7 +60,9 @@ export default function CommunityMetaInfo({
             </View>
 
             <View className="flex-1 flex-col justify-between">
-              <Text className="text-xl font-bold leading-none">{name}</Text>
+              <Text className="line-clamp-1 text-xl font-bold leading-none">
+                {name}
+              </Text>
               <View className="flex-row items-center gap-3">
                 <Text className="text-sm font-normal leading-none text-secondary">
                   {displayValue(totalNumber || 0)}{" "}

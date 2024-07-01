@@ -1,13 +1,14 @@
 import { Tabs } from "expo-router";
 import React, { useEffect } from "react";
-import { View } from "react-native";
+// import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ExploreIcon,
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
-import ExploreViewSelect from "~/components/explore/ExploreSelect";
+// import ExploreViewSelect from "~/components/explore/ExploreSelect";
+import ExploreViewSwitch from "~/components/explore/ExploreViewSwitch";
 import {
   Header,
   HeaderLeft,
@@ -17,11 +18,11 @@ import {
 } from "~/components/layout/header/Header";
 import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
 import TabBar from "~/components/layout/tabBar/TabBar";
-import {
-  ExploreSharingButton,
-  PortfolioSharingButton,
-  TradeSharingButton,
-} from "~/components/platform-sharing/PlatformSharingButton";
+// import {
+//   ExploreSharingButton,
+//   PortfolioSharingButton,
+//   TradeSharingButton,
+// } from "~/components/platform-sharing/PlatformSharingButton";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
@@ -30,7 +31,7 @@ import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { logGA } from "~/utils/firebase/analytics.web";
 
 export default function TabLayout() {
-  const { currFid, farcasterAccount } = useFarcasterAccount();
+  // const { currFid, farcasterAccount } = useFarcasterAccount();
   // preload data
   useCommunityTokens();
   useCommunityRank();
@@ -60,7 +61,7 @@ export default function TabLayout() {
               <Header>
                 <HeaderLeft>
                   <HeaderLogo />
-                  <ExploreViewSelect />
+                  <ExploreViewSwitch />
                 </HeaderLeft>
 
                 <HeaderRight>
