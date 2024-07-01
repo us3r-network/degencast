@@ -200,7 +200,6 @@ const SellBadge = forwardRef<
           setToken(tokenInfo);
         });
     }, [paymentToken, account?.address]);
-
     const { nftPrice } = getBurnNFTPriceAfterFee(amount);
     return (
       <View className="flex gap-4">
@@ -389,6 +388,7 @@ const BuyBadge = forwardRef<
       undefined,
     );
     useEffect(() => {
+      console.log("token", paymentToken);
       if (paymentToken && account?.address)
         getTokenInfo({
           address: paymentToken,
@@ -398,7 +398,6 @@ const BuyBadge = forwardRef<
           setToken(tokenInfo);
         });
     }, [paymentToken, account?.address]);
-
     const { nftPrice, adminFee } = getMintNFTPriceAfterFee(amount);
     const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
     const perBadgePrice = fetchedPrice

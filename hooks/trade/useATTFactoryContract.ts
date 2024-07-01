@@ -33,13 +33,14 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
   const getBurnNFTPriceAfterFee = (amount: number = 1) => {
     const { data, status } = useReadContract({
       ...contract,
-      functionName: "getMintNFTPriceAfterFee",
+      functionName: "getBurnNFTPriceAfterFee",
       args: [tokenAddress, BigInt(amount)],
     });
     const nftPrice = data ? (data as bigint[])[0] : undefined;
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
   };
+  
   const getPaymentToken = () => {
     const { data, status } = useReadContract({
       ...contract,
