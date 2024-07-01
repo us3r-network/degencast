@@ -4,8 +4,8 @@ import { wagmiConfig } from "~/config/wagmiConfig";
 
 export const ATT_FACTORY_CONTRACT_ADDRESS: Address = process.env
   .EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS as Address;
-export const ATT_CONTRACT_CHAINID: number =
-  (process.env.EXPO_PUBLIC_ATT_CONTRACT_CHAINID as unknown as number) ||
+const ATT_CONTRACT_CHAINID: Number =
+  Number(process.env.EXPO_PUBLIC_ATT_CONTRACT_CHAINID) ||
   baseSepolia.id;
 export const ATT_CONTRACT_CHAIN: Chain = wagmiConfig.chains.find(
   (chain) => chain.id === ATT_CONTRACT_CHAINID,

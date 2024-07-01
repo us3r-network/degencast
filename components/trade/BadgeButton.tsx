@@ -17,7 +17,6 @@ import {
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import {
-  ATT_CONTRACT_CHAINID,
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
 } from "~/constants/att";
@@ -194,7 +193,7 @@ const SellBadge = forwardRef<
       if (paymentToken && account?.address)
         getTokenInfo({
           address: paymentToken,
-          chainId: ATT_CONTRACT_CHAINID,
+          chainId: ATT_CONTRACT_CHAIN.id,
           account: account?.address,
         }).then((tokenInfo) => {
           setToken(tokenInfo);
@@ -239,7 +238,7 @@ const SellBadge = forwardRef<
         <OnChainActionButtonWarper
           variant="secondary"
           className="w-full"
-          targetChainId={ATT_CONTRACT_CHAINID}
+          targetChainId={ATT_CONTRACT_CHAIN.id}
           warpedButton={
             <Button
               variant="secondary"
@@ -388,11 +387,10 @@ const BuyBadge = forwardRef<
       undefined,
     );
     useEffect(() => {
-      console.log("token", paymentToken);
       if (paymentToken && account?.address)
         getTokenInfo({
           address: paymentToken,
-          chainId: ATT_CONTRACT_CHAINID,
+          chainId: ATT_CONTRACT_CHAIN.id,
           account: account?.address,
         }).then((tokenInfo) => {
           setToken(tokenInfo);
@@ -472,7 +470,7 @@ const BuyBadge = forwardRef<
         <OnChainActionButtonWarper
           variant="secondary"
           className="w-full"
-          targetChainId={ATT_CONTRACT_CHAINID}
+          targetChainId={ATT_CONTRACT_CHAIN.id}
           allowanceParams={allowanceParams}
           warpedButton={
             <Button

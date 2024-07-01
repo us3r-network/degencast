@@ -5,7 +5,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import {
-  ATT_CONTRACT_CHAINID,
+  ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
 } from "~/constants/att";
 import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
@@ -13,11 +13,10 @@ import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFa
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
   address: ATT_FACTORY_CONTRACT_ADDRESS,
-  chainId: ATT_CONTRACT_CHAINID,
+  chainId: ATT_CONTRACT_CHAIN.id,
 };
 
 export function useATTFactoryContractInfo(tokenAddress: Address) {
-  
   const getMintNFTPriceAfterFee = (amount: number = 1) => {
     const { data, status } = useReadContract({
       ...contract,
@@ -40,7 +39,7 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
   };
-  
+
   const getPaymentToken = () => {
     const { data, status } = useReadContract({
       ...contract,
@@ -48,7 +47,7 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
       args: [tokenAddress],
     });
     const paymentToken = data ? ((data as unknown[])[1] as Address) : undefined;
-    
+
     return { paymentToken, status };
   };
 

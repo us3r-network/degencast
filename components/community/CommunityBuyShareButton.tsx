@@ -1,6 +1,6 @@
 import { formatUnits } from "viem";
 import { Text } from "~/components/ui/text";
-import { ATT_CONTRACT_CHAINID } from "~/constants/att";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useATTFactoryContractInfo } from "~/hooks/trade/useATTFactoryContract";
 import { cn } from "~/lib/utils";
 import { CommunityInfo } from "~/services/community/types/community";
@@ -41,7 +41,7 @@ export default function CommunityBuyShareButton({
           if (paymentToken && account?.address)
             getTokenInfo({
               address: paymentToken,
-              chainId: ATT_CONTRACT_CHAINID,
+              chainId: ATT_CONTRACT_CHAIN.id,
               account: account?.address,
             }).then((tokenInfo) => {
               setToken(tokenInfo);
