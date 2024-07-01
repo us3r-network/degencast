@@ -17,5 +17,5 @@ export const BADGE_PAYMENT_TOKEN: TokenWithTradeInfo = {
     "https://assets.coingecko.com/coins/images/34515/standard/android-chrome-512x512.png",
 };
 //todo: delete this later
-export const BADGE_TEST_TOKEN_ADDRESS: Address =
-  "0x92aAefcE127B885e1d73E2eb0001641386693DA6";
+// export const BADGE_TEST_TOKEN_ADDRESS: Address =
+//   "0x92aAefcE127B885e1d73E2eb0001641386693DA6";

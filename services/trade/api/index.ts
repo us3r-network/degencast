@@ -3,6 +3,7 @@ import { ApiResp } from "~/services/shared/types";
 import {
   TokenWithTradeInfo,
   ShareInfo,
+  CreateTokenResp,
   // TipsInfo,
 } from "../types";
 
@@ -23,6 +24,17 @@ export function communityShares(): RequestPromise<
   return request({
     url: `topics/trade-shares`,
     method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+export function createToken(channelId:string): RequestPromise<
+  ApiResp<CreateTokenResp>
+> {
+  return request({
+    url: `/topics/channels/${channelId}/attention-tokens`,
+    method: "post",
     headers: {
       needToken: true,
     },

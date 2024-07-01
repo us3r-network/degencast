@@ -38,6 +38,8 @@ import {
 } from "./TranasactionResult";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import { useUserToken } from "~/hooks/user/useUserTokens";
+import { createToken } from "~/services/trade/api";
+import Toast from "react-native-toast-message";
 
 export function SellButton({
   logo,
@@ -485,3 +487,45 @@ export const SHARE_INFO = [
   "Badge holders could claim airdrops after channel token launch",
   "Buy channel badges to earn 500 $CAST point",
 ];
+
+export function LaunchButton({
+  channelId,
+  onComplete,
+}: {
+  channelId: string;
+  onComplete: (tokenAddress: Address) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      className="w-14"
+      size="sm"
+      variant="secondary"
+      disabled={loading}
+      onPress={async () => {
+        setLoading(true);
+        const resp = await createToken(channelId);
+        console.log(resp);
+        const attentionTokenAddr = resp.data?.data?.attentionTokenAddr;
+        if (attentionTokenAddr) {
+          Toast.show({
+            type: "success",
+            text1: "Token Created",
+            text2: "You can now trade your token",
+          });
+          onComplete(resp.data.data.attentionTokenAddr);
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Token Creation Failed",
+            text2: "Please try again later",
+          });
+          setLoading(false);
+          return;
+        }
+      }}
+    >
+      <Text>Launch</Text>
+    </Button>
+  );
+}

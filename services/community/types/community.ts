@@ -35,7 +35,7 @@ export type CommunityEntity = {
     parent_url: string;
   }>;
   channelId?: string;
-  badgeTokenAddress: Address;
+  attentionTokenAddress: Address;
   hostUserData?: Array<FarcasterUserData>;
 };
 

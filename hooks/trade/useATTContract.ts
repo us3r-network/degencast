@@ -73,12 +73,13 @@ export function useATTContractInfo(tokenAddress: Address) {
           functionName: "UNIT",
         },
       ],
-      // query: { enabled: true },
+      query: { enabled: true },
     });
-    // console.log("getBalance", data);
+    console.log("getBalance", data);
     const rawBalance = (data as ReadContractReturnType[])?.[0].result as bigint;
     const unit = (data as ReadContractReturnType[])?.[1].result as bigint;
-    const balance = rawBalance && unit ? Number(rawBalance / unit) : undefined;
+    const balance =
+      rawBalance != undefined && unit ? Number(rawBalance / unit) : undefined;
     return { data: balance, status };
   };
 
