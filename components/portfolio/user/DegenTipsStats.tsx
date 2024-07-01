@@ -39,7 +39,7 @@ export default function DegenTipsStats({
   }
   return (
     // <ExternalLink href={`${DEGENTIPS_URL}`} target="_blank">
-      <View variant="link" className="h-6 flex-row items-center gap-1 p-0">
+      <View className="h-6 flex-row items-center gap-1 p-0">
         <Text className="text-sm font-medium text-white">
           {new Intl.NumberFormat("en-US", {
             notation: "compact",
