@@ -1,6 +1,12 @@
-import { Address } from "viem";
+import { Address, Chain } from "viem";
 import { baseSepolia } from "viem/chains";
+import { wagmiConfig } from "~/config/wagmiConfig";
 
-export const ATT_FACTORY_CONTRACT_ADDRESS: Address =
-  "0xE5E3da329D361C3ebf21E849bCf1B3e78730Dc33";
-export const ATT_CONTRACT_CHAIN = baseSepolia;
+export const ATT_FACTORY_CONTRACT_ADDRESS: Address = process.env
+  .EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS as Address;
+export const ATT_CONTRACT_CHAINID: number =
+  (process.env.EXPO_PUBLIC_ATT_CONTRACT_CHAINID as unknown as number) ||
+  baseSepolia.id;
+export const ATT_CONTRACT_CHAIN: Chain = wagmiConfig.chains.find(
+  (chain) => chain.id === ATT_CONTRACT_CHAINID,
+) as Chain;

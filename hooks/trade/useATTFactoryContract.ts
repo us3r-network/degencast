@@ -5,7 +5,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import {
-  ATT_CONTRACT_CHAIN,
+  ATT_CONTRACT_CHAINID,
   ATT_FACTORY_CONTRACT_ADDRESS,
 } from "~/constants/att";
 import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
@@ -13,7 +13,7 @@ import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFa
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
   address: ATT_FACTORY_CONTRACT_ADDRESS,
-  chainId: ATT_CONTRACT_CHAIN.id,
+  chainId: ATT_CONTRACT_CHAINID,
 };
 
 export function useATTFactoryContractInfo(tokenAddress: Address) {

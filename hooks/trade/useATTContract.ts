@@ -1,10 +1,10 @@
 import { Address } from "viem";
 import { useReadContract, useReadContracts } from "wagmi";
-import { ATT_CONTRACT_CHAIN } from "~/constants/att";
+import { ATT_CONTRACT_CHAINID } from "~/constants/att";
 import ATT_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionToken.json";
 import { ReadContractReturnType } from "./types";
 
-const chainId = ATT_CONTRACT_CHAIN.id;
+const chainId = ATT_CONTRACT_CHAINID;
 const abi = ATT_CONTRACT_ABI_JSON.abi;
 
 export function useATTContractInfo(tokenAddress: Address) {
