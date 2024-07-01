@@ -45,7 +45,7 @@ export type TokenWithTradeInfo = {
   balance?: number | string | undefined;
 };
 
-export type ShareInfo = {
+export type BadgeInfo = {
   tokenAddress: `0x${string}`;
   name?: string | undefined;
   channelId: string;
@@ -57,8 +57,3 @@ export type ShareInfo = {
 export type CreateTokenResp = {
   attentionTokenAddr: Address;
 };
-// export type TipsInfo = {
-//   name?: string | undefined;
-//   logo?: string;
-//   amount: number;
-// };
