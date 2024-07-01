@@ -1,9 +1,8 @@
-import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
+import request, { RequestPromise } from "../../shared/api/request";
 import {
-  TokenWithTradeInfo,
-  ShareInfo,
-  // TipsInfo,
+  CreateTokenResp,
+  TokenWithTradeInfo
 } from "../types";
 
 export function communityTokens(): RequestPromise<
@@ -17,25 +16,14 @@ export function communityTokens(): RequestPromise<
     },
   });
 }
-export function communityShares(): RequestPromise<
-  ApiResp<ShareInfo[]>
+export function createToken(channelId:string): RequestPromise<
+  ApiResp<CreateTokenResp>
 > {
   return request({
-    url: `topics/trade-shares`,
-    method: "get",
+    url: `/topics/channels/${channelId}/attention-tokens`,
+    method: "post",
     headers: {
       needToken: true,
     },
   });
 }
-// export function communityTips(): RequestPromise<
-//   ApiResp<TipsInfo[]>
-// > {
-//   return request({
-//     url: `topics/trade-tips`,
-//     method: "get",
-//     headers: {
-//       needToken: true,
-//     },
-//   });
-// }

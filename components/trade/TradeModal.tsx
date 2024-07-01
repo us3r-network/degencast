@@ -276,6 +276,19 @@ function SwapToken({
     });
   };
 
+  const allowanceParams =
+    account?.address &&
+    fromToken?.address &&
+    fromToken?.decimals &&
+    fromAmount &&
+    allowanceTarget
+      ? {
+          owner: account.address,
+          tokenAddress: fromToken.address,
+          spender: allowanceTarget,
+          value: parseUnits(fromAmount, fromToken.decimals),
+        }
+      : undefined;
   if (transationData)
     return (
       <TransactionInfo
@@ -331,14 +344,7 @@ function SwapToken({
               variant="secondary"
               className="mt-6"
               targetChainId={fromToken.chainId}
-              takerAddress={account.address}
-              tokenAddress={fromToken.address}
-              allowanceTarget={allowanceTarget}
-              allowanceValue={
-                Number(fromAmount) > 0
-                  ? parseUnits(fromAmount, fromToken.decimals)
-                  : undefined
-              }
+              allowanceParams={allowanceParams}
               warpedButton={
                 <Button
                   variant="secondary"

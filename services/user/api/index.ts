@@ -1,5 +1,5 @@
 import { ApiResp } from "~/services/shared/types";
-import { ShareInfo, TokenWithTradeInfo } from "~/services/trade/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
 import {
   InvitationCodeRespEntity,
@@ -105,20 +105,7 @@ export function myTokens(
     },
   });
 }
-export function myShares(
-  pubkey: `0x${string}`,
-): RequestPromise<ApiResp<ShareInfo[]>> {
-  return request({
-    url: `topics/my-shares`,
-    method: "get",
-    params: {
-      pubkey,
-    },
-    headers: {
-      needToken: true,
-    },
-  });
-}
+
 export function myTips(): RequestPromise<ApiResp<TipsInfo[]>> {
   return request({
     url: `topics/my-tips`,
