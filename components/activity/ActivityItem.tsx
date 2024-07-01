@@ -14,21 +14,20 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
   return (
     <View className="flex w-full flex-col gap-4">
       <ActivityItemUserInfo userData={data.user} timestamp={data.timestamp} />
-      <View className=" flex-row items-center gap-1">
-        <Text
-          className={cn(
-            "text-base font-medium",
-            data?.operation === ActivityOperation.buy
-              ? "text-[#F41F4C]"
-              : data?.operation === ActivityOperation.sell
-                ? "text-[#00D1A7]"
-                : "",
-          )}
-        >
-          {capitalize(data?.operation || "")}
-        </Text>
-        <Text>{data?.badgeAmount} Channel Badge of</Text>
-
+      <Text
+        className={cn(
+          " inline-block text-base font-medium",
+          data?.operation === ActivityOperation.buy
+            ? "text-[#F41F4C]"
+            : data?.operation === ActivityOperation.sell
+              ? "text-[#00D1A7]"
+              : "",
+        )}
+      >
+        {capitalize(data?.operation || "")}{" "}
+        <Text className=" inline-block">
+          {data?.badgeAmount} Channel Badge of
+        </Text>{" "}
         <Link asChild href={`communities/${data?.channel?.id || ""}`}>
           <Pressable className="flex-row items-center">
             <Avatar
@@ -47,7 +46,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             )}
           </Pressable>
         </Link>
-      </View>
+      </Text>
       <Text>{data?.degenAmount?.toLocaleString()} Degen</Text>
     </View>
   );

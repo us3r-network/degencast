@@ -34,7 +34,7 @@ export default function ActivitiesLayout() {
               navigationState={{ index, routes }}
               renderScene={renderScene}
               onIndexChange={setIndex}
-              renderTabBar={DefaultTabBar}
+              renderTabBar={(props) => <DefaultTabBar {...props} />}
             />
           </CardContent>
         </Card>

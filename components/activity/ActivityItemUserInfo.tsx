@@ -26,7 +26,7 @@ export default function ActivityItemUserInfo({
         }}
       >
         <View
-          className={cn("flex w-full flex-row items-center gap-1", className)}
+          className={cn("flex w-full flex-row items-center gap-1 ", className)}
           {...props}
         >
           <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full object-cover">
@@ -42,7 +42,7 @@ export default function ActivityItemUserInfo({
             @{userData?.username}
           </Text>
           {timestamp && (
-            <Text className=" text-base font-medium text-secondary">
+            <Text className=" whitespace-nowrap text-base font-medium text-secondary">
               · {dayjs(timestamp).fromNow(true)}
             </Text>
           )}

@@ -12,7 +12,7 @@ export default function FollowingActivities() {
     loadItems();
   }, []);
   return (
-    <View className="h-full w-full pt-4">
+    <View className="h-full w-full pt-3">
       <FlatList
         style={{
           flex: 1,
