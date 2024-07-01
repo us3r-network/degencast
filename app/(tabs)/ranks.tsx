@@ -8,13 +8,12 @@ import {
 } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
-import { BuyButton } from "~/components/trade/BadgeButton";
+import { BuyButton, LaunchButton } from "~/components/trade/BadgeButton";
 import { TradeButton } from "~/components/trade/TradeButton";
 import { Card, CardContent } from "~/components/ui/card";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
-import { BADGE_TEST_TOKEN_ADDRESS } from "~/constants/att";
 import {
   DEFAULT_ORDER_PARAMS,
   OrderParams,
@@ -213,19 +212,31 @@ function Item({
         if (item.tokenInfo) return <TradeButton token2={item.tokenInfo} />;
       case CommunityRankOrderBy.NEW_CASTS:
       case CommunityRankOrderBy.MEMBERS:
-        return (
-          <BuyButton
-            name={item.name}
-            logo={item.image_url}
-            tokenAddress={BADGE_TEST_TOKEN_ADDRESS}
-          />
-        );
+        if (item.attentionTokenAddress) {
+          return (
+            <BuyButton
+              name={item.name}
+              logo={item.image_url}
+              tokenAddress={item.attentionTokenAddress}
+            />
+          );
+        } else {
+          return (
+            <LaunchButton
+              channelId={item.id}
+              onComplete={(tokenAddress) => {
+                console.log("tokenAddress", tokenAddress);
+                item.attentionTokenAddress = tokenAddress;
+              }}
+            />
+          );
+        }
       case CommunityRankOrderBy.CREATED_DATE:
         return <CommunityJoinButton channelId={item.id} />;
       default:
         return <CommunityJoinButton channelId={item.id} />;
     }
-  }, [item, orderBy]);
+  }, [item, orderBy, item.attentionTokenAddress]);
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">

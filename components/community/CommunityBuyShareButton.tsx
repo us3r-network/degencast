@@ -14,19 +14,19 @@ export default function CommunityBuyShareButton({
 }: ButtonProps & {
   communityInfo: CommunityInfo;
 }) {
-  const badgeTokenAddress = communityInfo?.badgeTokenAddress;
-  if (!badgeTokenAddress) {
+  const attentionTokenAddress = communityInfo?.attentionTokenAddress;
+  if (!attentionTokenAddress) {
     return null;
   }
   return (
     <BuyButton
-      tokenAddress={badgeTokenAddress}
+      tokenAddress={attentionTokenAddress}
       logo={communityInfo.logo}
       name={communityInfo.name}
       renderButton={() => {
         const token = BADGE_PAYMENT_TOKEN;
         const amount = 1;
-        const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo(badgeTokenAddress);
+        const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo(attentionTokenAddress);
         const { nftPrice } = getMintNFTPriceAfterFee(amount);
         const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
         const perSharePrice = fetchedPrice

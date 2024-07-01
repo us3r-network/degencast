@@ -66,6 +66,7 @@ export function CommunityBadge({ badge }: { badge: ShareInfo }) {
   const account = useAccount();
   const { getNFTBalance } = useATTContractInfo(badge.tokenAddress);
   const { data: balance } = getNFTBalance(account?.address);
+  console.log("CommunityBadge", badge, account?.address, balance)
   return (
     <View className="flex-row items-center justify-between">
       <Link href={`/communities/${badge.channelId}/shares`} asChild>

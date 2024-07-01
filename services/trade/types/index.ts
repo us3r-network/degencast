@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 type VolumeStats = {
   volume_usd: string;
   date: number;
@@ -52,6 +54,9 @@ export type ShareInfo = {
   amount?: number;
 };
 
+export type CreateTokenResp = {
+  attentionTokenAddr: Address;
+};
 // export type TipsInfo = {
 //   name?: string | undefined;
 //   logo?: string;

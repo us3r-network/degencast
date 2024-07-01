@@ -15,7 +15,6 @@ import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { Channel } from "~/services/farcaster/types";
 import { CommunityBadge } from "../tokens/UserCommunityBadges";
-import { BADGE_TEST_TOKEN_ADDRESS } from "~/constants/att";
 
 export default function UserChannelAssets({
   channel,
@@ -61,14 +60,16 @@ export default function UserChannelAssets({
           {channel.tokenInfo && (
             <CommunityToken token={channel.tokenInfo} withSwapButton />
           )}
-          {/* {channel.badgeTokenAddress && ( */}
-            <CommunityBadge badge={{
-                tokenAddress: BADGE_TEST_TOKEN_ADDRESS,
+          {channel.attentionTokenAddress && (
+            <CommunityBadge
+              badge={{
+                tokenAddress: channel.attentionTokenAddress,
                 name: channel.name,
                 channelId: channel.id,
                 logo: channel.image_url,
-            }} />
-          {/* )} */}
+              }}
+            />
+          )}
           <MyPoints />
         </View>
       </DialogContent>
