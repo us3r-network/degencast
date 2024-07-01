@@ -1,10 +1,12 @@
 import { useEffect } from "react";
-import { Address, erc20Abi } from "viem";
+import { Address, erc20Abi, formatUnits } from "viem";
 import {
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { readContracts } from "@wagmi/core";
+import { wagmiConfig } from "~/config/wagmiConfig";
 
 const MAX_ALLOWANCE = BigInt(2) ** BigInt(256) - BigInt(1);
 
@@ -129,5 +131,54 @@ export function useERC20Transfer({
     transationError,
     transationLoading,
     transationStatus,
+  };
+}
+
+export async function getTokenInfo({
+  address,
+  chainId,
+  account,
+}: {
+  address: Address;
+  chainId: number;
+  account: Address;
+}) {
+  const contract = {
+    address,
+    abi: erc20Abi,
+    // chainId,
+  };
+  if (!address || !chainId) return undefined;
+  const data = await readContracts(wagmiConfig, {
+    contracts: [
+      {
+        ...contract,
+        functionName: "name",
+      },
+      {
+        ...contract,
+        functionName: "symbol",
+      },
+      {
+        ...contract,
+        functionName: "decimals",
+      },
+      {
+        ...contract,
+        functionName: "balanceOf",
+        args: [account],
+      },
+    ],
+  });
+  console.log("getTokenInfo", data)
+  if (!data) return undefined;
+  return {
+    address,
+    chainId,
+    name: data[0].result,
+    symbol: data[1].result,
+    decimals: data[2].result,
+    rawBalance: data[3].result,
+    balance: formatUnits(data[3].result as bigint, data[2].result as unknown as number),
   };
 }

@@ -40,13 +40,14 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
   };
-  const getPaymentToken = (owner?:Address) => {
+  const getPaymentToken = () => {
     const { data, status } = useReadContract({
       ...contract,
       functionName: "tokens",
       args: [tokenAddress],
     });
     const paymentToken = data ? ((data as unknown[])[1] as Address) : undefined;
+    
     return { paymentToken, status };
   };
 

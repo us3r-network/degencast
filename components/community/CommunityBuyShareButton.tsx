@@ -1,11 +1,15 @@
 import { formatUnits } from "viem";
 import { Text } from "~/components/ui/text";
-import { BADGE_PAYMENT_TOKEN } from "~/constants/att";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useATTFactoryContractInfo } from "~/hooks/trade/useATTFactoryContract";
 import { cn } from "~/lib/utils";
 import { CommunityInfo } from "~/services/community/types/community";
 import { BuyButton } from "../trade/BadgeButton";
 import { Button, ButtonProps } from "../ui/button";
+import { useState, useEffect } from "react";
+import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
+import { TokenWithTradeInfo } from "~/services/trade/types";
+import { useAccount } from "wagmi";
 
 export default function CommunityBuyShareButton({
   communityInfo,
@@ -24,9 +28,26 @@ export default function CommunityBuyShareButton({
       logo={communityInfo.logo}
       name={communityInfo.name}
       renderButton={() => {
-        const token = BADGE_PAYMENT_TOKEN;
+        const account = useAccount();
         const amount = 1;
-        const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo(attentionTokenAddress);
+        const { getMintNFTPriceAfterFee, getPaymentToken } =
+          useATTFactoryContractInfo(attentionTokenAddress);
+
+        const { paymentToken } = getPaymentToken();
+        const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
+          undefined,
+        );
+        useEffect(() => {
+          if (paymentToken && account?.address)
+            getTokenInfo({
+              address: paymentToken,
+              chainId: ATT_CONTRACT_CHAIN.id,
+              account: account?.address,
+            }).then((tokenInfo) => {
+              setToken(tokenInfo);
+            });
+        }, [paymentToken, account?.address]);
+
         const { nftPrice } = getMintNFTPriceAfterFee(amount);
         const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
         const perSharePrice = fetchedPrice

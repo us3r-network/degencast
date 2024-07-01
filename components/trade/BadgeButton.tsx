@@ -1,8 +1,9 @@
 import { useConnectWallet } from "@privy-io/react-auth";
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { View } from "react-native";
-import { Address, formatUnits, parseUnits } from "viem";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import Toast from "react-native-toast-message";
+import { Address, formatUnits } from "viem";
+import { useAccount } from "wagmi";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import NumberField from "~/components/common/NumberField";
 import { Button } from "~/components/ui/button";
@@ -18,7 +19,6 @@ import { Text } from "~/components/ui/text";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
-  BADGE_PAYMENT_TOKEN,
 } from "~/constants/att";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import {
@@ -26,20 +26,19 @@ import {
   useATTFactoryContractInfo,
   useATTFactoryContractSell,
 } from "~/hooks/trade/useATTFactoryContract";
+import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
 import { cn } from "~/lib/utils";
+import { createToken } from "~/services/trade/api";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
 import { TokenWithValue } from "../common/TokenInfo";
 import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
+import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
-import { useUserToken } from "~/hooks/user/useUserTokens";
-import { createToken } from "~/services/trade/api";
-import Toast from "react-native-toast-message";
 
 export function SellButton({
   logo,
@@ -186,8 +185,20 @@ const SellBadge = forwardRef<
     const { getBurnNFTPriceAfterFee, getPaymentToken } =
       useATTFactoryContractInfo(tokenAddress);
 
-    // const { paymentTokenInfo: token } = getPaymentToken();
-    const token = BADGE_PAYMENT_TOKEN;
+    const { paymentToken } = getPaymentToken();
+    const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
+      undefined,
+    );
+    useEffect(() => {
+      if (paymentToken && account?.address)
+        getTokenInfo({
+          address: paymentToken,
+          chainId: ATT_CONTRACT_CHAIN.id,
+          account: account?.address,
+        }).then((tokenInfo) => {
+          setToken(tokenInfo);
+        });
+    }, [paymentToken, account?.address]);
 
     const { nftPrice } = getBurnNFTPriceAfterFee(amount);
     return (
@@ -372,12 +383,20 @@ const BuyBadge = forwardRef<
     const { getMintNFTPriceAfterFee, getPaymentToken } =
       useATTFactoryContractInfo(tokenAddress);
 
-    // const { paymentToken } = getPaymentToken();
-    const token = useUserToken(
-      account?.address,
-      BADGE_PAYMENT_TOKEN.address,
-      ATT_CONTRACT_CHAIN.id,
+    const { paymentToken } = getPaymentToken();
+    const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
+      undefined,
     );
+    useEffect(() => {
+      if (paymentToken && account?.address)
+        getTokenInfo({
+          address: paymentToken,
+          chainId: ATT_CONTRACT_CHAIN.id,
+          account: account?.address,
+        }).then((tokenInfo) => {
+          setToken(tokenInfo);
+        });
+    }, [paymentToken, account?.address]);
 
     const { nftPrice, adminFee } = getMintNFTPriceAfterFee(amount);
     const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
