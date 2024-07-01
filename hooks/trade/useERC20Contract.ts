@@ -143,12 +143,14 @@ export async function getTokenInfo({
   chainId: number;
   account: Address;
 }) {
+  if (!address || !chainId) return undefined;
+  const chain = wagmiConfig.chains.find((chain) => chain.id === chainId);
+  if (!chain) return undefined;
   const contract = {
     address,
     abi: erc20Abi,
-    // chainId,
+    chainId: chain.id,
   };
-  if (!address || !chainId) return undefined;
   const data = await readContracts(wagmiConfig, {
     contracts: [
       {
@@ -170,8 +172,7 @@ export async function getTokenInfo({
       },
     ],
   });
-  console.log("getTokenInfo", data)
-  if (!data) return undefined;
+  if (!data || data.length < 4) return undefined;
   return {
     address,
     chainId,
@@ -179,6 +180,9 @@ export async function getTokenInfo({
     symbol: data[1].result,
     decimals: data[2].result,
     rawBalance: data[3].result,
-    balance: formatUnits(data[3].result as bigint, data[2].result as unknown as number),
+    balance: formatUnits(
+      data[3].result as bigint,
+      data[2].result as unknown as number,
+    ),
   };
 }
