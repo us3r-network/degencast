@@ -3,7 +3,7 @@ import { CastList } from "~/components/portfolio/posts/UserCasts";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import { getUserFarcasterAccount } from "~/utils/privy";
 
-export default function CastsScreen() {
+export default function MyCastsScreen() {
   const { user } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
 

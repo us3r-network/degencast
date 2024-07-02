@@ -4,7 +4,7 @@ import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
 import UserToekns from "~/components/portfolio/tokens/UserTokens";
 import UserWallet from "~/components/portfolio/tokens/UserWallet";
 
-export default function UserTokensScreen() {
+export default function MyTokensScreen() {
   const account = useAccount();
   return (
     <ScrollView className="h-full w-full" showsVerticalScrollIndicator={false}>

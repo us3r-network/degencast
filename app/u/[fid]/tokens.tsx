@@ -6,10 +6,10 @@ import UserToekns from "~/components/portfolio/tokens/UserTokens";
 import useUserBulk from "~/hooks/user/useUserBulk";
 import { Text } from "~/components/ui/text";
 
-export default function UserTokensScreen() {
+export default function UserTokensScreen({ fid }: { fid: string }) {
   const { userInfo, load } = useUserBulk();
 
-  const { fid } = useLocalSearchParams<{ fid: string }>();
+  // const { fid } = useLocalSearchParams<{ fid: string }>();
   useEffect(() => {
     if (Number(fid)) load(Number(fid));
   }, [fid]);
