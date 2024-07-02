@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchUserHostChannels } from "~/services/farcaster/api";
-import { Channel } from "~/services/farcaster/types/neynar";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
