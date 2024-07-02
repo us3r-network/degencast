@@ -12,12 +12,22 @@ export default function TrendingScreen() {
     coverChannels,
     loadCoverChannels,
     loading: coverChannelsLoading,
+    rejected: coverChannelsRejected,
   } = useLoadCoverChannels();
   useEffect(() => {
-    if (!coverChannelsLoading && coverChannels.length === 0) {
+    if (
+      !coverChannelsRejected &&
+      !coverChannelsLoading &&
+      coverChannels.length === 0
+    ) {
       loadCoverChannels();
     }
-  }, [coverChannelsLoading, coverChannels, loadCoverChannels]);
+  }, [
+    coverChannelsLoading,
+    coverChannelsRejected,
+    coverChannels,
+    loadCoverChannels,
+  ]);
   return (
     <View className="h-full w-full">
       {coverChannelsLoading ? (

@@ -9,7 +9,8 @@ function MobileTabBar(props: BottomTabBarProps) {
 
   return (
     <View className="flex items-center justify-evenly border-t-0 bg-background p-4">
-      <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-between rounded-[20px] px-10 py-3">
+      <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-between rounded-[20px] px-0 py-3 sm:px-8">
+        <View className="sm:hidden" />
         {state.routes.map((route, index: number) => {
           const { options } = descriptors[route.key];
           const label =
@@ -67,6 +68,7 @@ function MobileTabBar(props: BottomTabBarProps) {
             </Pressable>
           );
         })}
+        <View className="sm:hidden" />
       </Card>
     </View>
   );
