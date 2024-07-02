@@ -1,11 +1,16 @@
 import { FlatList, View } from "react-native";
 import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
-import { Separator } from "../ui/separator";
-import { Loading } from "../common/Loading";
-import ActivityItem from "./ActivityItem";
 import { useEffect } from "react";
-export default function AllActivities() {
-  const { items, loading, loadItems } = useLoadOnchainActivities();
+import { Separator } from "~/components/ui/separator";
+import ActivityItem from "~/components/activity/ActivityItem";
+import { Loading } from "~/components/common/Loading";
+import { useGlobalSearchParams } from "expo-router";
+export default function OnchainScreen() {
+  const globalParams = useGlobalSearchParams();
+  const { id: channelId } = globalParams as { id: string };
+  const { items, loading, loadItems } = useLoadOnchainActivities({
+    channelId,
+  });
   useEffect(() => {
     loadItems();
   }, []);

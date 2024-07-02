@@ -12,7 +12,7 @@ export default function PowerusersActivities() {
     loadItems();
   }, []);
   return (
-    <View className="h-full w-full pt-3">
+    <View className="h-full w-full pt-4">
       <FlatList
         style={{
           flex: 1,

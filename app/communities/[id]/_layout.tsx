@@ -1,12 +1,5 @@
-import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-  useSegments,
-  useNavigation,
-  Link,
-} from "expo-router";
-import { createContext, useContext, useEffect, useState } from "react";
+import { Stack, useLocalSearchParams, useNavigation, Link } from "expo-router";
+import { createContext, useContext, useEffect } from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
 import { Search } from "~/components/common/Icons";
@@ -18,24 +11,22 @@ import { CommunitySharingButton } from "~/components/platform-sharing/PlatformSh
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import useLoadCommunityMembersShare from "~/hooks/community/useLoadCommunityMembersShare";
 import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import { cn } from "~/lib/utils";
 import { CommunityData } from "~/services/community/api/community";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import TokensScreen from "./tokens";
+import ContributionsScreen from "./contributions";
+import DefaultTabBar from "~/components/layout/material-top-tabs/TabBar";
+import FeedsLayout from "./feeds/_layout";
 
 const initialRouteName = "tokens";
 
-const TABS = [
-  { label: "Tokens", value: "tokens" },
-  // { label: "Shares", value: "shares" },
-  { label: "Contributions", value: "contributions" },
-  { label: "Casts", value: "casts" },
-];
+const Tab = createMaterialTopTabNavigator();
 
 const CommunityContext = createContext<{
   community: CommunityData | null | undefined;
@@ -59,14 +50,6 @@ export default function CommunityDetail() {
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { id: channelId } = params as { id: string };
-  const segments = useSegments();
-  const [activeScreen, setActiveScreen] = useState(initialRouteName);
-  useEffect(() => {
-    if (segments?.[2]) {
-      setActiveScreen(segments[2]);
-    }
-  }, [segments]);
-  const router = useRouter();
   const { communityDetail, communityBasic, loading, loadCommunityDetail } =
     useLoadCommunityDetail(channelId);
 
@@ -81,7 +64,7 @@ export default function CommunityDetail() {
   const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(channelId);
   const { membersShare, loadMembersShare } =
     useLoadCommunityMembersShare(channelId);
-  const { casts, loadCasts } = useLoadCommunityCasts(channelId);
+  useLoadCommunityCasts(channelId);
 
   useEffect(() => {
     if (tipsRank.length === 0) {
@@ -161,44 +144,39 @@ export default function CommunityDetail() {
               communityInfo={community}
               className=" max-sm:hidden "
             />
-            <View className="box-border w-full flex-1 pt-5">
-              <Tabs
-                value={activeScreen}
-                onValueChange={(value) => {
-                  setActiveScreen(value);
-                  router.push(`/communities/${channelId}/${value}` as any);
-                }}
-                className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2 px-4"
-              >
-                <TabsList className="flex-row rounded-full bg-white shadow-lg">
-                  {TABS.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      className={cn("flex-1 flex-row rounded-full")}
-                      value={tab.value}
-                    >
-                      <Text
-                        className={cn(
-                          "whitespace-nowrap font-medium text-primary",
-                          activeScreen === tab.value &&
-                            "text-primary-foreground",
-                        )}
-                      >
-                        {tab.label}
-                      </Text>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-              <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-5 pb-0 pt-10 ">
+            <View className="box-border w-full flex-1">
+              <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-4 pb-0">
                 <CommunityContext.Provider value={{ community, loading }}>
-                  <Stack
+                  <Tab.Navigator
                     initialRouteName={initialRouteName}
-                    screenOptions={{
-                      header: () => null,
-                      contentStyle: { backgroundColor: "white" },
+                    tabBar={(props) => <DefaultTabBar {...props} />}
+                    sceneContainerStyle={{
+                      backgroundColor: "white",
+                      paddingTop: 15,
                     }}
-                  />
+                  >
+                    <Tab.Screen
+                      name="tokens"
+                      component={TokensScreen}
+                      options={{
+                        title: "Tokens",
+                      }}
+                    />
+                    <Tab.Screen
+                      name="contributions"
+                      component={ContributionsScreen}
+                      options={{
+                        title: "Contributions",
+                      }}
+                    />
+                    <Tab.Screen
+                      name="feeds"
+                      component={FeedsLayout}
+                      options={{
+                        title: "Feeds",
+                      }}
+                    />
+                  </Tab.Navigator>
                 </CommunityContext.Provider>
               </Card>
             </View>

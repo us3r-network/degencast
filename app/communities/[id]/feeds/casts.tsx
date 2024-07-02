@@ -4,7 +4,7 @@ import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
-import { useCommunityCtx } from "./_layout";
+import { useCommunityCtx } from "../_layout";
 import useChannelExplorePage from "~/hooks/explore/useChannelExplorePage";
 import { ChannelExploreDataOrigin } from "~/features/community/channelExplorePageSlice";
 import { cn } from "~/lib/utils";

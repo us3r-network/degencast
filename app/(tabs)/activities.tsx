@@ -28,7 +28,7 @@ export default function ActivitiesLayout() {
       className="flex-1 bg-background"
     >
       <View className="box-border w-full flex-1 px-4">
-        <Card className="relative mx-auto box-border h-full w-full max-w-screen-sm rounded-2xl p-2">
+        <Card className="relative mx-auto box-border h-full w-full max-w-screen-sm rounded-2xl p-4 pb-0">
           <CardContent className="h-full w-full p-0">
             <TabView
               navigationState={{ index, routes }}
