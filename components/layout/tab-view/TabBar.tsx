@@ -62,6 +62,7 @@ export default function DefaultTabBar({
             });
             return (
               <Pressable
+                key={route.key}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 onPress={onPress}

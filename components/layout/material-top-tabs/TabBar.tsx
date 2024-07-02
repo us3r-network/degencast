@@ -96,6 +96,7 @@ export default function DefaultTabBar(props: MaterialTopTabBarProps) {
 
             return (
               <Pressable
+                key={route.key}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -186,6 +187,7 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
 
             return (
               <Pressable
+                key={route.key}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 accessibilityLabel={options.tabBarAccessibilityLabel}
