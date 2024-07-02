@@ -11,6 +11,7 @@ export default function useLoadCoverChannels() {
   const data = useAppSelector(selectCoverChannels);
   const { items: coverChannels, pageInfo, status, errorMsg } = data;
   const loading = status === AsyncRequestStatus.PENDING;
+  const rejected = status === AsyncRequestStatus.REJECTED;
 
   const loadCoverChannels = useCallback(async () => {
     if (loading) return;
@@ -19,6 +20,7 @@ export default function useLoadCoverChannels() {
 
   return {
     loading,
+    rejected,
     coverChannels,
     pageInfo,
     errorMsg,
