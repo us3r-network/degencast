@@ -90,3 +90,96 @@ export default function DefaultTabBar({
     </View>
   );
 }
+
+export function OutlineTabBar({
+  navigationState,
+  position,
+  layout,
+  jumpTo,
+}: SceneRendererProps & {
+  navigationState: NavigationState<{ key: string; title: string }>;
+}) {
+  const routes = navigationState.routes || [];
+  const { width } = layout;
+  const wrapperPadding = 4;
+  const itemGap = 4;
+  const itemsLen = routes.length;
+  const totalGapWidth = itemGap * (itemsLen - 1);
+  const itemBoxWidth = (width - totalGapWidth - wrapperPadding * 2) / itemsLen;
+  const itemBoxHeight = 30;
+  const itemIndicatorWidth = itemBoxWidth;
+  const itemIndicatorHeight = itemBoxHeight;
+  const itemIndicatorTranslateX = position.interpolate({
+    inputRange: routes.map((_, i) => i),
+    outputRange: routes.map((_, i) => {
+      return i * itemBoxWidth + itemGap * i;
+    }),
+  });
+  return (
+    <View
+      className="relative box-border flex w-full flex-row rounded-xl border border-secondary bg-muted"
+      style={{
+        padding: wrapperPadding,
+        gap: itemGap,
+        backgroundColor: "rgba(163, 110, 254, 0.10)",
+      }}
+    >
+      {itemBoxWidth > 0 && (
+        <>
+          <Animated.View
+            style={{
+              position: "absolute",
+              width: itemIndicatorWidth,
+              height: itemIndicatorHeight,
+              backgroundColor: "#4C2896",
+              borderRadius: 10,
+              transform: [{ translateX: itemIndicatorTranslateX }],
+              bottom: wrapperPadding,
+            }}
+          />
+          {routes.map((route, index) => {
+            const label = route.title;
+            const isFocused = index === navigationState.index;
+            const onPress = () => {
+              jumpTo(route.key);
+            };
+            const onLongPress = () => {
+              jumpTo(route.key);
+            };
+            const inputRange = routes.map((_, i) => i);
+            const textColor = position.interpolate({
+              inputRange,
+              outputRange: inputRange.map((i) =>
+                i === index ? "#fff" : "#4C2896",
+              ),
+            });
+            return (
+              <Pressable
+                key={route.key}
+                accessibilityRole="button"
+                accessibilityState={isFocused ? { selected: true } : {}}
+                onPress={onPress}
+                onLongPress={onLongPress}
+                className="flex-row items-center justify-center"
+                style={{
+                  width: itemBoxWidth,
+                  height: itemBoxHeight,
+                }}
+              >
+                <Animated.Text
+                  style={{
+                    color: textColor,
+                    fontSize: 14,
+                    fontWeight: 500,
+                  }}
+                >
+                  {label as any}
+                </Animated.Text>
+              </Pressable>
+            );
+          })}
+        </>
+      )}
+    </View>
+  );
+}
