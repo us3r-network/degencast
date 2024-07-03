@@ -9,7 +9,8 @@ import useUserInviteCode from "~/hooks/user/useUserInviteCode";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
-import OnboardingModal from "./portfolio/user/Onboarding";
+import OnboardingModal from "./portfolio/onboarding/Onboarding";
+import InviteCodeModal from "./portfolio/onboarding/InviteCodeModal";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { currFid } = useFarcasterAccount();
@@ -85,7 +86,8 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   return (
     <>
       {children}
-      <OnboardingModal />
+      <OnboardingModal />     
+      <InviteCodeModal />
     </>
   );
 }

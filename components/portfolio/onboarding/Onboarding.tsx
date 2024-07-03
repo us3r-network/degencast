@@ -2,8 +2,8 @@ import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import ApplyLaunch from "~/components/portfolio/user/ApplyLaunch";
-import SignUp from "~/components/portfolio/user/Signup";
+import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
+import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useAuth from "~/hooks/user/useAuth";
 
@@ -57,7 +57,7 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
   else
     return (
       <View className="h-full w-full">
-        <SignUp
+        <OnboardingSteps
           onComplete={() => {
             console.log("signed up", { fid: user?.farcaster?.fid });
             if (user?.farcaster?.fid) {

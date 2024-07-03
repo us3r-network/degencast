@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useNavigation } from "expo-router";
 import React, { useEffect } from "react";
 // import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,12 +25,15 @@ import TabBar from "~/components/layout/tabBar/TabBar";
 //   TradeSharingButton,
 // } from "~/components/platform-sharing/PlatformSharingButton";
 import UserGlobalPoints from "~/components/point/UserGlobalPoints";
+import InviteCodeModal from "~/components/portfolio/onboarding/InviteCodeModal";
 import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import useAuth from "~/hooks/user/useAuth";
 import { logGA } from "~/utils/firebase/analytics.web";
 
+const AUTH_PROTECTED_ROUTES = ["portfolio"];
 export default function TabLayout() {
   // const { currFid, farcasterAccount } = useFarcasterAccount();
   // preload data
@@ -39,6 +42,8 @@ export default function TabLayout() {
   useEffect(() => {
     logGA("app_open", {});
   }, []);
+  const { authenticated, login } = useAuth();
+  const navigation = useNavigation();
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
@@ -47,9 +52,29 @@ export default function TabLayout() {
           // to prevent a hydration error in React Navigation v6.
           headerShown: useClientOnlyValue(false, true),
         }}
-        tabBar={(props) => {
-          return <TabBar {...props} />;
+        screenListeners={{
+          // Monitor tab press and if 'portfolio' tab is pressed
+          tabPress: (e: any) => {
+            console.log("tabPress", e);
+            AUTH_PROTECTED_ROUTES.forEach((route) => {
+              if ((e.target as string).startsWith(route)) {
+                if (!authenticated) {
+                  e.preventDefault();
+                  login({
+                    onSuccess: () => {
+                      console.log("login successful!");
+                      navigation.navigate(route as never);
+                    },
+                    onFail: () => {
+                      console.log("Failed to login");
+                    },
+                  });
+                }
+              }
+            });
+          },
         }}
+        tabBar={(props) => <TabBar {...props} />}
       >
         <Tabs.Screen
           name="index"

@@ -12,16 +12,17 @@ import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { cn } from "~/lib/utils";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
-import UserSignin from "./UserSignin";
+import UserSignin from "../user/UserSignin";
 import { X } from "~/components/common/Icons";
-
+import useAuth from "~/hooks/user/useAuth";
+//todo: seperate install pwa from onboarding steps
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
-// console.log("pwa stats: ", isSupported, isInstalled, showPrompt);
 
-export default function SignUp({ onComplete }: { onComplete: () => void }) {
+export default function OnboardingSteps({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
 
-  const { user, logout } = usePrivy();
+  const { user } = usePrivy();
+  const { logout } = useAuth();
 
   const nextStep = (newUser?: User) => {
     const u = newUser || user;
@@ -125,7 +126,6 @@ export default function SignUp({ onComplete }: { onComplete: () => void }) {
           <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
             <StepIndicator stepNum={5} stepNo={step} />
             <UserSignin
-              showCancelButton={false}
               onSuccess={() => {
                 console.log("signup successful!");
                 nextStep();

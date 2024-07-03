@@ -372,7 +372,7 @@ function UnlinkButton({ action }: { action: () => void }) {
 }
 
 function LogoutButton() {
-  const { logout } = usePrivy();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open}>

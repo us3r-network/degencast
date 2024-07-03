@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
 import { View } from "react-native";
 import { LogOut } from "~/components/common/Icons";
@@ -15,8 +14,7 @@ import { Text } from "~/components/ui/text";
 import useAuth from "~/hooks/user/useAuth";
 
 export default function UserLogout() {
-  const { ready, logout } = usePrivy();
-  const { authenticated } = useAuth();
+  const { authenticated, ready, logout } = useAuth();
   const [open, setOpen] = useState(false);
   if (!ready || !authenticated) {
     return null;

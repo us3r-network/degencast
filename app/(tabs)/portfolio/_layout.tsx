@@ -35,7 +35,6 @@ export default function PortfolioScreen() {
             (!authenticated ? (
               <Card className="flex h-full w-full items-center justify-center rounded-2xl">
                 <UserSignin
-                  showCancelButton
                   onSuccess={() => {
                     console.log("login successful!");
                   }}

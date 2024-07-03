@@ -82,15 +82,17 @@ export default function CommunityMetaInfo({
           <Text className="line-clamp-2 text-sm font-normal leading-6">
             {description}
           </Text>
-          <HostUserInfo
-            key={host.fid}
-            data={{
-              fid: host.fid,
-              avatar: host.pfp_url,
-              username: host.username,
-              displayName: host.display_name,
-            }}
-          />
+          {host && (
+            <HostUserInfo
+              key={host.fid}
+              data={{
+                fid: host.fid,
+                avatar: host.pfp_url,
+                username: host.username,
+                displayName: host.display_name,
+              }}
+            />
+          )}
         </Pressable>
       </Link>
     </View>
