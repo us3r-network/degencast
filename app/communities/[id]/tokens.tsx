@@ -13,9 +13,12 @@ import { Loading } from "~/components/common/Loading";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import ApplyLaunchButton from "~/components/common/ApplyLaunchButton";
+import CommunityAttentionTokenInfo from "~/components/community/CommunityAttentionTokenInfo";
+import CommunityBuyShareButton from "~/components/community/CommunityBuyShareButton";
 
 export default function TokensScreen() {
   const { community } = useCommunityCtx();
+
   const communityToken = community?.tokens?.[0];
   const id = community?.channelId || "";
   const { communityDetail, loading } = useLoadCommunityDetail(id);
@@ -29,6 +32,8 @@ export default function TokensScreen() {
       </View>
     );
   }
+  const communityInfo = { ...(communityDetail || community) };
+  const attentionTokenAddress = communityInfo?.attentionTokenAddress;
   return (
     <View className="flex-1 flex-col">
       {communityToken && communityToken?.tradeInfo ? (
@@ -42,6 +47,17 @@ export default function TokensScreen() {
             tradeInfo={communityToken.tradeInfo}
           />
         </ScrollView>
+      ) : attentionTokenAddress ? (
+        <>
+          <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
+            <CommunityAttentionTokenInfo channelId={id} />
+          </ScrollView>
+          {communityInfo && (
+            <View className=" py-5">
+              <CommunityBuyShareButton communityInfo={communityInfo} />
+            </View>
+          )}
+        </>
       ) : (
         <>
           <ScrollView

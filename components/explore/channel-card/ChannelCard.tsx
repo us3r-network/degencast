@@ -11,6 +11,7 @@ import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import { ExploreApplyLaunchButton } from "~/components/common/ApplyLaunchButton";
 import { ExploreCard } from "../ExploreStyled";
 import ChannelCardCasts from "./ChannelCardCasts";
+import CommunityBuyShareButton from "~/components/community/CommunityBuyShareButton";
 
 export default function ChannelCard({
   communityInfo,
@@ -30,6 +31,7 @@ export default function ChannelCard({
       (item.tradeInfo?.channel && item.tradeInfo.channel === channelId) ||
       (tokenAddress && item.tradeInfo?.tokenAddress === tokenAddress),
   );
+  const attentionTokenAddress = communityInfo?.attentionTokenAddress;
 
   const { currFid } = useFarcasterAccount();
   const { channels } = useUserHostChannels(Number(currFid));
@@ -54,9 +56,13 @@ export default function ChannelCard({
         </View>
       )}
       <View className={cn("w-full flex-col gap-4 px-4")}>
-        {communityToken && <ExploreTradeButton token2={communityToken} />}
-        {channelId && !communityToken && isChannelHost && (
-          <ExploreApplyLaunchButton channelId={channelId} />
+        {communityToken ? (
+          <ExploreTradeButton token2={communityToken} />
+        ) : attentionTokenAddress ? (
+          <CommunityBuyShareButton communityInfo={communityInfo} />
+        ) : (
+          channelId &&
+          isChannelHost && <ExploreApplyLaunchButton channelId={channelId} />
         )}
       </View>
     </ExploreCard>

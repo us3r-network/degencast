@@ -1,16 +1,13 @@
 import request, { RequestPromise } from "~/services/shared/api/request";
-import { ActivityEntity } from "../types/activity";
 import { ApiResp } from "~/services/shared/types";
+import { AttentionTokenEntity } from "../types/attention-token";
 
 export type ChannelAttentionTokenParams = {
   channelId: string;
 };
-export type ChannelAttentionTokenData = Array<ActivityEntity>;
 export function getChannelAttentionToken({
   channelId,
-}: ChannelAttentionTokenParams): RequestPromise<
-  ApiResp<ChannelAttentionTokenData>
-> {
+}: ChannelAttentionTokenParams): RequestPromise<ApiResp<AttentionTokenEntity>> {
   return request({
     url: `/topics/channels/${channelId}/attention-tokens`,
     method: "get",
