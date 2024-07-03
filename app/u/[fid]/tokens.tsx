@@ -2,7 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { ScrollView, View } from "react-native";
 import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
-import UserToekns from "~/components/portfolio/tokens/UserTokens";
+import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import useUserBulk from "~/hooks/user/useUserBulk";
 import { Text } from "~/components/ui/text";
 
@@ -24,7 +24,7 @@ export default function UserTokensScreen({ fid }: { fid: string }) {
     <ScrollView className="h-full w-full" showsVerticalScrollIndicator={false}>
       {address ? (
         <View className="flex w-full gap-6">
-          <UserToekns address={address as `0x${string}`} />
+          <UserTokens address={address as `0x${string}`} />
           <CommunityTokens address={address as `0x${string}`} />
         </View>
       ) : (
