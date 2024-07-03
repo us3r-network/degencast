@@ -26,8 +26,7 @@ import { getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function UserWalletSelect() {
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
 
   const { setActiveWallet } = useSetActiveWallet();
   const { wallets: connectedWallets } = useWallets();

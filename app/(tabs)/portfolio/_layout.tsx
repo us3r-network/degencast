@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
 import { View } from "react-native";
@@ -21,8 +20,7 @@ const TABS = [
 ];
 
 export default function PortfolioScreen() {
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
   const segments = useSegments();
   return (
     <SafeAreaView
@@ -35,7 +33,6 @@ export default function PortfolioScreen() {
             (!authenticated ? (
               <Card className="flex h-full w-full items-center justify-center rounded-2xl">
                 <UserSignin
-                  showCancelButton
                   onSuccess={() => {
                     console.log("login successful!");
                   }}

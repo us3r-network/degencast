@@ -59,7 +59,7 @@ export function SellButton({
         className={cn("w-14")}
         size="sm"
         variant={"secondary"}
-        onPress={connectWallet}
+        onPress={()=>connectWallet()}
       >
         <Text>Sell</Text>
       </Button>
@@ -276,7 +276,7 @@ export function BuyButton({
         className={cn("w-14")}
         size="sm"
         variant={"secondary"}
-        onPress={connectWallet}
+        onPress={()=>connectWallet()}
       >
         <Text>Buy</Text>
       </Button>

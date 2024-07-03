@@ -2,8 +2,8 @@ import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import ApplyLaunch from "~/components/portfolio/user/ApplyLaunch";
-import SignUp from "~/components/portfolio/user/Signup";
+import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
+import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useAuth from "~/hooks/user/useAuth";
 
@@ -12,8 +12,7 @@ const OnboardingModal = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
   const [open, setOpen] = useState(false);
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
   useEffect(() => {
     const goOnboarding = async () => {
       const skipOnboardingDate =
@@ -35,7 +34,10 @@ const OnboardingModal = React.forwardRef<
           onComplete={() => {
             setOpen(false);
             const nowDate = new Date();
-            AsyncStorage.setItem(SKIP_ONBOARDING_KEY, nowDate.setDate(nowDate.getDate() + 7).toString());
+            AsyncStorage.setItem(
+              SKIP_ONBOARDING_KEY,
+              nowDate.setDate(nowDate.getDate() + 7).toString(),
+            );
           }}
         />
       </DialogContent>
@@ -54,19 +56,18 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
         <ApplyLaunch onComplete={onComplete} />
       </View>
     );
-  else
-    return (
-      <View className="h-full w-full">
-        <SignUp
-          onComplete={() => {
-            console.log("signed up", { fid: user?.farcaster?.fid });
-            if (user?.farcaster?.fid) {
-              setSignedUp(true);
-            } else {
-              onComplete();
-            }
-          }}
-        />
-      </View>
-    );
+  return (
+    <View className="h-full w-full">
+      <OnboardingSteps
+        onComplete={() => {
+          console.log("signed up", { fid: user?.farcaster?.fid });
+          if (user?.farcaster?.fid) {
+            setSignedUp(true);
+          } else {
+            onComplete();
+          }
+        }}
+      />
+    </View>
+  );
 }

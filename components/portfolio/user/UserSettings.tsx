@@ -56,8 +56,7 @@ export default function UserSettings({
 }: {
   showFarcasterAccount?: boolean;
 }) {
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
 
   const { setActiveWallet } = useSetActiveWallet();
   const { wallets: connectedWallets } = useWallets();
@@ -372,7 +371,7 @@ function UnlinkButton({ action }: { action: () => void }) {
 }
 
 function LogoutButton() {
-  const { logout } = usePrivy();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open}>
