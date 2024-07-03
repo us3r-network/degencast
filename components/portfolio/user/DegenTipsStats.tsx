@@ -38,8 +38,8 @@ export default function DegenTipsStats({
     return null;
   }
   return (
-    <ExternalLink href={`${DEGENTIPS_URL}`} target="_blank">
-      <Button variant="link" className="h-6 flex-row items-center gap-1 p-0">
+    // <ExternalLink href={`${DEGENTIPS_URL}`} target="_blank">
+      <View className="h-6 flex-row items-center gap-1 p-0">
         <Text className="text-sm font-medium text-white">
           {new Intl.NumberFormat("en-US", {
             notation: "compact",
@@ -51,7 +51,7 @@ export default function DegenTipsStats({
             notation: "compact",
           }).format(totalDegenAllowance)}
         </Text>
-      </Button>
-    </ExternalLink>
+      </View>
+    // </ExternalLink>
   );
 }

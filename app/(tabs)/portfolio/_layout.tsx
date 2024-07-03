@@ -1,12 +1,24 @@
-import { User, usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@privy-io/react-auth";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
+import DefaultTabBar from "~/components/layout/material-top-tabs/TabBar";
+import UserInfo from "~/components/portfolio/user/UserInfo";
 import UserSignin from "~/components/portfolio/user/UserSignin";
 import { Card } from "~/components/ui/card";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
+import MyCastsScreen from "./casts";
+import MyChannelsScreen from "./channels";
+import MyTokensScreen from "./tokens";
+
+const Tab = createMaterialTopTabNavigator();
+const TABS = [
+  { label: "Tokens", value: "tokens", component: MyTokensScreen },
+  { label: "Channels", value: "channels", component: MyChannelsScreen },
+  { label: "Casts", value: "casts", component: MyCastsScreen },
+];
 
 export default function PortfolioScreen() {
   const { ready } = usePrivy();
@@ -33,7 +45,32 @@ export default function PortfolioScreen() {
                 />
               </Card>
             ) : (
-              <PortfolioContent defaultTab={segments?.[2]} />
+              <View className="flex h-full w-full items-center gap-4 ">
+                <View className="h-24 w-full">
+                  <UserInfo />
+                </View>
+                <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-4 pb-0">
+                  <Tab.Navigator
+                    initialRouteName={segments?.[2]}
+                    tabBar={(props) => <DefaultTabBar {...props} />}
+                    sceneContainerStyle={{
+                      backgroundColor: "white",
+                      paddingTop: 15,
+                    }}
+                  >
+                    {TABS.map((tab) => (
+                      <Tab.Screen
+                        key={tab.value}
+                        name={tab.value}
+                        component={tab.component}
+                        options={{
+                          title: tab.label,
+                        }}
+                      />
+                    ))}
+                  </Tab.Navigator>
+                </Card>
+              </View>
             ))}
         </View>
       </View>

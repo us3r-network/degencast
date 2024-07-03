@@ -4,7 +4,7 @@ import ChannelList from "~/components/portfolio/channels/UserChannels";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import { getUserFarcasterAccount } from "~/utils/privy";
 
-export default function ChannelsScreen() {
+export default function MyChannelsScreen() {
   const { user } = usePrivy();
   const farcasterAccount = getUserFarcasterAccount(user);
 

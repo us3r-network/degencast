@@ -1,3 +1,4 @@
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
   Stack,
   useLocalSearchParams,
@@ -8,11 +9,23 @@ import { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
+import DefaultTabBar from "~/components/layout/material-top-tabs/TabBar";
 import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
-import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
+import UserInfo from "~/components/portfolio/user/UserInfo";
+import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useUserBulk from "~/hooks/user/useUserBulk";
+import UserCastsScreen from "./casts";
+import UserChannelsScreen from "./channels";
+import UserTokensScreen from "./tokens";
+
+const Tab = createMaterialTopTabNavigator();
+const TABS = [
+  { label: "Tokens", value: "tokens", component: UserTokensScreen },
+  { label: "Channels", value: "channels", component: UserChannelsScreen },
+  { label: "Casts", value: "casts", component: UserCastsScreen },
+];
 
 export default function UserPortfolioScreen() {
   const segments = useSegments();
@@ -75,7 +88,35 @@ export default function UserPortfolioScreen() {
           }}
         />
         <View className="mx-auto box-border w-full max-w-screen-sm flex-1 px-4">
-          <PortfolioContent fid={Number(fid)} defaultTab={segments?.[2]} />
+          <View className="flex h-full w-full items-center gap-4 ">
+            <View className="h-24 w-full">
+              <UserInfo fid={Number(fid)} />
+            </View>
+            <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-4 pb-0">
+              <Tab.Navigator
+                initialRouteName={segments?.[2]}
+                tabBar={(props) => <DefaultTabBar {...props} />}
+                sceneContainerStyle={{
+                  backgroundColor: "white",
+                  paddingTop: 15,
+                }}
+              >
+                {TABS.map((tab) => {
+                  const Component = tab.component;
+                  return (
+                    <Tab.Screen
+                      key={tab.value}
+                      name={tab.value}
+                      component={()=><Component fid={fid!}/>}
+                      options={{
+                        title: tab.label,
+                      }}
+                    />
+                  );
+                })}
+              </Tab.Navigator>
+            </Card>
+          </View>
         </View>
       </SafeAreaView>
     );
