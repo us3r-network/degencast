@@ -29,7 +29,6 @@ const InviteCodeModal = React.forwardRef<
       open={open}
       ref={ref}
       onOpenChange={(open) => {
-        console.log("open", open);
         logout();
         setOpen(open);
       }}

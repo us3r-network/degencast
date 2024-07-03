@@ -34,7 +34,10 @@ const OnboardingModal = React.forwardRef<
           onComplete={() => {
             setOpen(false);
             const nowDate = new Date();
-            AsyncStorage.setItem(SKIP_ONBOARDING_KEY, nowDate.setDate(nowDate.getDate() + 7).toString());
+            AsyncStorage.setItem(
+              SKIP_ONBOARDING_KEY,
+              nowDate.setDate(nowDate.getDate() + 7).toString(),
+            );
           }}
         />
       </DialogContent>
@@ -53,19 +56,18 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
         <ApplyLaunch onComplete={onComplete} />
       </View>
     );
-  else
-    return (
-      <View className="h-full w-full">
-        <OnboardingSteps
-          onComplete={() => {
-            console.log("signed up", { fid: user?.farcaster?.fid });
-            if (user?.farcaster?.fid) {
-              setSignedUp(true);
-            } else {
-              onComplete();
-            }
-          }}
-        />
-      </View>
-    );
+  return (
+    <View className="h-full w-full">
+      <OnboardingSteps
+        onComplete={() => {
+          console.log("signed up", { fid: user?.farcaster?.fid });
+          if (user?.farcaster?.fid) {
+            setSignedUp(true);
+          } else {
+            onComplete();
+          }
+        }}
+      />
+    </View>
+  );
 }

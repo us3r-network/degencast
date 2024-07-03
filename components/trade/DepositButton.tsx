@@ -123,7 +123,7 @@ export default function DepositButton() {
                 toWallet={activeWallet}
               />
             ) : (
-              <Button variant="secondary" onPress={()=>connectWallet}>
+              <Button variant="secondary" onPress={()=>connectWallet()}>
                 <Text>Connect your wallet & transfer</Text>
               </Button>
             )}

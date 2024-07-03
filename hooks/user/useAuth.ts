@@ -34,18 +34,18 @@ export default function useAuth() {
   }, [usedInviterFid]);
 
   const syncDegencastId = async (privyDid: string) => {
-    console.log("syncDegencastId", privyDid);
+    // console.log("syncDegencastId", privyDid);
     dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.PENDING));
     const existId = await AsyncStorage.getItem(`degencastId_${privyDid}`);
     if (existId) {
-      console.log("exist degencast id", existId);
+      // console.log("exist degencast id", existId);
       dispatch(setDegencastId(parseInt(existId)));
       dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.FULFILLED));
       return existId;
     } else {
       try {
         const resp = await getMyDegencast();
-        console.log("my degencast resp", resp);
+        // console.log("my degencast resp", resp);
         if (resp.data?.code === ApiRespCode.SUCCESS) {
           const id = resp.data?.data?.id;
           if (id) {
@@ -63,7 +63,7 @@ export default function useAuth() {
           throw new Error("degencast id error: " + resp.data?.msg || "");
         }
       } catch (error) {
-        console.log("degencast id error", error);
+        // console.log("degencast id error", error);
         dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.REJECTED));
         return null;
       }
@@ -108,15 +108,15 @@ export default function useAuth() {
       isNewUser: boolean,
       wasAlreadyAuthenticated: boolean,
     ) => {
-      console.log(
-        "privy login completed: ",
-        user,
-        isNewUser,
-        wasAlreadyAuthenticated,
-      );
+      // console.log(
+      //   "privy login completed: ",
+      //   user,
+      //   isNewUser,
+      //   wasAlreadyAuthenticated,
+      // );
       setStatus(SigninStatus.LOGGINGIN_DEGENCAST);
       syncDegencastId(user.id).then((degencastId) => {
-        console.log("degencastId", degencastId);
+        // console.log("degencastId", degencastId);
         if (degencastId) {
           setStatus(SigninStatus.SUCCESS);
           loginHandler?.onSuccess();
@@ -130,7 +130,7 @@ export default function useAuth() {
       });
     },
     onError: (error: unknown) => {
-      console.error("Failed to login", error);
+      // console.error("Failed to login", error);
       setStatus(SigninStatus.FAILED);
       loginHandler?.onFail(error);
     },
