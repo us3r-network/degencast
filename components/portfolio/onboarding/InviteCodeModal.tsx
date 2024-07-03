@@ -40,10 +40,10 @@ const InviteCodeModal = React.forwardRef<
         </DialogHeader>
         <InviteCodeForm
           onSuccess={() => {
-            console.log("login successful!");
+            console.log("signup degencast successful!");
           }}
           onFail={(error: unknown) => {
-            console.log("Failed to login", error);
+            console.log("Failed to signup degencast", error);
             logout();
           }}
         />

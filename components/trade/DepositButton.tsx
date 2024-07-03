@@ -53,14 +53,20 @@ export default function DepositButton() {
     // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
     if (!connectedWallets?.length) return undefined;
     const currentWallet = connectedWallets.find(
-      (wallet) => wallet.connectorType !== "embedded" && wallet.connectorType !== "coinbase_wallet",
+      (wallet) =>
+        wallet.connectorType !== "embedded" &&
+        wallet.connectorType !== "coinbase_wallet",
     );
     if (currentWallet) return currentWallet;
   }, [connectedWallets]);
 
   if (!activeWalletAddress || !activeWallet)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button
+        size={"icon"}
+        className="rounded-full"
+        onPress={() => connectWallet}
+      >
         <Text>
           <ArrowDown />
         </Text>
@@ -117,7 +123,7 @@ export default function DepositButton() {
                 toWallet={activeWallet}
               />
             ) : (
-              <Button variant="secondary" onPress={connectWallet}>
+              <Button variant="secondary" onPress={()=>connectWallet}>
                 <Text>Connect your wallet & transfer</Text>
               </Button>
             )}

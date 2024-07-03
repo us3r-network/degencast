@@ -17,7 +17,7 @@ export default function ActiveWallet() {
         </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
-          onPress={connectWallet}
+          onPress={()=>connectWallet}
         >
           <Wallet className="font-medium text-secondary" />
           <Text className="text-xs font-medium text-secondary">Switch</Text>
@@ -32,7 +32,7 @@ export default function ActiveWallet() {
         </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
-          onPress={connectWallet}
+          onPress={()=>connectWallet}
         >
           <Wallet className="font-medium text-secondary" />
           <Text className="text-xs font-medium text-secondary">Connect</Text>

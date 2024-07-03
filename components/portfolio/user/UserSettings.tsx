@@ -56,8 +56,7 @@ export default function UserSettings({
 }: {
   showFarcasterAccount?: boolean;
 }) {
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
 
   const { setActiveWallet } = useSetActiveWallet();
   const { wallets: connectedWallets } = useWallets();

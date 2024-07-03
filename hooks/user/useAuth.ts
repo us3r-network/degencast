@@ -84,7 +84,7 @@ export default function useAuth() {
         inviterFid: inviterFidRef.current,
         inviteCode,
       });
-      console.log("login resp", resp);
+      // console.log("login resp", resp);
       if (resp.data?.code === ApiRespCode.SUCCESS) {
         const id = resp.data?.data?.id;
         if (id) {

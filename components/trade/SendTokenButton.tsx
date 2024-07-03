@@ -64,7 +64,7 @@ export default function SendTokenButton({
 
   if (!activeWalletAddress)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button size={"icon"} className="rounded-full" onPress={()=>connectWallet}>
         <Text>
           <ArrowUp />
         </Text>

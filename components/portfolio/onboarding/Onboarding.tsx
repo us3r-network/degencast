@@ -12,8 +12,7 @@ const OnboardingModal = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
   const [open, setOpen] = useState(false);
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
   useEffect(() => {
     const goOnboarding = async () => {
       const skipOnboardingDate =
