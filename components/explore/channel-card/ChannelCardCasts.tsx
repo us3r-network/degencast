@@ -130,7 +130,7 @@ export default function ChannelCardCasts({
                     navigateToCommunityDetail(
                       channelId,
                       communityInfo,
-                      "casts",
+                      "feeds/casts",
                     );
                   }}
                 >

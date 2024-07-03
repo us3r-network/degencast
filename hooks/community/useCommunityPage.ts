@@ -9,9 +9,9 @@ export default function useCommunityPage() {
   const dispatch = useAppDispatch();
 
   const navigateToCommunityDetail = useCallback(
-    (channelId: string, data: CommunityEntity, tab?: string) => {
+    (channelId: string, data: CommunityEntity, childRoutePath?: string) => {
       dispatch(upsertCommunityBasicData({ id: channelId, data: data as any }));
-      router.push(`communities/${channelId}/${tab || ""}` as any);
+      router.push(`communities/${channelId}/${childRoutePath || ""}` as any);
     },
     [router],
   );

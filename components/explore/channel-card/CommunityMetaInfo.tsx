@@ -26,7 +26,7 @@ export default function CommunityMetaInfo({
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, description, memberInfo, channelId } = communityInfo;
   const hosts = communityInfo?.hosts || [];
-  const host = hosts[0];
+  const host = hosts?.[0];
   const { totalNumber, newPostNumber } = memberInfo || {};
 
   return (
@@ -82,15 +82,17 @@ export default function CommunityMetaInfo({
           <Text className="line-clamp-2 text-sm font-normal leading-6">
             {description}
           </Text>
-          <HostUserInfo
-            key={host.fid}
-            data={{
-              fid: host.fid,
-              avatar: host.pfp_url,
-              username: host.username,
-              displayName: host.display_name,
-            }}
-          />
+          {host && (
+            <HostUserInfo
+              key={host.fid}
+              data={{
+                fid: host.fid,
+                avatar: host.pfp_url,
+                username: host.username,
+                displayName: host.display_name,
+              }}
+            />
+          )}
         </Pressable>
       </Link>
     </View>

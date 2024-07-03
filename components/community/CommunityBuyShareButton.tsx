@@ -27,49 +27,62 @@ export default function CommunityBuyShareButton({
       tokenAddress={attentionTokenAddress}
       logo={communityInfo.logo}
       name={communityInfo.name}
-      renderButton={() => {
-        const account = useAccount();
-        const amount = 1;
-        const { getMintNFTPriceAfterFee, getPaymentToken } =
-          useATTFactoryContractInfo(attentionTokenAddress);
-
-        const { paymentToken } = getPaymentToken();
-        const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
-          undefined,
-        );
-        useEffect(() => {
-          if (paymentToken && account?.address)
-            getTokenInfo({
-              address: paymentToken,
-              chainId: ATT_CONTRACT_CHAIN.id,
-              account: account?.address,
-            }).then((tokenInfo) => {
-              setToken(tokenInfo);
-            });
-        }, [paymentToken, account?.address]);
-
-        const { nftPrice } = getMintNFTPriceAfterFee(amount);
-        const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
-        const perSharePrice = fetchedPrice
-          ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-          : "";
-        const symbol = token?.symbol || "";
-
-        return (
-          <Button
-            variant={"secondary"}
-            className={cn(" flex-col items-center ")}
-          >
-            {fetchedPrice ? (
-              <Text>
-                Buy with {perSharePrice} {symbol}
-              </Text>
-            ) : (
-              <Text> Fetching Price... </Text>
-            )}
-          </Button>
-        );
-      }}
+      renderButton={() => (
+        <CommunityBuyShareButtonRender
+          attentionTokenAddress={attentionTokenAddress}
+        />
+      )}
     />
+  );
+}
+
+function CommunityBuyShareButtonRender({
+  attentionTokenAddress,
+}: {
+  attentionTokenAddress: `0x${string}`;
+}) {
+  const account = useAccount();
+  const amount = 1;
+  const { getMintNFTPriceAfterFee, getPaymentToken } =
+    useATTFactoryContractInfo(attentionTokenAddress);
+
+  const { paymentToken } = getPaymentToken();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
+  useEffect(() => {
+    if (paymentToken && account?.address)
+      getTokenInfo({
+        address: paymentToken,
+        chainId: ATT_CONTRACT_CHAIN.id,
+        account: account?.address,
+      }).then((tokenInfo) => {
+        setToken(tokenInfo);
+      });
+  }, [paymentToken, account?.address]);
+
+  const { nftPrice } = getMintNFTPriceAfterFee(amount);
+  const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
+  const perSharePrice = fetchedPrice
+    ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
+    : "";
+  const symbol = token?.symbol || "";
+
+  return (
+    <Button
+      variant={"secondary"}
+      className={cn(
+        " h-[60px] flex-row items-center gap-1 rounded-[20px] bg-secondary px-[12px] py-[6px] ",
+      )}
+    >
+      {fetchedPrice ? (
+        <Text className="line-clamp-1 text-base font-bold">
+          Buy Channel Badge with {perSharePrice} {symbol}
+        </Text>
+      ) : (
+        <Text className="line-clamp-1 text-base font-bold">
+          {" "}
+          Fetching Price...{" "}
+        </Text>
+      )}
+    </Button>
   );
 }
