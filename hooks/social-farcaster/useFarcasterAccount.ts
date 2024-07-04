@@ -1,7 +1,7 @@
 import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
 
 export default function useFarcasterAccount() {
-  const { user } = usePrivy();
+  const { user, linkFarcaster } = usePrivy();
   const farcasterAccount = user?.linkedAccounts.find(
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
@@ -9,5 +9,5 @@ export default function useFarcasterAccount() {
 
   const currFid = user?.farcaster?.fid || undefined;
 
-  return { farcasterAccount, signerPublicKey, currFid };
+  return { farcasterAccount, signerPublicKey, currFid, linkFarcaster };
 }

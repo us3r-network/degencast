@@ -1,8 +1,5 @@
 import { FarcasterNetwork, Message, makeFrameAction } from "@farcaster/hub-web";
 import {
-  useConnectWallet
-} from "@privy-io/react-auth";
-import {
   sendTransaction,
   switchChain,
   waitForTransactionReceipt,
@@ -27,6 +24,7 @@ import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import {
   postFrameActionApi,
@@ -51,7 +49,7 @@ export default function EmbedFrame({
 
   const { currFid } = useFarcasterAccount();
   const { chain, address } = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   const config = useConfig();
 
   const [isLoading, setIsLoading] = useState(false);

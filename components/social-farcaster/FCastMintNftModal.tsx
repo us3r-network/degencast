@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { Image } from "expo-image";
 import { useMemo, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -27,6 +26,7 @@ import { AspectRatio } from "../ui/aspect-ratio";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { Text } from "../ui/text";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 // import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
@@ -44,7 +44,7 @@ export default function FCastMintNftModal({
     display: string;
   };
 }) {
-  const { connectWallet } = usePrivy();
+  const { connectWallet } = useWalletAccount();
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();

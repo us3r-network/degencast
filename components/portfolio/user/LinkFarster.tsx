@@ -1,12 +1,12 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { Image } from "expo-image";
 import { View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
 
 export function LinkFarcaster() {
-  const { linkFarcaster } = usePrivy();
+  const { linkFarcaster } = useFarcasterAccount();
   const { ready, authenticated } = useAuth();
   if (ready && authenticated) {
     return (
