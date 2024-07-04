@@ -119,7 +119,7 @@ export default function useAuth() {
         // console.log("degencastId", degencastId);
         if (degencastId) {
           setStatus(SigninStatus.SUCCESS);
-          loginHandler?.onSuccess();
+          loginHandler?.onSuccess?.();
         } else {
           if (INVITE_ONLY) {
             setStatus(SigninStatus.NEED_INVITE_CODE);
@@ -132,7 +132,7 @@ export default function useAuth() {
     onError: (error: unknown) => {
       // console.error("Failed to login", error);
       setStatus(SigninStatus.FAILED);
-      loginHandler?.onFail(error);
+      loginHandler?.onFail?.(error);
     },
   };
 
@@ -141,7 +141,7 @@ export default function useAuth() {
     const resp = await signupDegencast(inviteCode);
     if (resp) {
       setStatus(SigninStatus.SUCCESS);
-      loginHandler?.onSuccess();
+      loginHandler?.onSuccess?.();
     } else {
       if (INVITE_ONLY) {
         setStatus(SigninStatus.NEED_INVITE_CODE);
@@ -162,13 +162,11 @@ export default function useAuth() {
   const { login: privyLogin } = useLogin(privyLoginHanler);
   const [loginHandler, setLoginHandler] = useState<LoginHander>();
 
-  const login = async ({
-    onSuccess,
-    onFail,
-  }: {
-    onSuccess: () => void;
-    onFail: (error: unknown) => void;
+  const login = async (opts?: {
+    onSuccess?: () => void;
+    onFail?: (error: unknown) => void;
   }) => {
+    const { onSuccess, onFail } = opts || {};
     setLoginHandler({
       onSuccess,
       onFail,
@@ -198,8 +196,8 @@ export default function useAuth() {
 }
 
 type LoginHander = {
-  onSuccess: () => void;
-  onFail: (error: unknown) => void;
+  onSuccess?: () => void;
+  onFail?: (error: unknown) => void;
 };
 
 export enum SigninStatus {

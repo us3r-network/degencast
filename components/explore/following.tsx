@@ -11,14 +11,14 @@ import {
 } from "~/utils/userActionEvent";
 import ChannelCard from "./channel-card/ChannelCard";
 import { ExploreSwipeItem, itemHeight, itemPaddingTop } from "./ExploreStyled";
-import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useLoadFollowingChannels from "~/hooks/explore/useLoadFollowingChannels";
 import { ConnectFarcasterCard } from "./ConnectFarcasterCard";
 import { FollowingEmptyListCard } from "./EmptyListCard";
+import useAuth from "~/hooks/user/useAuth";
 
 export default function FollowingChannelsScreen() {
-  const { authenticated } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   if (!authenticated || !currFid) {
     return (

@@ -14,6 +14,7 @@ import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 import useUserAction from "~/hooks/user/useUserAction";
 import { UserActionName } from "~/services/user/types";
+import useAuth from "~/hooks/user/useAuth";
 
 const HomeChanel = {
   id: "",
@@ -60,7 +61,8 @@ export default function CreateScreen() {
       }
     }
   }, [warpcastChannels, searchChannelId]);
-  const { login, ready, user } = usePrivy();
+  const { user } = usePrivy();
+  const { login, ready } = useAuth();
 
   const fid = user?.farcaster?.fid;
 
@@ -161,7 +163,10 @@ export default function CreateScreen() {
       >
         {(!fid && (
           <View className="flex-1 p-4 pt-16">
-            <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
+            <Button
+              className="rounded-lg bg-primary px-6 py-3"
+              onPress={() => login()}
+            >
               <Text className="text-primary-foreground">
                 Log in with farcaster
               </Text>

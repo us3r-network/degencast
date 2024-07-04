@@ -50,7 +50,7 @@ export default function EmbedFrame({
 }) {
   const { getPrivySigner } = useFarcasterSigner();
 
-  const { user, login, ready, authenticated } = usePrivy();
+  const { user } = usePrivy();
   const { chain, address } = useAccount();
   const { connectWallet } = useConnectWallet();
   const config = useConfig();

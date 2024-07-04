@@ -8,7 +8,6 @@ import { Button, ButtonProps } from "../ui/button";
 import { Image } from "react-native";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import useAuth from "~/hooks/user/useAuth";
-import { usePrivy } from "@privy-io/react-auth";
 import { openTwitterCreateTweet } from "~/utils/platform-sharing/twitter";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useUserAction from "~/hooks/user/useUserAction";
@@ -33,8 +32,7 @@ export default function FCastShareModal({
     Invite: { unit: inviteUnit },
   } = actionPointConfig;
   const castHex = getCastHex(cast);
-  const { login } = usePrivy();
-  const { authenticated } = useAuth();
+  const { login, ready, authenticated } = useAuth();
   const { recast, removeRecast, recasted, recastCount } =
     useFarcasterRecastAction({ cast });
   const onRecast = () => {
