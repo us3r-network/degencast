@@ -1,4 +1,3 @@
-import { useConnectWallet } from "@privy-io/react-auth";
 import React, { forwardRef, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -27,6 +26,7 @@ import {
   useATTFactoryContractSell,
 } from "~/hooks/trade/useATTFactoryContract";
 import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { createToken } from "~/services/trade/api";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -52,7 +52,7 @@ export function SellButton({
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   if (!account.address)
     return (
       <Button
@@ -267,7 +267,7 @@ export function BuyButton({
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   const [open, setOpen] = useState(false);
   const handlePress = () => {
     if (!account.address) {

@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { Image } from "expo-image";
 import React, { useEffect } from "react";
 import { View } from "react-native";
@@ -10,24 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { WARRPCAST } from "~/constants/farcaster";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useUserBulk from "~/hooks/user/useUserBulk";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import useUserChannels from "~/hooks/user/useUserChannels";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { Author } from "~/services/farcaster/types/neynar";
-import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 import DegenTipsStats from "./DegenTipsStats";
 import UserSettings from "./UserSettings";
 
 export default function UserInfo({ fid }: { fid?: number }) {
-  const { user } = usePrivy();
-  const farcasterAccount = getUserFarcasterAccount(user);
-  const walletAccount = getUserWallets(user)[0];
-  fid = fid || farcasterAccount?.fid || undefined;
+  const {currFid} = useFarcasterAccount();
+  const {linkedWallets} = useWalletAccount();
+  const walletAccount = linkedWallets?.length>0 ? linkedWallets[0]: undefined;
+  fid = fid || currFid || undefined;
   useUserChannels(fid); //preload channels
-  useUserCasts(fid, farcasterAccount?.fid || undefined); //preload casts
-  const { userInfo, load } = useUserBulk(farcasterAccount?.fid || undefined);
+  useUserCasts(fid, currFid || undefined); //preload casts
+  const { userInfo, load } = useUserBulk(currFid || undefined);
   useEffect(() => {
     if (fid) load(fid);
   }, [fid]);
@@ -64,7 +64,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
             </AvatarFallback>
           </Avatar>
           <View className="absolute bottom-0 right-0 size-6">
-            {farcasterAccount?.fid !== userInfo.fid ? (
+            {currFid !== userInfo.fid ? (
               <FollowUserButton farcasterUserInfo={userInfo} />
             ) : (
               <UserSettings />

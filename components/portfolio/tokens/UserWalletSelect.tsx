@@ -1,15 +1,6 @@
-import {
-  ConnectedWallet,
-  WalletWithMetadata,
-  useConnectWallet,
-  usePrivy,
-  useWallets,
-} from "@privy-io/react-auth";
-import { useSetActiveWallet } from "@privy-io/wagmi";
 import * as Clipboard from "expo-clipboard";
-import React, { useMemo } from "react";
+import React from "react";
 import { Pressable, View } from "react-native";
-import { useAccount } from "wagmi";
 import { Plug, PlusCircle } from "~/components/common/Icons";
 import { WalletIcon } from "~/components/common/WalletIcon";
 import {
@@ -21,30 +12,18 @@ import {
 } from "~/components/ui/select";
 import { Text, TextClassContext } from "~/components/ui/text";
 import useAuth from "~/hooks/user/useAuth";
+import useWalletAccount, {
+  ConnectedWallet,
+  WalletWithMetadata,
+} from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
-import { getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function UserWalletSelect() {
   const { ready, authenticated } = useAuth();
 
-  const { setActiveWallet } = useSetActiveWallet();
-  const { wallets: connectedWallets } = useWallets();
-  const { address: activeWalletAddress } = useAccount();
-
-  const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) => wallet.address === activeWalletAddress,
-    );
-    if (currentWallet) return currentWallet;
-    const firstInjectedWallet = connectedWallets.find(
-      (wallet) => wallet.connectorType === "injected",
-    );
-    if (firstInjectedWallet) return firstInjectedWallet;
-    return connectedWallets[0];
-  }, [connectedWallets, activeWalletAddress]);
+  const { connectedWallets, activeWallet, setActiveWallet } =
+    useWalletAccount();
 
   if (!ready || !authenticated) {
     return null;
@@ -101,22 +80,11 @@ export default function UserWalletSelect() {
 }
 
 function LinkWallets() {
-  const { user, linkWallet } = usePrivy();
-  const { connectWallet } = useConnectWallet();
-  const { wallets: connectedWallets } = useWallets();
-  const linkedWallets = useMemo(
-    () => (user ? getUserWallets(user) : []),
-    [user],
-  );
-  const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets
-      .filter(
-        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-      )
-      .filter((wallet) => wallet.connectorType !== "embedded");
-  }, [linkedWallets, connectedWallets]);
+  const { ready, authenticated } = useAuth();
+  const { connectWallet, linkWallet, unconnectedLinkedWallets } =
+    useWalletAccount();
 
-  if (!user) return null;
+  if (!ready || !authenticated) return null;
   return (
     <View className="flex w-full gap-2">
       {unconnectedLinkedWallets.map((wallet) => (
@@ -147,7 +115,7 @@ function WalletItem({
   wallet: ConnectedWallet | WalletWithMetadata;
   action?: () => void;
 }) {
-  const { wallets: connectedWallets } = useWallets();
+  const { connectedWallets } = useWalletAccount();
   return (
     <View
       className="w-full flex-row items-center justify-between gap-6"
