@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -59,7 +59,7 @@ export function SellButton({
         className={cn("w-14")}
         size="sm"
         variant={"secondary"}
-        onPress={()=>connectWallet()}
+        onPress={() => connectWallet()}
       >
         <Text>Sell</Text>
       </Button>
@@ -264,89 +264,119 @@ export function BuyButton({
   logo?: string;
   name?: string;
   tokenAddress: Address;
-  renderButton?: () => React.ReactElement;
+  renderButton?: (props: { onPress: () => void }) => React.ReactNode;
+}) {
+  const account = useAccount();
+  const { connectWallet } = useWalletAccount();
+  const [open, setOpen] = useState(false);
+  const handlePress = () => {
+    if (!account.address) {
+      connectWallet();
+      return;
+    }
+    setOpen(true);
+  };
+  return (
+    <Pressable>
+      {renderButton ? (
+        renderButton({ onPress: handlePress })
+      ) : (
+        <Button
+          className={cn("w-14")}
+          size="sm"
+          variant={"secondary"}
+          onPress={handlePress}
+        >
+          <Text>Buy</Text>
+        </Button>
+      )}
+
+      {account.address && (
+        <BuyBadgeDialog
+          logo={logo}
+          name={name}
+          tokenAddress={tokenAddress}
+          open={open}
+          onOpenChange={setOpen}
+        />
+      )}
+    </Pressable>
+  );
+}
+
+export function BuyBadgeDialog({
+  logo,
+  name,
+  tokenAddress,
+  open,
+  onOpenChange,
+}: {
+  logo?: string;
+  name?: string;
+  tokenAddress: Address;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-  const account = useAccount();
-  const { connectWallet } = useWalletAccount();
-  if (!account.address)
-    return (
-      <Button
-        className={cn("w-14")}
-        size="sm"
-        variant={"secondary"}
-        onPress={()=>connectWallet()}
-      >
-        <Text>Buy</Text>
-      </Button>
-    );
-  else
-    return (
-      <Dialog
-        onOpenChange={() => {
-          setTransationData(undefined);
-          setError("");
-        }}
-      >
-        <DialogTrigger asChild>
-          {renderButton ? (
-            renderButton()
-          ) : (
-            <Button className={cn("w-14")} size="sm" variant={"secondary"}>
-              <Text>Buy</Text>
-            </Button>
-          )}
-        </DialogTrigger>
-        {!transationData && !error && (
-          <DialogContent className="w-screen">
-            <DialogHeader
-              className={cn("mr-4 flex-row items-center justify-between gap-2")}
-            >
-              <DialogTitle>Buy Badges & get allowance</DialogTitle>
-            </DialogHeader>
-            <View className="flex-row items-center justify-between gap-2">
-              <Text>Active Wallet</Text>
-              <UserWalletSelect />
-            </View>
-            <BuyBadge
-              logo={logo}
-              name={name}
-              tokenAddress={tokenAddress}
-              onSuccess={setTransationData}
-              onError={setError}
-            />
-            <DialogFooter>
-              <About title={SHARE_TITLE} info={SHARE_INFO} />
-            </DialogFooter>
-          </DialogContent>
-        )}
-        {transationData && (
-          <DialogContent className="w-screen">
-            <DialogHeader className={cn("flex gap-2")}>
-              <DialogTitle>Transaction</DialogTitle>
-            </DialogHeader>
-            <TransactionInfo
-              data={transationData}
-              buttonText="Buy more"
-              buttonAction={() => setTransationData(undefined)}
-            />
-          </DialogContent>
-        )}
-        {error && (
-          <DialogContent className="w-screen">
-            <DialogHeader className={cn("flex gap-2")}>
-              <DialogTitle>Error</DialogTitle>
-            </DialogHeader>
-            <ErrorInfo
-              error={error}
-              buttonText="Try Again"
-              buttonAction={() => setError("")}
-            />
-          </DialogContent>
-        )}
-      </Dialog>
-    );
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setTransationData(undefined);
+        setError("");
+        onOpenChange(o);
+      }}
+    >
+      {!transationData && !error && (
+        <DialogContent className="w-screen">
+          <DialogHeader
+            className={cn("mr-4 flex-row items-center justify-between gap-2")}
+          >
+            <DialogTitle>Buy Badges & get allowance</DialogTitle>
+          </DialogHeader>
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Active Wallet</Text>
+            <UserWalletSelect />
+          </View>
+          <BuyBadge
+            logo={logo}
+            name={name}
+            tokenAddress={tokenAddress}
+            onSuccess={setTransationData}
+            onError={setError}
+          />
+          <DialogFooter>
+            <About title={SHARE_TITLE} info={SHARE_INFO} />
+          </DialogFooter>
+        </DialogContent>
+      )}
+      {transationData && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Transaction</DialogTitle>
+          </DialogHeader>
+          <TransactionInfo
+            data={transationData}
+            buttonText="Buy more"
+            buttonAction={() => setTransationData(undefined)}
+          />
+        </DialogContent>
+      )}
+      {error && (
+        <DialogContent className="w-screen">
+          <DialogHeader className={cn("flex gap-2")}>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <ErrorInfo
+            error={error}
+            buttonText="Try Again"
+            buttonAction={() => setError("")}
+          />
+        </DialogContent>
+      )}
+    </Dialog>
+  );
 }
 
 const BuyBadge = forwardRef<

@@ -55,16 +55,26 @@ export default function ChannelCard({
           />
         </View>
       )}
-      <View className={cn("w-full flex-col gap-4 px-4")}>
-        {communityToken ? (
+
+      {/* {communityToken ? (
+        <View className={cn("w-full flex-col gap-4 px-4")}>
           <ExploreTradeButton token2={communityToken} />
-        ) : attentionTokenAddress ? (
-          <CommunityBuyShareButton communityInfo={communityInfo} />
-        ) : (
-          channelId &&
-          isChannelHost && <ExploreApplyLaunchButton channelId={channelId} />
-        )}
-      </View>
+        </View>
+      ) : (
+        !attentionTokenAddress &&
+        channelId &&
+        isChannelHost && (
+          <View className={cn("w-full flex-col gap-4 px-4")}>
+            <ExploreApplyLaunchButton channelId={channelId} />
+          </View>
+        )
+      )} */}
+
+      {!attentionTokenAddress && channelId && isChannelHost && (
+        <View className={cn("w-full flex-col gap-4 px-4")}>
+          <ExploreApplyLaunchButton channelId={channelId} />
+        </View>
+      )}
     </ExploreCard>
   );
 }
