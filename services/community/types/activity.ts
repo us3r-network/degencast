@@ -12,6 +12,7 @@ export type ActivityEntity = {
     id: string;
     imageUrl: string;
   };
+  userAddr: string;
   user: Author;
   timestamp: number;
 };
