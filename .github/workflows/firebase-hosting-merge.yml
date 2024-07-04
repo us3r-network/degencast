@@ -37,8 +37,8 @@ jobs:
           EXPO_PUBLIC_NFT_STORAGE_API_KEY: "${{ secrets.NFT_STORAGE_API_KEY }}"
           EXPO_PUBLIC_HTTP_HMAC_KEY: "${{ secrets.HTTP_HMAC_KEY }}"
           EXPO_PUBLIC_INVITE_ONLY: "${{ vars.EXPO_PUBLIC_INVITE_ONLY }}"
-          ATT_FACTORY_CONTRACT_ADDRESS: "${{ vars.ATT_FACTORY_CONTRACT_ADDRESS }}"
-          ATT_CONTRACT_CHAINID: "${{ vars.ATT_CONTRACT_CHAINID }}"
+          EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS: "${{ vars.EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS }}"
+          EXPO_PUBLIC_ATT_CONTRACT_CHAINID: "${{ vars.EXPO_PUBLIC_ATT_CONTRACT_CHAINID }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -74,8 +74,8 @@ jobs:
           EXPO_PUBLIC_NFT_STORAGE_API_KEY: "${{ secrets.NFT_STORAGE_API_KEY }}"
           EXPO_PUBLIC_HTTP_HMAC_KEY: "${{ secrets.HTTP_HMAC_KEY }}"
           EXPO_PUBLIC_INVITE_ONLY: "${{ vars.EXPO_PUBLIC_INVITE_ONLY }}"
-          ATT_FACTORY_CONTRACT_ADDRESS: "${{ vars.ATT_FACTORY_CONTRACT_ADDRESS }}"
-          ATT_CONTRACT_CHAINID: "${{ vars.ATT_CONTRACT_CHAINID }}"
+          EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS: "${{ vars.EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS }}"
+          EXPO_PUBLIC_ATT_CONTRACT_CHAINID: "${{ vars.EXPO_PUBLIC_ATT_CONTRACT_CHAINID }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -111,8 +111,8 @@ jobs:
           EXPO_PUBLIC_NFT_STORAGE_API_KEY: "${{ secrets.NFT_STORAGE_API_KEY }}"
           EXPO_PUBLIC_HTTP_HMAC_KEY: "${{ secrets.HTTP_HMAC_KEY }}"
           EXPO_PUBLIC_INVITE_ONLY: "${{ vars.EXPO_PUBLIC_INVITE_ONLY }}"
-          ATT_FACTORY_CONTRACT_ADDRESS: "${{ vars.ATT_FACTORY_CONTRACT_ADDRESS }}"
-          ATT_CONTRACT_CHAINID: "${{ vars.ATT_CONTRACT_CHAINID }}"
+          EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS: "${{ vars.EXPO_PUBLIC_ATT_FACTORY_CONTRACT_ADDRESS }}"
+          EXPO_PUBLIC_ATT_CONTRACT_CHAINID: "${{ vars.EXPO_PUBLIC_ATT_CONTRACT_CHAINID }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
