@@ -20,7 +20,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
       />
       <Text
         className={cn(
-          " inline-block text-base font-medium",
+          " inline-block align-baseline text-base font-medium",
           data?.operation === ActivityOperation.buy
             ? "text-[#F41F4C]"
             : data?.operation === ActivityOperation.sell
@@ -29,14 +29,14 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         )}
       >
         {capitalize(data?.operation || "")}{" "}
-        <Text className=" inline-block">
+        <Text className=" inline-block  align-baseline">
           {data?.badgeAmount} Channel Badge of
         </Text>{" "}
         <Link asChild href={`communities/${data?.channel?.id || ""}`}>
-          <Pressable className="flex-row items-center">
+          <Pressable className="flex-row items-center align-bottom">
             <Avatar
               alt={"Avatar"}
-              className="h-5 w-5 rounded-full object-cover"
+              className="h-5 w-5 rounded-full object-cover  "
             >
               <AvatarImage source={{ uri: data?.channel?.imageUrl }} />
               <AvatarFallback>
@@ -44,7 +44,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               </AvatarFallback>
             </Avatar>
             {data?.channel?.id && (
-              <Text className="text-base font-medium text-secondary">
+              <Text className=" text-base font-medium  text-secondary">
                 /{data?.channel?.id}
               </Text>
             )}
