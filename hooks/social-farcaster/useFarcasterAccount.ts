@@ -5,9 +5,9 @@ export default function useFarcasterAccount() {
   const farcasterAccount = user?.linkedAccounts.find(
     (account) => account.type === "farcaster",
   ) as FarcasterWithMetadata;
-  const signerPublicKey = farcasterAccount?.signerPublicKey || "";
+  const signerPublicKey = farcasterAccount?.signerPublicKey;
 
-  const currFid = user?.farcaster?.fid || "";
+  const currFid = user?.farcaster?.fid || undefined;
 
   return { farcasterAccount, signerPublicKey, currFid };
 }

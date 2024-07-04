@@ -1,10 +1,10 @@
-import { usePrivy } from "@privy-io/react-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
 import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
 
 const OnboardingModal = React.forwardRef<
@@ -49,7 +49,7 @@ export default OnboardingModal;
 export const SKIP_ONBOARDING_KEY = "skipOnboarding";
 export function Onboarding({ onComplete }: { onComplete: () => void }) {
   const [signedUp, setSignedUp] = useState(false);
-  const { user } = usePrivy();
+  const { currFid } = useFarcasterAccount();
   if (signedUp)
     return (
       <View className="mx-auto flex h-full w-full items-center bg-primary">
@@ -60,8 +60,8 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
     <View className="h-full w-full">
       <OnboardingSteps
         onComplete={() => {
-          console.log("signed up", { fid: user?.farcaster?.fid });
-          if (user?.farcaster?.fid) {
+          console.log("signed up", { fid: currFid });
+          if (currFid) {
             setSignedUp(true);
           } else {
             onComplete();

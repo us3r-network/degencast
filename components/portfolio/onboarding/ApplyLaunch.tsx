@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useEffect } from "react";
 import { Image, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -6,13 +5,16 @@ import ApplyLaunchButton from "~/components/common/ApplyLaunchButton";
 import { Loading } from "~/components/common/Loading";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 
-export default function ApplyLaunch({ onComplete }: { onComplete: () => void }) {
-  const { user } = usePrivy();
-  const { channels, loading, done } = useUserHostChannels(
-    user?.farcaster?.fid || undefined,
-  );
+export default function ApplyLaunch({
+  onComplete,
+}: {
+  onComplete: () => void;
+}) {
+  const { currFid } = useFarcasterAccount();
+  const { channels, loading, done } = useUserHostChannels(currFid);
 
   useEffect(() => {
     if (done && channels.length === 0) {

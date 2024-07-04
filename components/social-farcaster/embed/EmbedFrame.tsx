@@ -1,8 +1,6 @@
 import { FarcasterNetwork, Message, makeFrameAction } from "@farcaster/hub-web";
 import {
-  FarcasterWithMetadata,
-  useConnectWallet,
-  usePrivy,
+  useConnectWallet
 } from "@privy-io/react-auth";
 import {
   sendTransaction,
@@ -27,6 +25,7 @@ import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { cn } from "~/lib/utils";
 import {
@@ -49,8 +48,8 @@ export default function EmbedFrame({
   imgIsFixedRatio?: boolean;
 }) {
   const { getPrivySigner } = useFarcasterSigner();
+  const { currFid } = useFarcasterAccount();
 
-  const { user } = usePrivy();
   const { chain, address } = useAccount();
   const { connectWallet } = useConnectWallet();
   const config = useConfig();
@@ -63,13 +62,10 @@ export default function EmbedFrame({
   const [txBtnIdx, setTxBtnIdx] = useState(0);
   const [txSimulate, setTxSimulate] = useState<any>([]);
 
-  const farcasterAccount = user?.linkedAccounts.find(
-    (account) => account.type === "farcaster",
-  ) as FarcasterWithMetadata;
-
+  
   const genFrameActionData = useCallback(
     async (btnIdx: number, txId?: string) => {
-      if (!farcasterAccount.fid) {
+      if (!currFid) {
         Toast.show({
           type: "info",
           text1: "Login farcaster first",
@@ -108,7 +104,7 @@ export default function EmbedFrame({
             addr && txId ? fromHex(addr as `0x`, "bytes") : Buffer.from(""),
         },
         {
-          fid: Number(farcasterAccount.fid),
+          fid: currFid,
           network: FarcasterNetwork.MAINNET,
         },
         signer,
@@ -118,7 +114,7 @@ export default function EmbedFrame({
       }
       const trustedDataValue = trustedDataResult.value;
       const untrustedData = {
-        fid: Number(farcasterAccount.fid),
+        fid: currFid,
         url: url,
         messageHash: toHex(trustedDataValue.hash),
         network: FarcasterNetwork.MAINNET,
@@ -143,7 +139,7 @@ export default function EmbedFrame({
         trustedData,
       };
     },
-    [frameData, farcasterAccount, cast, text, address],
+    [frameData, currFid, cast, text, address],
   );
   const reportTransaction = useCallback(
     async (txId: string, btnIdx: number, postUrl: string, state?: string) => {

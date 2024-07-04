@@ -1,15 +1,13 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { CastList } from "~/components/portfolio/posts/UserCasts";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
-import { getUserFarcasterAccount } from "~/utils/privy";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 export default function MyCastsScreen() {
-  const { user } = usePrivy();
-  const farcasterAccount = getUserFarcasterAccount(user);
+  const { currFid } = useFarcasterAccount();
 
-  if (farcasterAccount?.fid) {
-    return <CastList fid={farcasterAccount?.fid} />;
-  } else if (!farcasterAccount) {
+  if (currFid) {
+    return <CastList fid={currFid} />;
+  } else {
     return <LinkFarcaster />;
   }
 }
