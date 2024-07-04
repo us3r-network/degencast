@@ -1,12 +1,15 @@
 import { useRef, useState } from "react";
 import { FlatList, LayoutRectangle, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
+import { BuyChannelBadgeWithIconButton } from "~/components/community/CommunityBuyShareButton";
 import FCast from "~/components/social-farcaster/FCast";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
+import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useCommunityPage from "~/hooks/community/useCommunityPage";
 import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
+import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { cn } from "~/lib/utils";
 import { CommunityInfo } from "~/services/community/types/community";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
@@ -17,7 +20,8 @@ export default function ChannelCardCasts({
   channelId: string;
   communityInfo: CommunityInfo;
 }) {
-  const { navigateToCommunityDetail } = useCommunityPage();
+  // const { navigateToCommunityDetail } = useCommunityPage();
+  const { navigateToCastDetail } = useCastPage();
 
   const { casts, loading, pageInfo } = useLoadCommunityCasts(channelId);
   const [layout, setLayout] = useState<LayoutRectangle>();
@@ -61,13 +65,17 @@ export default function ChannelCardCasts({
         }
       }}
     >
-      <View className=" absolute bottom-4 right-[30px] z-20">
+      <View className=" absolute bottom-4 right-[30px] z-20 flex-col items-center">
         {currentCast && (
           <FCastExploreActions
             cast={currentCast}
             communityInfo={communityInfo}
           />
         )}
+        <BuyChannelBadgeWithIconButton
+          communityInfo={communityInfo}
+          className="mt-3"
+        />
       </View>
 
       <FlatList
@@ -127,11 +135,16 @@ export default function ChannelCardCasts({
                   className={cn(" h-full w-full ")}
                   onPress={(e) => {
                     e.stopPropagation();
-                    navigateToCommunityDetail(
-                      channelId,
-                      communityInfo,
-                      "feeds/casts",
-                    );
+                    // navigateToCommunityDetail(
+                    //   channelId,
+                    //   communityInfo,
+                    //   "feeds/casts",
+                    // );
+                    const castHex = getCastHex(cast);
+                    navigateToCastDetail(castHex, {
+                      origin: CastDetailDataOrigin.Explore,
+                      cast: cast,
+                    });
                   }}
                 >
                   <Card

@@ -196,7 +196,7 @@ export function CommunityDetailMetaInfoDropdown({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Pressable className="flex-row items-center gap-1">
+        <View className="flex-row items-center gap-1">
           <Avatar alt={name || ""} className=" size-6 border border-secondary">
             <AvatarImage source={{ uri: logo || "" }} />
             <AvatarFallback className="border-primary bg-secondary">
@@ -214,10 +214,11 @@ export function CommunityDetailMetaInfoDropdown({
           >
             <ChevronDown className={cn(" size-5 stroke-primary-foreground ")} />
           </View>
-        </Pressable>
+        </View>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className=" w-screen rounded-none border-none bg-primary p-4 "
+        sideOffset={15}
+        className=" w-screen rounded-none border-none bg-primary p-4 pt-0"
         overlayClassName="bg-black bg-opacity-50 fixed w-screen h-[calc(100vh-100px)] top-[100px] left-0"
       >
         <CommunityDetailMetaInfo2

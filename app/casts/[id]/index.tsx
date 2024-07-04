@@ -4,6 +4,7 @@ import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { Loading } from "~/components/common/Loading";
+import { BuyChannelBadgeWithIconButton } from "~/components/community/CommunityBuyShareButton";
 import FCast from "~/components/social-farcaster/FCast";
 import {
   FCastDetailActions,
@@ -270,9 +271,15 @@ function CastDetailWithData({
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
         <View className="relative w-full flex-1 px-4">
-          <View className=" absolute bottom-4 right-4 z-20">
+          <View className=" absolute bottom-4 right-4 z-20 flex-col items-center">
             {cast && community && (
               <FCastExploreActions cast={cast} communityInfo={community} />
+            )}
+            {community && (
+              <BuyChannelBadgeWithIconButton
+                communityInfo={community}
+                className="mt-3"
+              />
             )}
           </View>
           <FlatList
