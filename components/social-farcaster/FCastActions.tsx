@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
 import { ViewProps } from "react-native";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
@@ -20,6 +19,7 @@ import {
   getCastHex,
   isNeynarCast,
 } from "~/utils/farcaster/cast-utils";
+import useAuth from "~/hooks/user/useAuth";
 
 export function FCastDetailActions({
   cast,
@@ -40,7 +40,7 @@ export function FCastDetailActions({
     : farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
-  const { authenticated, login } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
@@ -158,7 +158,7 @@ export function FCastExploreActions({
   const castUserData = farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastPage();
-  const { authenticated, login } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
@@ -269,7 +269,7 @@ export function CreatedFCastActions({
 }: ViewProps & {
   cast: FarCast;
 }) {
-  const { authenticated, login } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
   const onShare = () => {};
   return <PostDetailActions onShare={onShare} hideGift hideLike {...props} />;
 }

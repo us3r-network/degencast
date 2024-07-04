@@ -19,6 +19,7 @@ import GoBackButton from "~/components/common/GoBackButton";
 import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
+import useAuth from "~/hooks/user/useAuth";
 
 const HomeChanel = {
   id: "",
@@ -102,7 +103,8 @@ function CastReplyWithData({
   const [value, setValue] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
-  const { login, ready, user } = usePrivy();
+  const { user } = usePrivy();
+  const { login, ready } = useAuth();
 
   useEffect(() => {
     if (community) {
@@ -173,7 +175,10 @@ function CastReplyWithData({
       >
         {(!user?.farcaster?.signerPublicKey && (
           <View className="flex-1 p-4 pt-16">
-            <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
+            <Button
+              className="rounded-lg bg-primary px-6 py-3"
+              onPress={() => login()}
+            >
               <Text className="text-primary-foreground">
                 Log in with farcaster
               </Text>

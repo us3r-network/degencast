@@ -14,7 +14,6 @@ import {
 } from "~/features/community/joinCommunitySlice";
 import { ApiRespCode } from "~/services/shared/types";
 import useAuth from "../user/useAuth";
-import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "../social-farcaster/useFarcasterSigner";
 import Toast from "react-native-toast-message";
@@ -25,10 +24,9 @@ export default function useJoinCommunityAction(
 ) {
   const { showToast } = opts || {};
   const dispatch = useAppDispatch();
-  const { login } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
-  const { authenticated } = useAuth();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);
 

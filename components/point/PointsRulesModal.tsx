@@ -7,7 +7,6 @@ import useUserTotalPoints from "~/hooks/user/useUserTotalPoints";
 import { Separator } from "../ui/separator";
 import useUserAction from "~/hooks/user/useUserAction";
 import { useRouter } from "expo-router";
-import { usePrivy } from "@privy-io/react-auth";
 import useAuth from "~/hooks/user/useAuth";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
@@ -47,8 +46,7 @@ export function PointsRules({
 }: {
   onOpenChange?: (open: boolean) => void;
 }) {
-  const { login } = usePrivy();
-  const { authenticated } = useAuth();
+  const { authenticated, login } = useAuth();
   const { signerPublicKey, currFid } = useFarcasterAccount();
   const { requestSigner } = useFarcasterSigner();
   const router = useRouter();
