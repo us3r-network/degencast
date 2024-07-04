@@ -1,22 +1,20 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { FlatList, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { cn } from "~/lib/utils";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
-import { getUserFarcasterAccount } from "~/utils/privy";
 
 export function CastList({ fid }: { fid: number }) {
-  const { user } = usePrivy();
-  const farcasterAccount = getUserFarcasterAccount(user);
+  const { currFid } = useFarcasterAccount();
   const {
     items: casts,
     loading,
     loadMore,
-  } = useUserCasts(fid, farcasterAccount?.fid || undefined);
+  } = useUserCasts(fid, currFid);
   const { navigateToCastDetail } = useCastPage();
   return (
     <View className="container h-full">

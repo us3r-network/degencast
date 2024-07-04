@@ -1,24 +1,20 @@
 import {
-  FarcasterWithMetadata,
   User,
   useCreateWallet,
   useExperimentalFarcasterSigner,
   useLinkAccount,
-  usePrivy,
-  useWallets,
+  useWallets
 } from "@privy-io/react-auth";
 import { ExternalEd25519Signer } from "@standard-crypto/farcaster-js-hub-rest";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
+import useFarcasterAccount from "./useFarcasterAccount";
 
 export default function useFarcasterSigner() {
   const { submitUserAction } = useUserAction();
 
-  const { user } = usePrivy();
-  const farcasterAccount = user?.linkedAccounts.find(
-    (account) => account.type === "farcaster",
-  ) as FarcasterWithMetadata;
+  const { farcasterAccount, signerPublicKey } = useFarcasterAccount();
 
   const { createWallet } = useCreateWallet();
   const { wallets } = useWallets();
@@ -46,20 +42,20 @@ export default function useFarcasterSigner() {
   } = useExperimentalFarcasterSigner();
 
   const [hasSigner, setHasSigner] = useState(
-    !!farcasterAccount?.signerPublicKey,
+    !!signerPublicKey,
   );
   useEffect(() => {
-    if (farcasterAccount && farcasterAccount.signerPublicKey && !hasSigner) {
+    if (signerPublicKey && !hasSigner) {
       setHasSigner(true);
       if (requestingSigner) {
         setRequestingSigner(false);
         submitUserAction({
           action: UserActionName.ConnectFarcaster,
-          data: { signerPublicKey: farcasterAccount.signerPublicKey },
+          data: { signerPublicKey},
         });
       }
     }
-  }, [farcasterAccount]);
+  }, [signerPublicKey]);
 
   const privySigner = useMemo(
     () =>
@@ -83,7 +79,7 @@ export default function useFarcasterSigner() {
       setLinkingFarcaster(true);
       linkFarcaster(); // this does not mean linking is done, it just starts the process, the user will have to confirm the linking, then the onSuccess callback will be called
     } else {
-      if (!farcasterAccount?.signerPublicKey) {
+      if (!signerPublicKey) {
         console.log("Requesting farcaster signer");
         try {
           // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
