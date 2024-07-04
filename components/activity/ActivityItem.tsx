@@ -13,7 +13,11 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
   return (
     <View className="flex w-full flex-col gap-4">
-      <ActivityItemUserInfo userData={data.user} timestamp={data.timestamp} />
+      <ActivityItemUserInfo
+        userAddr={data?.userAddr}
+        userData={data.user}
+        timestamp={data.timestamp}
+      />
       <Text
         className={cn(
           " inline-block text-base font-medium",
