@@ -102,7 +102,12 @@ function WebChart({ prices }: { prices: Array<AreaData<Time>> }) {
       topColor: "#A471F6",
       bottomColor: "rgba(209, 186, 247, 0.38)",
       lineColor: "#A471F6",
-      lineType: 2,
+      lineType: 0,
+      priceFormat: {
+        type: "price",
+        precision: 6,
+        minMove: 0.0000001,
+      },
     });
 
     newSeries.setData(data || []);
