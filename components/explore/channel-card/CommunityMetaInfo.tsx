@@ -1,4 +1,4 @@
-import { Pressable, View, ViewProps } from "react-native";
+import { Pressable, View, ViewProps, Image } from "react-native";
 import { Text } from "~/components/ui/text";
 import { CommunityData } from "~/services/community/api/community";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -82,17 +82,7 @@ export default function CommunityMetaInfo({
           <Text className="line-clamp-2 text-sm font-normal leading-6">
             {description}
           </Text>
-          {host && (
-            <HostUserInfo
-              key={host.fid}
-              data={{
-                fid: host.fid,
-                avatar: host.pfp_url,
-                username: host.username,
-                displayName: host.display_name,
-              }}
-            />
-          )}
+          {host && <HostUserInfo key={host.fid} data={host} />}
         </Pressable>
       </Link>
     </View>
@@ -104,14 +94,9 @@ function HostUserInfo({
   className,
 }: {
   className?: string;
-  data: {
-    fid: string | number;
-    avatar: string;
-    username: string;
-    displayName: string;
-  };
+  data: Author;
 }) {
-  const { fid, avatar, username, displayName } = data;
+  const { fid, pfp_url, username, display_name } = data;
   return (
     <Link
       className={cn(" w-fit", className)}
@@ -124,8 +109,8 @@ function HostUserInfo({
         <Text className="line-clamp-1 text-sm font-normal leading-none">
           Host
         </Text>
-        <Avatar alt={displayName || ""} className=" size-[20px]">
-          <AvatarImage source={{ uri: avatar || "" }} />
+        <Avatar alt={display_name || ""} className=" size-[20px]">
+          <AvatarImage source={{ uri: pfp_url || "" }} />
           <AvatarFallback className="border-primary bg-secondary">
             <Text className="text-sm font-bold">{username}</Text>
           </AvatarFallback>
@@ -134,6 +119,12 @@ function HostUserInfo({
         <Text className="text-sm font-normal leading-none text-secondary hover:underline">
           @{username}
         </Text>
+        {data.power_badge && (
+          <Image
+            source={require("~/assets/images/active-badge.webp")}
+            style={{ width: 12, height: 12 }}
+          />
+        )}
       </View>
     </Link>
   );

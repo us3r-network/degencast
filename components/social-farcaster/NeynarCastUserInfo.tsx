@@ -1,4 +1,4 @@
-import { View, ViewProps } from "react-native";
+import { View, ViewProps, Image } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
 import { cn } from "~/lib/utils";
@@ -35,6 +35,12 @@ export default function NeynarCastUserInfo({
         <Text className="line-clamp-1 text-sm font-normal hover:underline">
           {userData?.display_name}
         </Text>
+        {userData.power_badge && (
+          <Image
+            source={require("~/assets/images/active-badge.webp")}
+            style={{ width: 12, height: 12 }}
+          />
+        )}
         <Text className=" text-xs font-normal text-secondary hover:underline">
           @{userData?.username}
         </Text>

@@ -60,6 +60,12 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
           <Text className="flex-shrink-0 text-sm font-medium hover:underline">
             {author.display_name}
           </Text>
+          {author?.power_badge && (
+            <Image
+              source={require("~/assets/images/active-badge.webp")}
+              style={{ width: 12, height: 12 }}
+            />
+          )}
           <Text className="line-clamp-1 text-xs font-normal text-secondary hover:underline">
             @{author.username}
           </Text>
