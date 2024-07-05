@@ -1,23 +1,28 @@
 import {
+  ConnectedWallet as PrivyConnectedWalletType,
   MoonpayConfig as PrivyMoonpayConfig,
+  WalletWithMetadata as PrivyWalletWithMetadata,
   useConnectWallet,
   usePrivy,
   useWallets,
-  ConnectedWallet as PrivyConnectedWalletType,
-  WalletWithMetadata as PrivyWalletWithMetadata,
 } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
-import { getUserWallets } from "~/utils/privy";
 
 export default function useWalletAccount() {
-  const { user, linkWallet } = usePrivy();
+  const { user, linkWallet, unlinkWallet } = usePrivy();
   const { connectWallet } = useConnectWallet();
   const { setActiveWallet } = useSetActiveWallet();
   const { wallets: connectedWallets } = useWallets();
   const { address: activeWalletAddress } = useAccount();
-  const linkedWallets = getUserWallets(user);
+
+  const linkedWallets =
+    user?.linkedAccounts?.filter((account) => account.type === "wallet") || [];
+
+  const embededWallet = linkedWallets.find(
+    (wallet) => wallet.connectorType !== "embedded",
+  );
 
   const activeWallet = useMemo(() => {
     // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
@@ -27,10 +32,6 @@ export default function useWalletAccount() {
     );
     if (currentWallet) return currentWallet;
   }, [connectedWallets, activeWalletAddress]);
-
-  const embededWallet = linkedWallets.find(
-    (wallet) => wallet.connectorType !== "embedded",
-  );
 
   const connectedExternalWallet = useMemo(() => {
     // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
@@ -51,10 +52,18 @@ export default function useWalletAccount() {
       .filter((wallet) => wallet.connectorType !== "embedded");
   }, [linkedWallets, connectedWallets]);
 
+  const linkAccountNum =
+    user?.linkedAccounts?.filter(
+      (account) =>
+        !(account.type === "wallet" && account.connectorType === "embedded"),
+    ).length || 0;
+
   return {
     connectWallet,
     linkWallet,
+    unlinkWallet,
     setActiveWallet,
+    linkAccountNum,
     connectedWallets,
     linkedWallets,
     activeWallet,
@@ -65,5 +74,5 @@ export default function useWalletAccount() {
 }
 
 export type ConnectedWallet = PrivyConnectedWalletType;
-export type MoonpayConfig = PrivyMoonpayConfig;
 export type WalletWithMetadata = PrivyWalletWithMetadata;
+export type MoonpayConfig = PrivyMoonpayConfig;
