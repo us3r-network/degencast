@@ -72,14 +72,17 @@ export default function CommunityDetailMetaInfo({
           </View>
         </View>
         {!!hostUserDataObj && (
-          <View className="flex-row gap-1">
+          <Link
+            href={`/u/${hostUserDataObj.fid}`}
+            className="flex flex-row gap-1"
+          >
             <Text className="text-sm font-medium leading-none text-secondary">
               Host
             </Text>
-            <Text className="text-sm font-medium leading-none text-primary-foreground">
+            <Text className="text-sm font-medium leading-none text-primary-foreground hover:underline">
               @{hostUserDataObj?.userName}
             </Text>
-          </View>
+          </Link>
         )}
 
         <Text className="line-clamp-1 text-sm font-medium leading-6 text-secondary">
@@ -96,11 +99,11 @@ export default function CommunityDetailMetaInfo({
 export function CommunityDetailMetaInfo2({
   communityInfo,
   className,
-  navigateToCreateBefore,
+  navigateBefore,
   ...props
 }: ViewProps & {
   communityInfo: CommunityData;
-  navigateToCreateBefore?: () => void;
+  navigateBefore?: () => void;
 }) {
   const { name, logo, description, memberInfo, hostUserData, channelId } =
     communityInfo;
@@ -128,14 +131,23 @@ export function CommunityDetailMetaInfo2({
           </Text>
 
           {!!hostUserDataObj && (
-            <View className="flex-row gap-1">
+            <Link
+              href={`/u/${hostUserDataObj.fid}`}
+              className="flex flex-row gap-1"
+              onPress={(e) => {
+                e.stopPropagation();
+                if (navigateBefore) {
+                  navigateBefore();
+                }
+              }}
+            >
               <Text className="text-sm font-normal leading-6 text-primary-foreground ">
                 Host
               </Text>
               <Text className="text-sm font-normal leading-6 text-secondary">
                 @{hostUserDataObj?.userName}
               </Text>
-            </View>
+            </Link>
           )}
         </View>
       </View>
@@ -173,8 +185,8 @@ export function CommunityDetailMetaInfo2({
           <Button
             className=" h-10 flex-1 rounded-md border-none bg-primary-foreground p-0"
             onPress={() => {
-              if (navigateToCreateBefore) {
-                navigateToCreateBefore();
+              if (navigateBefore) {
+                navigateBefore();
               }
             }}
           >
@@ -223,7 +235,7 @@ export function CommunityDetailMetaInfoDropdown({
       >
         <CommunityDetailMetaInfo2
           communityInfo={community}
-          navigateToCreateBefore={() => {
+          navigateBefore={() => {
             setOpen(false);
           }}
         />
