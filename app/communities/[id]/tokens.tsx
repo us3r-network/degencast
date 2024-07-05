@@ -38,62 +38,54 @@ export default function TokensScreen() {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
   return (
     <View className="flex-1 flex-col">
-      {
-        // communityToken && communityToken?.tradeInfo ? (
-        //   <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
-        //     <CommunityTokenInfo
-        //       tokenInfo={{
-        //         standard: communityToken.tokenStandard,
-        //         contract: communityToken.contract,
-        //         chain: communityToken.tradeInfo.chain,
-        //       }}
-        //       tradeInfo={communityToken.tradeInfo}
-        //     />
-        //   </ScrollView>
-        // ) :
-        attentionTokenAddress ? (
-          <>
-            <ScrollView
-              className="flex-1"
-              showsHorizontalScrollIndicator={false}
-            >
-              <CommunityAttentionTokenInfo channelId={id} />
-            </ScrollView>
-            {communityInfo && (
-              <View className=" py-5">
-                <BuyChannelBadgeWithUpvoteButton
-                  communityInfo={communityInfo}
-                />
-              </View>
-            )}
-          </>
-        ) : (
-          <>
-            <ScrollView
-              className="mx-auto max-w-[350px] flex-1 flex-col items-center justify-center"
-              showsHorizontalScrollIndicator={false}
-            >
-              <Image
-                source={require("~/assets/images/no-token.png")}
-                style={{ width: 280, height: 280 }}
-              />
-              <Text className=" mt-7 text-center text-xl font-bold text-primary">
-                Coming Soon
-              </Text>
-              <Text className="mt-7 text-center text-base leading-8 text-secondary">
-                Onchain Channel Pass for {`\n`}
-                Governance, Moderation and Monetisation
-              </Text>
-            </ScrollView>
-            {isChannelHost && (
-              <View className=" py-5">
-                <ApplyLaunchButton channelId={id} />
-              </View>
-            )}
-          </>
-          // <ShareActivities id={id as string} />
-        )
-      }
+      {communityToken && communityToken?.tradeInfo ? (
+        <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
+          <CommunityTokenInfo
+            tokenInfo={{
+              standard: communityToken.tokenStandard,
+              contract: communityToken.contract,
+              chain: communityToken.tradeInfo.chain,
+            }}
+            tradeInfo={communityToken.tradeInfo}
+          />
+        </ScrollView>
+      ) : attentionTokenAddress ? (
+        <>
+          <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
+            <CommunityAttentionTokenInfo channelId={id} />
+          </ScrollView>
+          {communityInfo && (
+            <View className=" py-5">
+              <BuyChannelBadgeWithUpvoteButton communityInfo={communityInfo} />
+            </View>
+          )}
+        </>
+      ) : (
+        <>
+          <ScrollView
+            className="mx-auto max-w-[350px] flex-1 flex-col items-center justify-center"
+            showsHorizontalScrollIndicator={false}
+          >
+            <Image
+              source={require("~/assets/images/no-token.png")}
+              style={{ width: 280, height: 280 }}
+            />
+            <Text className=" mt-7 text-center text-xl font-bold text-primary">
+              Coming Soon
+            </Text>
+            <Text className="mt-7 text-center text-base leading-8 text-secondary">
+              Onchain Channel Pass for {`\n`}
+              Governance, Moderation and Monetisation
+            </Text>
+          </ScrollView>
+          {isChannelHost && (
+            <View className=" py-5">
+              <ApplyLaunchButton channelId={id} />
+            </View>
+          )}
+        </>
+        // <ShareActivities id={id as string} />
+      )}
     </View>
   );
 }
