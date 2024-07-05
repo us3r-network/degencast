@@ -71,9 +71,7 @@ export default function FcastMiniCard({
           </AvatarFallback>
         </Avatar>
 
-        <Text className="line-clamp-1 text-xs font-medium">
-          {userInfo.display}
-        </Text>
+        <Text className="line-clamp-1 font-bold">{userInfo.display}</Text>
         {userInfo.power_badge && (
           <Image
             source={require("~/assets/images/active-badge.webp")}

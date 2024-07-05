@@ -37,13 +37,7 @@ const communityRankState: CommunityRankState = {
 const PAGE_SIZE = 30;
 export const fetchItems = createAsyncThunk(
   "communityRank/fetchItems",
-  async (
-    {
-      order,
-      orderBy,
-    }: OrderParams,
-    thunkAPI,
-  ) => {
+  async ({ order, orderBy }: OrderParams, thunkAPI) => {
     const { communityRank } = thunkAPI.getState() as {
       communityRank: CommunityRankState;
     };
@@ -77,7 +71,7 @@ export const communityRankSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
-        const newItems = action.payload.data;
+        const newItems = action.payload.data.filter((item) => !!item.id);
         state.items = uniqBy(state.items.concat(newItems), "id");
         if (newItems.length >= PAGE_SIZE) {
           state.nextPageNumber += 1;

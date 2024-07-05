@@ -57,7 +57,7 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
               <Text>{author.display_name?.slice(0, 1)}</Text>
             </AvatarFallback>
           </Avatar>
-          <Text className="flex-shrink-0 text-sm font-medium hover:underline">
+          <Text className="flex-shrink-0 font-bold hover:underline">
             {author.display_name}
           </Text>
           {author?.power_badge && (
@@ -66,11 +66,11 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
               style={{ width: 12, height: 12 }}
             />
           )}
-          <Text className="line-clamp-1 text-xs font-normal text-secondary hover:underline">
+          <Text className="line-clamp-1 text-secondary hover:underline">
             @{author.username}
           </Text>
         </Link>
-        <Text className="line-clamp-6 text-base">{cast.text}</Text>
+        <Text className="line-clamp-6">{cast.text}</Text>
         {castImg && (
           <Image
             className="w-full rounded-[10px] object-cover"

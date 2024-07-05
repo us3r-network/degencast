@@ -79,7 +79,7 @@ export default function CommunityMetaInfo({
               </View>
             </View>
           </View>
-          <Text className="line-clamp-2 text-sm font-normal leading-6">
+          <Text className="line-clamp-1 text-sm font-normal leading-6">
             {description}
           </Text>
           {host && <HostUserInfo key={host.fid} data={host} />}

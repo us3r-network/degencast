@@ -23,6 +23,8 @@ import TokensScreen from "./tokens";
 import ContributionsScreen from "./contributions";
 import DefaultTabBar from "~/components/layout/material-top-tabs/TabBar";
 import FeedsLayout from "./feeds/_layout";
+import { ScreenLoading } from "~/components/common/Loading";
+import NotFoundChannel from "~/components/community/NotFoundChannel";
 
 const initialRouteName = "tokens";
 
@@ -50,33 +52,38 @@ export default function CommunityDetail() {
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { id: channelId } = params as { id: string };
-  const { communityDetail, communityBasic, loading, loadCommunityDetail } =
-    useLoadCommunityDetail(channelId);
+  const {
+    communityDetail,
+    communityBasic,
+    loading,
+    rejected,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId);
 
   const community = communityDetail || communityBasic;
 
   useEffect(() => {
-    if (!communityDetail) {
-      loadCommunityDetail();
-    }
-  }, [communityDetail, loadCommunityDetail]);
+    if (loading || rejected || communityDetail) return;
+    loadCommunityDetail();
+  }, [loading, rejected, communityDetail, loadCommunityDetail]);
 
-  const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(channelId);
-  const { membersShare, loadMembersShare } =
-    useLoadCommunityMembersShare(channelId);
   useLoadCommunityCasts(channelId);
 
-  useEffect(() => {
-    if (tipsRank.length === 0) {
-      loadTipsRank();
-    }
-  }, [tipsRank]);
+  // const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(channelId);
+  // const { membersShare, loadMembersShare } =
+  //   useLoadCommunityMembersShare(channelId);
 
-  useEffect(() => {
-    if (membersShare.length === 0) {
-      loadMembersShare();
-    }
-  }, [membersShare]);
+  // useEffect(() => {
+  //   if (tipsRank.length === 0) {
+  //     loadTipsRank();
+  //   }
+  // }, [tipsRank]);
+
+  // useEffect(() => {
+  //   if (membersShare.length === 0) {
+  //     loadMembersShare();
+  //   }
+  // }, [membersShare]);
 
   return (
     <SafeAreaView
@@ -138,7 +145,7 @@ export default function CommunityDetail() {
         }}
       />
       <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
-        {community && (
+        {community ? (
           <>
             <CommunityDetailMetaInfo
               communityInfo={community}
@@ -181,6 +188,12 @@ export default function CommunityDetail() {
               </Card>
             </View>
           </>
+        ) : loading ? (
+          <View className="flex flex-1 items-center justify-center">
+            <ScreenLoading />
+          </View>
+        ) : (
+          <NotFoundChannel />
         )}
       </View>
     </SafeAreaView>
