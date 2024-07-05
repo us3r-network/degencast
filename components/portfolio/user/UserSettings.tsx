@@ -1,15 +1,7 @@
-import {
-  ConnectedWallet,
-  WalletWithMetadata,
-  useConnectWallet,
-  usePrivy,
-  useWallets,
-} from "@privy-io/react-auth";
-import { useSetActiveWallet } from "@privy-io/wagmi";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { get } from "lodash";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useAccount, useDisconnect } from "wagmi";
@@ -45,10 +37,14 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Text, TextClassContext } from "~/components/ui/text";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
+import useWalletAccount, {
+  ConnectedWallet,
+  WalletWithMetadata,
+} from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
-import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 
 export default function UserSettings({
@@ -56,27 +52,8 @@ export default function UserSettings({
 }: {
   showFarcasterAccount?: boolean;
 }) {
-  const { ready } = usePrivy();
-  const { authenticated } = useAuth();
-
-  const { setActiveWallet } = useSetActiveWallet();
-  const { wallets: connectedWallets } = useWallets();
-  const { address: activeWalletAddress } = useAccount();
-
-  const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) => wallet.address === activeWalletAddress,
-    );
-    if (currentWallet) return currentWallet;
-    const firstInjectedWallet = connectedWallets.find(
-      (wallet) => wallet.connectorType === "injected",
-    );
-    if (firstInjectedWallet) return firstInjectedWallet;
-    return connectedWallets[0];
-  }, [connectedWallets, activeWalletAddress]);
-
+  const { ready, authenticated } = useAuth();
+  const { connectedWallets, setActiveWallet } = useWalletAccount();
   const [open, setOpen] = React.useState(false);
 
   if (!ready || !authenticated) {
@@ -157,22 +134,11 @@ function Catalog({ title, icon, children }: CatalogProps) {
 }
 
 function LinkWallets() {
-  const { user, linkWallet } = usePrivy();
-  const { connectWallet } = useConnectWallet();
-  const { wallets: connectedWallets } = useWallets();
-  const linkedWallets = useMemo(
-    () => (user ? getUserWallets(user) : []),
-    [user],
-  );
-  const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets
-      .filter(
-        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-      )
-      .filter((wallet) => wallet.connectorType !== "embedded");
-  }, [linkedWallets, connectedWallets]);
+  const { ready, authenticated } = useAuth();
+  const { unconnectedLinkedWallets, connectWallet, linkWallet } =
+    useWalletAccount();
 
-  if (!user) return null;
+  if (!ready || !authenticated) return null;
   return (
     <View className="flex w-full gap-2">
       {unconnectedLinkedWallets.map((wallet) => (
@@ -205,10 +171,9 @@ const WalletItem = React.forwardRef<
   ViewRef,
   SlottableViewProps & WalletItemProps
 >(({ wallet, action }, ref) => {
-  const { unlinkWallet } = usePrivy();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { wallets: connectedWallets } = useWallets();
+  const { connectedWallets, unlinkWallet } = useWalletAccount();
   return (
     <View className="w-full flex-row items-center justify-between gap-6">
       <Pressable className="flex-row items-center gap-2" onPress={action}>
@@ -264,11 +229,13 @@ const WalletItem = React.forwardRef<
 });
 
 function FarcasterAccount() {
-  const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
   const { requestSigner, hasSigner } = useFarcasterSigner();
-  if (!user) return null;
-  const farcasterAccount = getUserFarcasterAccount(user);
+  const { ready, authenticated } = useAuth();
+
+  const { farcasterAccount, linkFarcaster, unlinkFarcaster } =
+    useFarcasterAccount();
   // console.log("farcasterAccount", farcasterAccount);
+  if (!ready || !authenticated) return null;
   if (farcasterAccount?.fid) {
     return (
       <View className="flex-row items-center justify-between">
@@ -325,12 +292,7 @@ function FarcasterAccount() {
 
 function UnlinkButton({ action }: { action: () => void }) {
   const [open, setOpen] = useState(false);
-  const { user } = usePrivy();
-  const linkAccountNum =
-    user?.linkedAccounts?.filter(
-      (account) =>
-        !(account.type === "wallet" && account.connectorType === "embedded"),
-    ).length || 0;
+  const { linkAccountNum } = useWalletAccount();
   return (
     <AlertDialog open={open}>
       <AlertDialogTrigger>
@@ -372,7 +334,7 @@ function UnlinkButton({ action }: { action: () => void }) {
 }
 
 function LogoutButton() {
-  const { logout } = usePrivy();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open}>

@@ -54,12 +54,12 @@ function CoverChannelItem({ data: channel }: { data: CoverChannelsData[0] }) {
             <Text className="text-sm font-bold">{channel.name}</Text>
           </AvatarFallback>
         </Avatar>
-        <View className="w-full flex-1 flex-col justify-between bg-[#1E293B] p-1">
-          <Text className=" text-xs font-medium text-[#718096]">
+        <View className="w-full flex-col justify-between bg-[#1E293B] p-1">
+          {/* <Text className=" text-xs font-medium text-[#718096]">
             {channel.name}
-          </Text>
-          <View className=" flex-col gap-1">
-            <Text className=" line-clamp-1 text-base font-bold text-white">
+          </Text> */}
+          <View className=" flex-col gap-[2px]">
+            <Text className=" line-clamp-1 min-h-6 text-base font-bold text-white">
               {symbol}
             </Text>
             {showPriceChange && (

@@ -1,11 +1,15 @@
-import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
+import { Link, Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import GoBackButton from "~/components/common/GoBackButton";
 import GoHomeButton from "~/components/common/GoHomeButton";
 import { Loading } from "~/components/common/Loading";
+import { BuyChannelBadgeWithIconButton } from "~/components/community/CommunityBuyShareButton";
 import FCast from "~/components/social-farcaster/FCast";
-import { FCastDetailActions } from "~/components/social-farcaster/FCastActions";
+import {
+  FCastDetailActions,
+  FCastExploreActions,
+} from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
@@ -33,24 +37,23 @@ import { UserData } from "~/utils/farcaster/user-data";
 export default function CastDetail() {
   const params = useLocalSearchParams();
   const { id, fid } = params as { id: string; fid?: string };
+  const castHash = id.startsWith("0x") ? id.slice(2) : id;
   const { castDetailData } = useCastPage();
-  const data = castDetailData?.[id as string];
+  const data = castDetailData?.[castHash as string];
   const { cast } = data || {};
   if (cast) {
     const isNeynar = isNeynarCast(cast);
     if (isNeynar) {
-      return <CachedNeynarCastDetail />;
+      return <CachedNeynarCastDetail castHash={castHash} />;
     }
-    return <CachedCastDetail />;
+    return <CachedCastDetail castHash={castHash} />;
   }
-  return <FetchedCastDetail />;
+  return <FetchedCastDetail castHash={castHash} />;
 }
 
-function CachedCastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params as { id: string };
+function CachedCastDetail({ castHash }: { castHash: string }) {
   const { castDetailData } = useCastPage();
-  const data = castDetailData?.[id as string];
+  const data = castDetailData?.[castHash as string];
   const {
     cast: cachedCast,
     farcasterUserDataObj: cachedFarcasterUserDataObj,
@@ -65,10 +68,10 @@ function CachedCastDetail() {
     loadCastDetail,
   } = useLoadCastDetail();
   useEffect(() => {
-    if (id) {
-      loadCastDetail(id as string);
+    if (castHash) {
+      loadCastDetail(castHash as string);
     }
-  }, [id, loadCastDetail]);
+  }, [castHash, loadCastDetail]);
 
   // get community info
   const parentUrl = getCastParentUrl(cachedCast);
@@ -105,11 +108,9 @@ function CachedCastDetail() {
   );
 }
 
-function CachedNeynarCastDetail() {
-  const params = useLocalSearchParams();
-  const { id } = params as { id: string };
+function CachedNeynarCastDetail({ castHash }: { castHash: string }) {
   const { castDetailData } = useCastPage();
-  const data = castDetailData?.[id as string];
+  const data = castDetailData?.[castHash as string];
   const { community: cachedCommunity } = data;
   const cachedCast = data.cast as NeynarCast;
 
@@ -119,10 +120,10 @@ function CachedNeynarCastDetail() {
     loadNeynarCastDetail,
   } = useLoadNeynarCastDetail();
   useEffect(() => {
-    if (id) {
-      loadNeynarCastDetail(id as string);
+    if (castHash) {
+      loadNeynarCastDetail(castHash as string);
     }
-  }, [id, loadNeynarCastDetail]);
+  }, [castHash, loadNeynarCastDetail]);
 
   // get community info
   const parentUrl = getCastParentUrl(cachedCast);
@@ -152,10 +153,7 @@ function CachedNeynarCastDetail() {
   );
 }
 
-function FetchedCastDetail() {
-  const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params as { id: string };
-
+function FetchedCastDetail({ castHash }: { castHash: string }) {
   // get cast info
   const {
     cast: fetchedNeynarCast,
@@ -163,10 +161,10 @@ function FetchedCastDetail() {
     loadNeynarCastDetail,
   } = useLoadNeynarCastDetail();
   useEffect(() => {
-    if (id) {
-      loadNeynarCastDetail(id as string);
+    if (castHash) {
+      loadNeynarCastDetail(castHash as string);
     }
-  }, [id, loadNeynarCastDetail]);
+  }, [castHash, loadNeynarCastDetail]);
 
   // get community info
   const parentUrl = getCastParentUrl(fetchedNeynarCast!);
@@ -212,16 +210,14 @@ function CastDetailWithData({
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail } = useCastPage();
+  const { setCastDetailCacheData } = useCastPage();
   const navigation = useNavigation();
-  const params = useLocalSearchParams<{ id: string }>();
-  const { id } = params as { id: string };
-
+  const castHash = getCastHex(cast);
   const {
     comments,
     loading: commentsLoading,
     loadCastComments,
-  } = useLoadNeynarCastComments(id);
+  } = useLoadNeynarCastComments(castHash);
 
   useEffect(() => {
     loadCastComments();
@@ -258,8 +254,9 @@ function CastDetailWithData({
                     }}
                   />
                 )}
+                <Text className=" text-base font-bold sm:text-xl">Cast</Text>
               </View>
-              <View>
+              {/* <View>
                 {cast && (
                   <FCastDetailActions
                     cast={cast!}
@@ -267,13 +264,24 @@ function CastDetailWithData({
                     communityInfo={community}
                   />
                 )}
-              </View>
+              </View> */}
             </View>
           ),
         }}
       />
       <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
-        <View className="w-full flex-1 px-4">
+        <View className="relative w-full flex-1 px-4">
+          <View className=" absolute bottom-4 right-4 z-20 flex-col items-center">
+            {cast && community && (
+              <FCastExploreActions cast={cast} communityInfo={community} />
+            )}
+            {community && (
+              <BuyChannelBadgeWithIconButton
+                communityInfo={community}
+                className="mt-3"
+              />
+            )}
+          </View>
           <FlatList
             style={{
               flex: 1,
@@ -311,16 +319,17 @@ function CastDetailWithData({
               <Separator className=" my-3 bg-primary/10" />
             )}
             renderItem={({ item }) => {
+              const castHex = getCastHex(item);
               return (
-                <Pressable
-                  onPress={() => {
-                    const castHex = getCastHex(item);
-                    navigateToCastDetail(castHex, {
+                <Link
+                  href={`/casts/${castHex}`}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setCastDetailCacheData(castHex, {
                       origin: CastDetailDataOrigin.Comments,
                       cast: item,
                       community: community,
                     });
-                    // router.push(`/casts/${castHex}`);
                   }}
                 >
                   <FCastComment
@@ -328,7 +337,7 @@ function CastDetailWithData({
                     cast={item}
                     communityInfo={community}
                   />
-                </Pressable>
+                </Link>
               );
             }}
             keyExtractor={(item, index) => index.toString()}

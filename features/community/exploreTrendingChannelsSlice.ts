@@ -5,8 +5,8 @@ import {
   ExploreTrendingChannelsData,
   getExploreTrendingChannels,
 } from "~/services/community/api/community";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 import { upsertManyToReactions } from "../cast/castReactionsSlice";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 type ExploreTrendingChannelsState = {
   items: ExploreTrendingChannelsData;
@@ -50,8 +50,8 @@ export const fetchItems = createAsyncThunk<ExploreTrendingChannelsData>(
       const casts = channels
         .filter((item) => !!item.cast)
         .map((item) => item.cast);
-      const viewerContexts = viewerContextsFromCasts(casts as any[]);
-      dispatch(upsertManyToReactions(viewerContexts));
+      const reactions = getReactionsCountAndViewerContexts(casts as any[]);
+      dispatch(upsertManyToReactions(reactions));
       return channels;
     }
     return rejectWithValue(new Error(resp.data.msg));

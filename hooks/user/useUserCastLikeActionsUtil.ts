@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useCallback } from "react";
 import {
   addManyToLikeActions,
@@ -10,10 +9,11 @@ import {
 import { getCastUserActions } from "~/services/user/api";
 import { UserActionData, UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import useAuth from "./useAuth";
 
 export default function useUserCastLikeActionsUtil() {
   const dispatch = useAppDispatch();
-  const { authenticated } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
 
   const { likeActions, likeActionsPendingCastHashes, actionPointConfig } =
     useAppSelector(selectUserAction);

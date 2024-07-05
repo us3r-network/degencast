@@ -1,17 +1,26 @@
-import { usePrivy } from "@privy-io/react-auth";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
-import { Button } from "~/components/ui/button";
+import DefaultTabBar from "~/components/layout/material-top-tabs/TabBar";
+import UserInfo from "~/components/portfolio/user/UserInfo";
+import UserSignin from "~/components/portfolio/user/UserSignin";
 import { Card } from "~/components/ui/card";
-import { Text } from "~/components/ui/text";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
+import MyCastsScreen from "./casts";
+import MyChannelsScreen from "./channels";
+import MyTokensScreen from "./tokens";
+
+const Tab = createMaterialTopTabNavigator();
+const TABS = [
+  { label: "Tokens", value: "tokens", component: MyTokensScreen },
+  { label: "Channels", value: "channels", component: MyChannelsScreen },
+  { label: "Casts", value: "casts", component: MyCastsScreen },
+];
 
 export default function PortfolioScreen() {
-  const { ready, authenticated: privyAuthenticated, login } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
   const segments = useSegments();
   return (
     <SafeAreaView
@@ -21,14 +30,44 @@ export default function PortfolioScreen() {
       <View className="box-border w-full flex-1 px-4">
         <View className="relative mx-auto box-border w-full max-w-screen-sm flex-1">
           {ready &&
-            (!privyAuthenticated ? (
+            (!authenticated ? (
               <Card className="flex h-full w-full items-center justify-center rounded-2xl">
-                <Button onPress={login}>
-                  <Text>Log in</Text>
-                </Button>
+                <UserSignin
+                  onSuccess={() => {
+                    console.log("login successful!");
+                  }}
+                  onFail={(error: unknown) => {
+                    console.log("Failed to login", error);
+                  }}
+                />
               </Card>
             ) : (
-              authenticated && <PortfolioContent defaultTab={segments?.[2]} />
+              <View className="flex h-full w-full items-center gap-4 ">
+                <View className="h-24 w-full">
+                  <UserInfo />
+                </View>
+                <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-4 pb-0">
+                  <Tab.Navigator
+                    initialRouteName={segments?.[2]}
+                    tabBar={(props) => <DefaultTabBar {...props} />}
+                    sceneContainerStyle={{
+                      backgroundColor: "white",
+                      paddingTop: 15,
+                    }}
+                  >
+                    {TABS.map((tab) => (
+                      <Tab.Screen
+                        key={tab.value}
+                        name={tab.value}
+                        component={tab.component}
+                        options={{
+                          title: tab.label,
+                        }}
+                      />
+                    ))}
+                  </Tab.Navigator>
+                </Card>
+              </View>
             ))}
         </View>
       </View>

@@ -1,11 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { FarCast } from "~/services/farcaster/types";
-import { usePrivy } from "@privy-io/react-auth";
-import useFarcasterWrite from "./useFarcasterWrite";
-import useFarcasterAccount from "./useFarcasterAccount";
-import useUserAction from "../user/useUserAction";
-import { UserActionName } from "~/services/user/types";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { useCallback, useMemo } from "react";
 import {
   addLike,
   addLikePending,
@@ -13,13 +6,19 @@ import {
   removeLikePending,
   selectCastReactions,
 } from "~/features/cast/castReactionsSlice";
-import useFarcasterSigner from "./useFarcasterSigner";
+import { FarCast } from "~/services/farcaster/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { UserActionName } from "~/services/user/types";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   getCastFid,
-  getCastHex,
-  getCastReactionsCount,
+  getCastHex
 } from "~/utils/farcaster/cast-utils";
+import useAuth from "../user/useAuth";
+import useUserAction from "../user/useUserAction";
+import useFarcasterAccount from "./useFarcasterAccount";
+import useFarcasterSigner from "./useFarcasterSigner";
+import useFarcasterWrite from "./useFarcasterWrite";
 
 export default function useFarcasterLikeAction({
   cast,
@@ -33,7 +32,7 @@ export default function useFarcasterLikeAction({
   const dispatch = useAppDispatch();
   const { reactions, likePendingCastIds } = useAppSelector(selectCastReactions);
 
-  const { authenticated, login } = usePrivy();
+  const { authenticated, login } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { submitUserAction } = useUserAction();
@@ -46,14 +45,18 @@ export default function useFarcasterLikeAction({
     () => !!reactions?.[castHex]?.liked,
     [reactions, castHex],
   );
+  const likeCount = useMemo(
+    () => reactions?.[castHex]?.likesCount || 0,
+    [reactions, castHex],
+  );
   const likePending = useMemo(
     () => likePendingCastIds.includes(castHex),
     [likePendingCastIds, castHex],
   );
 
-  const [likeCount, setLikeCount] = useState<number>(
-    getCastReactionsCount(cast).likesCount,
-  );
+  // const [likeCount, setLikeCount] = useState<number>(
+  //   getCastReactionsCount(cast).likesCount,
+  // );
 
   const likeCastAction = useCallback(async () => {
     if (!authenticated) {
@@ -77,7 +80,7 @@ export default function useFarcasterLikeAction({
         action: UserActionName.Like,
         castHash: castHex,
       });
-      setLikeCount((pre) => pre + 1);
+      // setLikeCount((pre) => pre + 1);
       onLikeSuccess?.();
     } catch (error) {
       console.error(error);
@@ -120,7 +123,7 @@ export default function useFarcasterLikeAction({
         castHash: castHex,
       });
 
-      setLikeCount((pre) => pre - 1);
+      // setLikeCount((pre) => pre - 1);
       onRemoveLikeSuccess?.();
     } catch (error) {
       console.error(error);

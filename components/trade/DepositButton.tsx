@@ -1,10 +1,5 @@
-import {
-  ConnectedWallet,
-  useConnectWallet,
-  useWallets,
-} from "@privy-io/react-auth";
 import * as Clipboard from "expo-clipboard";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import {
@@ -16,7 +11,6 @@ import {
   http,
   parseEther,
 } from "viem";
-import { useAccount } from "wagmi";
 import { ArrowDown, Copy } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
 import {
@@ -28,6 +22,9 @@ import {
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
+import useWalletAccount, {
+  ConnectedWallet,
+} from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { shortPubKey } from "~/utils/shortPubKey";
 import UserTokens from "../portfolio/tokens/UserTokens";
@@ -36,31 +33,19 @@ import { Slider } from "../ui/slider";
 import FundButton from "./FundButton";
 
 export default function DepositButton() {
-  const { connectWallet } = useConnectWallet();
-  const { wallets: connectedWallets } = useWallets();
-  const { address: activeWalletAddress } = useAccount();
+  const {
+    connectWallet,
+    activeWallet,
+    connectedExternalWallet,
+  } = useWalletAccount();
 
-  const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) => wallet.address === activeWalletAddress,
-    );
-    if (currentWallet) return currentWallet;
-  }, [connectedWallets, activeWalletAddress]);
-
-  const connectedExternalWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) => wallet.connectorType !== "embedded" && wallet.connectorType !== "coinbase_wallet",
-    );
-    if (currentWallet) return currentWallet;
-  }, [connectedWallets]);
-
-  if (!activeWalletAddress || !activeWallet)
+  if (!activeWallet)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button
+        size={"icon"}
+        className="rounded-full"
+        onPress={() => connectWallet}
+      >
         <Text>
           <ArrowDown />
         </Text>
@@ -87,16 +72,18 @@ export default function DepositButton() {
             <DialogTitle>Deposit</DialogTitle>
           </DialogHeader>
           <View className="flex gap-6">
-            <UserTokens address={activeWalletAddress} />
+            <UserTokens address={activeWallet.address as Address} />
             <View className=" w-full flex-row items-center justify-between gap-2 rounded-lg border-2 border-secondary/50">
               <Text className="ml-2 line-clamp-1 flex-1 text-secondary/50">
-                {activeWalletAddress}
+                {activeWallet.address as Address}
               </Text>
               <Button
                 size="icon"
                 variant="ghost"
                 onPress={async (event) => {
-                  await Clipboard.setStringAsync(activeWalletAddress);
+                  await Clipboard.setStringAsync(
+                    activeWallet.address as Address,
+                  );
                   Toast.show({
                     type: "info",
                     text1: "Wallet Address Copied!",
@@ -117,7 +104,7 @@ export default function DepositButton() {
                 toWallet={activeWallet}
               />
             ) : (
-              <Button variant="secondary" onPress={connectWallet}>
+              <Button variant="secondary" onPress={() => connectWallet()}>
                 <Text>Connect your wallet & transfer</Text>
               </Button>
             )}

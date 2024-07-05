@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { Dimensions, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import useLoadCoverChannels from "~/hooks/community/useLoadCoverChannels";
 import CoverChannels from "./CoverChannels";
 import { Loading } from "../common/Loading";
-import { DEFAULT_HEADER_HEIGHT, DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { cn } from "~/lib/utils";
 import TrendingChannels from "./TrendingChannels";
 import { itemHeight, itemPaddingTop } from "./ExploreStyled";
@@ -13,12 +12,22 @@ export default function TrendingScreen() {
     coverChannels,
     loadCoverChannels,
     loading: coverChannelsLoading,
+    rejected: coverChannelsRejected,
   } = useLoadCoverChannels();
   useEffect(() => {
-    if (!coverChannelsLoading && coverChannels.length === 0) {
+    if (
+      !coverChannelsRejected &&
+      !coverChannelsLoading &&
+      coverChannels.length === 0
+    ) {
       loadCoverChannels();
     }
-  }, [coverChannelsLoading, coverChannels, loadCoverChannels]);
+  }, [
+    coverChannelsLoading,
+    coverChannelsRejected,
+    coverChannels,
+    loadCoverChannels,
+  ]);
   return (
     <View className="h-full w-full">
       {coverChannelsLoading ? (

@@ -1,5 +1,6 @@
 import { FarcasterUserData } from "~/services/farcaster/types";
 import { TradeInfo } from "./trade";
+import { Address } from "viem";
 
 export type CommunityEntity = {
   id: number;
@@ -34,7 +35,7 @@ export type CommunityEntity = {
     parent_url: string;
   }>;
   channelId?: string;
-  shares?: Array<{ subjectAddress: `0x${string}` }>;
+  attentionTokenAddress: Address;
   hostUserData?: Array<FarcasterUserData>;
 };
 

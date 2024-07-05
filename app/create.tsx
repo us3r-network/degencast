@@ -1,18 +1,19 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, ActivityIndicator } from "react-native";
-import { Avatar, AvatarImage } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import { WarpcastChannel } from "~/services/community/api/community";
-import Editor from "~/components/social-farcaster/Editor";
-import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
+import { ActivityIndicator, SafeAreaView, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import GoBackButton from "~/components/common/GoBackButton";
+import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
+import Editor from "~/components/social-farcaster/Editor";
+import { Avatar, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import useAuth from "~/hooks/user/useAuth";
 import useUserAction from "~/hooks/user/useUserAction";
+import { WarpcastChannel } from "~/services/community/api/community";
 import { UserActionName } from "~/services/user/types";
 
 const HomeChanel = {
@@ -26,7 +27,7 @@ export default function CreateScreen() {
   const { sharingCastMint, clearSharingCastMint } = useCastCollection();
   const { submitUserAction } = useUserAction();
   const localSearchParams = useLocalSearchParams();
-  console.log("localSearchParams", localSearchParams);
+  // console.log("localSearchParams", localSearchParams);
   const {
     embeds: searchEmbeds,
     text: searchText,
@@ -60,9 +61,8 @@ export default function CreateScreen() {
       }
     }
   }, [warpcastChannels, searchChannelId]);
-  const { login, ready, user } = usePrivy();
-
-  const fid = user?.farcaster?.fid;
+  const { currFid, farcasterAccount } = useFarcasterAccount();
+  const { login, ready } = useAuth();
 
   return (
     <SafeAreaView id="ss" style={{ flex: 1 }} className="h-full bg-white">
@@ -90,7 +90,7 @@ export default function CreateScreen() {
                 </View>
               )) || (
                 <View>
-                  {fid && (
+                  {currFid && (
                     <Button
                       className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
                       size={"icon"}
@@ -106,7 +106,7 @@ export default function CreateScreen() {
                               return { url: item };
                             }),
                           ],
-                          channel: channel.url,
+                          parentUrl: channel.url,
                         };
 
                         const result = await submitCast(data);
@@ -119,7 +119,7 @@ export default function CreateScreen() {
                             type: "postToast",
                             props: {
                               hash: result?.hash,
-                              fid: fid,
+                              fid: currFid,
                             },
                             // position: "bottom",
                           });
@@ -154,13 +154,17 @@ export default function CreateScreen() {
           ),
         }}
       />
+
       <View
         className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
         id="create-view"
       >
-        {(!fid && (
+        {(!currFid && (
           <View className="flex-1 p-4 pt-16">
-            <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
+            <Button
+              className="rounded-lg bg-primary px-6 py-3"
+              onPress={() => login()}
+            >
               <Text className="text-primary-foreground">
                 Log in with farcaster
               </Text>
@@ -169,29 +173,31 @@ export default function CreateScreen() {
         )) || (
           <View className="h-full w-full" id="ad">
             <View className="mb-5 flex flex-row items-center gap-1">
-              {user?.farcaster?.pfp && (
+              {farcasterAccount?.pfp && (
                 <Avatar alt="" className="h-5 w-5">
-                  <AvatarImage source={{ uri: user?.farcaster?.pfp }} />
+                  <AvatarImage source={{ uri: farcasterAccount?.pfp }} />
                 </Avatar>
               )}
               <Text className="text-sm font-medium" id="textareaLabel">
-                {user?.farcaster?.displayName}
+                {farcasterAccount?.displayName}
               </Text>
               <Text className="text-xs text-secondary" id="textareaLabel">
-                @{user?.farcaster?.username}
+                @{farcasterAccount?.username}
               </Text>
             </View>
-            <Editor
-              text={value}
-              setText={setValue}
-              images={images}
-              setImages={setImages}
-              channel={channel}
-              setChannel={setChannel}
-              previewComponent={
-                embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
-              }
-            />
+            <View className="w-full flex-1">
+              <Editor
+                text={value}
+                setText={setValue}
+                images={images}
+                setImages={setImages}
+                channel={channel}
+                setChannel={setChannel}
+                previewComponent={
+                  embeds ? <CreateCastPreviewEmbeds embeds={embeds} /> : null
+                }
+              />
+            </View>
           </View>
         )}
       </View>

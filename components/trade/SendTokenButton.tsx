@@ -1,5 +1,4 @@
-import { useConnectWallet, usePrivy, useWallets } from "@privy-io/react-auth";
-import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import {
   Address,
@@ -12,7 +11,7 @@ import { base } from "viem/chains";
 import {
   useAccount,
   useSendTransaction,
-  useWaitForTransactionReceipt
+  useWaitForTransactionReceipt,
 } from "wagmi";
 import { ArrowUp } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
@@ -26,9 +25,9 @@ import {
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN_ADDRESS } from "~/constants";
 import { useERC20Transfer } from "~/hooks/trade/useERC20Contract";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
@@ -47,24 +46,15 @@ export default function SendTokenButton({
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
+  const { connectWallet, connectedWallets, activeWallet } = useWalletAccount();
 
-  const { connectWallet } = useConnectWallet();
-
-  const { wallets: connectedWallets } = useWallets();
-  const { address: activeWalletAddress } = useAccount();
-
-  const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) => wallet.address === activeWalletAddress,
-    );
-    if (currentWallet) return currentWallet;
-  }, [connectedWallets, activeWalletAddress]);
-
-  if (!activeWalletAddress)
+  if (!activeWallet?.address)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button
+        size={"icon"}
+        className="rounded-full"
+        onPress={() => connectWallet()}
+      >
         <Text>
           <ArrowUp />
         </Text>
@@ -79,7 +69,10 @@ export default function SendTokenButton({
       >
         <DialogTrigger
           asChild
-          disabled={activeWallet?.connectorType !== "embedded" && activeWallet?.connectorType !== "coinbase_wallet"}
+          disabled={
+            activeWallet?.connectorType !== "embedded" &&
+            activeWallet?.connectorType !== "coinbase_wallet"
+          }
         >
           <Button size={"icon"} className="rounded-full">
             <Text>
@@ -105,21 +98,16 @@ const SendToken = forwardRef<
   }
 >(({ className, chain, setSending, ...props }, ref) => {
   const account = useAccount();
-  const { user } = usePrivy();
 
   const [address, setAddress] = useState<`0x${string}`>();
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
+  const { embededWallet } = useWalletAccount();
   useEffect(() => {
-    if (user) {
-      const linkedWallets = getUserWallets(user);
-      const defaultWallet = linkedWallets.find(
-        (wallet) => wallet.connectorType !== "embedded",
-      );
-      if (defaultWallet) setAddress(defaultWallet.address as `0x${string}`);
-    }
-  }, [user]);
+    if (embededWallet) setAddress(embededWallet.address as `0x${string}`);
+  }, [embededWallet]);
+
   useEffect(() => {
     if (token) {
       setAmount(String(token.balance) || "0");

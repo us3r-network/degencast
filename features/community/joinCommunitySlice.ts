@@ -47,6 +47,14 @@ export const joinCommunitySlice = createSlice({
         (item) => item.id !== action.payload,
       );
     },
+    removeOneFromJoinedCommunitiesByChannelId: (
+      state: JoinCommunityState,
+      action: PayloadAction<string>,
+    ) => {
+      state.joinedCommunities = state.joinedCommunities.filter(
+        (item) => item.channelId !== action.payload,
+      );
+    },
     addOneToJoinActionPendingIds: (
       state: JoinCommunityState,
       action: PayloadAction<string | number>,
@@ -76,6 +84,7 @@ export const {
   setJoinedCommunities,
   addOneToJoinedCommunities,
   removeOneFromJoinedCommunities,
+  removeOneFromJoinedCommunitiesByChannelId,
   addOneToJoinActionPendingIds,
   removeOneFromJoinActionPendingIds,
   setJoinedCommunitiesRequestStatus,

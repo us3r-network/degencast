@@ -1,4 +1,3 @@
-import { useConnectWallet } from "@privy-io/react-auth";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
 import { Button, ButtonProps } from "~/components/ui/button";
@@ -12,13 +11,18 @@ import { upperFirst } from "lodash";
 import { ArrowUpDown } from "../common/Icons";
 import { LegacyRef, forwardRef } from "react";
 import { View } from "react-native";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function SwapButton() {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   if (!account.address)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button
+        size={"icon"}
+        className="rounded-full"
+        onPress={() => connectWallet()}
+      >
         <Text>
           <ArrowUpDown />
         </Text>
@@ -48,14 +52,14 @@ export function TradeButton({
   token2?: TokenWithTradeInfo;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   if (!account.address)
     return (
       <Button
         className={cn("w-14")}
         size="sm"
         variant={"secondary"}
-        onPress={connectWallet}
+        onPress={() => connectWallet()}
       >
         <Text>Trade</Text>
       </Button>
@@ -92,7 +96,7 @@ export function ExploreTradeButton({
   token2?: TokenWithTradeInfo;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
 
   const symbol = token2?.symbol || "";
   const logo = token2?.logoURI || "";
@@ -101,7 +105,7 @@ export function ExploreTradeButton({
       <ExploreTradeStyledButton
         name={symbol}
         logo={logo}
-        onPress={connectWallet}
+        onPress={() => connectWallet()}
         {...props}
       />
     );
@@ -135,7 +139,7 @@ export function ChannelExploreTradeButton({
   token2?: TokenWithTradeInfo;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
 
   const symbol = token2?.symbol || "";
   const logo = token2?.logoURI || "";
@@ -144,7 +148,7 @@ export function ChannelExploreTradeButton({
       <ChannelExploreTradeStyledButton
         name={symbol}
         logo={logo}
-        onPress={connectWallet}
+        onPress={() => connectWallet()}
         {...props}
       />
     );

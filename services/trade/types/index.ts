@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 type VolumeStats = {
   volume_usd: string;
   date: number;
@@ -39,22 +41,19 @@ export type TokenWithTradeInfo = {
   symbol: string | undefined;
   logoURI?: string;
   tradeInfo?: TradeInfo;
-  rawBalance?: BigInt | string;
+  rawBalance?: bigint | string;
   balance?: number | string | undefined;
 };
 
-export type ShareInfo = {
+export type BadgeInfo = {
+  tokenAddress: `0x${string}`;
   name?: string | undefined;
   channelId: string;
   logo?: string;
   priceETH?: string;
-  sharesSubject: `0x${string}`;
-  trend: number;
   amount?: number;
 };
 
-// export type TipsInfo = {
-//   name?: string | undefined;
-//   logo?: string;
-//   amount: number;
-// };
+export type CreateTokenResp = {
+  attentionTokenAddr: Address;
+};

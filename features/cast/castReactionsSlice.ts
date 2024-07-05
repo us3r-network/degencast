@@ -1,12 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 
+const defaultReactions = {
+  liked: false,
+  recasted: false,
+  likesCount: 0,
+  recastsCount: 0,
+};
+type Reactions = {
+  liked: boolean;
+  recasted: boolean;
+  likesCount: number;
+  recastsCount: number;
+};
 export type CastReactionsState = {
   reactions: {
-    [castHex: string]: {
-      liked: boolean;
-      recasted: boolean;
-    };
+    [castHex: string]: Reactions;
   };
   likePendingCastIds: Array<string>;
   recastPendingCastIds: Array<string>;
@@ -24,19 +33,17 @@ export const castReactionsSlice = createSlice({
   reducers: {
     addLike: (state, action: PayloadAction<string>) => {
       const castHex = action.payload;
-      const reactions = state.reactions[castHex] || {
-        liked: false,
-        recasted: false,
-      };
-      state.reactions[castHex] = { ...reactions, liked: true };
+      const reactions = state.reactions[castHex] || { ...defaultReactions };
+      reactions.liked = true;
+      reactions.likesCount += 1;
+      state.reactions[castHex] = { ...reactions };
     },
     removeLike: (state, action: PayloadAction<string>) => {
       const castHex = action.payload;
-      const reactions = state.reactions[castHex] || {
-        liked: false,
-        recasted: false,
-      };
-      state.reactions[castHex] = { ...reactions, liked: false };
+      const reactions = state.reactions[castHex] || { ...defaultReactions };
+      reactions.liked = false;
+      reactions.likesCount = Math.max(0, reactions.likesCount - 1);
+      state.reactions[castHex] = { ...reactions };
     },
     addLikePending: (state, action: PayloadAction<string>) => {
       state.likePendingCastIds.push(action.payload);
@@ -48,18 +55,12 @@ export const castReactionsSlice = createSlice({
     },
     addRecast: (state, action: PayloadAction<string>) => {
       const castHex = action.payload;
-      const reactions = state.reactions[castHex] || {
-        liked: false,
-        recasted: false,
-      };
+      const reactions = state.reactions[castHex] || { ...defaultReactions };
       state.reactions[castHex] = { ...reactions, recasted: true };
     },
     removeRecast: (state, action: PayloadAction<string>) => {
       const castHex = action.payload;
-      const reactions = state.reactions[castHex] || {
-        liked: false,
-        recasted: false,
-      };
+      const reactions = state.reactions[castHex] || { ...defaultReactions };
       state.reactions[castHex] = { ...reactions, recasted: false };
     },
     addRecastPending: (state, action: PayloadAction<string>) => {
@@ -73,7 +74,7 @@ export const castReactionsSlice = createSlice({
     upsertManyToReactions: (
       state,
       action: PayloadAction<{
-        [castHex: string]: { liked: boolean; recasted: boolean };
+        [castHex: string]: Reactions;
       }>,
     ) => {
       state.reactions = {

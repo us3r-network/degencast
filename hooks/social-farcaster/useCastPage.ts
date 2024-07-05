@@ -16,20 +16,26 @@ export default function useCastPage() {
   const { castDetailData, castReplyData, castReplyRecordData } =
     useAppSelector(selectCastPage);
 
-  const navigateToCastDetail = useCallback(
+  const setCastDetailCacheData = useCallback(
     (id: string, params: CastDetailData) => {
       dispatch(upsertToCastDetailData({ id, params }));
-      router.push(`casts/${id}` as any);
     },
-    [router],
+    [],
+  );
+
+  const setCastReplyCacheData = useCallback(
+    (id: string, params: CastReplayData) => {
+      dispatch(setCastReplyData(params));
+    },
+    [],
   );
 
   const navigateToCastReply = useCallback(
     (id: string, params: CastReplayData) => {
-      dispatch(setCastReplyData(params));
+      setCastReplyCacheData(id, params);
       router.push(`casts/${id}/reply` as any);
     },
-    [router],
+    [router, setCastReplyCacheData],
   );
 
   const addCastReplyRecordDataToStore = useCallback(
@@ -44,7 +50,7 @@ export default function useCastPage() {
     castReplyData,
     castReplyRecordData,
     navigateToCastReply,
-    navigateToCastDetail,
     addCastReplyRecordDataToStore,
+    setCastDetailCacheData,
   };
 }

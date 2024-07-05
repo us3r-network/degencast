@@ -1,22 +1,45 @@
 import { ApiResp } from "~/services/shared/types";
-import { ShareInfo, TokenWithTradeInfo } from "~/services/trade/types";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
 import {
+  InvitationCodeRespEntity,
   LoginRespEntity,
   TipsInfo,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
 
-export function login(params?: {
-  inviterFid: string | number;
+export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
+  return request({
+    url: `degencast-users/me`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function getMyInvitationCodes(): RequestPromise<ApiResp<InvitationCodeRespEntity>> {
+  return request({
+    url: `degencast-users/my-invitation-codes`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function loginDegencast(params?: {
+  inviterFid?: string | number;
+  inviteCode?: string;
 }): RequestPromise<ApiResp<LoginRespEntity>> {
-  const { inviterFid } = params || {};
+  const { inviterFid, inviteCode } = params || {};
   return request({
     url: `degencast-users/login`,
     method: "post",
     params: {
       ...(inviterFid ? { inviterFid } : {}),
+      ...(inviteCode ? { inviterCode:inviteCode } : {}),
     },
     headers: {
       needToken: true,
@@ -82,20 +105,7 @@ export function myTokens(
     },
   });
 }
-export function myShares(
-  pubkey: `0x${string}`,
-): RequestPromise<ApiResp<ShareInfo[]>> {
-  return request({
-    url: `topics/my-shares`,
-    method: "get",
-    params: {
-      pubkey,
-    },
-    headers: {
-      needToken: true,
-    },
-  });
-}
+
 export function myTips(): RequestPromise<ApiResp<TipsInfo[]>> {
   return request({
     url: `topics/my-tips`,

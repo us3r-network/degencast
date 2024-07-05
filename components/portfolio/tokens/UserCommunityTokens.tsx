@@ -52,7 +52,7 @@ export default function CommunityTokens({
           otherTokens
             .slice(0, DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <MyCommunityToken key={item.address} token={item} />
+              <CommunityToken key={item.address} token={item} />
             ))}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
@@ -60,14 +60,14 @@ export default function CommunityTokens({
           otherTokens
             .slice(DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <MyCommunityToken key={item.address} token={item} />
+              <CommunityToken key={item.address} token={item} />
             ))}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-export function MyCommunityToken({
+export function CommunityToken({
   token,
   withSwapButton,
 }: {

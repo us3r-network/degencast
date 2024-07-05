@@ -120,6 +120,32 @@ export function fetchUnjoiningCommunity(
   });
 }
 
+export type JoiningChannelData = null;
+export function fetchJoiningChannel(
+  channelId: string | number,
+): RequestPromise<ApiResp<JoiningChannelData>> {
+  return request({
+    url: `/topics/channels/${channelId}/joining`,
+    method: "post",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type UnjoiningChannelData = null;
+export function fetchUnjoiningChannel(
+  channelId: string | number,
+): RequestPromise<ApiResp<UnjoiningChannelData>> {
+  return request({
+    url: `/topics/channels/${channelId}/unjoining`,
+    method: "post",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
 export type CommunityData = CommunityEntity & CommunityStatistics;
 export function fetchCommunity(
   id: string | number,

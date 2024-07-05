@@ -1,10 +1,12 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "../ui/button";
 import { Text } from "../ui/text";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { ExploreCard } from "./ExploreStyled";
+import useAuth from "~/hooks/user/useAuth";
+
 export function ConnectFarcasterCard() {
-  const { authenticated, login, linkFarcaster } = usePrivy();
+  const { linkFarcaster } = useFarcasterAccount();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   return (
     <ExploreCard className="flex-row items-center justify-center">

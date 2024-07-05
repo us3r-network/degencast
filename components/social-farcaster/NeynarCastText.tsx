@@ -1,4 +1,4 @@
-import { TouchableOpacity, Linking } from "react-native";
+import { TouchableOpacity, Linking, Pressable } from "react-native";
 import { Text } from "../ui/text";
 import { Link } from "expo-router";
 import isURL from "validator/lib/isURL";
@@ -38,7 +38,13 @@ export default function NeynarCastText({
       );
       if (mentionData) {
         return (
-          <Link href={`/u/${mentionData.fid}/tokens`} key={index}>
+          <Link
+            href={`/u/${mentionData.fid}`}
+            key={index}
+            onPress={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
               {part}
             </Text>
@@ -55,7 +61,13 @@ export default function NeynarCastText({
     if (part.startsWith("/")) {
       const channelId = part.slice(1);
       return (
-        <Link key={index} href={`/communities/${channelId}`}>
+        <Link
+          key={index}
+          href={`/communities/${channelId}`}
+          onPress={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <Text className="inline-block text-secondary hover:cursor-pointer hover:underline">
             {part}
           </Text>
@@ -75,16 +87,17 @@ export default function NeynarCastText({
       if (findWebpage) return null;
 
       return (
-        <TouchableOpacity
+        <Pressable
           key={index}
-          onPress={() => {
+          onPress={(e) => {
+            e.stopPropagation();
             Linking.openURL(link);
           }}
         >
           <Text className="inline-block break-all text-secondary hover:cursor-pointer hover:underline">
             {part}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       );
     }
     return <Text key={index}>{part}</Text>;
@@ -97,5 +110,5 @@ export default function NeynarCastText({
 }
 
 function isMention(part: string) {
-  return part.startsWith("@");
+  return !!part && part.startsWith("@");
 }

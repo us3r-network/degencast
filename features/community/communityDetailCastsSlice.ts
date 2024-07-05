@@ -31,7 +31,7 @@ export const groupDataDefault = {
 };
 const communityDetailCastsState: CommunityDetailCastsState = {};
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 export const fetchItems = createAsyncThunk<
   NaynarChannelCastsFeedData,
   {
@@ -82,7 +82,7 @@ export const communityDetailCastsSlice = createSlice({
     builder
       .addCase(fetchItems.pending, (state, action) => {
         const { channelId } = action.meta.arg;
-        if (!state[channelId]) {
+        if (!state?.[channelId]) {
           state[channelId] = cloneDeep(groupDataDefault);
         }
         state[channelId].errorMsg = "";
@@ -90,9 +90,12 @@ export const communityDetailCastsSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         const { channelId } = action.meta.arg;
+        if (!state?.[channelId]) {
+          state[channelId] = cloneDeep(groupDataDefault);
+        }
         state[channelId].status = AsyncRequestStatus.FULFILLED;
         const { casts: newItems, pageInfo } = action.payload;
-        state[channelId].items.push(...newItems);
+        state[channelId].items.push(...(newItems || []));
         state[channelId].pageInfo = { ...pageInfo };
       })
       .addCase(fetchItems.rejected, (state, action) => {

@@ -11,12 +11,10 @@ import { enableMapSet } from "immer";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import communityRank from "~/features/rank/communityRankSlice";
-import communityShares from "~/features/trade/communitySharesSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
 import userChannels from "~/features/user/userChannelsSlice";
 import userCasts from "~/features/user/userCastsSlice";
 import userHostChannels from "~/features/user/userHostChannelsSlice";
-import userCommunityShares from "~/features/user/communitySharesSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
 import userAction from "~/features/user/userActionSlice";
 import inviteCode from "~/features/user/inviteCodeSlice";
@@ -51,13 +49,11 @@ export const store = configureStore({
     castPage,
     castCollection,
     communityTokens,
-    communityShares,
     communityRank,
     userCommunityTokens,
     userChannels,
     userCasts,
     userHostChannels,
-    userCommunityShares,
     channelExplorePage,
     communityDetail,
     communityDetailTipsRank,

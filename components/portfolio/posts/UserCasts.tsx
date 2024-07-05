@@ -1,23 +1,18 @@
-import { usePrivy } from "@privy-io/react-auth";
+import { Link } from "expo-router";
 import { FlatList, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserCasts from "~/hooks/user/useUserCasts";
 import { cn } from "~/lib/utils";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
-import { getUserFarcasterAccount } from "~/utils/privy";
 
 export function CastList({ fid }: { fid: number }) {
-  const { user } = usePrivy();
-  const farcasterAccount = getUserFarcasterAccount(user);
-  const {
-    items: casts,
-    loading,
-    loadMore,
-  } = useUserCasts(fid, farcasterAccount?.fid || undefined);
-  const { navigateToCastDetail } = useCastPage();
+  const { currFid } = useFarcasterAccount();
+  const { items: casts, loading, loadMore } = useUserCasts(fid, currFid);
+  const { setCastDetailCacheData } = useCastPage();
   return (
     <View className="container h-full">
       {loading && casts.length === 0 ? (
@@ -34,22 +29,23 @@ export function CastList({ fid }: { fid: number }) {
               renderItem={({ item, index }) => {
                 const isLastItem = index === casts.length - 1;
                 const isOdd = index % 2 === 0;
+                const castHex = getCastHex(item);
                 return (
-                  <Pressable
+                  <Link
                     className={cn(
                       "flex-1",
                       isLastItem && isOdd && " w-1/2 flex-none pr-[5px]",
                     )}
+                    href={`/casts/${castHex}`}
                     onPress={() => {
-                      const castHex = getCastHex(item);
-                      navigateToCastDetail(castHex, {
+                      setCastDetailCacheData(castHex, {
                         origin: CastDetailDataOrigin.Protfolio,
                         cast: item,
                       });
                     }}
                   >
                     <FcastMiniCard className="flex-1" cast={item} />
-                  </Pressable>
+                  </Link>
                 );
               }}
               keyExtractor={(item) => item.hash}

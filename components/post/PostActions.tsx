@@ -19,12 +19,15 @@ import {
   ViewProps,
 } from "react-native";
 import { Image } from "react-native";
-import { CommentIcon2, EditIcon } from "../common/SvgIcons";
-import { useCallback, useEffect, useState } from "react";
-import { Image as ImageIcon } from "~/components/common/Icons";
+import { CommentIcon2, EditIcon, MintIcon } from "../common/SvgIcons";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { Link } from "expo-router";
+import useAppSettings from "~/hooks/useAppSettings";
 
-export function ActionButton({ className, ...props }: ButtonProps) {
+export const ActionButton = forwardRef(function ({
+  className,
+  ...props
+}: ButtonProps) {
   return (
     <Button
       className={cn(
@@ -34,7 +37,7 @@ export function ActionButton({ className, ...props }: ButtonProps) {
       {...props}
     />
   );
-}
+});
 
 export function ActionText({ className, ...props }: TextProps) {
   return <Text className={cn("text-xs text-primary", className)} {...props} />;
@@ -167,7 +170,7 @@ export const MintButton = ({
 }) => {
   return (
     <ActionButton {...props}>
-      <ImageIcon size={iconSize} className={cn("stroke-primary")} />
+      <MintIcon className={cn("stroke-primary")} />
     </ActionButton>
   );
 };
@@ -230,8 +233,6 @@ export const ExplorePostActions = ({
   liking,
   reposted,
   reposting,
-  showActions,
-  showActionsChange,
   onLike,
   onGift,
   onShare,
@@ -248,8 +249,6 @@ export const ExplorePostActions = ({
   liking?: boolean;
   reposted?: boolean;
   reposting?: boolean;
-  showActions: boolean;
-  showActionsChange: (showActions: boolean) => void;
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
@@ -257,6 +256,10 @@ export const ExplorePostActions = ({
   onMint?: () => void;
   onRepost?: () => void;
 }) => {
+  const {
+    openExploreCastMenu: showActions,
+    setOpenExploreCastMenu: showActionsChange,
+  } = useAppSettings();
   const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
     showActionsChange(!showActions);
@@ -288,6 +291,22 @@ export const ExplorePostActions = ({
       >
         <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
       </ActionMenuItem> */}
+      <ActionMenuItem
+        showMenu={showActions}
+        scaleAnimatedValue={scaleAnimatedValue}
+        translateYAnimatedValue={translateYAnimatedValue}
+        index={5}
+      >
+        <Link
+          href={`/create${channelId ? "?channelId=" + channelId : ""}`}
+          asChild
+        >
+          <ActionButton className="shadow-md shadow-primary">
+            <SquarePen size={16} strokeWidth={2} className="stroke-primary" />
+          </ActionButton>
+        </Link>
+      </ActionMenuItem>
+
       <ActionMenuItem
         showMenu={showActions}
         scaleAnimatedValue={scaleAnimatedValue}
@@ -362,14 +381,14 @@ export const ExplorePostActions = ({
           />
         </Animated.View>
       </ActionButton>
-      <Link
+      {/* <Link
         href={`/create${channelId ? "?channelId=" + channelId : ""}`}
         asChild
       >
         <ActionButton className="z-10 mt-3 h-[50px] w-[50px] shadow-md shadow-primary">
           <SquarePen size={20} strokeWidth={2} className="stroke-primary" />
         </ActionButton>
-      </Link>
+      </Link> */}
     </View>
   );
 };

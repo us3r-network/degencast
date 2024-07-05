@@ -1,16 +1,15 @@
 import useUserTotalPoints from "~/hooks/user/useUserTotalPoints";
-import { Atom } from "../common/Icons";
 import { Badge } from "../ui/badge";
 import { Text } from "../ui/text";
 import { Button } from "../ui/button";
-import { usePrivy } from "@privy-io/react-auth";
 import PointsRulesModal from "./PointsRulesModal";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, Image, View, Animated } from "react-native";
+import useAuth from "~/hooks/user/useAuth";
 
 export default function UserGlobalPoints() {
   const { totalPoints } = useUserTotalPoints();
-  const { authenticated, ready, login } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const pointChangeAnimation = useState(new Animated.Value(0))[0];
   const totalPointsPrev = useRef(totalPoints);

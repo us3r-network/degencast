@@ -50,14 +50,21 @@ export const getCommunityFrameLink = (
     fid?: string | number;
   },
 ) => {
-  let link = `${DEGENCAST_FRAME_HOST}/allowance/${id}`;
+  let link = `${DEGENCAST_FRAME_HOST}/atttoken/frames?attnft=${id}`;
   const { fid } = opts || {};
   if (fid) {
-    link += `/fid/${fid}`;
+    link += `&inviteFid=${fid}`;
   }
-  if (fid) {
-    link += `?inviteFid=${fid}`;
-  }
+
+  // TODO 下面这个链接修复后再还原
+  // let link = `${DEGENCAST_FRAME_HOST}/allowance/${id}`;
+  // const { fid } = opts || {};
+  // if (fid) {
+  //   link += `/fid/${fid}`;
+  // }
+  // if (fid) {
+  //   link += `?inviteFid=${fid}`;
+  // }
   return link;
 };
 

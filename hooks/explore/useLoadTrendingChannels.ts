@@ -32,12 +32,12 @@ export default function useLoadTrendingChannels(opts: {
     }
   }, [currentIndex, itemsLen, loading]);
 
-  useSwipeCastsActions({
-    casts: items.map((channel) => channel.cast),
-    currentCastIndex: currentIndex,
-    swipeDataRefValue: opts.swipeDataRefValue,
-    onViewCastActionSubmited: opts.onViewCastActionSubmited,
-  });
+  // useSwipeCastsActions({
+  //   casts: items.map((channel) => channel.cast),
+  //   currentCastIndex: currentIndex,
+  //   swipeDataRefValue: opts.swipeDataRefValue,
+  //   onViewCastActionSubmited: opts.onViewCastActionSubmited,
+  // });
 
   return {
     loading,
