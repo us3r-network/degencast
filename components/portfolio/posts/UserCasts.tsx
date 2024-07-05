@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { FlatList, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
@@ -10,12 +11,8 @@ import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export function CastList({ fid }: { fid: number }) {
   const { currFid } = useFarcasterAccount();
-  const {
-    items: casts,
-    loading,
-    loadMore,
-  } = useUserCasts(fid, currFid);
-  const { navigateToCastDetail } = useCastPage();
+  const { items: casts, loading, loadMore } = useUserCasts(fid, currFid);
+  const { setCastDetailCacheData } = useCastPage();
   return (
     <View className="container h-full">
       {loading && casts.length === 0 ? (
@@ -32,22 +29,23 @@ export function CastList({ fid }: { fid: number }) {
               renderItem={({ item, index }) => {
                 const isLastItem = index === casts.length - 1;
                 const isOdd = index % 2 === 0;
+                const castHex = getCastHex(item);
                 return (
-                  <Pressable
+                  <Link
                     className={cn(
                       "flex-1",
                       isLastItem && isOdd && " w-1/2 flex-none pr-[5px]",
                     )}
+                    href={`/casts/${castHex}`}
                     onPress={() => {
-                      const castHex = getCastHex(item);
-                      navigateToCastDetail(castHex, {
+                      setCastDetailCacheData(castHex, {
                         origin: CastDetailDataOrigin.Protfolio,
                         cast: item,
                       });
                     }}
                   >
                     <FcastMiniCard className="flex-1" cast={item} />
-                  </Pressable>
+                  </Link>
                 );
               }}
               keyExtractor={(item) => item.hash}
