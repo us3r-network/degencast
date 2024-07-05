@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   addCommunityDetailPendingId,
   removeCommunityDetailPendingId,
@@ -18,6 +18,7 @@ export default function useLoadCommunityDetail(id: string) {
   const communityDetail = detailData[id];
   const communityBasic = basicData[id];
   const loading = detailPendingIds.includes(id);
+  const [rejected, setRejected] = useState(false);
 
   const loadCommunityDetail = useCallback(async () => {
     if (!id || id === "home" || loading) {
@@ -34,6 +35,7 @@ export default function useLoadCommunityDetail(id: string) {
       }
     } catch (error) {
       console.error(error);
+      setRejected(true);
     } finally {
       dispatch(removeCommunityDetailPendingId(id));
     }
@@ -41,6 +43,7 @@ export default function useLoadCommunityDetail(id: string) {
 
   return {
     loading,
+    rejected,
     communityDetail,
     communityBasic,
     loadCommunityDetail,

@@ -32,7 +32,7 @@ export default function NeynarCastUserInfo({
             <Text>{userData?.display_name?.slice(0, 1)}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className="line-clamp-1 text-sm font-normal hover:underline">
+        <Text className="line-clamp-1 font-bold hover:underline">
           {userData?.display_name}
         </Text>
         {userData.power_badge && (
@@ -41,11 +41,11 @@ export default function NeynarCastUserInfo({
             style={{ width: 12, height: 12 }}
           />
         )}
-        <Text className=" text-xs font-normal text-secondary hover:underline">
+        <Text className=" text-secondary hover:underline">
           @{userData?.username}
         </Text>
         {timestamp && (
-          <Text className=" text-xs font-normal text-secondary">
+          <Text className="text-secondary">
             · {dayjs(timestamp).fromNow(true)}
           </Text>
         )}
