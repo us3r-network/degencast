@@ -20,49 +20,46 @@ export default function ActivityItemUserInfo({
 }) {
   const router = useRouter();
   return (
-    <Link asChild href={`/u/${userData.fid}/tokens`}>
-      <Pressable
-        className="w-full"
-        onPress={(e) => {
-          e.preventDefault();
-          router.push(`/u/${userData.fid}/tokens`);
-        }}
+    <Link
+      href={`/u/${userData.fid}`}
+      onPress={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <View
+        className={cn("flex w-full flex-row items-center gap-1 ", className)}
+        {...props}
       >
-        <View
-          className={cn("flex w-full flex-row items-center gap-1 ", className)}
-          {...props}
-        >
-          {userData?.username ? (
-            <>
-              <Avatar
-                alt={"Avatar"}
-                className="h-5 w-5 rounded-full object-cover"
-              >
-                <AvatarImage source={{ uri: userData?.pfp_url }} />
-                <AvatarFallback>
-                  <Text>{userData?.display_name?.slice(0, 1)}</Text>
-                </AvatarFallback>
-              </Avatar>
-              <Text className="line-clamp-1 text-base font-bold">
-                {userData?.display_name}
-              </Text>
-              <Text className=" text-base font-medium text-secondary">
-                @{userData?.username}
-              </Text>
-            </>
-          ) : (
-            <Text className="line-clamp-1 text-base font-bold">
-              {userAddr ? shortAddress(userAddr) : "undefined"}
+        {userData?.username ? (
+          <>
+            <Avatar
+              alt={"Avatar"}
+              className="h-5 w-5 rounded-full object-cover"
+            >
+              <AvatarImage source={{ uri: userData?.pfp_url }} />
+              <AvatarFallback>
+                <Text>{userData?.display_name?.slice(0, 1)}</Text>
+              </AvatarFallback>
+            </Avatar>
+            <Text className="line-clamp-1 text-base font-bold hover:underline">
+              {userData?.display_name}
             </Text>
-          )}
+            <Text className=" text-base font-medium text-secondary hover:underline">
+              @{userData?.username}
+            </Text>
+          </>
+        ) : (
+          <Text className="line-clamp-1 text-base font-bold hover:underline">
+            {userAddr ? shortAddress(userAddr) : "undefined"}
+          </Text>
+        )}
 
-          {timestamp && (
-            <Text className=" whitespace-nowrap text-base font-medium text-secondary">
-              · {dayjs(timestamp).fromNow(true)}
-            </Text>
-          )}
-        </View>
-      </Pressable>
+        {timestamp && (
+          <Text className=" whitespace-nowrap text-base font-medium text-secondary">
+            · {dayjs(timestamp).fromNow(true)}
+          </Text>
+        )}
+      </View>
     </Link>
   );
 }

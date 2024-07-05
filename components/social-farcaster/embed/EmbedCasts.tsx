@@ -8,6 +8,7 @@ import { Card } from "~/components/ui/card";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { Link } from "expo-router";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId || embed.cast_id);
@@ -22,7 +23,7 @@ export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
 }
 
 function EmbedCast({ cast }: { cast: NeynarCast }) {
-  const { navigateToCastDetail } = useCastPage();
+  const { setCastDetailCacheData } = useCastPage();
   const { author } = cast;
 
   const castImg = useMemo(() => {
@@ -31,31 +32,38 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
   }, [cast]);
 
   return (
-    <Pressable
+    <Link
+      href={`/casts/${getCastHex(cast)}`}
       className="w-full "
-      onPress={() => {
+      onPress={(e) => {
+        e.stopPropagation();
         const castHex = getCastHex(cast);
-        // router.push(`/casts/${castHex}`);
-        navigateToCastDetail(castHex, {
+        setCastDetailCacheData(castHex, {
           cast,
         });
       }}
     >
       <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
-        <View className="flex flex-row items-center gap-1">
+        <Link
+          className="flex flex-row items-center gap-1"
+          href={`/u/${author.fid}`}
+          onPress={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
             <AvatarImage source={{ uri: author.pfp_url }} />
             <AvatarFallback>
               <Text>{author.display_name?.slice(0, 1)}</Text>
             </AvatarFallback>
           </Avatar>
-          <Text className="flex-shrink-0 text-sm font-medium">
+          <Text className="flex-shrink-0 text-sm font-medium hover:underline">
             {author.display_name}
           </Text>
-          <Text className="line-clamp-1 text-xs font-normal text-secondary">
+          <Text className="line-clamp-1 text-xs font-normal text-secondary hover:underline">
             @{author.username}
           </Text>
-        </View>
+        </Link>
         <Text className="line-clamp-6 text-base">{cast.text}</Text>
         {castImg && (
           <Image
@@ -64,7 +72,7 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
           />
         )}
       </Card>
-    </Pressable>
+    </Link>
   );
 }
 

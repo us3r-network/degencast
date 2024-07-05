@@ -1,4 +1,5 @@
 import {
+  Link,
   Stack,
   useGlobalSearchParams,
   useLocalSearchParams,
@@ -46,7 +47,7 @@ const itemHeight =
 
 export default function ChannelExploreScreen() {
   const navigation = useNavigation();
-  const { navigateToCastDetail } = useCastPage();
+  const { setCastDetailCacheData } = useCastPage();
   const params = useLocalSearchParams<{ channelId: string }>();
   const { channelId } = params as { channelId: string };
   const globalParams = useGlobalSearchParams<{ cast?: string }>();
@@ -238,6 +239,7 @@ export default function ChannelExploreScreen() {
             }}
           >
             {renderCasts.map((data) => {
+              const castHex = getCastHex(data);
               return (
                 <View
                   key={data.index.toString()}
@@ -252,14 +254,14 @@ export default function ChannelExploreScreen() {
                     height: itemHeight,
                   }}
                 >
-                  <Pressable
+                  <Link
+                    href={`/casts/${castHex}`}
                     className={cn(
                       "box-border h-full w-full overflow-hidden p-4",
                     )}
-                    onPress={() => {
-                      const castHex = getCastHex(data);
-                      // router.push(`/casts/${castHex}`);
-                      navigateToCastDetail(castHex, {
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      setCastDetailCacheData(castHex, {
                         origin: CastDetailDataOrigin.ChannelCastExplore,
                         cast: data,
                         farcasterUserDataObj: farcasterUserDataObj,
@@ -274,7 +276,7 @@ export default function ChannelExploreScreen() {
                       webpageImgIsFixedRatio={true}
                       viewMoreWordLimits={isDesktop ? 200 : 50}
                     />
-                  </Pressable>
+                  </Link>
                 </View>
               );
             })}

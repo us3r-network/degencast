@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useRef, useState } from "react";
 import { FlatList, LayoutRectangle, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
@@ -21,7 +22,7 @@ export default function ChannelCardCasts({
   communityInfo: CommunityInfo;
 }) {
   // const { navigateToCommunityDetail } = useCommunityPage();
-  const { navigateToCastDetail } = useCastPage();
+  const { setCastDetailCacheData } = useCastPage();
 
   const { casts, loading, pageInfo } = useLoadCommunityCasts(channelId);
   const [layout, setLayout] = useState<LayoutRectangle>();
@@ -115,9 +116,10 @@ export default function ChannelCardCasts({
         }}
         renderItem={({ item: cast, index }) => {
           const isLastItem = index === showCasts.length - 1;
+          const castHex = getCastHex(cast);
           return (
             <View
-              key={getCastHex(cast)}
+              key={castHex}
               className="h-full"
               style={{
                 height: itemHeight,
@@ -131,17 +133,13 @@ export default function ChannelCardCasts({
                   marginLeft: 15,
                 }}
               >
-                <Pressable
+                <Link
                   className={cn(" h-full w-full ")}
+                  href={`/casts/${castHex}`}
                   onPress={(e) => {
                     e.stopPropagation();
-                    // navigateToCommunityDetail(
-                    //   channelId,
-                    //   communityInfo,
-                    //   "feeds/casts",
-                    // );
-                    const castHex = getCastHex(cast);
-                    navigateToCastDetail(castHex, {
+
+                    setCastDetailCacheData(castHex, {
                       origin: CastDetailDataOrigin.Explore,
                       cast: cast,
                     });
@@ -154,7 +152,7 @@ export default function ChannelCardCasts({
                   >
                     <FCast cast={cast} webpageImgIsFixedRatio={true} />
                   </Card>
-                </Pressable>
+                </Link>
               </View>
             </View>
           );

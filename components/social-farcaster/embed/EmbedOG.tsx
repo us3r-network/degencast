@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Linking, Image } from "react-native";
+import { View, Pressable, Linking, Image } from "react-native";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { OGData } from "~/services/farcaster/types";
@@ -7,7 +7,7 @@ export default function EmbedOG({ data, url }: { data: OGData; url: string }) {
   const img = data.ogImage?.[0]?.url;
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={(e) => {
         e.stopPropagation();
         Linking.openURL(url);
@@ -34,6 +34,6 @@ export default function EmbedOG({ data, url }: { data: OGData; url: string }) {
           </Text>
         </View>
       </Card>
-    </TouchableOpacity>
+    </Pressable>
   );
 }

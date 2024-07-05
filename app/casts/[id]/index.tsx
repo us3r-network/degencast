@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
+import { Link, Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { View, Text, SafeAreaView, FlatList, Pressable } from "react-native";
 import GoBackButton from "~/components/common/GoBackButton";
@@ -210,7 +210,7 @@ function CastDetailWithData({
   };
   community: CommunityInfo;
 }) {
-  const { navigateToCastDetail } = useCastPage();
+  const { setCastDetailCacheData } = useCastPage();
   const navigation = useNavigation();
   const castHash = getCastHex(cast);
   const {
@@ -319,16 +319,17 @@ function CastDetailWithData({
               <Separator className=" my-3 bg-primary/10" />
             )}
             renderItem={({ item }) => {
+              const castHex = getCastHex(item);
               return (
-                <Pressable
-                  onPress={() => {
-                    const castHex = getCastHex(item);
-                    navigateToCastDetail(castHex, {
+                <Link
+                  href={`/casts/${castHex}`}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setCastDetailCacheData(castHex, {
                       origin: CastDetailDataOrigin.Comments,
                       cast: item,
                       community: community,
                     });
-                    // router.push(`/casts/${castHex}`);
                   }}
                 >
                   <FCastComment
@@ -336,7 +337,7 @@ function CastDetailWithData({
                     cast={item}
                     communityInfo={community}
                   />
-                </Pressable>
+                </Link>
               );
             }}
             keyExtractor={(item, index) => index.toString()}

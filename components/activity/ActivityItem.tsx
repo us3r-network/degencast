@@ -32,7 +32,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         <Text className=" inline-block  align-baseline">
           {data?.badgeAmount} Channel Badge of
         </Text>{" "}
-        <Link asChild href={`communities/${data?.channel?.id || ""}`}>
+        <Link asChild href={`/communities/${data?.channel?.id || ""}`}>
           <Pressable className="flex-row items-center align-bottom">
             <Avatar
               alt={"Avatar"}
@@ -44,7 +44,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               </AvatarFallback>
             </Avatar>
             {data?.channel?.id && (
-              <Text className=" text-base font-medium  text-secondary">
+              <Text className=" text-base font-medium  text-secondary hover:underline">
                 /{data?.channel?.id}
               </Text>
             )}

@@ -113,23 +113,28 @@ function HostUserInfo({
 }) {
   const { fid, avatar, username, displayName } = data;
   return (
-    <Link className={cn(" w-fit", className)} href={`/u/${fid}`} asChild>
-      <Pressable className="w-fit">
-        <View className={cn("flex-row items-center gap-1")}>
-          <Text className="line-clamp-1 text-sm font-normal leading-none">
-            Host
-          </Text>
-          <Avatar alt={displayName || ""} className=" size-[20px]">
-            <AvatarImage source={{ uri: avatar || "" }} />
-            <AvatarFallback className="border-primary bg-secondary">
-              <Text className="text-sm font-bold">{username}</Text>
-            </AvatarFallback>
-          </Avatar>
-          <Text className="text-sm font-normal leading-none text-secondary">
-            @{username}
-          </Text>
-        </View>
-      </Pressable>
+    <Link
+      className={cn(" w-fit", className)}
+      href={`/u/${fid}`}
+      onPress={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <View className={cn("flex-row items-center gap-1")}>
+        <Text className="line-clamp-1 text-sm font-normal leading-none">
+          Host
+        </Text>
+        <Avatar alt={displayName || ""} className=" size-[20px]">
+          <AvatarImage source={{ uri: avatar || "" }} />
+          <AvatarFallback className="border-primary bg-secondary">
+            <Text className="text-sm font-bold">{username}</Text>
+          </AvatarFallback>
+        </Avatar>
+
+        <Text className="text-sm font-normal leading-none text-secondary hover:underline">
+          @{username}
+        </Text>
+      </View>
     </Link>
   );
 }
