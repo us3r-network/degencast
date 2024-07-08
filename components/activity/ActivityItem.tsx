@@ -4,13 +4,12 @@ import {
 } from "~/services/community/types/activity";
 import { Text } from "../ui/text";
 import ActivityItemUserInfo from "./ActivityItemUserInfo";
-import { Pressable, View, ViewProps, Image } from "react-native";
+import { Pressable, View, ViewProps } from "react-native";
 import { Link } from "expo-router";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "~/lib/utils";
 import { Author } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
-import dayjs from "dayjs";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
@@ -36,7 +35,15 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
           {data?.badgeAmount} Channel Badge of
         </Text>{" "}
         <Link asChild href={`/communities/${data?.channel?.id || ""}`}>
-          <Pressable className="flex-row items-center align-bottom">
+          <Pressable
+            className="flex-row items-center align-bottom"
+            onPress={(e) => {
+              e.stopPropagation();
+              if (!data?.channel?.id) {
+                e.preventDefault();
+              }
+            }}
+          >
             <Avatar
               alt={"Avatar"}
               className="h-5 w-5 rounded-full object-cover  "
@@ -138,7 +145,15 @@ export function ActivityItemOperation({ data }: { data: ActivityEntity }) {
 export function ActivityItemChannel({ data }: { data: ActivityEntity }) {
   return (
     <Link asChild href={`/communities/${data?.channel?.id || ""}`}>
-      <Pressable className="flex-row items-center gap-1 align-bottom">
+      <Pressable
+        className="flex-row items-center gap-1 align-bottom"
+        onPress={(e) => {
+          e.stopPropagation();
+          if (!data?.channel?.id) {
+            e.preventDefault();
+          }
+        }}
+      >
         <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full object-cover  ">
           <AvatarImage source={{ uri: data?.channel?.imageUrl }} />
           <AvatarFallback>
