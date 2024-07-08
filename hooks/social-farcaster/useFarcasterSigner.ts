@@ -1,10 +1,10 @@
 import {
   User,
   useCreateWallet,
-  useExperimentalFarcasterSigner,
+  useFarcasterSigner as usePrivyFarcasterSigner,
   useLinkAccount,
   useWallets
-} from "@privy-io/react-auth";
+} from "~/lib/privy";
 import { ExternalEd25519Signer } from "@standard-crypto/farcaster-js-hub-rest";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserActionName } from "~/services/user/types";
@@ -39,7 +39,7 @@ export default function useFarcasterSigner() {
     requestFarcasterSignerFromWarpcast,
     getFarcasterSignerPublicKey,
     signFarcasterMessage,
-  } = useExperimentalFarcasterSigner();
+  } = usePrivyFarcasterSigner();
 
   const [hasSigner, setHasSigner] = useState(
     !!signerPublicKey,

@@ -1,4 +1,4 @@
-import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
+import { FarcasterWithMetadata, usePrivy } from "~/lib/privy";
 
 export default function useFarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();

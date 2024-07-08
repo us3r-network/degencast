@@ -1,6 +1,9 @@
-// import { PrivyProvider } from "@privy-io/react-auth";
-import { PrivyProvider } from "@privy-io/expo";
-import { WagmiProvider } from "@privy-io/wagmi";
+import 'fast-text-encoding';
+import 'react-native-get-random-values';
+import '@ethersproject/shims';
+
+import { PrivyProvider } from "~/lib/privy";
+import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";

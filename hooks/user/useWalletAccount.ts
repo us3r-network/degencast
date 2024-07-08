@@ -5,8 +5,8 @@ import {
   useConnectWallet,
   usePrivy,
   useWallets,
-} from "@privy-io/react-auth";
-import { useSetActiveWallet } from "@privy-io/wagmi";
+  useSetActiveWallet
+} from "~/lib/privy";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 

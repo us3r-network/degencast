@@ -1,7 +1,7 @@
 import { base, baseSepolia, mainnet, sepolia } from "viem/chains";
 import { http } from "wagmi";
 
-import { createConfig } from "@privy-io/wagmi";
+import { createConfig } from "wagmi";
 
 // Replace these with your app's chains
 

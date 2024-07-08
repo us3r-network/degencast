@@ -1,4 +1,4 @@
-import { User, useLogin, useLogout, usePrivy } from "@privy-io/react-auth";
+import { User, useLogin, useLogout, usePrivy } from "~/lib/privy";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
