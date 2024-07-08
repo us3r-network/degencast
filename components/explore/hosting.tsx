@@ -40,7 +40,7 @@ function HostingChannels() {
   const { items, currentIndex, setCurrentIndex, loading } =
     useLoadHostingChannels({
       swipeDataRefValue: swipeData.current,
-      onViewCastActionSubmited: () => {
+      onViewActionSubmited: () => {
         swipeData.current = { ...defaultSwipeData };
       },
     });

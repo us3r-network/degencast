@@ -40,7 +40,7 @@ function FollowingChannels() {
   const { items, currentIndex, setCurrentIndex, loading } =
     useLoadFollowingChannels({
       swipeDataRefValue: swipeData.current,
-      onViewCastActionSubmited: () => {
+      onViewActionSubmited: () => {
         swipeData.current = { ...defaultSwipeData };
       },
     });

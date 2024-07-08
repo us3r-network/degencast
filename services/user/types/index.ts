@@ -20,6 +20,7 @@ export enum UserActionName {
   Invite = "Invite",
   SwapToken = "SwapToken",
   MintCast = "MintCast",
+  ViewChannel = "ViewChannel",
 }
 
 export type UserActionData = {

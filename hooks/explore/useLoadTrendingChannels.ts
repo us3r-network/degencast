@@ -5,12 +5,12 @@ import {
 } from "~/features/community/exploreTrendingChannelsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import useSwipeCastsActions from "./useSwipeCastsActions";
+import useSwipeChannelsActions from "./useSwipeChannelsActions";
 
 const LOAD_MORE_CRITICAL_NUM = 5;
 export default function useLoadTrendingChannels(opts: {
   swipeDataRefValue?: any;
-  onViewCastActionSubmited?: () => void;
+  onViewActionSubmited?: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useAppDispatch();
@@ -32,12 +32,12 @@ export default function useLoadTrendingChannels(opts: {
     }
   }, [currentIndex, itemsLen, loading]);
 
-  // useSwipeCastsActions({
-  //   casts: items.map((channel) => channel.cast),
-  //   currentCastIndex: currentIndex,
-  //   swipeDataRefValue: opts.swipeDataRefValue,
-  //   onViewCastActionSubmited: opts.onViewCastActionSubmited,
-  // });
+  useSwipeChannelsActions({
+    channels: items,
+    currentIndex: currentIndex,
+    swipeDataRefValue: opts.swipeDataRefValue,
+    onViewActionSubmited: opts.onViewActionSubmited,
+  });
 
   return {
     loading,
