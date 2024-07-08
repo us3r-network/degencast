@@ -18,7 +18,7 @@ export default function CastsScreen() {
   const { casts, loading, loadCasts } = useLoadCommunityCasts(id);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 pt-4">
       {casts.length > 0 && (
         <FlatList
           data={casts}

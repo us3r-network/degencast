@@ -18,12 +18,14 @@ export default function ActivityItemUserInfo({
   userData: Author;
   timestamp?: string | number;
 }) {
-  const router = useRouter();
   return (
     <Link
       href={`/u/${userData.fid}`}
       onPress={(e) => {
         e.stopPropagation();
+        if (!userData.fid) {
+          e.preventDefault();
+        }
       }}
     >
       <View
