@@ -1,17 +1,27 @@
 import { FlatList, View } from "react-native";
 import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
-import { Separator } from "../ui/separator";
-import { Loading } from "../common/Loading";
-import ActivityItem from "./ActivityItem";
+// import { Separator } from "../ui/separator";
+// import { Loading } from "../common/Loading";
+// import ActivityItem from "./ActivityItem";
 import { useEffect } from "react";
+import ActivitiesTable from "./ActivitiesTable";
 export default function AllActivities() {
   const { items, loading, loadItems } = useLoadOnchainActivities();
   useEffect(() => {
     loadItems();
   }, []);
   return (
-    <View className="h-full w-full pt-4">
-      <FlatList
+    <View className="h-full w-full">
+      <ActivitiesTable
+        items={items}
+        loading={loading}
+        onEndReached={() => {
+          if (loading || (!loading && items?.length === 0)) return;
+          loadItems();
+          return;
+        }}
+      />
+      {/* <FlatList
         style={{
           flex: 1,
         }}
@@ -36,7 +46,7 @@ export default function AllActivities() {
           }
           return <View className="mb-10" />;
         }}
-      />
+      /> */}
     </View>
   );
 }

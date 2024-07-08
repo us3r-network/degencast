@@ -1,10 +1,11 @@
 import { FlatList, View } from "react-native";
 import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
 import { useEffect } from "react";
-import { Separator } from "~/components/ui/separator";
-import ActivityItem from "~/components/activity/ActivityItem";
-import { Loading } from "~/components/common/Loading";
+// import { Separator } from "~/components/ui/separator";
+// import ActivityItem from "~/components/activity/ActivityItem";
+// import { Loading } from "~/components/common/Loading";
 import { useGlobalSearchParams } from "expo-router";
+import ActivitiesTable from "~/components/activity/ActivitiesTable";
 export default function OnchainScreen() {
   const globalParams = useGlobalSearchParams();
   const { id: channelId } = globalParams as { id: string };
@@ -15,8 +16,17 @@ export default function OnchainScreen() {
     loadItems();
   }, []);
   return (
-    <View className="h-full w-full pt-4">
-      <FlatList
+    <View className="h-full w-full">
+      <ActivitiesTable
+        items={items}
+        loading={loading}
+        onEndReached={() => {
+          if (loading || (!loading && items?.length === 0)) return;
+          loadItems();
+          return;
+        }}
+      />
+      {/* <FlatList
         style={{
           flex: 1,
         }}
@@ -41,7 +51,7 @@ export default function OnchainScreen() {
           }
           return <View className="mb-10" />;
         }}
-      />
+      /> */}
     </View>
   );
 }

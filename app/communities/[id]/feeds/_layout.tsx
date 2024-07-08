@@ -34,7 +34,6 @@ export default function FeedsLayout() {
         tabBar={(props) => <OutlineTabBar {...props} />}
         sceneContainerStyle={{
           backgroundColor: "white",
-          paddingTop: 15,
         }}
       >
         <Tab.Screen
