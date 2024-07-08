@@ -17,7 +17,7 @@ export default function TrendingChannels() {
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
   const { items, currentIndex, setCurrentIndex } = useLoadTrendingChannels({
     swipeDataRefValue: swipeData.current,
-    onViewCastActionSubmited: () => {
+    onViewActionSubmited: () => {
       swipeData.current = { ...defaultSwipeData };
     },
   });
