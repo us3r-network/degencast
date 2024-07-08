@@ -1,3 +1,5 @@
+import { ConnectedWallet } from "@privy-io/react-auth";
+
 export { PrivyProvider } from "@privy-io/expo";
 export { getAccessToken, usePrivy } from "@privy-io/react-auth";
 export {
@@ -9,7 +11,11 @@ export {
   useLogout,
   useWallets,
 } from "@privy-io/react-auth";
-export { useSetActiveWallet } from "@privy-io/wagmi";
+export { WagmiProvider, createConfig } from "wagmi";
+export const useSetActiveWallet = () => {
+  const setActiveWallet = (wallet: ConnectedWallet) => Promise<void>;
+  return { setActiveWallet };
+};
 export type { User } from "@privy-io/expo";
 export type {
   ConnectedWallet,

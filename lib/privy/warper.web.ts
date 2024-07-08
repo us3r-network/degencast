@@ -10,7 +10,7 @@ export {
   usePrivy,
   useWallets,
 } from "@privy-io/react-auth";
-export { useSetActiveWallet } from "@privy-io/wagmi";
+export { WagmiProvider, useSetActiveWallet, createConfig } from "@privy-io/wagmi";
 export type {
   ConnectedWallet,
   FarcasterWithMetadata,

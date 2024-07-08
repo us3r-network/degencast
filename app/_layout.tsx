@@ -2,8 +2,7 @@ import 'fast-text-encoding';
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 
-import { PrivyProvider } from "~/lib/privy";
-import { WagmiProvider } from "wagmi";
+import { PrivyProvider, WagmiProvider } from "~/lib/privy";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
