@@ -30,7 +30,7 @@ export default function ActivitiesTable({
   return (
     <Table className="mt-0 h-full w-full">
       <TableHeader>
-        <TableRow>
+        <TableRow className="border-primary/10">
           <TableHead className="flex-1 items-start px-0 sm:px-3">
             <Text className="text-sm font-bold text-card-foreground">User</Text>
           </TableHead>
@@ -64,7 +64,7 @@ export default function ActivitiesTable({
               <TableRow
                 key={index.toString()}
                 className={cn(
-                  "active:bg-secondary",
+                  "border-primary/10 active:bg-secondary",
                   index % 2 && "bg-muted/40 ",
                 )}
               >
