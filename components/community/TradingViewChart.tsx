@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import { TrendingDown, TrendingUp } from "../common/Icons";
 import WebView from "react-native-webview";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import dayjs from "dayjs";
 
 export default function TradingViewChart({
   prices,
@@ -88,12 +89,30 @@ function WebChart({ prices }: { prices: Array<AreaData<Time>> }) {
         },
       },
       rightPriceScale: {
-        visible: false,
+        // visible: false,
         ticksVisible: true,
       },
       timeScale: {
-        visible: false,
+        // visible: false,
+        timeVisible: true,
+        secondsVisible: false,
         borderVisible: false,
+        tickMarkFormatter: (time: number) => {
+          return dayjs(time * 1000).format("MMM DD");
+        },
+      },
+      handleScale: {
+        mouseWheel: false,
+        pinch: false,
+        axisPressedMouseMove: false,
+      },
+      handleScroll: {
+        vertTouchDrag: false,
+        horzTouchDrag: false,
+        mouseWheel: false,
+      },
+      localization: {
+        locale: "en-US",
       },
       autoSize: true,
     });
@@ -106,7 +125,7 @@ function WebChart({ prices }: { prices: Array<AreaData<Time>> }) {
       priceFormat: {
         type: "price",
         precision: 6,
-        minMove: 0.0000001,
+        minMove: 0.000001,
       },
     });
 
@@ -144,6 +163,7 @@ function WebViewChart({ prices }: { prices: Array<AreaData<Time>> }) {
     <html>
     <head>
         <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     </head>
     <body>
         <div id="chart-container"></div>
@@ -167,12 +187,28 @@ function WebViewChart({ prices }: { prices: Array<AreaData<Time>> }) {
                 },
               },
               rightPriceScale: {
-                visible: false,
                 ticksVisible: true,
               },
               timeScale: {
-                visible: false,
+                timeVisible: true,
+                secondsVisible: false,
                 borderVisible: false,
+                tickMarkFormatter: (time: number) => {
+                  return dayjs(time * 1000).format("MMM DD");
+                },
+              },
+              handleScale: {
+                mouseWheel: false,
+                pinch: false,
+                axisPressedMouseMove: false,
+              },
+              handleScroll: {
+                vertTouchDrag: false,
+                horzTouchDrag: false,
+                mouseWheel: false,
+              },
+              localization: {
+                locale: "en-US",
               },
               autoSize: true,
             });
@@ -181,7 +217,12 @@ function WebViewChart({ prices }: { prices: Array<AreaData<Time>> }) {
               topColor: "#A471F6",
               bottomColor: "rgba(209, 186, 247, 0.38)",
               lineColor:"#A471F6",
-              lineType: 2,
+              lineType: 0,
+              priceFormat: {
+                type: "price",
+                precision: 6,
+                minMove: 0.000001,
+              }
             });
 
             newSeries.setData(${JSON.stringify(prices)});

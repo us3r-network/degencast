@@ -25,7 +25,7 @@ export default function CommunityTokenInfo({
   useEffect(() => {
     setPrices([]);
     axios
-      .get(`${ohlcvApiBaseUrl}/ohlcv/minute?aggregate=15&limit=100`)
+      .get(`${ohlcvApiBaseUrl}/ohlcv/hour?aggregate=1&limit=168`)
       .then((res) => {
         const { data, meta } = res.data;
         const ohlcvList = data?.attributes?.ohlcv_list || [];
