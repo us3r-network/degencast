@@ -11,6 +11,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
 import OnboardingModal from "./portfolio/onboarding/Onboarding";
 import InviteCodeModal from "./portfolio/onboarding/InviteCodeModal";
+import useUserInvitationCodes from "~/hooks/user/useUserInvitationCodes";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { currFid } = useFarcasterAccount();
@@ -26,6 +27,7 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { fetchCastCollections } = useCastCollection();
   const { loadCurrUserInfo } = useCurrUserInfo();
 
+  const { clearMyInvitationCodes } = useUserInvitationCodes();
   useEffect(() => {
     if (currFid) loadCurrUserInfo(Number(currFid));
   }, [currFid]);
@@ -43,6 +45,12 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
       clearUsedInviterData();
     }
   }, [authenticated, clearUsedInviterData]);
+
+  useEffect(() => {
+    if (!authenticated) {
+      clearMyInvitationCodes();
+    }
+  }, [authenticated, clearMyInvitationCodes]);
 
   useEffect(() => {
     loadWarpcastChannels();
@@ -86,7 +94,7 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   return (
     <>
       {children}
-      <OnboardingModal />     
+      <OnboardingModal />
       <InviteCodeModal />
     </>
   );

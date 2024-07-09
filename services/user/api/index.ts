@@ -19,7 +19,9 @@ export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
   });
 }
 
-export function getMyInvitationCodes(): RequestPromise<ApiResp<InvitationCodeRespEntity>> {
+export function getMyInvitationCodes(): RequestPromise<
+  ApiResp<Array<InvitationCodeRespEntity>>
+> {
   return request({
     url: `degencast-users/my-invitation-codes`,
     method: "get",
@@ -39,7 +41,7 @@ export function loginDegencast(params?: {
     method: "post",
     params: {
       ...(inviterFid ? { inviterFid } : {}),
-      ...(inviteCode ? { inviterCode:inviteCode } : {}),
+      ...(inviteCode ? { inviterCode: inviteCode } : {}),
     },
     headers: {
       needToken: true,
