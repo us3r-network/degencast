@@ -44,7 +44,6 @@
     "@tanstack/react-query": "^5.28.9",
     "@zoralabs/protocol-sdk": "^0.5.14",
     "axios": "^1.6.8",
-    "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
