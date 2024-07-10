@@ -64,6 +64,7 @@
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.6",
     "expo-web-browser": "~13.0.3",
+    "node-libs-expo": "^0.0.3",
     "fast-text-encoding": "^1.0.6",
     "firebase": "^10.12.2",
     "frames.js": "^0.9.6",
