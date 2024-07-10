@@ -4,7 +4,7 @@ import {
   useFarcasterSigner as usePrivyFarcasterSigner,
   useLinkAccount,
   useWallets
-} from "~/lib/privy";
+} from "@privy-io/react-auth";
 import { ExternalEd25519Signer } from "@standard-crypto/farcaster-js-hub-rest";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserActionName } from "~/services/user/types";

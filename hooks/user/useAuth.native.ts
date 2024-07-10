@@ -1,4 +1,4 @@
-import { User, useLogin, useLogout, usePrivy } from "@privy-io/react-auth";
+import { User, usePrivy } from "@privy-io/expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
@@ -14,11 +14,10 @@ import { INVITE_ONLY } from "~/constants";
 import Toast from "react-native-toast-message";
 
 export default function useAuth() {
-  const {
-    ready: privyReady,
-    user: privyUser,
-    authenticated: privyAuthenticated,
-  } = usePrivy();
+
+  const privyReady = true;
+  const privyUser = { id: "0" };
+  const privyAuthenticated = false;
 
   const dispatch = useAppDispatch();
 
@@ -159,7 +158,6 @@ export default function useAuth() {
     }
   };
 
-  const { login: privyLogin } = useLogin(privyLoginHanler);
   const [loginHandler, setLoginHandler] = useState<LoginHander>();
 
   const login = async (opts?: {
@@ -172,7 +170,6 @@ export default function useAuth() {
       onFail,
     });
     setStatus(SigninStatus.LOGGINGIN_PRIVY);
-    privyLogin();
   };
 
   const privyLogoutHanler = {
@@ -182,7 +179,7 @@ export default function useAuth() {
       setStatus(SigninStatus.IDLE);
     },
   };
-  const { logout } = useLogout(privyLogoutHanler);
+  const { logout } = usePrivy();
   return {
     ready: privyReady,
     authenticated: privyAuthenticated && degencastId,

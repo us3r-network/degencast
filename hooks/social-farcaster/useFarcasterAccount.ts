@@ -1,4 +1,4 @@
-import { FarcasterWithMetadata, usePrivy } from "~/lib/privy";
+import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
 
 export default function useFarcasterAccount() {
   const { user, linkFarcaster, unlinkFarcaster } = usePrivy();
@@ -7,7 +7,7 @@ export default function useFarcasterAccount() {
   ) as FarcasterWithMetadata;
   const signerPublicKey = farcasterAccount?.signerPublicKey;
 
-  const currFid = user?.farcaster?.fid || undefined;
+  const currFid = farcasterAccount?.fid || undefined;
 
   return {
     farcasterAccount,
