@@ -1,3 +1,9 @@
+Object.assign(window, {
+  addEventListener: () => 0,
+  removeEventListener: () => {},
+  dispatchEvent: () => true,
+  CustomEvent: class CustomEvent {} as any,
+});
 import 'fast-text-encoding';
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
