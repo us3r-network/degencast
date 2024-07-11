@@ -1,20 +1,20 @@
+import { useMemo, useState } from "react";
+import { Dimensions, Image, View } from "react-native";
+import { X } from "~/components/common/Icons";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import useAuth from "~/hooks/user/useAuth";
 import {
   ConnectedWallet,
   User,
   useLinkAccount,
   usePrivy,
 } from "@privy-io/react-auth";
-import { useMemo, useState } from "react";
-import { Dimensions, Image, View } from "react-native";
-import { Button } from "~/components/ui/button";
-import { Text } from "~/components/ui/text";
-import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { cn } from "~/lib/utils";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
 import UserSignin from "../user/UserSignin";
-import { X } from "~/components/common/Icons";
-import useAuth from "~/hooks/user/useAuth";
 //todo: seperate install pwa from onboarding steps
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
 

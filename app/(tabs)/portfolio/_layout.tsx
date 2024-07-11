@@ -48,7 +48,7 @@ export default function PortfolioScreen() {
                 </View>
                 <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-4 pb-0">
                   <Tab.Navigator
-                    initialRouteName={segments?.[2]}
+                    initialRouteName={segments?.[0]}
                     tabBar={(props) => <DefaultTabBar {...props} />}
                     sceneContainerStyle={{
                       backgroundColor: "white",

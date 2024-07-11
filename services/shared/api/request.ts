@@ -1,10 +1,10 @@
 import axios, {
+  AxiosPromise,
   AxiosRequestConfig,
   AxiosRequestHeaders,
-  AxiosPromise,
 } from "axios";
-import { API_BASE_URL } from "../../../constants";
-import { getAccessToken } from "@privy-io/react-auth";
+import { API_BASE_URL } from "~/constants";
+import { getAccessToken } from "~/lib/privy";
 
 export type RequestPromise<T> = AxiosPromise<T>;
 export type AxiosCustomHeaderType = {
@@ -32,14 +32,14 @@ const axiosInstance = axios.create();
 axiosInstance.defaults.baseURL = API_BASE_URL;
 
 axiosInstance.interceptors.request.use(
-  async(config) => {
+  async (config) => {
     if (!config?.headers) {
       config.headers = {} as AxiosHeaders;
     }
     if (config.headers?.token) {
       config.headers["Authorization"] = config.headers?.token;
     } else if (config.headers?.needToken) {
-      const privyToken = await getAccessToken() // privy token时效1小时所以必须实时获取privy token，不能使用injectUserToken注入
+      const privyToken = await getAccessToken(); // privy token时效1小时所以必须实时获取privy token，不能使用injectUserToken注入
       config.headers["Authorization"] = privyToken || "";
       delete config.headers.needToken;
     }

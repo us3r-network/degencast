@@ -16,9 +16,11 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.us3r.degencast",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.us3r.degencast",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -36,7 +38,8 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
