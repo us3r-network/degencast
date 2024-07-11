@@ -1,5 +1,6 @@
 import { Tabs, useNavigation } from "expo-router";
 import React, { useEffect } from "react";
+import { Platform } from "react-native";
 // import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -40,18 +41,14 @@ export default function TabLayout() {
   useCommunityTokens();
   useCommunityRank();
   useEffect(() => {
-    logGA("app_open", {});
+    if (Platform.OS === "web") logGA("app_open", {});
   }, []);
   const { authenticated, login } = useAuth();
   const navigation = useNavigation();
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
-        screenOptions={{
-          // Disable the static render of the header on web
-          // to prevent a hydration error in React Navigation v6.
-          headerShown: useClientOnlyValue(false, true),
-        }}
+        screenOptions={{ headerShown: useClientOnlyValue(false, true) }}
         screenListeners={{
           // Monitor tab press and if 'portfolio' tab is pressed
           tabPress: (e: any) => {
@@ -153,7 +150,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="portfolio"
+          name={`portfolio${Platform.OS === "web" ? "/index" : ""}`}
           options={{
             title: "Portfolio",
             tabBarLabelPosition: "below-icon",

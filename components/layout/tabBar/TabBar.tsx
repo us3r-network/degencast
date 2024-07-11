@@ -12,6 +12,12 @@ function MobileTabBar(props: BottomTabBarProps) {
       <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-between rounded-[20px] px-0 py-3 sm:px-8">
         <View className="sm:hidden" />
         {state.routes.map((route, index: number) => {
+          // hide nested navigation tabs
+          const hasNestedNavigation =
+            Platform.OS !== "web" &&
+            route.name.includes("/") &&
+            !route.name.includes("/index");
+          if (hasNestedNavigation) return null;
           const { options } = descriptors[route.key];
           const label =
             options.tabBarLabel !== undefined

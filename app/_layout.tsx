@@ -1,12 +1,6 @@
-Object.assign(window, {
-  addEventListener: () => 0,
-  removeEventListener: () => {},
-  dispatchEvent: () => true,
-  CustomEvent: class CustomEvent {} as any,
-});
-import 'fast-text-encoding';
-import 'react-native-get-random-values';
-import '@ethersproject/shims';
+import "fast-text-encoding";
+import "react-native-get-random-values";
+import "@ethersproject/shims";
 
 import { PrivyProvider, WagmiProvider } from "~/lib/privy";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,6 +22,15 @@ import { store } from "~/store/store";
 import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
 import "../global.css";
+
+if (Platform.OS !== "web") {
+  Object.assign(window, {
+    addEventListener: () => 0,
+    removeEventListener: () => {},
+    dispatchEvent: () => true,
+    CustomEvent: class CustomEvent {} as any,
+  });
+}
 
 dayjs.extend(relativeTime);
 
