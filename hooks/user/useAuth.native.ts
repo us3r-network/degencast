@@ -15,7 +15,7 @@ import Toast from "react-native-toast-message";
 
 export default function useAuth() {
 
-  const privyReady = true;
+  const privyReady = false;
   const privyUser = { id: "0" };
   const privyAuthenticated = false;
 

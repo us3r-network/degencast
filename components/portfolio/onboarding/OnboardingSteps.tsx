@@ -10,7 +10,7 @@ import {
   User,
   useLinkAccount,
   usePrivy,
-} from "~/lib/privy";
+} from "@privy-io/react-auth";
 import { cn } from "~/lib/utils";
 import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
