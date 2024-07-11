@@ -67,7 +67,6 @@ export default function FCastMintNftModal({
 
   const { currUserInfo, loading: currUserDataLoading } = useCurrUserInfo();
 
-  const currUserDisplayName = currUserInfo ? currUserInfo.display_name : "";
   const {
     createNewToken,
     createNewCollection,
@@ -77,7 +76,6 @@ export default function FCastMintNftModal({
     castUserData,
     imgUrl: imgUrl,
     channelId,
-    currUserDisplayName,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
       onOpenChange(false);
