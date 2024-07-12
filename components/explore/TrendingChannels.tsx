@@ -70,7 +70,7 @@ export default function TrendingChannels() {
         <ScrollView
           style={{ flex: 1, height: itemHeight }}
           className="w-full"
-          contentContainerStyle={{ alignItems: "center" }}
+          contentContainerClassName="items-center"
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           pagingEnabled={true}

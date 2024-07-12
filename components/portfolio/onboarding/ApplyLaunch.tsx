@@ -27,7 +27,7 @@ export default function ApplyLaunch({
   }
   return (
     <View className="relative flex h-full w-full  flex-col items-center justify-center ">
-      <ScrollView className="flex h-full w-full items-center ">
+      <ScrollView className="flex h-full w-full" contentContainerClassName="items-center">
         <View className="max-w-screen-sm p-6">
           <View className="mb-8 flex flex-col items-center justify-center gap-8 pt-2">
             <Text className="text-3xl font-bold text-white">

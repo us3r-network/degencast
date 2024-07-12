@@ -117,7 +117,8 @@ function HostingChannels() {
       >
         <ScrollView
           style={{ flex: 1, height: itemHeight }}
-          className="w-full items-center"
+          className="w-full"
+          contentContainerClassName="items-center"
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           pagingEnabled={true}

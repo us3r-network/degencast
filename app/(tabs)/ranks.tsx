@@ -82,8 +82,8 @@ export default function Ranks() {
 }
 
 const RankOrderList = [
-  { icon: <ArrowDownNarrowWide size="14" />, value: "DESC" },
-  { icon: <ArrowUpNarrowWide size="14" />, value: "ASC" },
+  { icon: <ArrowDownNarrowWide size="14" color="white" />, value: "DESC" },
+  { icon: <ArrowUpNarrowWide size="14" color="white" />, value: "ASC" },
 ];
 const RankOrderByList = [
   { label: "Market Cap", value: CommunityRankOrderBy.MARKET_CAP },

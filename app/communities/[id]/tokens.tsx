@@ -63,7 +63,8 @@ export default function TokensScreen() {
       ) : (
         <>
           <ScrollView
-            className="mx-auto max-w-[350px] flex-1 flex-col items-center justify-center"
+            className="mx-auto max-w-[350px] flex-1"
+            contentContainerClassName="flex-col items-center justify-center"
             showsHorizontalScrollIndicator={false}
           >
             <Image
