@@ -77,7 +77,6 @@
     "lodash": "^4.17.21",
     "lucide-react-native": "^0.378.0",
     "nativewind": "4.0.36",
-    "nft.storage": "^7.1.1",
     "react": "18.2.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "18.2.0",

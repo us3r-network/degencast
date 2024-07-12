@@ -27,7 +27,6 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { Text } from "../ui/text";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
-// import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
 
 export default function FCastMintNftModal({
   cast,
@@ -67,39 +66,19 @@ export default function FCastMintNftModal({
 
   const { currUserInfo, loading: currUserDataLoading } = useCurrUserInfo();
 
-  const currUserDisplayName = currUserInfo ? currUserInfo.display_name : "";
   const {
     createNewToken,
     createNewCollection,
     loading: create1155TokenLoading,
   } = useCreateNew1155Token({
     cast,
-    castUserData,
-    imgUrl: imgUrl,
     channelId,
-    currUserDisplayName,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
       onOpenChange(false);
       setOpenShare(true);
     },
   });
-
-  // premint
-  // const {
-  //   createNewCollection,
-  //   createNewToken,
-  //   loading: create1155TokenLoading,
-  // } = useCreateNew1155TokenForFree({
-  //   cast,
-  //   imgUrl: originImgUrl,
-  //   channelId,
-  //   onCreateTokenSuccess: (data) => {
-  //     setCreatedTokenInfo(data);
-  //     onOpenChange(false);
-  //     setOpenShare(true);
-  //   },
-  // });
 
   return (
     <>
