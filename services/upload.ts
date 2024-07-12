@@ -22,7 +22,8 @@ export function uploadImage(
 }
 
 export type ARUploadResult = {
-  url: string;
+  arUrl: string;
+  arseedUrl: string;
   everHash: string;
   order: {
     itemId: string;

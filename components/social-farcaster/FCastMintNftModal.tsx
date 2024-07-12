@@ -73,8 +73,6 @@ export default function FCastMintNftModal({
     loading: create1155TokenLoading,
   } = useCreateNew1155Token({
     cast,
-    castUserData,
-    imgUrl: imgUrl,
     channelId,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
