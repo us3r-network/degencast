@@ -52,7 +52,7 @@ export default function UserGlobalPoints() {
           }}
         >
           <Animated.View style={[pointAnimationStyle]}>
-            <Badge className="flex h-6 w-fit flex-row items-center overflow-hidden border-0 bg-[#F2B949] p-0 shadow shadow-black/25 transition-all">
+            <Badge className="flex h-6 w-fit flex-row items-center overflow-hidden border-0 bg-[#F2B949] p-0 transition-all">
               {/* <Atom className="size-4 text-white" /> */}
               <View className="flex h-full flex-row items-center gap-1 px-2 py-0">
                 <Image
