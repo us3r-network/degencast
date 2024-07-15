@@ -16,12 +16,11 @@ export default function ExploreViewSwitch() {
   return (
     <View className="flex flex-row items-center">
       {options.map((item, index) => (
-        <>
+        <View key={index} className="flex flex-row items-center">
           {index > 0 && (
             <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
           )}
           <Pressable
-            key={index}
             onPress={() => {
               setExploreActivatedViewName(
                 item?.value as ExploreActivatedViewName,
@@ -39,7 +38,7 @@ export default function ExploreViewSwitch() {
               {item.label}
             </Text>
           </Pressable>
-        </>
+        </View>
       ))}
     </View>
   );

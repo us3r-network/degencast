@@ -31,60 +31,58 @@ export default function CommunityMetaInfo({
 
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
-      <Link className="w-full" href={`/communities/${channelId}`} asChild>
-        <Pressable
-          className="w-full flex-col gap-4"
-          onPress={(e) => {
-            e.stopPropagation();
-            if (!channelId) return;
-            navigateToCommunityDetail(channelId, communityInfo);
-          }}
-        >
-          <View className={cn("w-full flex-row gap-3")}>
-            <View className=" relative">
-              <Avatar
-                alt={name || ""}
-                className="size-[50px] border border-secondary"
-              >
-                <AvatarImage source={{ uri: logo || "" }} />
-                <AvatarFallback className="border-primary bg-secondary">
-                  <Text className="text-sm font-bold">{name}</Text>
-                </AvatarFallback>
-              </Avatar>
-              {channelId && (
-                <CommunityAvatarJoinIconButton
-                  channelId={channelId}
-                  className=" absolute -bottom-1 -right-1"
-                />
-              )}
-            </View>
+      <Pressable
+        className="w-full flex-col gap-4"
+        onPress={(e) => {
+          e.stopPropagation();
+          if (!channelId) return;
+          navigateToCommunityDetail(channelId, communityInfo);
+        }}
+      >
+        <View className={cn("w-full flex-row gap-3")}>
+          <View className=" relative">
+            <Avatar
+              alt={name || ""}
+              className="size-[50px] border border-secondary"
+            >
+              <AvatarImage source={{ uri: logo || "" }} />
+              <AvatarFallback className="border-primary bg-secondary">
+                <Text className="text-sm font-bold">{name}</Text>
+              </AvatarFallback>
+            </Avatar>
+            {channelId && (
+              <CommunityAvatarJoinIconButton
+                channelId={channelId}
+                className=" absolute -bottom-1 -right-1"
+              />
+            )}
+          </View>
 
-            <View className="flex-1 flex-col justify-between">
-              <Text className="line-clamp-1 text-xl font-bold leading-none">
-                {name}
+          <View className="flex-1 flex-col justify-between">
+            <Text className="line-clamp-1 text-xl font-bold leading-none">
+              {name}
+            </Text>
+            <View className="flex-row items-center gap-3">
+              <Text className="text-sm font-normal leading-none text-secondary">
+                {displayValue(totalNumber || 0)}{" "}
+                <Text className="text-sm font-normal leading-none">
+                  Followers
+                </Text>
               </Text>
-              <View className="flex-row items-center gap-3">
-                <Text className="text-sm font-normal leading-none text-secondary">
-                  {displayValue(totalNumber || 0)}{" "}
-                  <Text className="text-sm font-normal leading-none">
-                    Followers
-                  </Text>
+              <Text className="text-sm font-normal leading-none text-secondary">
+                {displayValue(newPostNumber || 0)}{" "}
+                <Text className="text-sm font-normal leading-none">
+                  New Casts
                 </Text>
-                <Text className="text-sm font-normal leading-none text-secondary">
-                  {displayValue(newPostNumber || 0)}{" "}
-                  <Text className="text-sm font-normal leading-none">
-                    New Casts
-                  </Text>
-                </Text>
-              </View>
+              </Text>
             </View>
           </View>
-          <Text className="line-clamp-1 text-sm font-normal leading-6">
-            {description}
-          </Text>
-          {host && <HostUserInfo key={host.fid} data={host} />}
-        </Pressable>
-      </Link>
+        </View>
+        <Text className="line-clamp-1 text-sm font-normal leading-6">
+          {description}
+        </Text>
+        {host && <HostUserInfo key={host.fid} data={host} />}
+      </Pressable>
     </View>
   );
 }

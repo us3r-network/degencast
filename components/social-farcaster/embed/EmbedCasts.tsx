@@ -8,7 +8,7 @@ import { Card } from "~/components/ui/card";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId || embed.cast_id);
@@ -23,6 +23,7 @@ export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
 }
 
 function EmbedCast({ cast }: { cast: NeynarCast }) {
+  const router = useRouter();
   const { setCastDetailCacheData } = useCastPage();
   const { author } = cast;
 
@@ -32,8 +33,7 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
   }, [cast]);
 
   return (
-    <Link
-      href={`/casts/${getCastHex(cast)}`}
+    <Pressable
       className="w-full "
       onPress={(e) => {
         e.stopPropagation();
@@ -41,6 +41,7 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
         setCastDetailCacheData(castHex, {
           cast,
         });
+        router.push(`/casts/${getCastHex(cast)}`);
       }}
     >
       <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
@@ -78,7 +79,7 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
           />
         )}
       </Card>
-    </Link>
+    </Pressable>
   );
 }
 

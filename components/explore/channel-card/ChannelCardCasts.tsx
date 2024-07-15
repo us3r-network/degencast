@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import { useRef, useState } from "react";
+import { Link, useRouter } from "expo-router";
+import { forwardRef, LegacyRef, useRef, useState } from "react";
 import { FlatList, LayoutRectangle, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import { BuyChannelBadgeWithIconButton } from "~/components/community/CommunityBuyShareButton";
@@ -14,13 +14,17 @@ import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import { cn } from "~/lib/utils";
 import { CommunityInfo } from "~/services/community/types/community";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
-export default function ChannelCardCasts({
-  channelId,
-  communityInfo,
-}: {
-  channelId: string;
-  communityInfo: CommunityInfo;
-}) {
+const ChannelCardCasts = forwardRef(function (
+  {
+    channelId,
+    communityInfo,
+  }: {
+    channelId: string;
+    communityInfo: CommunityInfo;
+  },
+  ref: LegacyRef<View>,
+) {
+  const router = useRouter();
   // const { navigateToCommunityDetail } = useCommunityPage();
   const { setCastDetailCacheData } = useCastPage();
 
@@ -133,9 +137,8 @@ export default function ChannelCardCasts({
                   marginLeft: 15,
                 }}
               >
-                <Link
+                <Pressable
                   className={cn(" h-full w-full ")}
-                  href={`/casts/${castHex}`}
                   onPress={(e) => {
                     e.stopPropagation();
 
@@ -143,6 +146,7 @@ export default function ChannelCardCasts({
                       origin: CastDetailDataOrigin.Explore,
                       cast: cast,
                     });
+                    router.push(`/casts/${castHex}`);
                   }}
                 >
                   <Card
@@ -152,7 +156,7 @@ export default function ChannelCardCasts({
                   >
                     <FCast cast={cast} webpageImgIsFixedRatio={true} />
                   </Card>
-                </Link>
+                </Pressable>
               </View>
             </View>
           );
@@ -219,4 +223,5 @@ export default function ChannelCardCasts({
       />
     </View>
   );
-}
+});
+export default ChannelCardCasts;
