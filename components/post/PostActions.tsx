@@ -17,23 +17,26 @@ import {
   TextProps,
   View,
   ViewProps,
+  Pressable,
 } from "react-native";
 import { Image } from "react-native";
 import { CommentIcon2, EditIcon, MintIcon } from "../common/SvgIcons";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, LegacyRef, useCallback, useEffect, useState } from "react";
 import { Link } from "expo-router";
 import useAppSettings from "~/hooks/useAppSettings";
+import React from "react";
 
-export const ActionButton = forwardRef(function ({
-  className,
-  ...props
-}: ButtonProps) {
+export const ActionButton = forwardRef<
+  React.ElementRef<typeof Pressable>,
+  ButtonProps
+>(({ className, ...props }, ref) => {
   return (
     <Button
       className={cn(
         " h-[42px] w-[42px] flex-col rounded-full bg-white p-0 active:bg-white active:opacity-100 web:hover:opacity-100",
         className,
       )}
+      ref={ref}
       {...props}
     />
   );
@@ -226,23 +229,7 @@ function ActionMenuItem({
   return <Animated.View style={[actionStyle]}>{children}</Animated.View>;
 }
 
-export const ExplorePostActions = ({
-  channelId,
-  liked,
-  likeCount,
-  liking,
-  reposted,
-  reposting,
-  onLike,
-  onGift,
-  onShare,
-  onComment,
-  onMint,
-  onRepost,
-
-  className,
-  ...props
-}: ViewProps & {
+type ExplorePostActionsProps = {
   channelId?: string;
   liked: boolean;
   likeCount?: number;
@@ -255,7 +242,27 @@ export const ExplorePostActions = ({
   onComment?: () => void;
   onMint?: () => void;
   onRepost?: () => void;
-}) => {
+};
+export const ExplorePostActions = forwardRef(function (
+  {
+    channelId,
+    liked,
+    likeCount,
+    liking,
+    reposted,
+    reposting,
+    onLike,
+    onGift,
+    onShare,
+    onComment,
+    onMint,
+    onRepost,
+
+    className,
+    ...props
+  }: ViewProps & ExplorePostActionsProps,
+  ref: LegacyRef<View>,
+) {
   const {
     openExploreCastMenu: showActions,
     setOpenExploreCastMenu: showActionsChange,
@@ -277,6 +284,7 @@ export const ExplorePostActions = ({
 
   return (
     <View
+      ref={ref}
       className={cn(
         " relative z-0 flex w-fit flex-col items-center",
         className,
@@ -391,27 +399,9 @@ export const ExplorePostActions = ({
       </Link> */}
     </View>
   );
-};
+});
 
-export const PostDetailActions = ({
-  liked = false,
-  likeCount,
-  liking,
-  reposted,
-  reposting,
-  onLike,
-  onGift,
-  onShare,
-  onComment,
-  onMint,
-  onRepost,
-  hideLike,
-  hideGift,
-  hideShare,
-  hideComment,
-  className,
-  ...props
-}: ViewProps & {
+type PostDetailActionsProps = {
   liked?: boolean;
   likeCount?: number;
   liking?: boolean;
@@ -427,9 +417,35 @@ export const PostDetailActions = ({
   hideGift?: boolean;
   hideShare?: boolean;
   hideComment?: boolean;
-}) => {
+};
+export const PostDetailActions = forwardRef(function (
+  {
+    liked = false,
+    likeCount,
+    liking,
+    reposted,
+    reposting,
+    onLike,
+    onGift,
+    onShare,
+    onComment,
+    onMint,
+    onRepost,
+    hideLike,
+    hideGift,
+    hideShare,
+    hideComment,
+    className,
+    ...props
+  }: ViewProps & PostDetailActionsProps,
+  ref: LegacyRef<View>,
+) {
   return (
-    <View className={cn(" flex w-fit flex-row gap-3", className)} {...props}>
+    <View
+      className={cn(" flex w-fit flex-row gap-3", className)}
+      ref={ref}
+      {...props}
+    >
       {!hideGift && (
         <GiftButton
           variant={"outline"}
@@ -488,4 +504,4 @@ export const PostDetailActions = ({
       )}
     </View>
   );
-};
+});

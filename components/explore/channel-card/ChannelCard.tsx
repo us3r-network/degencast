@@ -12,16 +12,17 @@ import { ExploreApplyLaunchButton } from "~/components/common/ApplyLaunchButton"
 import { ExploreCard } from "../ExploreStyled";
 import ChannelCardCasts from "./ChannelCardCasts";
 import CommunityBuyShareButton from "~/components/community/CommunityBuyShareButton";
+import React from "react";
+import { ViewRef } from "~/components/primitives/types";
 
-export default function ChannelCard({
-  communityInfo,
-  cast,
-  className,
-  ...props
-}: ViewProps & {
+type ChannelCardProps = ViewProps & {
   communityInfo: CommunityInfo;
   cast?: FarCast | NeynarCast | null;
-}) {
+};
+const ChannelCard = React.forwardRef<
+  ViewRef,
+  React.ComponentPropsWithoutRef<typeof View> & ChannelCardProps
+>(({ communityInfo, cast, className }, ref) => {
   const { channelId } = communityInfo;
   const { loading: communityTokensLoading, items: communityTokens } =
     useCommunityTokens();
@@ -41,7 +42,7 @@ export default function ChannelCard({
   return (
     <ExploreCard
       className={cn("flex-col gap-4 bg-[#F5F0FE] px-0", className)}
-      {...props}
+      ref={ref}
     >
       <View className={cn("w-full flex-col gap-4 px-4")}>
         <CommunityMetaInfo communityInfo={communityInfo} />
@@ -77,4 +78,6 @@ export default function ChannelCard({
       )}
     </ExploreCard>
   );
-}
+});
+
+export default ChannelCard;

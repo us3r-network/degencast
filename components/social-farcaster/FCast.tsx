@@ -23,7 +23,6 @@ export default function FCast({
   hidePoints = true,
   webpageImgIsFixedRatio,
   viewMoreWordLimits,
-  ...props
 }: ViewProps & {
   cast: FarCast | NeynarCast;
   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
@@ -42,11 +41,7 @@ export default function FCast({
     embeds.webpages.length > 0;
   const isNeynar = isNeynarCast(cast);
   return (
-    <View
-      key={castHex}
-      className={cn("flex w-full flex-col gap-4", className)}
-      {...props}
-    >
+    <View key={castHex} className={cn("flex w-full flex-col gap-4", className)}>
       {/* header - user info */}
       <View className="flex flex-row items-center justify-between gap-6">
         {isNeynar ? (

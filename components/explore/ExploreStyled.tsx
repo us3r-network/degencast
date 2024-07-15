@@ -3,6 +3,9 @@ import { Dimensions, View, ViewProps } from "react-native";
 import { isDesktop } from "react-device-detect";
 import { cn } from "~/lib/utils";
 import { Card } from "../ui/card";
+import { forwardRef, LegacyRef } from "react";
+import React from "react";
+import { ViewRef } from "../primitives/types";
 
 export const headerHeight = DEFAULT_HEADER_HEIGHT;
 export const footerHeight = DEFAULT_TABBAR_HEIGHT;
@@ -12,7 +15,10 @@ export const itemHeight =
   headerHeight -
   footerHeight +
   itemPaddingTop;
-export function ExploreSwipeItem({ children, className, ...props }: ViewProps) {
+export const ExploreSwipeItem = forwardRef(function (
+  { children, className, ...props }: ViewProps,
+  ref: LegacyRef<View>,
+) {
   return (
     <View
       className={cn(
@@ -25,6 +31,7 @@ export function ExploreSwipeItem({ children, className, ...props }: ViewProps) {
         height: itemHeight,
         paddingTop: itemPaddingTop,
       }}
+      ref={ref}
       {...props}
     >
       <View
@@ -36,16 +43,20 @@ export function ExploreSwipeItem({ children, className, ...props }: ViewProps) {
       </View>
     </View>
   );
-}
+});
 
-export function ExploreCard({ className, ...props }: ViewProps) {
+export const ExploreCard = React.forwardRef<
+  ViewRef,
+  React.ComponentPropsWithoutRef<typeof View>
+>(({ className, ...props }: ViewProps, ref: LegacyRef<View>) => {
   return (
     <Card
       className={cn(
         "box-border h-full w-full flex-col gap-4 rounded-[20px] border-none p-3",
         className,
       )}
+      ref={ref}
       {...props}
     />
   );
-}
+});

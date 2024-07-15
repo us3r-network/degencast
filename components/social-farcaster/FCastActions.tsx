@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ViewProps } from "react-native";
+import { forwardRef, LegacyRef, useState } from "react";
+import { View, ViewProps } from "react-native";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
@@ -21,17 +21,20 @@ import {
 } from "~/utils/farcaster/cast-utils";
 import useAuth from "~/hooks/user/useAuth";
 
-export function FCastDetailActions({
-  cast,
-  farcasterUserDataObj,
-  communityInfo,
-  ...props
-}: ViewProps & {
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: { [key: string]: UserData };
-  communityInfo: CommunityInfo;
-  isDetail?: boolean;
-}) {
+export const FCastDetailActions = forwardRef(function (
+  {
+    cast,
+    farcasterUserDataObj,
+    communityInfo,
+    ...props
+  }: ViewProps & {
+    cast: FarCast | NeynarCast;
+    farcasterUserDataObj?: { [key: string]: UserData };
+    communityInfo: CommunityInfo;
+    isDetail?: boolean;
+  },
+  ref: LegacyRef<View>,
+) {
   const castFid = getCastFid(cast);
   const castUserData = isNeynarCast(cast)
     ? {
@@ -102,6 +105,7 @@ export function FCastDetailActions({
   return (
     <>
       <PostDetailActions
+        ref={ref}
         liked={liked}
         liking={likePending}
         reposted={recasted}
@@ -142,18 +146,21 @@ export function FCastDetailActions({
       />
     </>
   );
-}
+});
 
-export function FCastExploreActions({
-  cast,
-  farcasterUserDataObj,
-  communityInfo,
-  ...props
-}: ViewProps & {
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: { [key: string]: UserData };
-  communityInfo: CommunityInfo;
-}) {
+export const FCastExploreActions = forwardRef(function (
+  {
+    cast,
+    farcasterUserDataObj,
+    communityInfo,
+    ...props
+  }: ViewProps & {
+    cast: FarCast | NeynarCast;
+    farcasterUserDataObj?: { [key: string]: UserData };
+    communityInfo: CommunityInfo;
+  },
+  ref: LegacyRef<View>,
+) {
   const castFid = getCastFid(cast);
   const castUserData = farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
@@ -219,6 +226,7 @@ export function FCastExploreActions({
   return (
     <>
       <ExplorePostActions
+        ref={ref}
         channelId={channelId}
         liked={liked}
         likeCount={likeCount}
@@ -261,15 +269,4 @@ export function FCastExploreActions({
       />
     </>
   );
-}
-
-export function CreatedFCastActions({
-  cast,
-  ...props
-}: ViewProps & {
-  cast: FarCast;
-}) {
-  const { login, ready, authenticated } = useAuth();
-  const onShare = () => {};
-  return <PostDetailActions onShare={onShare} hideGift hideLike {...props} />;
-}
+});
