@@ -335,7 +335,16 @@ export const ExplorePostActions = forwardRef(function (
   const scaleAnimatedValue = useState(new Animated.Value(0))[0];
   const translateYAnimatedValue = useState(new Animated.Value(0))[0];
   const translateXAnimatedValue = useState(new Animated.Value(0))[0];
-
+  const openIconDeg = useMemo(() => {
+    switch (direction) {
+      case "left":
+        return "90deg";
+      case "top":
+        return "180deg";
+      default:
+        return "90deg";
+    }
+  }, [direction]);
   return (
     <View
       ref={ref}
@@ -412,7 +421,7 @@ export const ExplorePostActions = forwardRef(function (
                 {
                   rotate: toggleBtnAnimation.interpolate({
                     inputRange: [0, 1],
-                    outputRange: ["0deg", "180deg"],
+                    outputRange: ["0deg", openIconDeg],
                   }),
                 },
               ],
