@@ -6,11 +6,16 @@ import {
 import FollowingScreen from "~/components/explore/following";
 import HostingScreen from "~/components/explore/hosting";
 import TrendingScreen from "~/components/explore/trending";
+import TrendingChannels from "~/components/explore/TrendingChannels";
 import { Tabs, TabsContent } from "~/components/ui/tabs";
 import useAppSettings from "~/hooks/useAppSettings";
 
 const TABS = [
-  { label: "Trending", value: "trending", screenComponent: <TrendingScreen /> },
+  {
+    label: "Trending",
+    value: "trending",
+    screenComponent: <TrendingChannels />,
+  },
   {
     label: "Following",
     value: "following",

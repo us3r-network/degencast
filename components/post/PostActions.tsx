@@ -21,7 +21,15 @@ import {
 } from "react-native";
 import { Image } from "react-native";
 import { CommentIcon2, EditIcon, MintIcon } from "../common/SvgIcons";
-import { forwardRef, LegacyRef, useCallback, useEffect, useState } from "react";
+import {
+  forwardRef,
+  LegacyRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Link } from "expo-router";
 import useAppSettings from "~/hooks/useAppSettings";
 import React from "react";
@@ -179,18 +187,20 @@ export const MintButton = ({
 };
 
 function ActionMenuItem({
-  scaleAnimatedValue,
-  translateYAnimatedValue,
-  showMenu,
   index,
   children,
 }: {
   children: React.ReactNode;
-  scaleAnimatedValue: Animated.Value;
-  translateYAnimatedValue: Animated.Value;
-  showMenu: boolean;
   index: number;
 }) {
+  const {
+    direction,
+    showMenu,
+    scaleAnimatedValue,
+    translateYAnimatedValue,
+    translateXAnimatedValue,
+  } = useActionMenuCtx();
+
   useEffect(() => {
     Animated.timing(scaleAnimatedValue, {
       toValue: showMenu ? 1 : 0,
@@ -203,6 +213,32 @@ function ActionMenuItem({
       useNativeDriver: true,
     }).start();
   }, [showMenu]);
+
+  const translateStyle = useMemo(() => {
+    switch (direction) {
+      case "top":
+        return {
+          translateY: translateYAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -(52 * index)],
+          }),
+        };
+      case "left":
+        return {
+          translateX: translateYAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -(52 * index)],
+          }),
+        };
+      default:
+        return {
+          translateY: translateYAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -(52 * index)],
+          }),
+        };
+    }
+  }, [translateYAnimatedValue, direction]);
   const actionStyle = {
     position: "absolute" as "absolute",
     zIndex: index,
@@ -218,18 +254,14 @@ function ActionMenuItem({
           outputRange: [0, 1],
         }),
       },
-      {
-        translateY: translateYAnimatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -(52 * index)],
-        }),
-      },
+      translateStyle,
     ],
   };
   return <Animated.View style={[actionStyle]}>{children}</Animated.View>;
 }
 
 type ExplorePostActionsProps = {
+  direction?: "top" | "left";
   channelId?: string;
   liked: boolean;
   likeCount?: number;
@@ -243,8 +275,29 @@ type ExplorePostActionsProps = {
   onMint?: () => void;
   onRepost?: () => void;
 };
+const ActionMenuCtx = React.createContext<{
+  showMenu?: boolean;
+  direction?: "top" | "left";
+  scaleAnimatedValue: Animated.Value;
+  translateYAnimatedValue: Animated.Value;
+  translateXAnimatedValue: Animated.Value;
+}>({
+  showMenu: false,
+  direction: "left",
+  scaleAnimatedValue: new Animated.Value(0),
+  translateYAnimatedValue: new Animated.Value(0),
+  translateXAnimatedValue: new Animated.Value(0),
+});
+function useActionMenuCtx() {
+  const context = useContext(ActionMenuCtx);
+  if (!context) {
+    throw new Error("useActionMenuCtx must be used within ActionMenuCtx");
+  }
+  return context;
+}
 export const ExplorePostActions = forwardRef(function (
   {
+    direction = "left",
     channelId,
     liked,
     likeCount,
@@ -281,89 +334,73 @@ export const ExplorePostActions = forwardRef(function (
   }, [showActions]);
   const scaleAnimatedValue = useState(new Animated.Value(0))[0];
   const translateYAnimatedValue = useState(new Animated.Value(0))[0];
+  const translateXAnimatedValue = useState(new Animated.Value(0))[0];
 
   return (
     <View
       ref={ref}
       className={cn(
         " relative z-0 flex w-fit flex-col items-center",
+        direction === "left" ? " h-fit flex-row" : "",
         className,
       )}
       {...props}
     >
-      {/* <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
+      <ActionMenuCtx.Provider
+        value={{
+          showMenu: showActions,
+          direction,
+          scaleAnimatedValue,
+          translateYAnimatedValue,
+          translateXAnimatedValue,
+        }}
+      >
+        {/* <ActionMenuItem
         index={5}
       >
         <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
       </ActionMenuItem> */}
-      <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
-        index={5}
-      >
-        <Link
-          href={`/create${channelId ? "?channelId=" + channelId : ""}`}
-          asChild
-        >
-          <ActionButton className="shadow-md shadow-primary">
-            <SquarePen size={16} strokeWidth={2} className="stroke-primary" />
-          </ActionButton>
-        </Link>
-      </ActionMenuItem>
+        <ActionMenuItem index={5}>
+          <Link
+            href={`/create${channelId ? "?channelId=" + channelId : ""}`}
+            asChild
+          >
+            <ActionButton className="shadow-md shadow-primary">
+              <SquarePen size={16} strokeWidth={2} className="stroke-primary" />
+            </ActionButton>
+          </Link>
+        </ActionMenuItem>
 
-      <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
-        index={4}
-      >
-        <CommentButton
-          className=" shadow-md shadow-primary"
-          onPress={onComment}
-        />
-      </ActionMenuItem>
-      <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
-        index={3}
-      >
-        <MintButton className=" shadow-md shadow-primary" onPress={onMint} />
-      </ActionMenuItem>
-      <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
-        index={2}
-      >
-        {/* <ShareButton className=" shadow-md shadow-primary" onPress={onShare} /> */}
-        <RepostButton
-          className=" shadow-md shadow-primary"
-          disabled={reposting}
-          reposted={reposted}
-          reposting={reposting}
-          onPress={onRepost}
-        />
-      </ActionMenuItem>
-      <ActionMenuItem
-        showMenu={showActions}
-        scaleAnimatedValue={scaleAnimatedValue}
-        translateYAnimatedValue={translateYAnimatedValue}
-        index={1}
-      >
-        <LikeButton
-          className=" shadow-md shadow-primary"
-          disabled={liking}
-          liked={liked}
-          liking={liking}
-          likeCount={likeCount}
-          onPress={onLike}
-        />
-      </ActionMenuItem>
+        <ActionMenuItem index={4}>
+          <CommentButton
+            className=" shadow-md shadow-primary"
+            onPress={onComment}
+          />
+        </ActionMenuItem>
+        <ActionMenuItem index={3}>
+          <MintButton className=" shadow-md shadow-primary" onPress={onMint} />
+        </ActionMenuItem>
+        <ActionMenuItem index={2}>
+          {/* <ShareButton className=" shadow-md shadow-primary" onPress={onShare} /> */}
+          <RepostButton
+            className=" shadow-md shadow-primary"
+            disabled={reposting}
+            reposted={reposted}
+            reposting={reposting}
+            onPress={onRepost}
+          />
+        </ActionMenuItem>
+        <ActionMenuItem index={1}>
+          <LikeButton
+            className=" shadow-md shadow-primary"
+            disabled={liking}
+            liked={liked}
+            liking={liking}
+            likeCount={likeCount}
+            onPress={onLike}
+          />
+        </ActionMenuItem>
+      </ActionMenuCtx.Provider>
       <ActionButton
         className=" z-10 h-[50px] w-[50px] shadow-md shadow-primary"
         onPress={toggleActions}
