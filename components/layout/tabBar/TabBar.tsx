@@ -1,15 +1,20 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { Platform, Pressable, TouchableOpacity, View } from "react-native";
-import { Card } from "~/components/ui/card";
+import { Platform, Pressable, View } from "react-native";
 import { Text } from "~/components/ui/text";
+import { DEFAULT_TABBAR_HEIGHT } from "~/constants";
 import { cn } from "~/lib/utils";
 
 function MobileTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
 
   return (
-    <View className="flex items-center justify-evenly border-t-0 bg-background p-4">
-      <Card className="h-[60px] w-full max-w-screen-sm flex-row items-center justify-between rounded-[20px] px-0 py-3 sm:px-8">
+    <View
+      className="shadow-md-top flex items-center justify-evenly border-t-0 bg-background"
+      style={{
+        height: DEFAULT_TABBAR_HEIGHT,
+      }}
+    >
+      <View className="h-full w-full max-w-screen-sm flex-row items-center justify-between px-0 py-3 sm:px-8">
         <View className="sm:hidden" />
         {state.routes.map((route, index: number) => {
           // hide nested navigation tabs
@@ -60,13 +65,13 @@ function MobileTabBar(props: BottomTabBarProps) {
               {options.tabBarIcon &&
                 options.tabBarIcon({
                   focused: isFocused,
-                  color: isFocused ? "#A36EFE" : "#4C2896",
+                  color: isFocused ? "#FFF" : "#A36EFE",
                   size: 0,
                 })}
               <Text
                 className={cn(
                   "text-xs font-medium",
-                  isFocused ? "text-secondary" : "text-primary",
+                  isFocused ? "text-white" : "text-secondary",
                 )}
               >
                 {label as string}
@@ -75,7 +80,7 @@ function MobileTabBar(props: BottomTabBarProps) {
           );
         })}
         <View className="sm:hidden" />
-      </Card>
+      </View>
     </View>
   );
 }

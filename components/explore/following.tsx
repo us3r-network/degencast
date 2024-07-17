@@ -16,6 +16,7 @@ import useLoadFollowingChannels from "~/hooks/explore/useLoadFollowingChannels";
 import { ConnectFarcasterCard } from "./ConnectFarcasterCard";
 import { FollowingEmptyListCard } from "./EmptyListCard";
 import useAuth from "~/hooks/user/useAuth";
+import { PageContent } from "../layout/content/Content";
 
 export default function FollowingChannelsScreen() {
   const { login, ready, authenticated } = useAuth();
@@ -109,7 +110,7 @@ function FollowingChannels() {
   }
 
   return (
-    <View style={{ flex: 1 }} className="relative bg-background">
+    <PageContent>
       <View
         className={cn("w-full")}
         style={{ height: itemHeight }}
@@ -173,6 +174,6 @@ function FollowingChannels() {
           })}
         </ScrollView>
       </View>
-    </View>
+    </PageContent>
   );
 }

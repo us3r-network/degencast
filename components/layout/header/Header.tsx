@@ -64,3 +64,15 @@ export function HeaderRight({ className, ...props }: ViewProps) {
     />
   );
 }
+
+export function HeaderCenter({ className, ...props }: ViewProps) {
+  return (
+    <View
+      className={cn(
+        "m-auto w-full flex-1 max-sm:px-4 sm:w-full sm:max-w-screen-sm",
+        className,
+      )}
+      {...props}
+    />
+  );
+}

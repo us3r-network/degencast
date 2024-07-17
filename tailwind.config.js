@@ -68,6 +68,7 @@ module.exports = {
         4: "0.9375rem", // 15px
       },
       boxShadow: {
+        "md-top": "0px -4px 4px 0px rgba(76, 40, 150, 0.60)",
         "floating-button": "0px 4px 4px 0px rgba(76, 40, 150, 0.60)",
       },
       gridTemplateRows: {

@@ -13,7 +13,7 @@ export const itemPaddingTop = 15;
 export const itemHeight =
   Dimensions.get("window").height -
   headerHeight -
-  footerHeight +
+  footerHeight -
   itemPaddingTop;
 export const ExploreSwipeItem = forwardRef(function (
   { children, className, ...props }: ViewProps,
