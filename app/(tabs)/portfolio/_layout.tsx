@@ -4,13 +4,11 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import UserSignin from "~/components/portfolio/user/UserSignin";
-import { Card } from "~/components/ui/card";
 import { PRIMERY_COLOR } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 import MyCastsScreen from "./casts";
 import MyChannelsScreen from "./channels";
 import WalletsScreen from "./wallets";
-import { PortfolioPageContent } from ".";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [

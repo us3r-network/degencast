@@ -1,20 +1,19 @@
 import { ScrollView, View } from "react-native";
 import { useAccount } from "wagmi";
-import { PageContent } from "~/components/layout/content/Content";
+import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import UserWallet from "~/components/portfolio/tokens/UserWallet";
 import UserInfo from "~/components/portfolio/user/UserInfo";
-import { PortfolioPageContent } from ".";
 
 export default function WalletsScreen() {
   const account = useAccount();
   return (
-    <View className="flex h-full gap-6">
-      <PageContent className="flex-none">
+    <PageContent className="flex h-full gap-6">
+      <View className="h-24">
         <UserInfo />
-      </PageContent>
-      <PortfolioPageContent>
+      </View>
+      <CardWarper>
         <ScrollView
           className="h-full w-full"
           showsVerticalScrollIndicator={false}
@@ -25,7 +24,7 @@ export default function WalletsScreen() {
             {account?.address && <CommunityTokens address={account?.address} />}
           </View>
         </ScrollView>
-      </PortfolioPageContent>
-    </View>
+      </CardWarper>
+    </PageContent>
   );
 }
