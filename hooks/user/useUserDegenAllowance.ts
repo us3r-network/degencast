@@ -28,9 +28,10 @@ export default function useUserDegenAllowance(params?: {
         address: address as string,
         fid,
       });
+      console.log("allowanceData", allowanceData);
       setTotalDegenAllowance(allowanceData.data?.[0]?.tip_allowance || "0");
       setRemainingDegenAllowance(
-        allowanceData.data?.[0]?.remaining_allowance || "0",
+        allowanceData.data?.[0]?.remaining_tip_allowance || "0",
       );
     } catch (e) {
       console.error(e);
