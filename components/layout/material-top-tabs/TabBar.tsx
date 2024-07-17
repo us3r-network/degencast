@@ -1,9 +1,8 @@
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { Animated, View, Pressable } from "react-native";
 import { Text } from "~/components/ui/text";
-import { cn } from "~/lib/utils";
 
-const getRouteItemRenderConfig = (
+export const getRouteItemRenderConfig = (
   tabBarProps: MaterialTopTabBarProps,
   route: MaterialTopTabBarProps["state"]["routes"][0],
   index: number,
