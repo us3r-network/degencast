@@ -36,7 +36,7 @@ export const DEGEN_METADATA: TokenWithTradeInfo = {
 
 export const DEFAULT_HEADER_HEIGHT = 54;
 export const DEFAULT_TABBAR_HEIGHT = 60;
-export const PRIMERY_COLOR = "#4C2896";
+export const PRIMARY_COLOR = "#4C2896";
 
 export const HTTP_HMAC_KEY = process.env.EXPO_PUBLIC_HTTP_HMAC_KEY || "";
 export const INVITE_ONLY = process.env.EXPO_PUBLIC_INVITE_ONLY;

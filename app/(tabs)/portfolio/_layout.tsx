@@ -4,7 +4,7 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import UserSignin from "~/components/portfolio/user/UserSignin";
-import { PRIMERY_COLOR } from "~/constants";
+import { PRIMARY_COLOR } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 import MyCastsScreen from "./casts";
 import MyChannelsScreen from "./channels";
@@ -43,7 +43,7 @@ export default function PortfolioScreen() {
               tabBar={(props) => <PageTabBar {...props} />}
               style={{ width: "100%" }}
               sceneContainerStyle={{
-                backgroundColor: PRIMERY_COLOR,
+                backgroundColor: PRIMARY_COLOR,
               }}
             >
               {TABS.map((tab) => {
