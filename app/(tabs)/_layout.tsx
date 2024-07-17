@@ -8,15 +8,7 @@ import {
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
-import {
-  Header,
-  HeaderLeftDefault,
-  HeaderRight,
-} from "~/components/layout/header/Header";
-import { SearchLink } from "~/components/layout/header/HeaderLinks";
 import TabBar from "~/components/layout/tabBar/TabBar";
-import UserGlobalPoints from "~/components/point/UserGlobalPoints";
-import { useClientOnlyValue } from "~/components/useClientOnlyValue";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import useAuth from "~/hooks/user/useAuth";
@@ -34,7 +26,7 @@ export default function TabLayout() {
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-background">
       <Tabs
-        screenOptions={{ headerShown: useClientOnlyValue(false, true) }}
+        screenOptions={{ headerShown: false }}
         sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenListeners={{
           // Monitor tab press and if 'portfolio' tab is pressed
@@ -66,7 +58,6 @@ export default function TabLayout() {
             title: "Feeds",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
-            headerShown: false,
           }}
         />
         <Tabs.Screen
@@ -75,23 +66,6 @@ export default function TabLayout() {
             title: "Ranks",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
-            headerTransparent: true,
-            headerStyle: {
-              height: 54,
-            },
-            header: () => (
-              <Header>
-                <HeaderLeftDefault title="Ranks" />
-                <HeaderRight>
-                  <UserGlobalPoints />
-                  <SearchLink />
-                  {/* <PostLink />
-                  <View>
-                    <TradeSharingButton fid={currFid} />
-                  </View> */}
-                </HeaderRight>
-              </Header>
-            ),
           }}
         />
         <Tabs.Screen
@@ -100,7 +74,6 @@ export default function TabLayout() {
             title: "Activities",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ActivityIcon stroke={color} />,
-            headerShown: false,
           }}
         />
         <Tabs.Screen
@@ -109,28 +82,7 @@ export default function TabLayout() {
             title: "Portfolio",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
-            headerTransparent: true,
-            headerStyle: {
-              height: 54,
-            },
-            header: () => (
-              <Header>
-                <HeaderLeftDefault title="Portfolio" />
-                <HeaderRight>
-                  <UserGlobalPoints />
-                  <SearchLink />
-                  {/* <PostLink />
-                  {currFid && farcasterAccount && (
-                    <View>
-                      <PortfolioSharingButton
-                        fid={Number(currFid)}
-                        fname={farcasterAccount.username || ""}
-                      />
-                    </View>
-                  )} */}
-                </HeaderRight>
-              </Header>
-            ),
+
           }}
         />
       </Tabs>

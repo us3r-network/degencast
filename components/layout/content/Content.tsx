@@ -1,4 +1,5 @@
 import { View, ViewProps } from "react-native";
+import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 
 export function PageContent({ className, ...props }: ViewProps) {
@@ -10,5 +11,19 @@ export function PageContent({ className, ...props }: ViewProps) {
       )}
       {...props}
     />
+  );
+}
+
+export function CardWarper({ className, children, ...props }: ViewProps) {
+  return (
+    <Card
+      className={cn(
+        "h-full w-full rounded-2xl rounded-b-none p-4 pb-0",
+        className,
+      )}
+      {...props}
+    >
+      <CardContent className="h-full w-full p-0">{children}</CardContent>
+    </Card>
   );
 }

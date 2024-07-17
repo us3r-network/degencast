@@ -17,7 +17,7 @@ export default function UserSignin({
       return (
         <Button
           variant="secondary"
-          className="w-1/2 rounded-full"
+          className="w-1/2 min-w-fit rounded-full"
           onPress={() => {
             login({ onSuccess, onFail });
           }}
