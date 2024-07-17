@@ -12,6 +12,7 @@ import {
 import ChannelCard from "./channel-card/ChannelCard";
 import useLoadTrendingChannels from "~/hooks/explore/useLoadTrendingChannels";
 import { ExploreSwipeItem, itemHeight } from "./ExploreStyled";
+import { PageContent } from "../layout/content/Content";
 
 export default function TrendingChannels() {
   const swipeData = useRef<SwipeEventData>(defaultSwipeData);
@@ -61,7 +62,7 @@ export default function TrendingChannels() {
   );
 
   return (
-    <View style={{ flex: 1 }} className="relative bg-background">
+    <PageContent>
       <View
         className={cn("w-full")}
         style={{ height: itemHeight }}
@@ -128,6 +129,6 @@ export default function TrendingChannels() {
       {items.length === 0 && (
         <ScreenLoading className=" absolute left-1/2 top-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2" />
       )}
-    </View>
+    </PageContent>
   );
 }
