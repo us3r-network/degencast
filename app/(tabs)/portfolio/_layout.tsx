@@ -9,6 +9,8 @@ import useAuth from "~/hooks/user/useAuth";
 import MyCastsScreen from "./casts";
 import MyChannelsScreen from "./channels";
 import WalletsScreen from "./wallets";
+import UserInfo from "~/components/portfolio/user/UserInfo";
+import { PageContent } from "~/components/layout/content/Content";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
@@ -40,7 +42,14 @@ export default function PortfolioScreen() {
           <View className="flex h-full w-full items-center gap-4 ">
             <Tab.Navigator
               initialRouteName={segments?.[0]}
-              tabBar={(props) => <PageTabBar {...props} />}
+              tabBar={(props) => (
+                <View className="flex gap-4 mb-4">
+                  <PageTabBar {...props} />
+                  <PageContent className="h-24 flex-none">
+                    <UserInfo />
+                  </PageContent>
+                </View>
+              )}
               style={{ width: "100%" }}
               sceneContainerStyle={{
                 backgroundColor: PRIMARY_COLOR,

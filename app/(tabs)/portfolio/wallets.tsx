@@ -9,10 +9,7 @@ import UserInfo from "~/components/portfolio/user/UserInfo";
 export default function WalletsScreen() {
   const account = useAccount();
   return (
-    <PageContent className="flex h-full gap-6">
-      <View className="h-24">
-        <UserInfo />
-      </View>
+    <PageContent>
       <CardWarper>
         <ScrollView
           className="h-full w-full"
