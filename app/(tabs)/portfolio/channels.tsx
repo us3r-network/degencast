@@ -4,12 +4,13 @@ import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
 import ChannelList from "~/components/portfolio/channels/UserChannels";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
+import { UserChannelsType } from "~/features/user/userChannelsSlice";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 function FollowingChannelsPage({ fid }: { fid: number }) {
   return (
     <CardWarper className="mt-4">
-      <ChannelList fid={fid} />
+      <ChannelList fid={fid} type={UserChannelsType.FOLLOWING} />
     </CardWarper>
   );
 }
@@ -17,7 +18,7 @@ function FollowingChannelsPage({ fid }: { fid: number }) {
 function HoldingChannelsPage({ fid }: { fid: number }) {
   return (
     <CardWarper className="mt-4">
-      <ChannelList fid={fid} />
+      <ChannelList fid={fid} type={UserChannelsType.HOLDING} />
     </CardWarper>
   );
 }

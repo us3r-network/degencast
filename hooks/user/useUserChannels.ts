@@ -4,16 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchItems,
   selectUserChannels,
+  UserChannelsType,
 } from "~/features/user/userChannelsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserChannels(fid?: number) {
+export default function useUserChannels( fid: number, type: UserChannelsType) {
   const dispatch = useDispatch();
   const {
-    items,
+    channels,
     status,
     error,
-    next,
     fid: currentFid,
   } = useSelector(selectUserChannels);
 
@@ -25,18 +25,19 @@ export default function useUserChannels(fid?: number) {
 
   useEffect(() => {
     loadMore();
-  }, [fid]);
+  }, [fid, type]);
 
   const loadMore = () => {
     if (status === AsyncRequestStatus.PENDING && fid === currentFid) return;
-    if (fid) dispatch(fetchItems(fid) as unknown as UnknownAction);
+    if (fid && type)
+      dispatch(fetchItems({ fid, type }) as unknown as UnknownAction);
   };
 
   return {
-    items,
+    items: channels.get(type)?.items || [],
     loading: status === AsyncRequestStatus.PENDING,
     error,
-    hasNext: !!next.cursor,
+    hasNext: !!channels.get(type)?.next.cursor,
     loadMore,
   };
 }

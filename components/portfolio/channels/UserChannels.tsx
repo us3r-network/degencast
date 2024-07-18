@@ -6,9 +6,16 @@ import { Text } from "~/components/ui/text";
 import useUserChannels from "~/hooks/user/useUserChannels";
 import { Channel } from "~/services/farcaster/types";
 import UserChannelAssets from "./UserChannelAssets";
+import { UserChannelsType } from "~/features/user/userChannelsSlice";
 
-export default function ChannelList({ fid }: { fid: number }) {
-  const { loading, items, hasNext, loadMore } = useUserChannels(fid);
+export default function ChannelList({
+  fid,
+  type,
+}: {
+  fid: number;
+  type: UserChannelsType;
+}) {
+  const { loading, items, hasNext, loadMore } = useUserChannels(fid, type);
   // console.log("ChannelList", { fid, loading, items, hasNext });
   return (
     <View className="container h-full">
