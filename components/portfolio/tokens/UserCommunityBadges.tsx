@@ -13,8 +13,8 @@ import {
 
 export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
   const account = useAccount();
-  const { getNFTBalance } = useATTContractInfo(badge.tokenAddress);
-  const { data: balance } = getNFTBalance(account?.address);
+  const { nftBalanceOf } = useATTContractInfo(badge.tokenAddress, badge.tokenId);
+  const { data: balance } = nftBalanceOf(account?.address);
   console.log("CommunityBadge", badge, account?.address, balance)
   return (
     <View className="flex-row items-center justify-between">
@@ -23,20 +23,22 @@ export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
           <CommunityInfo {...badge} />
         </Pressable>
       </Link>
-      <View className="flex-row items-center gap-2">
-        <Text className="text-sm">{balance}</Text>
+      <View className="flex-row items-center gap-2">nft
+        <Text className="text-sm">{Number(balance)}</Text>
         {balance !== undefined &&
           (balance > 0 ? (
             <SellButton
               logo={badge.logo}
               name={badge.name}
               tokenAddress={badge.tokenAddress}
+              tokenId={1} //todo: use cast tokenId from api
             />
           ) : (
             <BuyButton
               logo={badge.logo}
               name={badge.name}
               tokenAddress={badge.tokenAddress}
+              tokenId={1} //todo: use cast tokenId from api
             />
           ))}
       </View>

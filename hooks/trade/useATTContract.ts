@@ -7,7 +7,7 @@ import { ReadContractReturnType } from "./types";
 const chainId = ATT_CONTRACT_CHAIN.id;
 const abi = ATT_CONTRACT_ABI_JSON.abi;
 
-export function useATTContractInfo(tokenAddress: Address) {
+export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
   const contract = {
     abi,
     address: tokenAddress,
@@ -57,35 +57,21 @@ export function useATTContractInfo(tokenAddress: Address) {
     return { data: data as bigint, status };
   };
 
-  const getNFTBalance = (owner: Address | undefined) => {
+  const nftBalanceOf = (owner: Address | undefined) => {
     if (!owner) {
-      return { data: undefined, status: "error" };
+      return { data: 0n, status: "error" };
     }
-    const { data, status } = useReadContracts({
-      contracts: [
-        {
-          ...contract,
-          functionName: "balanceOf",
-          args: [owner],
-        },
-        {
-          ...contract,
-          functionName: "UNIT",
-        },
-      ],
-      query: { enabled: true },
+    const { data, status } = useReadContract({
+      ...contract,
+      functionName: "nftBalanceOf",
+      args: [owner, BigInt(tokenId)],
     });
-    // console.log("getBalance", data);
-    const rawBalance = (data as ReadContractReturnType[])?.[0].result as bigint;
-    const unit = (data as ReadContractReturnType[])?.[1].result as bigint;
-    const balance =
-      rawBalance != undefined && unit ? Number(rawBalance / unit) : undefined;
-    return { data: balance, status };
+    return { data: data as bigint, status };
   };
 
   return {
     // balanceOf,
-    getNFTBalance,
+    nftBalanceOf,
     // totalSupply,
     // MAX_SUPPLY,
     // UNIT,

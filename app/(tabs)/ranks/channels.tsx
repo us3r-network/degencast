@@ -9,7 +9,7 @@ import {
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import { BuyButton, LaunchButton } from "~/components/trade/BadgeButton";
+import { BuyButton, CreateTokenButton } from "~/components/trade/BadgeButton";
 import { TradeButton } from "~/components/trade/TradeButton";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
@@ -33,41 +33,43 @@ export default function ChannelsScreen() {
   return (
     <PageContent>
       <CardWarper>
-        <View className="flex gap-4">
+        <View className="flex gap-4 h-full">
           <OrderSelect setOrderParams={setOrderParams} />
           {loading && items.length === 0 ? (
             <Loading />
           ) : (
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={items}
-              numColumns={1}
-              ItemSeparatorComponent={() => <View className="h-4" />}
-              renderItem={({
-                item,
-                index,
-              }: {
-                item: Channel;
-                index: number;
-              }) => {
-                return (
-                  <Item
-                    key={item.id}
-                    item={item}
-                    index={index + 1}
-                    orderBy={orderParams.orderBy}
-                  />
-                );
-              }}
-              onEndReached={() => {
-                if (loading || !hasMore) return;
-                load(orderParams);
-              }}
-              onEndReachedThreshold={1}
-              ListFooterComponent={() => {
-                return loading ? <Loading /> : null;
-              }}
-            />
+            <View className="flex-1">
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                data={items}
+                numColumns={1}
+                ItemSeparatorComponent={() => <View className="h-4" />}
+                renderItem={({
+                  item,
+                  index,
+                }: {
+                  item: Channel;
+                  index: number;
+                }) => {
+                  return (
+                    <Item
+                      key={item.id}
+                      item={item}
+                      index={index + 1}
+                      orderBy={orderParams.orderBy}
+                    />
+                  );
+                }}
+                onEndReached={() => {
+                  if (loading || !hasMore) return;
+                  load(orderParams);
+                }}
+                onEndReachedThreshold={1}
+                ListFooterComponent={() => {
+                  return loading ? <Loading /> : null;
+                }}
+              />
+            </View>
           )}
         </View>
       </CardWarper>
@@ -212,11 +214,12 @@ function Item({
               name={item.name}
               logo={item.image_url}
               tokenAddress={item.attentionTokenAddress}
+              tokenId={1} //todo: use cast tokenId from api
             />
           );
         } else {
           return (
-            <LaunchButton
+            <CreateTokenButton
               channelId={item.id}
               onComplete={(tokenAddress) => {
                 console.log("tokenAddress", tokenAddress);
