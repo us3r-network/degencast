@@ -1,5 +1,5 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Stack, useLocalSearchParams, useNavigation, useSegments } from "expo-router";
+import { Stack, useLocalSearchParams, useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PageContent } from "~/components/layout/content/Content";
