@@ -11,13 +11,16 @@ import CastStatusActions from "./CastStatusActions";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 const ChannelCardCasts = forwardRef(function (
   {
     channel,
+    tokenInfo,
     casts,
   }: {
     channel?: CommunityEntity;
+    tokenInfo?: AttentionTokenEntity;
     casts: Array<{
       cast: NeynarCast;
       proposal: ProposalEntity;
@@ -71,6 +74,7 @@ const ChannelCardCasts = forwardRef(function (
                     <CastStatusActions
                       cast={cast}
                       channel={channel}
+                      tokenInfo={tokenInfo}
                       proposal={proposal}
                     />
                   ) : (
