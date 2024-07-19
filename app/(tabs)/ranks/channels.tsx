@@ -21,7 +21,7 @@ import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import { CommunityRankOrderBy } from "~/services/community/types/rank";
 import { Channel } from "~/services/farcaster/types";
 
-export default function ChannelRanks() {
+export default function ChannelsScreen() {
   const { loading, items, load, hasMore } = useCommunityRank();
   const [orderParams, setOrderParams] =
     useState<OrderParams>(DEFAULT_ORDER_PARAMS);
