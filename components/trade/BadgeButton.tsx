@@ -196,7 +196,7 @@ const Sell = forwardRef<
     const { data: balance } = nftBalanceOf(account?.address);
 
     const { getBurnNFTPriceAfterFee, getPaymentToken } =
-      useATTFactoryContractInfo(tokenAddress, tokenId);
+      useATTFactoryContractInfo(tokenAddress);
 
     const { paymentToken } = getPaymentToken();
     const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
@@ -439,7 +439,7 @@ const Buy = forwardRef<
     const { data: balance } = nftBalanceOf(account?.address);
 
     const { getMintNFTPriceAfterFee, getPaymentToken } =
-      useATTFactoryContractInfo(tokenAddress, tokenId);
+      useATTFactoryContractInfo(tokenAddress);
 
     const { paymentToken } = getPaymentToken();
     const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
@@ -452,6 +452,7 @@ const Buy = forwardRef<
           chainId: ATT_CONTRACT_CHAIN.id,
           account: account?.address,
         }).then((tokenInfo) => {
+          console.log("paymentToken tokenInfo", tokenInfo);
           setToken(tokenInfo);
         });
     }, [paymentToken, account?.address]);
@@ -460,7 +461,7 @@ const Buy = forwardRef<
     const perBadgePrice = fetchedPrice
       ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
       : "";
-
+    // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && nftPrice) {
         const transationData = {

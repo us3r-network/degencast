@@ -66,7 +66,7 @@ export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
       functionName: "nftBalanceOf",
       args: [owner, BigInt(tokenId)],
     });
-    return { data: data as bigint, status };
+    return { data: data ? (data as bigint) : undefined, status };
   };
 
   return {

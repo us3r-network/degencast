@@ -16,27 +16,24 @@ const contract = {
   chainId: ATT_CONTRACT_CHAIN.id,
 };
 
-export function useATTFactoryContractInfo(
-  tokenAddress: Address,
-  tokenId: number,
-) {
+export function useATTFactoryContractInfo(tokenAddress: Address) {
   const getMintNFTPriceAfterFee = (amount: number = 1) => {
     const { data, status } = useReadContract({
       ...contract,
       functionName: "getMintNFTPriceAfterFee",
-      args: [tokenAddress, BigInt(tokenId), BigInt(amount)],
+      args: [tokenAddress, BigInt(amount)],
     });
-    // console.log("getMintNFTPriceAfterFee", contract, data, status);
-    const nftPrice = data ? (data as bigint[])[0] : undefined;
-    const adminFee = data ? (data as bigint[])[1] : undefined;
-    return { nftPrice, adminFee, status };
+    // const nftPrice = data ? (data as bigint[])[0] : undefined;
+    // const adminFee = data ? (data as bigint[])[1] : undefined;
+    const nftPrice = data ? (data as bigint) : undefined;
+    return { nftPrice, adminFee: 0n, status };
   };
 
   const getBurnNFTPriceAfterFee = (amount: number = 1) => {
     const { data, status } = useReadContract({
       ...contract,
       functionName: "getBurnNFTPriceAfterFee",
-      args: [tokenAddress, BigInt(tokenId), BigInt(amount)],
+      args: [tokenAddress, BigInt(amount)],
     });
     const nftPrice = data ? (data as bigint[])[0] : undefined;
     const adminFee = data ? (data as bigint[])[1] : undefined;
@@ -49,7 +46,7 @@ export function useATTFactoryContractInfo(
       functionName: "tokens",
       args: [tokenAddress],
     });
-    const paymentToken = data ? ((data as unknown[])[1] as Address) : undefined;
+    const paymentToken = data ? ((data as unknown[])[2] as Address) : undefined;
 
     return { paymentToken, status };
   };
