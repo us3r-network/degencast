@@ -100,7 +100,7 @@ export const userChannelsSlice = createSlice({
         console.log("fetchItems.fulfilled", action.payload);
 
         switch (action.meta.arg.type) {
-          case UserChannelsType.HOLDING:
+          case UserChannelsType.HOLDING: {
             const allChannles = (action.payload as any).data.data;
             state.channels.set(type, {
               items: allChannles,
@@ -109,8 +109,9 @@ export const userChannelsSlice = createSlice({
               },
             });
             break;
+          }
           case UserChannelsType.FOLLOWING:
-          case UserChannelsType.ACTIVE:
+          case UserChannelsType.ACTIVE: {
             const newChannles = (action.payload as NeynarChannelsResp).channels;
             const mergeItems = uniqBy(
               [...(channelState?.items || []), ...newChannles],
@@ -123,6 +124,7 @@ export const userChannelsSlice = createSlice({
               },
             });
             break;
+          }
           default:
             break;
         }

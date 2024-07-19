@@ -1,5 +1,8 @@
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
-import { Animated, View, Pressable } from "react-native";
+import { useNavigation } from "expo-router";
+import { Animated, Pressable, View } from "react-native";
+import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
+import { Separator } from "~/components/ui/separator";
 import {
   Header,
   HeaderCenter,
@@ -7,18 +10,29 @@ import {
   HeaderLogo,
   HeaderRight,
 } from "../header/Header";
-import { Separator } from "~/components/ui/separator";
 import { SearchLink } from "../header/HeaderLinks";
 import { getRouteItemRenderConfig } from "./TabBar";
 
-export default function PageTabBar(props: MaterialTopTabBarProps) {
-  const { state, position, layout } = props;
+export default function PageTabBar(
+  props: MaterialTopTabBarProps & { level?: number },
+) {
+  console.log("props in PageTabBar", props);
+  const { state, position, level } = props;
   const { routes } = state;
+  const navigation = useNavigation();
 
   return (
     <Header>
       <HeaderLeft>
-        <HeaderLogo />
+        {level ? (
+          <GoBackButtonBgPrimary
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        ) : (
+          <HeaderLogo />
+        )}
       </HeaderLeft>
       <HeaderCenter className="relative flex w-full flex-1 flex-row items-center">
         {routes.map((route, index) => {
@@ -60,9 +74,7 @@ export default function PageTabBar(props: MaterialTopTabBarProps) {
           );
         })}
       </HeaderCenter>
-      <HeaderRight>
-        <SearchLink />
-      </HeaderRight>
+      <HeaderRight>{!level && <SearchLink />}</HeaderRight>
     </Header>
   );
 }

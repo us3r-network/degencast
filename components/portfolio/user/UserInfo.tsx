@@ -19,14 +19,16 @@ import { Author } from "~/services/farcaster/types/neynar";
 import { shortPubKey } from "~/utils/shortPubKey";
 import DegenTipsStats from "./DegenTipsStats";
 import UserSettings from "./UserSettings";
+import { UserChannelsType } from "~/features/user/userChannelsSlice";
 
 export default function UserInfo({ fid }: { fid?: number }) {
   const {currFid} = useFarcasterAccount();
   const {linkedWallets} = useWalletAccount();
   const walletAccount = linkedWallets?.length>0 ? linkedWallets[0]: undefined;
   fid = fid || currFid || undefined;
-  useUserChannels(fid); //preload channels
-  useUserCasts(fid, currFid || undefined); //preload casts
+  useUserChannels(fid, UserChannelsType.FOLLOWING); //preload channels
+  useUserChannels(fid, UserChannelsType.HOLDING); //preload channels
+  // useUserCasts(fid, currFid || undefined); //preload casts
   const { userInfo, load } = useUserBulk(currFid || undefined);
   useEffect(() => {
     if (fid) load(fid);

@@ -8,7 +8,7 @@ import {
 } from "~/features/user/userChannelsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserChannels( fid: number, type: UserChannelsType) {
+export default function useUserChannels( fid: number | undefined, type: UserChannelsType) {
   const dispatch = useDispatch();
   const {
     channels,

@@ -117,7 +117,7 @@ export function OutlineTabBar({
   });
   return (
     <View
-      className="relative w-full flex-row rounded-xl bg-white"
+      className="relative w-full flex-row rounded-xl bg-white mb-4"
       style={{
         padding: wrapperPadding,
         gap: itemGap,

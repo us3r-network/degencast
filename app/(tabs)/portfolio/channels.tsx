@@ -9,7 +9,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 function FollowingChannelsPage({ fid }: { fid: number }) {
   return (
-    <CardWarper className="mt-4">
+    <CardWarper>
       <ChannelList fid={fid} type={UserChannelsType.FOLLOWING} />
     </CardWarper>
   );
@@ -17,13 +17,13 @@ function FollowingChannelsPage({ fid }: { fid: number }) {
 
 function HoldingChannelsPage({ fid }: { fid: number }) {
   return (
-    <CardWarper className="mt-4">
+    <CardWarper>
       <ChannelList fid={fid} type={UserChannelsType.HOLDING} />
     </CardWarper>
   );
 }
 
-export default function MyChannelsScreen() {
+export default function UserChannelsScreen({ fid }: { fid?: number }) {
   const { currFid } = useFarcasterAccount();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -31,8 +31,8 @@ export default function MyChannelsScreen() {
     { key: "following", title: "Following" },
   ]);
   const renderScene = SceneMap({
-    following: () => <FollowingChannelsPage fid={currFid || 0} />,
-    holding: () => <HoldingChannelsPage fid={currFid || 0} />,
+    following: () => <FollowingChannelsPage fid={fid || currFid || 0} />,
+    holding: () => <HoldingChannelsPage fid={fid || currFid || 0} />,
   });
   return (
     <PageContent>

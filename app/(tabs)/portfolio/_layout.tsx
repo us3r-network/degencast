@@ -1,29 +1,28 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
 import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
+import UserInfo from "~/components/portfolio/user/UserInfo";
 import UserSignin from "~/components/portfolio/user/UserSignin";
 import { PRIMARY_COLOR } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
-import MyCastsScreen from "./casts";
-import MyChannelsScreen from "./channels";
+import CastsScreen from "./casts";
+import ChannelsScreen from "./channels";
 import WalletsScreen from "./wallets";
-import UserInfo from "~/components/portfolio/user/UserInfo";
-import { PageContent } from "~/components/layout/content/Content";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Wallets", value: "tokens", component: WalletsScreen },
-  { label: "Channels", value: "channels", component: MyChannelsScreen },
-  { label: "Casts", value: "casts", component: MyCastsScreen },
+  { label: "Wallets", value: "wallets", component: WalletsScreen },
+  { label: "Channels", value: "channels", component: ChannelsScreen },
+  { label: "Casts", value: "casts", component: CastsScreen },
 ];
 
 export default function PortfolioScreen() {
   const { ready, authenticated } = useAuth();
   const segments = useSegments();
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-background">
+    <View className="flex-1">
       {ready &&
         (!authenticated ? (
           <View className="flex h-full items-center justify-center">
@@ -39,7 +38,7 @@ export default function PortfolioScreen() {
             </View>
           </View>
         ) : (
-          <View className="flex h-full w-full items-center gap-4 ">
+          <View className="flex h-full w-full items-center gap-4 pb-4">
             <Tab.Navigator
               initialRouteName={segments?.[0]}
               tabBar={(props) => (
@@ -56,12 +55,11 @@ export default function PortfolioScreen() {
               }}
             >
               {TABS.map((tab) => {
-                const PageContent = tab.component;
                 return (
                   <Tab.Screen
                     key={tab.value}
                     name={tab.value}
-                    component={PageContent}
+                    component={tab.component}
                     options={{
                       title: tab.label,
                     }}
@@ -71,6 +69,6 @@ export default function PortfolioScreen() {
             </Tab.Navigator>
           </View>
         ))}
-    </SafeAreaView>
+    </View>
   );
 }

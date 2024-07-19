@@ -24,7 +24,7 @@ export default function TabLayout() {
   const { authenticated, login } = useAuth();
   const navigation = useNavigation();
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-background">
+    <SafeAreaView className="flex-1 bg-background">
       <Tabs
         screenOptions={{ headerShown: false }}
         sceneContainerStyle={{ backgroundColor: "transparent" }}
@@ -82,7 +82,6 @@ export default function TabLayout() {
             title: "Portfolio",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
-
           }}
         />
       </Tabs>

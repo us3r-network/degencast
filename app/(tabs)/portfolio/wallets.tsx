@@ -4,7 +4,6 @@ import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import UserWallet from "~/components/portfolio/tokens/UserWallet";
-import UserInfo from "~/components/portfolio/user/UserInfo";
 
 export default function WalletsScreen() {
   const account = useAccount();
