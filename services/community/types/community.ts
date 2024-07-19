@@ -37,6 +37,11 @@ export type CommunityEntity = {
   channelId?: string;
   attentionTokenAddress: Address;
   hostUserData?: Array<FarcasterUserData>;
+  memberInfo?: {
+    totalNumber?: number;
+    newPostNumber?: number;
+    friendMemberNumber?: number;
+  };
 };
 
 export type CommunityStatistics = {

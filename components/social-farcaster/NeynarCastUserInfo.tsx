@@ -45,7 +45,7 @@ export default function NeynarCastUserInfo({
           @{userData?.username}
         </Text>
         {timestamp && (
-          <Text className="text-secondary">
+          <Text className="text-nowrap text-secondary">
             · {dayjs(timestamp).fromNow(true)}
           </Text>
         )}

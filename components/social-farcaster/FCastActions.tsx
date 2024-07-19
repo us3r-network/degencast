@@ -224,7 +224,7 @@ export const FCastExploreActions = forwardRef(function (
     setOpenShareModal(true);
   };
   return (
-    <>
+    <View>
       <ExplorePostActions
         ref={ref}
         channelId={channelId}
@@ -267,6 +267,6 @@ export const FCastExploreActions = forwardRef(function (
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}
       />
-    </>
+    </View>
   );
 });
