@@ -11,23 +11,41 @@ import {
   ProposalStatus,
 } from "~/services/feeds/types/proposal";
 import dayjs from "dayjs";
+import ProposeButton from "../proposal/ProposeButton";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
   proposal: ProposalEntity;
+  tokenInfo?: AttentionTokenEntity;
 };
 export default function CastStatusActions({
   cast,
   channel,
+  tokenInfo,
   proposal,
 }: CastStatusActionsProps) {
   const { status } = proposal;
   switch (status) {
     case ProposalStatus.None:
-      return <NotProposed cast={cast} channel={channel} proposal={proposal} />;
+      return (
+        <NotProposed
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      );
     case ProposalStatus.Proposed:
-      return <Proposed cast={cast} channel={channel} proposal={proposal} />;
+      return (
+        <Proposed
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      );
     case ProposalStatus.Accepted:
       return <Accepted cast={cast} channel={channel} proposal={proposal} />;
     case ProposalStatus.Rejected:
@@ -37,40 +55,32 @@ export default function CastStatusActions({
   }
 }
 
-function UpvoteAction({ cast, channel, proposal }: CastStatusActionsProps) {
-  return (
-    <ActionButton
-      onPress={() => {
-        alert("TODO");
-      }}
-    >
-      <Text className="text-sm">👍</Text>
-    </ActionButton>
-  );
-}
-function DownvoteAction({ cast, channel, proposal }: CastStatusActionsProps) {
-  return (
-    <ActionButton
-      onPress={() => {
-        alert("TODO");
-      }}
-    >
-      <Text className="text-sm">👎</Text>
-    </ActionButton>
-  );
-}
-
-function NotProposed({ cast, channel, proposal }: CastStatusActionsProps) {
+function NotProposed({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastStatusActionsProps) {
   return (
     <View className="flex w-full flex-row items-center gap-4">
       <Text className="mr-auto text-sm text-secondary">Promising</Text>
       <FCastExploreActions cast={cast} communityInfo={channel as any} />
-      <UpvoteAction cast={cast} channel={channel} proposal={proposal} />
+      <ProposeButton
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
     </View>
   );
 }
 
-function Proposed({ cast, channel, proposal }: CastStatusActionsProps) {
+function Proposed({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastStatusActionsProps) {
   const { result, finalizeTime } = proposal;
   return (
     <View className="flex w-full flex-row items-center gap-4">
@@ -79,11 +89,12 @@ function Proposed({ cast, channel, proposal }: CastStatusActionsProps) {
         {dayjs(finalizeTime).date(1).format("HH:mm")}
       </Text>
       <FCastExploreActions cast={cast} communityInfo={channel as any} />
-      {result === ProposalResult.Downvote ? (
-        <UpvoteAction cast={cast} channel={channel} proposal={proposal} />
-      ) : (
-        <DownvoteAction cast={cast} channel={channel} proposal={proposal} />
-      )}
+      <ProposeButton
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
     </View>
   );
 }

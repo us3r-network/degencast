@@ -10,8 +10,10 @@ import useCastPage from "~/hooks/social-farcaster/useCastPage";
 export default function FCast({
   cast,
   className,
+  readOnly,
 }: ViewProps & {
   cast: NeynarCast;
+  readOnly?: boolean;
 }) {
   const castHex = getCastHex(cast);
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function FCast({
         className="flex w-full flex-col gap-4 overflow-hidden"
         onPress={(e) => {
           e.stopPropagation();
+          if (readOnly) return;
           setCastDetailCacheData(castHex, {
             cast: cast,
           });

@@ -32,7 +32,7 @@ export default function NeynarCastUserInfo({
             <Text>{userData?.display_name?.slice(0, 1)}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className="line-clamp-1 font-bold hover:underline">
+        <Text className="line-clamp-1 font-bold text-foreground hover:underline">
           {userData?.display_name}
         </Text>
         {userData.power_badge && (

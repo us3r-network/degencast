@@ -38,7 +38,11 @@ const ChannelCard = React.forwardRef<
 
       {casts.length > 0 ? (
         <View className="w-full flex-1">
-          <ChannelCardCasts channel={channel} casts={casts} />
+          <ChannelCardCasts
+            channel={channel}
+            tokenInfo={tokenInfo}
+            casts={casts}
+          />
         </View>
       ) : (
         <View className="flex w-full flex-row items-center justify-between px-4">

@@ -100,10 +100,14 @@ export default function NeynarCastText({
         </Pressable>
       );
     }
-    return <Text key={index}>{part}</Text>;
+    return (
+      <Text className=" text-foreground" key={index}>
+        {part}
+      </Text>
+    );
   });
   return (
-    <Text key={cast.hash} className="inline">
+    <Text key={cast.hash} className="inline text-foreground">
       {segments}
     </Text>
   );

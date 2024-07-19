@@ -19,23 +19,28 @@ export default function ChannelMetaInfo({
   channel,
   tokenInfo,
   className,
+  readOnly,
   ...props
 }: ViewProps & {
   channel: CommunityEntity;
-  tokenInfo: AttentionTokenEntity;
+  tokenInfo?: AttentionTokenEntity;
+  readOnly?: boolean;
 }) {
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, memberInfo, channelId } = channel;
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const progressNumber = Number(tokenInfo.progress.replace("%", ""));
+  const progressNumber = Number(tokenInfo?.progress.replace("%", ""));
 
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
       <Pressable
-        className="w-full flex-col gap-4"
+        className={cn(
+          "w-full flex-col gap-4",
+          readOnly && "pointer-events-none",
+        )}
         onPress={(e) => {
           e.stopPropagation();
-          if (!channelId) return;
+          if (!channelId || readOnly) return;
           navigateToCommunityDetail(channelId, channel);
         }}
       >
@@ -50,7 +55,7 @@ export default function ChannelMetaInfo({
                 <Text className="text-sm font-bold">{name}</Text>
               </AvatarFallback>
             </Avatar>
-            {channelId && (
+            {channelId && !readOnly && (
               <CommunityAvatarJoinIconButton
                 channelId={channelId}
                 className=" absolute -bottom-1 -right-1"
@@ -59,7 +64,9 @@ export default function ChannelMetaInfo({
           </View>
 
           <View className="flex-1 flex-col justify-center">
-            <Text className="line-clamp-1 font-bold leading-6">{name}</Text>
+            <Text className="line-clamp-1 font-bold leading-6 text-foreground">
+              {name}
+            </Text>
             <Text className="text-sm font-normal leading-6 text-[#9BA1AD]">
               {channelId && `/${channelId}`}
             </Text>
@@ -70,7 +77,7 @@ export default function ChannelMetaInfo({
               className="h-4 w-[100px] bg-[#D6A5EC]"
               indicatorClassName=" rounded-4 bg-[#9151C3]"
             />
-            <Text className="text-xl">{progressNumber}%</Text>
+            <Text className="text-xl text-foreground">{progressNumber}%</Text>
           </View>
         </View>
       </Pressable>
@@ -84,7 +91,9 @@ export function HomeChannelMetaInfo() {
       <View className="flex h-[50px] w-[50px] flex-row items-center justify-center rounded-full bg-secondary/20">
         <Home className="size-[24px] stroke-primary" />
       </View>
-      <Text className="line-clamp-1 font-bold leading-6">Home</Text>
+      <Text className="line-clamp-1 font-bold leading-6 text-foreground">
+        Home
+      </Text>
     </View>
   );
 }
