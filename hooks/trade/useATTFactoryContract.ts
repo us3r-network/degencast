@@ -26,7 +26,7 @@ export function useATTFactoryContractInfo(
       functionName: "getMintNFTPriceAfterFee",
       args: [tokenAddress, BigInt(tokenId), BigInt(amount)],
     });
-    // console.log("getMintNFTPriceAfterFee", data, status);
+    // console.log("getMintNFTPriceAfterFee", contract, data, status);
     const nftPrice = data ? (data as bigint[])[0] : undefined;
     const adminFee = data ? (data as bigint[])[1] : undefined;
     return { nftPrice, adminFee, status };
