@@ -16,7 +16,6 @@ import { getRouteItemRenderConfig } from "./TabBar";
 export default function PageTabBar(
   props: MaterialTopTabBarProps & { level?: number },
 ) {
-  console.log("props in PageTabBar", props);
   const { state, position, level } = props;
   const { routes } = state;
   const navigation = useNavigation();
