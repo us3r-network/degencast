@@ -1,226 +1,113 @@
-import { Link, useRouter } from "expo-router";
 import { forwardRef, LegacyRef, useRef, useState } from "react";
-import { FlatList, LayoutRectangle, Pressable, View } from "react-native";
-import { Loading } from "~/components/common/Loading";
-import { BuyChannelBadgeWithIconButton } from "~/components/community/CommunityBuyShareButton";
-import FCast from "~/components/social-farcaster/FCast";
+import { LayoutRectangle, View } from "react-native";
+import { CommunityEntity } from "~/services/community/types/community";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
+import { useSharedValue } from "react-native-reanimated";
+import FCast from "./FCast";
+import CastStatusActions from "./CastStatusActions";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
-import { Card } from "~/components/ui/card";
-import { Text } from "~/components/ui/text";
-import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
-import useCommunityPage from "~/hooks/community/useCommunityPage";
-import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import { cn } from "~/lib/utils";
-import { CommunityInfo } from "~/services/community/types/community";
-import { getCastHex } from "~/utils/farcaster/cast-utils";
+
 const ChannelCardCasts = forwardRef(function (
   {
-    channelId,
-    communityInfo,
+    channel,
+    casts,
   }: {
-    channelId: string;
-    communityInfo: CommunityInfo;
+    channel?: CommunityEntity;
+    casts: Array<{
+      cast: NeynarCast;
+      proposal: ProposalEntity;
+    }>;
   },
   ref: LegacyRef<View>,
 ) {
-  const router = useRouter();
-  // const { navigateToCommunityDetail } = useCommunityPage();
-  const { setCastDetailCacheData } = useCastPage();
-
-  const { casts, loading, pageInfo } = useLoadCommunityCasts(channelId);
-  const [layout, setLayout] = useState<LayoutRectangle>();
-  const layoutRef = useRef<LayoutRectangle>();
-  const layoutWidth = layout?.width || 0;
-  const layoutHeight = layout?.height || 0;
-  const itemWidth = layoutWidth ? layoutWidth - 30 : 0;
-  const itemHeight = layoutHeight;
   const showCasts = casts.slice(0, 10);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const currentCast = showCasts[currentIndex];
 
-  // const showViewMore =
-  //   !loading &&
-  //   showCasts.length > 0 &&
-  //   pageInfo?.hasNextPage &&
-  //   currentIndex > 0;
+  const [layout, setLayout] = useState<LayoutRectangle>();
+  const itemWidth = layout?.width || 0;
 
-  const viewabilityConfigCallbackPairs = useRef([
-    {
-      viewabilityConfig: {
-        viewAreaCoveragePercentThreshold: 80,
-      },
-      onViewableItemsChanged: ({ viewableItems, changed }: any) => {
-        const viewableIndex = viewableItems?.[0]?.index || 0;
-
-        if (viewableItems.length === 1) {
-          setCurrentIndex(viewableIndex);
-        }
-      },
-    },
-  ]);
-
+  const carouselRef = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+  const onPressPagination = (index: number) => {
+    carouselRef.current?.scrollTo({
+      /**
+       * Calculate the difference between the current index and the target index
+       * to ensure that the carousel scrolls to the nearest index
+       */
+      count: index - progress.value,
+      animated: true,
+    });
+  };
   return (
-    <View
-      className="relative h-full w-full"
-      onLayout={(e) => {
-        if (!layoutRef.current) {
-          setLayout(e.nativeEvent.layout);
-          layoutRef.current = e.nativeEvent.layout;
-        }
-      }}
-    >
-      <View className=" absolute bottom-4 right-[30px] z-20 flex-col items-center">
-        {currentCast && (
-          <FCastExploreActions
-            cast={currentCast}
-            communityInfo={communityInfo}
+    <View className="relative flex h-full w-full flex-col gap-4">
+      <View
+        className="w-full flex-1"
+        onLayout={(e) => {
+          const layout = e.nativeEvent.layout;
+          if (layout.width === 0 && layout.height === 0) return;
+          setLayout(layout);
+        }}
+      >
+        {itemWidth && (
+          <Carousel
+            ref={carouselRef}
+            width={itemWidth}
+            loop={false}
+            data={showCasts}
+            onProgressChange={progress}
+            renderItem={({ item, index }) => {
+              const { cast, proposal } = item;
+              return (
+                <View
+                  key={index.toString()}
+                  className="flex h-full w-full flex-col gap-4 px-4"
+                >
+                  <FCast className="flex-1 overflow-hidden" cast={cast} />
+                  {!!channel?.channelId && channel.channelId !== "home" ? (
+                    <CastStatusActions
+                      cast={cast}
+                      channel={channel}
+                      proposal={proposal}
+                    />
+                  ) : (
+                    <View className="ml-auto">
+                      <FCastExploreActions
+                        cast={cast}
+                        communityInfo={channel as any}
+                      />
+                    </View>
+                  )}
+                </View>
+              );
+            }}
+            style={{ flex: 1 }}
           />
         )}
-        <BuyChannelBadgeWithIconButton
-          communityInfo={communityInfo}
-          className="mt-3"
-        />
       </View>
-
-      <FlatList
-        data={showCasts}
-        horizontal={true}
-        inverted={false}
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled={true}
-        keyExtractor={(item, index) => index.toString()}
-        onEndReached={() => {
-          return;
-          // if (casts.length === 0 || loading) return;
-          // loadCasts();
-        }}
-        onEndReachedThreshold={0.5}
-        ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
-        style={{ flex: 1 }}
-        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-        // onScroll={(e) => {
-        //   // Hide cast menu when swiping to view more cards
-        //   const hideCastMenuIndex = 9999;
-        //   if (!showViewMore || currentIndex === hideCastMenuIndex) return;
-        //   if (
-        //     e.nativeEvent.contentOffset.x +
-        //       e.nativeEvent.layoutMeasurement.width >=
-        //     e.nativeEvent.contentSize.width - itemWidth / 2
-        //   ) {
-        //     setCurrentIndex(hideCastMenuIndex);
-        //   }
-        // }}
-        getItemLayout={(item, index) => {
-          return {
-            length: itemWidth,
-            offset: itemWidth * index,
-            index,
-          };
-        }}
-        renderItem={({ item: cast, index }) => {
-          const isLastItem = index === showCasts.length - 1;
-          const castHex = getCastHex(cast);
-          return (
-            <View
-              key={castHex}
-              className="h-full"
-              style={{
-                height: itemHeight,
-                width: isLastItem ? layoutWidth + 5 : itemWidth,
-              }}
-            >
-              <View
-                className="relative h-full w-full"
-                style={{
-                  width: itemWidth,
-                  marginLeft: 15,
-                }}
-              >
-                <Pressable
-                  className={cn(" h-full w-full ")}
-                  onPress={(e) => {
-                    e.stopPropagation();
-
-                    setCastDetailCacheData(castHex, {
-                      origin: CastDetailDataOrigin.Explore,
-                      cast: cast,
-                    });
-                    router.push(`/casts/${castHex}`);
-                  }}
-                >
-                  <Card
-                    className={cn(
-                      "z-10 box-border h-full w-full overflow-hidden rounded-[20px] border-none p-4 pb-0",
-                    )}
-                  >
-                    <FCast cast={cast} webpageImgIsFixedRatio={true} />
-                  </Card>
-                </Pressable>
-              </View>
-            </View>
-          );
-        }}
-        ListFooterComponent={() => {
-          if (loading) {
-            return (
-              <View
-                className="flex items-center justify-center p-5"
-                style={{
-                  height: itemHeight,
-                  width: layoutWidth + 5,
-                }}
-              >
-                <Loading />
-              </View>
-            );
-          }
-          // if (showViewMore) {
-          //   return (
-          //     <View
-          //       style={{
-          //         height: itemHeight,
-          //         width: layoutWidth + 5,
-          //       }}
-          //     >
-          //       <View
-          //         className="relative h-full w-full"
-          //         style={{
-          //           width: itemWidth,
-          //           marginLeft: 20,
-          //         }}
-          //       >
-          //         <Pressable
-          //           className={cn(" h-full w-full")}
-          //           onPress={(e) => {
-          //             e.stopPropagation();
-          //             navigateToCommunityDetail(
-          //               channelId,
-          //               communityInfo,
-          //               "casts",
-          //             );
-          //           }}
-          //         >
-          //           <Card
-          //             className={cn(
-          //               "z-10 box-border flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] border-none p-4 pb-0",
-          //             )}
-          //           >
-          //             <Text className=" text-center text-xl font-bold text-secondary">
-          //               View More
-          //             </Text>
-          //           </Card>
-          //         </Pressable>
-          //       </View>
-          //     </View>
-          //   );
-          // }
-          return null;
-        }}
-        ListEmptyComponent={() => {
-          return null;
-        }}
-      />
+      {showCasts.length > 1 && (
+        <Pagination.Basic
+          progress={progress}
+          data={showCasts}
+          dotStyle={{
+            width: 10,
+            height: 10,
+            backgroundColor: "rgba(163, 110, 254, 0.20)",
+            borderRadius: 5,
+          }}
+          activeDotStyle={{
+            width: 10,
+            height: 10,
+            backgroundColor: "#4C2896",
+            borderRadius: 5,
+          }}
+          containerStyle={{ height: "auto", gap: 15 }}
+          onPress={onPressPagination}
+        />
+      )}
     </View>
   );
 });

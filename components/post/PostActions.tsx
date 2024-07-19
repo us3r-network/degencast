@@ -20,7 +20,12 @@ import {
   Pressable,
 } from "react-native";
 import { Image } from "react-native";
-import { CommentIcon2, EditIcon, MintIcon } from "../common/SvgIcons";
+import {
+  CommentIcon2,
+  DegenIcon,
+  EditIcon,
+  MintIcon,
+} from "../common/SvgIcons";
 import {
   forwardRef,
   LegacyRef,
@@ -41,7 +46,7 @@ export const ActionButton = forwardRef<
   return (
     <Button
       className={cn(
-        " h-[42px] w-[42px] flex-col rounded-full bg-white p-0 active:bg-white active:opacity-100 web:hover:opacity-100",
+        " h-[42px] w-[42px] flex-col rounded-full bg-[#9151C3] p-0 active:bg-[#9151C3] active:opacity-100 web:hover:opacity-100",
         className,
       )}
       ref={ref}
@@ -51,147 +56,17 @@ export const ActionButton = forwardRef<
 });
 
 export function ActionText({ className, ...props }: TextProps) {
-  return <Text className={cn("text-xs text-primary", className)} {...props} />;
+  return <Text className={cn("text-xs text-white", className)} {...props} />;
 }
-
-export const LikeButton = ({
-  liked,
-  liking,
-  likeCount,
-  className,
-  iconSize = 16,
-  ...props
-}: ButtonProps & {
-  liked: boolean;
-  liking?: boolean;
-  likeCount?: number;
-  iconSize?: number;
-}) => {
-  return (
-    <ActionButton
-      className={cn(
-        "active:opacity-100",
-        liked
-          ? " bg-[#F41F4C] active:bg-[#F41F4C] web:hover:bg-[#F41F4C]"
-          : " bg-white active:bg-white web:hover:bg-white",
-        className,
-      )}
-      {...props}
-    >
-      {liking ? (
-        <ActivityIndicator
-          size={iconSize}
-          color={liked ? "white" : "#4C2896"}
-        />
-      ) : (
-        <Heart
-          size={iconSize}
-          className={cn(
-            " fill-primary stroke-primary",
-            liked && " fill-primary-foreground stroke-primary-foreground",
-          )}
-        />
-      )}
-
-      {likeCount !== undefined && (
-        <ActionText className={cn("", liked && " text-primary-foreground")}>
-          {likeCount || 0}
-        </ActionText>
-      )}
-    </ActionButton>
-  );
-};
-
-export const RepostButton = ({
-  iconSize = 16,
-  reposted,
-  reposting,
-  ...props
-}: ButtonProps & {
-  iconSize?: number;
-  reposted?: boolean;
-  reposting?: boolean;
-}) => {
-  return (
-    <ActionButton {...props}>
-      {reposting ? (
-        <ActivityIndicator
-          size={iconSize}
-          color={reposted ? "#00D1A7" : "#4C2896"}
-        />
-      ) : (
-        <Repeat
-          size={iconSize}
-          className={cn(" stroke-primary", reposted && " stroke-[#00D1A7] ")}
-        />
-      )}
-    </ActionButton>
-  );
-};
-
-export const GiftButton = ({
-  iconSize = 16,
-  ...props
-}: ButtonProps & {
-  iconSize?: number;
-}) => {
-  return (
-    <ActionButton {...props}>
-      <DollarSign size={iconSize} className={cn("stroke-primary")} />
-      {/* <ActionText>{giftCount || 0}</ActionText> */}
-    </ActionButton>
-  );
-};
-
-export const CommentButton = ({
-  iconSize = 16,
-  ...props
-}: ButtonProps & {
-  iconSize?: number;
-}) => {
-  return (
-    <ActionButton {...props}>
-      <CommentIcon2
-        width={iconSize}
-        height={iconSize}
-        className={cn(" flex fill-primary stroke-primary")}
-      />
-    </ActionButton>
-  );
-};
-
-export const ShareButton = ({
-  iconSize = 16,
-  ...props
-}: ButtonProps & {
-  iconSize?: number;
-}) => {
-  return (
-    <ActionButton {...props}>
-      <Share2 size={iconSize} className={cn(" fill-primary stroke-primary")} />
-    </ActionButton>
-  );
-};
-
-export const MintButton = ({
-  iconSize = 16,
-  ...props
-}: ButtonProps & {
-  iconSize?: number;
-}) => {
-  return (
-    <ActionButton {...props}>
-      <MintIcon className={cn("stroke-primary")} />
-    </ActionButton>
-  );
-};
 
 function ActionMenuItem({
   index,
   children,
+  size = 36,
 }: {
   children: React.ReactNode;
   index: number;
+  size?: number;
 }) {
   const {
     direction,
@@ -214,32 +89,37 @@ function ActionMenuItem({
     }).start();
   }, [showMenu]);
 
+  const gap = 10;
+  const offset = size + gap;
+
   const translateStyle = useMemo(() => {
     switch (direction) {
       case "top":
         return {
           translateY: translateYAnimatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -(52 * index)],
+            outputRange: [0, -(offset * index)],
           }),
         };
       case "left":
         return {
           translateX: translateYAnimatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -(52 * index)],
+            outputRange: [0, -(offset * index)],
           }),
         };
       default:
         return {
           translateY: translateYAnimatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -(52 * index)],
+            outputRange: [0, -(offset * index)],
           }),
         };
     }
   }, [translateYAnimatedValue, direction]);
   const actionStyle = {
+    width: 36,
+    height: 36,
     position: "absolute" as "absolute",
     zIndex: index,
 
@@ -259,6 +139,149 @@ function ActionMenuItem({
   };
   return <Animated.View style={[actionStyle]}>{children}</Animated.View>;
 }
+
+const ActionMenuItemButton = forwardRef<
+  React.ElementRef<typeof Pressable>,
+  ButtonProps
+>(({ className, ...props }, ref) => {
+  return (
+    <ActionButton
+      ref={ref}
+      className={cn(" h-[36px] w-[36px]", className)}
+      {...props}
+    />
+  );
+});
+
+export const LikeButton = ({
+  liked,
+  liking,
+  likeCount,
+  className,
+  iconSize = 16,
+  ...props
+}: ButtonProps & {
+  liked: boolean;
+  liking?: boolean;
+  likeCount?: number;
+  iconSize?: number;
+}) => {
+  return (
+    <ActionMenuItemButton
+      className={cn(
+        "gap-0 active:opacity-100",
+        liked
+          ? " bg-[#F41F4C] active:bg-[#F41F4C] web:hover:bg-[#F41F4C]"
+          : " bg-[#9151C3] active:bg-[#9151C3] web:hover:bg-[#9151C3]",
+        className,
+      )}
+      {...props}
+    >
+      {liking ? (
+        <ActivityIndicator size={iconSize} color={"white"} />
+      ) : (
+        <Heart
+          size={iconSize}
+          className={cn(" fill-primary-foreground stroke-primary-foreground")}
+        />
+      )}
+
+      {likeCount !== undefined && <ActionText>{likeCount || 0}</ActionText>}
+    </ActionMenuItemButton>
+  );
+};
+
+export const RepostButton = ({
+  iconSize = 16,
+  reposted,
+  reposting,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+  reposted?: boolean;
+  reposting?: boolean;
+}) => {
+  return (
+    <ActionMenuItemButton {...props}>
+      {reposting ? (
+        <ActivityIndicator
+          size={iconSize}
+          color={reposted ? "#00D1A7" : "#fff"}
+        />
+      ) : (
+        <Repeat
+          size={iconSize}
+          className={cn(
+            " stroke-primary-foreground",
+            reposted && " stroke-[#00D1A7] ",
+          )}
+        />
+      )}
+    </ActionMenuItemButton>
+  );
+};
+
+export const GiftButton = ({
+  iconSize = 16,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionMenuItemButton {...props}>
+      <DollarSign size={iconSize} className={cn("stroke-primary-foreground")} />
+      {/* <ActionText>{giftCount || 0}</ActionText> */}
+    </ActionMenuItemButton>
+  );
+};
+
+export const CommentButton = ({
+  iconSize = 16,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionMenuItemButton {...props}>
+      <CommentIcon2
+        width={iconSize}
+        height={iconSize}
+        className={cn(
+          " flex fill-primary-foreground stroke-primary-foreground",
+        )}
+      />
+    </ActionMenuItemButton>
+  );
+};
+
+export const ShareButton = ({
+  iconSize = 16,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionMenuItemButton {...props}>
+      <Share2
+        size={iconSize}
+        className={cn(" fill-primary-foreground stroke-primary-foreground")}
+      />
+    </ActionMenuItemButton>
+  );
+};
+
+export const MintButton = ({
+  iconSize = 16,
+  ...props
+}: ButtonProps & {
+  iconSize?: number;
+}) => {
+  return (
+    <ActionMenuItemButton {...props}>
+      <MintIcon className={cn("stroke-primary-foreground")} />
+    </ActionMenuItemButton>
+  );
+};
 
 type ExplorePostActionsProps = {
   direction?: "top" | "left";
@@ -316,10 +339,11 @@ export const ExplorePostActions = forwardRef(function (
   }: ViewProps & ExplorePostActionsProps,
   ref: LegacyRef<View>,
 ) {
-  const {
-    openExploreCastMenu: showActions,
-    setOpenExploreCastMenu: showActionsChange,
-  } = useAppSettings();
+  // const {
+  //   openExploreCastMenu: showActions,
+  //   setOpenExploreCastMenu: showActionsChange,
+  // } = useAppSettings();
+  const [showActions, showActionsChange] = useState(false);
   const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
     showActionsChange(!showActions);
@@ -367,32 +391,32 @@ export const ExplorePostActions = forwardRef(function (
         {/* <ActionMenuItem
         index={5}
       >
-        <GiftButton className=" shadow-md shadow-primary" onPress={onGift} />
+        <GiftButton  onPress={onGift} />
       </ActionMenuItem> */}
-        <ActionMenuItem index={5}>
+        <ActionMenuItem index={4}>
           <Link
             href={`/create${channelId ? "?channelId=" + channelId : ""}`}
             asChild
           >
-            <ActionButton className="shadow-md shadow-primary">
-              <SquarePen size={16} strokeWidth={2} className="stroke-primary" />
-            </ActionButton>
+            <ActionMenuItemButton>
+              <SquarePen
+                size={16}
+                strokeWidth={2}
+                className="stroke-primary-foreground"
+              />
+            </ActionMenuItemButton>
           </Link>
         </ActionMenuItem>
 
-        <ActionMenuItem index={4}>
-          <CommentButton
-            className=" shadow-md shadow-primary"
-            onPress={onComment}
-          />
-        </ActionMenuItem>
         <ActionMenuItem index={3}>
-          <MintButton className=" shadow-md shadow-primary" onPress={onMint} />
+          <CommentButton onPress={onComment} />
         </ActionMenuItem>
+        {/* <ActionMenuItem index={3}>
+          <MintButton onPress={onMint} />
+        </ActionMenuItem> */}
         <ActionMenuItem index={2}>
-          {/* <ShareButton className=" shadow-md shadow-primary" onPress={onShare} /> */}
+          {/* <ShareButton  onPress={onShare} /> */}
           <RepostButton
-            className=" shadow-md shadow-primary"
             disabled={reposting}
             reposted={reposted}
             reposting={reposting}
@@ -401,7 +425,6 @@ export const ExplorePostActions = forwardRef(function (
         </ActionMenuItem>
         <ActionMenuItem index={1}>
           <LikeButton
-            className=" shadow-md shadow-primary"
             disabled={liking}
             liked={liked}
             liking={liking}
@@ -410,10 +433,7 @@ export const ExplorePostActions = forwardRef(function (
           />
         </ActionMenuItem>
       </ActionMenuCtx.Provider>
-      <ActionButton
-        className=" z-10 h-[50px] w-[50px] shadow-md shadow-primary"
-        onPress={toggleActions}
-      >
+      <ActionButton className=" z-10" onPress={toggleActions}>
         <Animated.View
           style={[
             {
@@ -428,18 +448,19 @@ export const ExplorePostActions = forwardRef(function (
             },
           ]}
         >
-          <Image
+          {/* <Image
             source={require("~/assets/images/degen-icon.png")}
             resizeMode="contain"
             style={{ width: 20, height: 20 }}
-          />
+          /> */}
+          <DegenIcon />
         </Animated.View>
       </ActionButton>
       {/* <Link
         href={`/create${channelId ? "?channelId=" + channelId : ""}`}
         asChild
       >
-        <ActionButton className="z-10 mt-3 h-[50px] w-[50px] shadow-md shadow-primary">
+        <ActionButton className="z-10 mt-3 shadow-md shadow-primary">
           <SquarePen size={20} strokeWidth={2} className="stroke-primary" />
         </ActionButton>
       </Link> */}
