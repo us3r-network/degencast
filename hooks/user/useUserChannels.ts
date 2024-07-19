@@ -8,7 +8,10 @@ import {
 } from "~/features/user/userChannelsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserChannels( fid: number | undefined, type: UserChannelsType) {
+export default function useUserChannels(
+  fid: number | undefined,
+  type: UserChannelsType,
+) {
   const dispatch = useDispatch();
   const {
     channels,
@@ -24,7 +27,8 @@ export default function useUserChannels( fid: number | undefined, type: UserChan
   // }, [status, dispatch, fid]);
 
   useEffect(() => {
-    loadMore();
+    if (channels.get(type)?.items.length === 0 || fid !== currentFid)
+      loadMore();
   }, [fid, type]);
 
   const loadMore = () => {

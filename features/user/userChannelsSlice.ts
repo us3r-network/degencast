@@ -10,7 +10,7 @@ import {
   NeynarChannelsResp,
   PageInfo,
 } from "~/services/farcaster/types/neynar";
-import { ApiResp, AsyncRequestStatus } from "~/services/shared/types";
+import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
 const MAX_PAGE_SIZE = 100;
@@ -89,16 +89,15 @@ export const userChannelsSlice = createSlice({
         if (state.fid !== action.meta.arg.fid) {
           state.fid = action.meta.arg.fid;
           const type = action.meta.arg.type;
-          const channelState = state.channels.get(type);
           state.channels.set(type, { ...initialChannelsState });
+          state.error = undefined;
         }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
         const type = action.meta.arg.type;
         const channelState = state.channels.get(type);
-        console.log("fetchItems.fulfilled", action.payload);
-
+        // console.log("fetchItems.fulfilled", action.payload);
         switch (action.meta.arg.type) {
           case UserChannelsType.HOLDING: {
             const allChannles = (action.payload as any).data.data;
