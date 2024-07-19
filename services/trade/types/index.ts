@@ -47,6 +47,7 @@ export type TokenWithTradeInfo = {
 
 export type BadgeInfo = {
   tokenAddress: `0x${string}`;
+  tokenId: number;
   name?: string | undefined;
   channelId: string;
   logo?: string;
