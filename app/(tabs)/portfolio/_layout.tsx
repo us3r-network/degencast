@@ -38,7 +38,7 @@ export default function PortfolioScreen() {
             </View>
           </View>
         ) : (
-          <View className="flex h-full w-full items-center gap-4 pb-4">
+          <View className="h-full w-full pb-4">
             <Tab.Navigator
               initialRouteName={segments?.[0]}
               tabBar={(props) => (

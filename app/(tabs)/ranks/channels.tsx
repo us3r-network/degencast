@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { FlatList, Pressable, SafeAreaView, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import {
   ArrowDownNarrowWide,
@@ -8,12 +8,11 @@ import {
 } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import { BuyButton, LaunchButton } from "~/components/trade/BadgeButton";
 import { TradeButton } from "~/components/trade/TradeButton";
-import { Card, CardContent } from "~/components/ui/card";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import {
   DEFAULT_ORDER_PARAMS,
   OrderParams,
@@ -22,7 +21,7 @@ import useCommunityRank from "~/hooks/rank/useCommunityRank";
 import { CommunityRankOrderBy } from "~/services/community/types/rank";
 import { Channel } from "~/services/farcaster/types";
 
-export default function Ranks() {
+export default function ChannelRanks() {
   const { loading, items, load, hasMore } = useCommunityRank();
   const [orderParams, setOrderParams] =
     useState<OrderParams>(DEFAULT_ORDER_PARAMS);
@@ -32,52 +31,47 @@ export default function Ranks() {
   }, [orderParams]);
 
   return (
-    <SafeAreaView
-      style={{ paddingTop: DEFAULT_HEADER_HEIGHT }}
-      className="flex-1 bg-background"
-    >
-      <View className="box-border w-full flex-1 px-4">
-        <Card className="relative mx-auto box-border w-full max-w-screen-sm flex-1 rounded-2xl p-2">
-          <CardContent className="native:gap-2 h-full gap-4 p-0 sm:p-4">
-            <OrderSelect setOrderParams={setOrderParams} />
-            {loading && items.length === 0 ? (
-              <Loading />
-            ) : (
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                data={items}
-                numColumns={1}
-                ItemSeparatorComponent={() => <View className="h-4" />}
-                renderItem={({
-                  item,
-                  index,
-                }: {
-                  item: Channel;
-                  index: number;
-                }) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      index={index + 1}
-                      orderBy={orderParams.orderBy}
-                    />
-                  );
-                }}
-                onEndReached={() => {
-                  if (loading || !hasMore) return;
-                  load(orderParams);
-                }}
-                onEndReachedThreshold={1}
-                ListFooterComponent={() => {
-                  return loading ? <Loading /> : null;
-                }}
-              />
-            )}
-          </CardContent>
-        </Card>
-      </View>
-    </SafeAreaView>
+    <PageContent>
+      <CardWarper>
+        <View className="flex gap-4">
+          <OrderSelect setOrderParams={setOrderParams} />
+          {loading && items.length === 0 ? (
+            <Loading />
+          ) : (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={items}
+              numColumns={1}
+              ItemSeparatorComponent={() => <View className="h-4" />}
+              renderItem={({
+                item,
+                index,
+              }: {
+                item: Channel;
+                index: number;
+              }) => {
+                return (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    index={index + 1}
+                    orderBy={orderParams.orderBy}
+                  />
+                );
+              }}
+              onEndReached={() => {
+                if (loading || !hasMore) return;
+                load(orderParams);
+              }}
+              onEndReachedThreshold={1}
+              ListFooterComponent={() => {
+                return loading ? <Loading /> : null;
+              }}
+            />
+          )}
+        </View>
+      </CardWarper>
+    </PageContent>
   );
 }
 
