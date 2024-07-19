@@ -80,13 +80,13 @@ const RankOrderList = [
   { icon: <ArrowUpNarrowWide size="14" color="white" />, value: "ASC" },
 ];
 const RankOrderByList = [
-  { label: "Market Cap", value: CommunityRankOrderBy.MARKET_CAP },
-  { label: "Token Price", value: CommunityRankOrderBy.TOKEN_PRICE },
+  // { label: "Market Cap", value: CommunityRankOrderBy.MARKET_CAP },
+  // { label: "Token Price", value: CommunityRankOrderBy.TOKEN_PRICE },
   { label: "New Casts", value: CommunityRankOrderBy.NEW_CASTS },
   { label: "Members", value: CommunityRankOrderBy.MEMBERS },
   { label: "Created Date", value: CommunityRankOrderBy.CREATED_DATE },
-  { label: "Number of Trade", value: CommunityRankOrderBy.NUMBER_OF_TRADE },
-  { label: "Growth Rate", value: CommunityRankOrderBy.GROWTH_RATE },
+  // { label: "Number of Trade", value: CommunityRankOrderBy.NUMBER_OF_TRADE },
+  // { label: "Growth Rate", value: CommunityRankOrderBy.GROWTH_RATE },
 ];
 function OrderSelect({
   setOrderParams,
