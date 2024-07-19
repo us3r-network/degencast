@@ -23,10 +23,10 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
       functionName: "getMintNFTPriceAfterFee",
       args: [tokenAddress, BigInt(amount)],
     });
-    // console.log("getMintNFTPriceAfterFee", data, status);
-    const nftPrice = data ? (data as bigint[])[0] : undefined;
-    const adminFee = data ? (data as bigint[])[1] : undefined;
-    return { nftPrice, adminFee, status };
+    // const nftPrice = data ? (data as bigint[])[0] : undefined;
+    // const adminFee = data ? (data as bigint[])[1] : undefined;
+    const nftPrice = data ? (data as bigint) : undefined;
+    return { nftPrice, adminFee: 0n, status };
   };
 
   const getBurnNFTPriceAfterFee = (amount: number = 1) => {
@@ -46,7 +46,7 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
       functionName: "tokens",
       args: [tokenAddress],
     });
-    const paymentToken = data ? ((data as unknown[])[1] as Address) : undefined;
+    const paymentToken = data ? ((data as unknown[])[2] as Address) : undefined;
 
     return { paymentToken, status };
   };
@@ -58,7 +58,10 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
   };
 }
 
-export function useATTFactoryContractBuy(tokenAddress: Address) {
+export function useATTFactoryContractBuy(
+  tokenAddress: Address,
+  tokenId: number,
+) {
   const {
     writeContract,
     data: hash,
@@ -79,7 +82,7 @@ export function useATTFactoryContractBuy(tokenAddress: Address) {
     writeContract({
       ...contract,
       functionName: "mintNFT",
-      args: [tokenAddress, BigInt(amount), maxPayment],
+      args: [tokenAddress, BigInt(tokenId), BigInt(amount), maxPayment],
     });
   };
 
@@ -95,7 +98,10 @@ export function useATTFactoryContractBuy(tokenAddress: Address) {
   };
 }
 
-export function useATTFactoryContractSell(tokenAddress: Address) {
+export function useATTFactoryContractSell(
+  tokenAddress: Address,
+  tokenId: number,
+) {
   const {
     writeContract,
     data: hash,
@@ -108,7 +114,7 @@ export function useATTFactoryContractSell(tokenAddress: Address) {
     writeContract({
       ...contract,
       functionName: "burnNFT",
-      args: [tokenAddress, BigInt(amount)],
+      args: [tokenAddress, BigInt(tokenId), BigInt(amount)],
     });
   };
 

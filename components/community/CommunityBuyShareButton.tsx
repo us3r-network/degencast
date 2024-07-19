@@ -20,12 +20,14 @@ export default function CommunityBuyShareButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
+  const attentionTokenId = 1; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
   return (
     <BuyChannelBadgeButton
       tokenAddress={attentionTokenAddress}
+      tokenId={attentionTokenId}
       logo={communityInfo.logo}
       name={communityInfo.name}
     />
@@ -39,12 +41,14 @@ export function ExploreBuyShareIconButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
+  const attentionTokenId = 1; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
   return (
     <BuyChannelBadgeButton
       tokenAddress={attentionTokenAddress}
+      tokenId={attentionTokenId}
       logo={communityInfo.logo}
       name={communityInfo.name}
     />
@@ -58,12 +62,14 @@ export function BuyChannelBadgeWithUpvoteButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
+  const attentionTokenId = 1; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
   return (
     <BuyButton
       tokenAddress={attentionTokenAddress}
+      tokenId={attentionTokenId}
       logo={communityInfo.logo}
       name={communityInfo.name}
       renderButton={(props) => (
@@ -84,12 +90,14 @@ export function BuyChannelBadgeWithIconButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
+  const attentionTokenId = 1; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
   return (
     <BuyButton
       tokenAddress={attentionTokenAddress}
+      tokenId={attentionTokenId}
       logo={communityInfo.logo}
       name={communityInfo.name}
       renderButton={(props) => (
@@ -109,10 +117,12 @@ export function BuyChannelBadgeWithIconButton({
 
 function BuyChannelBadgeButton({
   tokenAddress,
+  tokenId,
   logo,
   name,
 }: {
   tokenAddress: `0x${string}`;
+  tokenId: number;
   logo?: string;
   name?: string;
 }) {
@@ -146,6 +156,7 @@ function BuyChannelBadgeButton({
       logo={logo}
       name={name}
       tokenAddress={tokenAddress}
+      tokenId={tokenId}
       renderButton={(props) => (
         <BuyChannelBadgeButtonStyled {...props}>
           <BuyChannelBadgeTextStyled>

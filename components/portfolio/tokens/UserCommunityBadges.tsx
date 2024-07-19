@@ -6,16 +6,16 @@ import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Text } from "~/components/ui/text";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import { BadgeInfo } from "~/services/trade/types";
-import {
-  BuyButton,
-  SellButton
-} from "../../trade/BadgeButton";
+import { BuyButton, SellButton } from "../../trade/BadgeButton";
 
 export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
   const account = useAccount();
-  const { getNFTBalance } = useATTContractInfo(badge.tokenAddress);
-  const { data: balance } = getNFTBalance(account?.address);
-  console.log("CommunityBadge", badge, account?.address, balance)
+  const { nftBalanceOf } = useATTContractInfo(
+    badge.tokenAddress,
+    badge.tokenId || 0,
+  );
+  const { data: balance } = nftBalanceOf(account?.address);
+  console.log("CommunityBadge", badge, account?.address, balance);
   return (
     <View className="flex-row items-center justify-between">
       <Link href={`/communities/${badge.channelId}/shares`} asChild>
@@ -24,19 +24,22 @@ export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
         </Pressable>
       </Link>
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm">{balance}</Text>
+        nft
+        <Text className="text-sm">{Number(balance)}</Text>
         {balance !== undefined &&
           (balance > 0 ? (
             <SellButton
               logo={badge.logo}
               name={badge.name}
               tokenAddress={badge.tokenAddress}
+              tokenId={1} //todo: use cast tokenId from api
             />
           ) : (
             <BuyButton
               logo={badge.logo}
               name={badge.name}
               tokenAddress={badge.tokenAddress}
+              tokenId={1} //todo: use cast tokenId from api
             />
           ))}
       </View>

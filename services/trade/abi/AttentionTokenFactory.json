@@ -14,12 +14,17 @@
                 },
                 {
                     "internalType": "address",
-                    "name": "_attentionTokenTemplate",
+                    "name": "_dn42069TokenTemplate",
                     "type": "address"
                 },
                 {
                     "internalType": "address",
-                    "name": "_admin",
+                    "name": "_danTemplate",
+                    "type": "address"
+                },
+                {
+                    "internalType": "contract IBondingCurve",
+                    "name": "_defaultBondingCurve",
                     "type": "address"
                 }
             ],
@@ -57,22 +62,6 @@
             "inputs": [
                 {
                     "internalType": "uint256",
-                    "name": "fee",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "maxFee",
-                    "type": "uint256"
-                }
-            ],
-            "name": "AttentionToken__MaxFeeExceeded",
-            "type": "error"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
                     "name": "price",
                     "type": "uint256"
                 },
@@ -82,7 +71,7 @@
                     "type": "uint256"
                 }
             ],
-            "name": "AttentionToken__MaxPaymentExceeded",
+            "name": "DN42069__MaxPaymentExceeded",
             "type": "error"
         },
         {
@@ -133,20 +122,13 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "creator",
+                    "name": "dan",
                     "type": "address"
-                }
-            ],
-            "name": "AttentionTokenCreated",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
+                },
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "token",
+                    "name": "paymentToken",
                     "type": "address"
                 },
                 {
@@ -160,15 +142,9 @@
                     "internalType": "string",
                     "name": "symbol",
                     "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "basePrice",
-                    "type": "uint256"
                 }
             ],
-            "name": "DN404Created",
+            "name": "DN42069Created",
             "type": "event"
         },
         {
@@ -211,7 +187,7 @@
                     "type": "uint128"
                 }
             ],
-            "name": "DN404LiquidityAdded",
+            "name": "LiquidityAdded",
             "type": "event"
         },
         {
@@ -232,11 +208,17 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
                 }
             ],
-            "name": "DN404NFTBurned",
+            "name": "NFTBurned",
             "type": "event"
         },
         {
@@ -257,11 +239,17 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
                 }
             ],
-            "name": "DN404NFTMinted",
+            "name": "NFTMinted",
             "type": "event"
         },
         {
@@ -308,6 +296,45 @@
             ],
             "name": "OwnershipTransferred",
             "type": "event"
+        },
+        {
+            "inputs": [],
+            "name": "ADMIN_FEE_BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "ADMIN_LIQUIDITY_FEE_BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
         },
         {
             "inputs": [],
@@ -375,8 +402,14 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "attentionTokenTemplate",
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "name": "baseURItoToken",
             "outputs": [
                 {
                     "internalType": "address",
@@ -393,6 +426,11 @@
                     "internalType": "address",
                     "name": "_tokenAddress",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_tokenId",
+                    "type": "uint256"
                 },
                 {
                     "internalType": "uint256",
@@ -446,23 +484,8 @@
                         },
                         {
                             "internalType": "uint256",
-                            "name": "initialTokenSupply",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "maxTokenSupply",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
                             "name": "unit",
                             "type": "uint256"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "initialSupplyOwner",
-                            "type": "address"
                         },
                         {
                             "internalType": "contract IERC20",
@@ -470,32 +493,20 @@
                             "type": "address"
                         }
                     ],
-                    "internalType": "struct AttentionTokenFactory.AttentionTokenConfig",
+                    "internalType": "struct DN42069LiqManager.DN42069Config",
                     "name": "_tokenConfig",
                     "type": "tuple"
                 },
                 {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "basePrice",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "supplyInflectionPoint",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct AttentionTokenFactory.PriceConfig",
-                    "name": "_priceConfig",
-                    "type": "tuple"
+                    "internalType": "contract IBondingCurve",
+                    "name": "_bondingCurve",
+                    "type": "address"
                 }
             ],
             "name": "createToken",
             "outputs": [
                 {
-                    "internalType": "contract AttentionToken",
+                    "internalType": "contract DN42069",
                     "name": "",
                     "type": "address"
                 }
@@ -506,17 +517,107 @@
         {
             "inputs": [
                 {
-                    "internalType": "address",
+                    "components": [
+                        {
+                            "internalType": "string",
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "symbol",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "baseURI",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "unit",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "contract IERC20",
+                            "name": "paymentToken",
+                            "type": "address"
+                        }
+                    ],
+                    "internalType": "struct DN42069LiqManager.DN42069Config",
+                    "name": "_tokenConfig",
+                    "type": "tuple"
+                }
+            ],
+            "name": "createTokenDefaultCurve",
+            "outputs": [
+                {
+                    "internalType": "contract DN42069",
                     "name": "",
                     "type": "address"
                 }
             ],
-            "name": "creators",
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "danTemplate",
             "outputs": [
                 {
                     "internalType": "address",
                     "name": "",
                     "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "defaultBondingCurve",
+            "outputs": [
+                {
+                    "internalType": "contract IBondingCurve",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "dn42069TokenTemplate",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getBurnNFTPriceAfterFee",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -535,7 +636,7 @@
                     "type": "uint256"
                 }
             ],
-            "name": "getBurnNFTPriceAfterFee",
+            "name": "getBurnNFTPriceAndFee",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -546,6 +647,11 @@
                     "internalType": "uint256",
                     "name": "adminFee",
                     "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "treasuryFee",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -555,7 +661,7 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "_tokenAddress",
+                    "name": "_token",
                     "type": "address"
                 },
                 {
@@ -568,98 +674,35 @@
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "nftPrice",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "adminFee",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "_amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getNextMintNFTPrice",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "nftPrice",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "_amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getPrevMintNFTPrice",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "nftPrice",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "supply",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "basePrice",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "supplyInflectionPoint",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getPrice",
-            "outputs": [
-                {
-                    "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
                 }
             ],
-            "stateMutability": "pure",
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_tokenAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getMintNFTPriceAndFee",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "nftPrice",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -675,7 +718,12 @@
                 {
                     "components": [
                         {
-                            "internalType": "contract AttentionToken",
+                            "internalType": "contract Dan",
+                            "name": "dan",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "contract DN42069",
                             "name": "token",
                             "type": "address"
                         },
@@ -685,31 +733,19 @@
                             "type": "address"
                         },
                         {
-                            "components": [
-                                {
-                                    "internalType": "uint256",
-                                    "name": "basePrice",
-                                    "type": "uint256"
-                                },
-                                {
-                                    "internalType": "uint256",
-                                    "name": "supplyInflectionPoint",
-                                    "type": "uint256"
-                                }
-                            ],
-                            "internalType": "struct AttentionTokenFactory.PriceConfig",
-                            "name": "priceConfig",
-                            "type": "tuple"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "admin",
+                            "internalType": "contract IBondingCurve",
+                            "name": "bondingCurve",
                             "type": "address"
                         },
                         {
-                            "internalType": "uint256",
-                            "name": "adminFeeBIP",
-                            "type": "uint256"
+                            "internalType": "contract Treasury",
+                            "name": "treasury",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "creator",
+                            "type": "address"
                         },
                         {
                             "internalType": "uint256",
@@ -720,14 +756,9 @@
                             "internalType": "bool",
                             "name": "graduated",
                             "type": "bool"
-                        },
-                        {
-                            "internalType": "contract Treasury",
-                            "name": "treasury",
-                            "type": "address"
                         }
                     ],
-                    "internalType": "struct AttentionTokenFactory.TokenInfo",
+                    "internalType": "struct DN42069LiqManager.TokenInfo",
                     "name": "",
                     "type": "tuple"
                 }
@@ -778,6 +809,11 @@
                 },
                 {
                     "internalType": "uint256",
+                    "name": "_tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
                     "name": "_amount",
                     "type": "uint256"
                 },
@@ -825,19 +861,6 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_tokenAddress",
-                    "type": "address"
-                }
-            ],
-            "name": "pauseToken",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
             "inputs": [],
             "name": "renounceOwnership",
             "outputs": [],
@@ -862,7 +885,12 @@
             "name": "tokens",
             "outputs": [
                 {
-                    "internalType": "contract AttentionToken",
+                    "internalType": "contract Dan",
+                    "name": "dan",
+                    "type": "address"
+                },
+                {
+                    "internalType": "contract DN42069",
                     "name": "token",
                     "type": "address"
                 },
@@ -872,31 +900,19 @@
                     "type": "address"
                 },
                 {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "basePrice",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "supplyInflectionPoint",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct AttentionTokenFactory.PriceConfig",
-                    "name": "priceConfig",
-                    "type": "tuple"
-                },
-                {
-                    "internalType": "address",
-                    "name": "admin",
+                    "internalType": "contract IBondingCurve",
+                    "name": "bondingCurve",
                     "type": "address"
                 },
                 {
-                    "internalType": "uint256",
-                    "name": "adminFeeBIP",
-                    "type": "uint256"
+                    "internalType": "contract Treasury",
+                    "name": "treasury",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "creator",
+                    "type": "address"
                 },
                 {
                     "internalType": "uint256",
@@ -907,11 +923,6 @@
                     "internalType": "bool",
                     "name": "graduated",
                     "type": "bool"
-                },
-                {
-                    "internalType": "contract Treasury",
-                    "name": "treasury",
-                    "type": "address"
                 }
             ],
             "stateMutability": "view",
@@ -928,24 +939,6 @@
             "name": "transferOwnership",
             "outputs": [],
             "stateMutability": "payable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_newOwner",
-                    "type": "address"
-                }
-            ],
-            "name": "transferTokenOwnership",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -969,45 +962,6 @@
                     "type": "address"
                 }
             ],
-            "name": "unpauseToken",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_adminFeeBIP",
-                    "type": "uint256"
-                }
-            ],
-            "name": "updateAdminFee",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_admin",
-                    "type": "address"
-                }
-            ],
-            "name": "updateAmind",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_tokenAddress",
-                    "type": "address"
-                }
-            ],
             "name": "withdrawFee",
             "outputs": [
                 {
@@ -1017,7 +971,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "attTokenAmount",
+                    "name": "schellingTokenAmount",
                     "type": "uint256"
                 }
             ],

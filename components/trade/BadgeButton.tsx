@@ -44,10 +44,12 @@ export function SellButton({
   logo,
   name,
   tokenAddress,
+  tokenId,
 }: {
   logo?: string;
   name?: string;
   tokenAddress: Address;
+  tokenId: number;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -88,10 +90,11 @@ export function SellButton({
               <Text>Active Wallet</Text>
               <UserWalletSelect />
             </View>
-            <SellBadge
+            <Sell
               logo={logo}
               name={name}
               tokenAddress={tokenAddress}
+              tokenId={tokenId}
               onSuccess={setTransationData}
               onError={setError}
             />
@@ -125,18 +128,28 @@ export function SellButton({
     );
 }
 
-const SellBadge = forwardRef<
+const Sell = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
     logo?: string;
     name?: string;
     tokenAddress: Address;
+    tokenId: number;
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
 >(
   (
-    { className, logo, name, tokenAddress, onSuccess, onError, ...props },
+    {
+      className,
+      logo,
+      name,
+      tokenAddress,
+      tokenId,
+      onSuccess,
+      onError,
+      ...props
+    },
     ref,
   ) => {
     const account = useAccount();
@@ -151,7 +164,7 @@ const SellBadge = forwardRef<
       waiting,
       writing,
       isSuccess,
-    } = useATTFactoryContractSell(tokenAddress);
+    } = useATTFactoryContractSell(tokenAddress, tokenId);
 
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && nftPrice) {
@@ -179,8 +192,8 @@ const SellBadge = forwardRef<
       }
     }, [writeError, transationError]);
 
-    const { getNFTBalance } = useATTContractInfo(tokenAddress);
-    const { data: balance } = getNFTBalance(account?.address);
+    const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
+    const { data: balance } = nftBalanceOf(account?.address);
 
     const { getBurnNFTPriceAfterFee, getPaymentToken } =
       useATTFactoryContractInfo(tokenAddress);
@@ -204,7 +217,7 @@ const SellBadge = forwardRef<
       <View className="flex gap-4">
         <View className="flex-row items-center justify-between">
           <CommunityInfo name={name} logo={logo} />
-          <Text className="text-sm">{balance} badges</Text>
+          <Text className="text-sm">{Number(balance)} badges</Text>
         </View>
         <View className="flex-row items-center justify-between">
           <View>
@@ -221,7 +234,7 @@ const SellBadge = forwardRef<
           <NumberField
             defaultValue={1}
             minValue={1}
-            maxValue={balance}
+            maxValue={Number(balance)}
             onChange={setAmount}
           />
         </View>
@@ -259,11 +272,13 @@ export function BuyButton({
   logo,
   name,
   tokenAddress,
+  tokenId,
   renderButton,
 }: {
   logo?: string;
   name?: string;
   tokenAddress: Address;
+  tokenId: number;
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
   const account = useAccount();
@@ -292,10 +307,11 @@ export function BuyButton({
       )}
 
       {account.address && (
-        <BuyBadgeDialog
+        <BuyDialog
           logo={logo}
           name={name}
           tokenAddress={tokenAddress}
+          tokenId={tokenId}
           open={open}
           onOpenChange={setOpen}
         />
@@ -304,16 +320,18 @@ export function BuyButton({
   );
 }
 
-export function BuyBadgeDialog({
+export function BuyDialog({
   logo,
   name,
   tokenAddress,
+  tokenId,
   open,
   onOpenChange,
 }: {
   logo?: string;
   name?: string;
   tokenAddress: Address;
+  tokenId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -339,10 +357,11 @@ export function BuyBadgeDialog({
             <Text>Active Wallet</Text>
             <UserWalletSelect />
           </View>
-          <BuyBadge
+          <Buy
             logo={logo}
             name={name}
             tokenAddress={tokenAddress}
+            tokenId={tokenId}
             onSuccess={setTransationData}
             onError={setError}
           />
@@ -379,18 +398,28 @@ export function BuyBadgeDialog({
   );
 }
 
-const BuyBadge = forwardRef<
+const Buy = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
     logo?: string;
     name?: string;
     tokenAddress: Address;
+    tokenId: number;
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
 >(
   (
-    { className, logo, name, tokenAddress, onSuccess, onError, ...props },
+    {
+      className,
+      logo,
+      name,
+      tokenAddress,
+      tokenId,
+      onSuccess,
+      onError,
+      ...props
+    },
     ref,
   ) => {
     const account = useAccount();
@@ -404,10 +433,10 @@ const BuyBadge = forwardRef<
       waiting,
       writing,
       isSuccess,
-    } = useATTFactoryContractBuy(tokenAddress);
+    } = useATTFactoryContractBuy(tokenAddress, tokenId);
 
-    const { getNFTBalance } = useATTContractInfo(tokenAddress);
-    const { data: balance } = getNFTBalance(account?.address);
+    const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
+    const { data: balance } = nftBalanceOf(account?.address);
 
     const { getMintNFTPriceAfterFee, getPaymentToken } =
       useATTFactoryContractInfo(tokenAddress);
@@ -423,6 +452,7 @@ const BuyBadge = forwardRef<
           chainId: ATT_CONTRACT_CHAIN.id,
           account: account?.address,
         }).then((tokenInfo) => {
+          console.log("paymentToken tokenInfo", tokenInfo);
           setToken(tokenInfo);
         });
     }, [paymentToken, account?.address]);
@@ -431,7 +461,7 @@ const BuyBadge = forwardRef<
     const perBadgePrice = fetchedPrice
       ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
       : "";
-
+    // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
     useEffect(() => {
       if (isSuccess && transactionReceipt && token && nftPrice) {
         const transationData = {
@@ -469,7 +499,7 @@ const BuyBadge = forwardRef<
       <View className="flex gap-4">
         <View className="flex-row items-center justify-between">
           <CommunityInfo name={name} logo={logo} />
-          <Text>{balance}</Text>
+          <Text>{Number(balance)}</Text>
         </View>
         <View className="flex-row items-center justify-between">
           <View>
@@ -535,7 +565,7 @@ export const SHARE_INFO = [
   "Buy channel badges to earn 500 $CAST point",
 ];
 
-export function LaunchButton({
+export function CreateTokenButton({
   channelId,
   onComplete,
 }: {
@@ -572,7 +602,7 @@ export function LaunchButton({
         }
       }}
     >
-      <Text>Launch</Text>
+      <Text>Create</Text>
     </Button>
   );
 }

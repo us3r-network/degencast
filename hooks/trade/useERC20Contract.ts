@@ -173,6 +173,9 @@ export async function getTokenInfo({
     ],
   });
   if (!data || data.length < 4) return undefined;
+  if (data[0].error || data[1].error || data[2].error || data[3].error) {
+    return undefined;
+  }
   return {
     address,
     chainId,

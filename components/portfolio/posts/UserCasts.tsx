@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
 import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
@@ -11,23 +11,22 @@ import { getCastHex } from "~/utils/farcaster/cast-utils";
 
 export function CastList({ fid }: { fid: number }) {
   const { currFid } = useFarcasterAccount();
-  const { items: casts, loading, loadMore } = useUserCasts(fid, currFid);
+  const { items, loading, loadMore } = useUserCasts(fid, currFid);
   const { setCastDetailCacheData } = useCastPage();
   return (
     <View className="container h-full">
-      {loading && casts.length === 0 ? (
+      {loading && items.length === 0 ? (
         <Loading />
       ) : (
         <View className="flex-1">
-          {casts.length > 0 && (
             <FlatList
-              data={casts}
+              data={items}
               numColumns={2}
               columnWrapperStyle={{ gap: 5 }}
               showsHorizontalScrollIndicator={false}
               ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
               renderItem={({ item, index }) => {
-                const isLastItem = index === casts.length - 1;
+                const isLastItem = index === items.length - 1;
                 const isOdd = index % 2 === 0;
                 const castHex = getCastHex(item);
                 return (
@@ -62,7 +61,6 @@ export function CastList({ fid }: { fid: number }) {
                 ) : null;
               }}
             />
-          )}
         </View>
       )}
     </View>

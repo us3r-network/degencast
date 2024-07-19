@@ -31,7 +31,6 @@ export default function TabLayout() {
         screenListeners={{
           // Monitor tab press and if 'portfolio' tab is pressed
           tabPress: (e: any) => {
-            console.log("tabPress", e);
             AUTH_PROTECTED_ROUTES.forEach((route) => {
               if ((e.target as string).startsWith(route)) {
                 if (!authenticated) {
