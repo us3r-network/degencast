@@ -308,13 +308,13 @@ export function notifyTipApi(data: {
   });
 }
 
-export function fetchUserChannels({
+export function fetchUserRecommendChannels({
   fid,
 }: {
   fid: number;
 }): AxiosPromise<ApiResp<Channel[]>> {
   return request({
-    url: `/topics/recommendaton/channels?fid=${fid || ""}&pubkey=0xA25532B1287dEe6501fFa13Ff457fFcc9a6Ca6B0`,
+    url: `/topics/recommendaton/channels?fid=${fid || ""}`,
     method: "get",
   });
 }

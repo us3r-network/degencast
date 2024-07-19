@@ -8,7 +8,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 function CurationFeedsPage({ fid }: { fid: number }) {
   return (
-    <CardWarper className="mt-4">
+    <CardWarper>
       <CastList fid={fid} />
     </CardWarper>
   );
@@ -16,13 +16,13 @@ function CurationFeedsPage({ fid }: { fid: number }) {
 
 function CastsFeedsPage({ fid }: { fid: number }) {
   return (
-    <CardWarper className="mt-4">
+    <CardWarper>
       <CastList fid={fid} />
     </CardWarper>
   );
 }
 
-export default function MyCastsScreen() {
+export default function MyCastsScreen({ fid }: { fid?: number }) {
   const { currFid } = useFarcasterAccount();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -30,8 +30,8 @@ export default function MyCastsScreen() {
     { key: "curation", title: "Curation" },
   ]);
   const renderScene = SceneMap({
-    curation: () => <CurationFeedsPage fid={currFid || 0} />,
-    casts: () => <CastsFeedsPage fid={currFid || 0} />,
+    curation: () => <CurationFeedsPage fid={fid || currFid || 0} />,
+    casts: () => <CastsFeedsPage fid={fid || currFid || 0} />,
   });
   return (
     <PageContent>
