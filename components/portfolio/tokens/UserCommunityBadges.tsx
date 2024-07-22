@@ -6,7 +6,7 @@ import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Text } from "~/components/ui/text";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import { BadgeInfo } from "~/services/trade/types";
-import { BuyButton, SellButton } from "../../trade/BadgeButton";
+import { BuyButton, SellButton } from "../../trade/ATTButton";
 
 export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
   const account = useAccount();

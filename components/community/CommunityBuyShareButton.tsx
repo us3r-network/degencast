@@ -4,7 +4,7 @@ import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useATTFactoryContractInfo } from "~/hooks/trade/useATTFactoryContract";
 import { cn } from "~/lib/utils";
 import { CommunityInfo } from "~/services/community/types/community";
-import { BuyButton } from "../trade/BadgeButton";
+import { BuyButton } from "../trade/ATTButton";
 import { Button, ButtonProps } from "../ui/button";
 import { useState, useEffect } from "react";
 import { getTokenInfo } from "~/hooks/trade/useERC20Contract";

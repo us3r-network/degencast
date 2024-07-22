@@ -9,7 +9,7 @@ import {
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import { BuyButton, CreateTokenButton } from "~/components/trade/BadgeButton";
+import { BuyButton, CreateTokenButton } from "~/components/trade/ATTButton";
 import { TradeButton } from "~/components/trade/TradeButton";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
