@@ -294,7 +294,7 @@ export function BuyButton({
           variant={"secondary"}
           onPress={handlePress}
         >
-          <Text>Buy</Text>
+          <Text>Mint</Text>
         </Button>
       )}
 
@@ -369,7 +369,7 @@ export function BuyDialog({
                 onError={setError}
               />
               <DialogFooter>
-                <About title={SHARE_TITLE} info={SHARE_INFO} />
+                <About title={ATT_TITLE} info={ATT_INFO} />
               </DialogFooter>
             </>
           )}
@@ -382,7 +382,7 @@ export function BuyDialog({
           </DialogHeader>
           <TransactionInfo
             data={transationData}
-            buttonText="Buy more"
+            buttonText="Mint more"
             buttonAction={() => setTransationData(undefined)}
           />
         </DialogContent>
@@ -454,7 +454,7 @@ const Buy = forwardRef<
         transactionReceipt,
         description: (
           <View className="flex-row items-center gap-2">
-            <Text>Buy {amount} badges and cost</Text>
+            <Text>Miny {amount} nfts and cost</Text>
             <TokenWithValue token={token} value={nftPrice} />
           </View>
         ),
@@ -524,11 +524,10 @@ const Buy = forwardRef<
               Number(token?.rawBalance || 0) < Number(nftPrice)
             }
             onPress={() => {
-              if (nftPrice)
-                buy(amount, nftPrice);
+              if (nftPrice) buy(amount, nftPrice);
             }}
           >
-            <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
+            <Text>{waiting || writing ? "Confirming..." : "Mint"}</Text>
           </Button>
         }
       />
@@ -536,12 +535,15 @@ const Buy = forwardRef<
   );
 });
 
-export const SHARE_TITLE = "About channel badge";
-export const SHARE_INFO = [
-  "When the channel badge bounding curve reaches a market cap of $42,069, all the liquidity will be deposited into Uniswap v3",
-  "4% of each trade goes into channel reward pool to support channel rewards, and Degencast takes a 1% commission",
-  "Badge holders could claim airdrops after channel token launch",
-  "Buy channel badges to earn 500 $CAST point",
+export const ATT_TITLE = "About Proposal, upvote & channel NFT";
+export const ATT_INFO = [
+  "Propose: Turn a cast into a Channel NFT.",
+  "Approve: Approved proposal = Channel NFT.",
+  "Curators: After proposal is approved, top 10 upvoters(include proposer) = curators. The earlier the more revenue.",
+  "NFT transaction fee: Degencast 1%, Channel host 2%, Creator 3%, ,Curators 4%.",
+  "All Channel NFTs share a same channel bonding curve.",
+  "When channel bounding curve reaches a market cap of 4,206,900 DEGEN, all the liquidity will be deposited into Uniswap v3.",
+  "Channel NFT holders could claim airdrops after channel token launch.",
 ];
 
 export function CreateTokenButton({
