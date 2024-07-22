@@ -19,6 +19,10 @@ import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposeCastCard from "./ProposeCastCard";
 import { Button } from "~/components/ui/button";
 import { Image } from "react-native";
+import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
+import { formatUnits } from "viem";
+import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 
 const getAboutInfo = () => {
   return [
@@ -51,6 +55,10 @@ export default function ProposeModal({
 }) {
   const [open, setOpen] = useState(false);
   const aboutInfo = getAboutInfo();
+  const { price, isLoading } = useProposePrice({
+    contractAddress: tokenInfo?.danContract!,
+    castHash: cast.hash,
+  });
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -83,18 +91,28 @@ export default function ProposeModal({
               resizeMode="contain"
               style={{ width: 20, height: 20 }}
             />
-            <Text className="font-normal">9999 DEGEN</Text>
+            <Text className="font-normal">
+              {isLoading || !price ? "--" : formatUnits(price, 18)} DEGEN
+            </Text>
           </View>
         </View>
-        <Button
-          variant={"secondary"}
-          className="w-full rounded-md"
-          onPress={() => {
-            alert("TODO");
-          }}
-        >
-          <Text>Propose</Text>
-        </Button>
+        <OnChainActionButtonWarper
+          variant="secondary"
+          className="w-full"
+          targetChainId={ATT_CONTRACT_CHAIN.id}
+          warpedButton={
+            <Button
+              variant={"secondary"}
+              className="w-full rounded-md"
+              onPress={() => {
+                alert("TODO");
+              }}
+            >
+              <Text>Propose</Text>
+            </Button>
+          }
+        />
+
         <DialogFooter>
           <About title="About Proposal & channel NFT" info={aboutInfo} />
         </DialogFooter>
