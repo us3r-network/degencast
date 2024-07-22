@@ -39,6 +39,7 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import { Separator } from "../ui/separator";
 
 export function SellButton({
   tokenAddress,
@@ -51,6 +52,7 @@ export function SellButton({
   const [error, setError] = useState("");
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
+  const [showDetails, setShowDetails] = useState(false);
   if (!account.address)
     return (
       <Button
@@ -77,21 +79,43 @@ export function SellButton({
         </DialogTrigger>
         {!transationData && !error && (
           <DialogContent className="w-screen">
-            <DialogHeader
-              className={cn("mr-4 flex-row items-center justify-between gap-2")}
-            >
-              <DialogTitle>Sell</DialogTitle>
+            <DialogHeader className={cn("mr-4 flex-row items-center")}>
+              <Pressable
+                disabled={!showDetails}
+                onPress={() => setShowDetails(false)}
+              >
+                <Text className={showDetails ? "text-secondary" : "text-white"}>
+                  Mint Channel NFT
+                </Text>
+              </Pressable>
+              <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
+              <Pressable
+                disabled={showDetails}
+                onPress={() => setShowDetails(true)}
+              >
+                <Text
+                  className={!showDetails ? "text-secondary" : "text-white"}
+                >
+                  Details
+                </Text>
+              </Pressable>
             </DialogHeader>
-            <View className="flex-row items-center justify-between gap-2">
-              <Text>Active Wallet</Text>
-              <UserWalletSelect />
-            </View>
-            <Sell
-              tokenAddress={tokenAddress}
-              tokenId={tokenId}
-              onSuccess={setTransationData}
-              onError={setError}
-            />
+            {showDetails ? (
+              <Details tokenAddress={tokenAddress} tokenId={tokenId} />
+            ) : (
+              <>
+                <View className="flex-row items-center justify-between gap-2">
+                  <Text>Active Wallet</Text>
+                  <UserWalletSelect />
+                </View>
+                <Sell
+                  tokenAddress={tokenAddress}
+                  tokenId={tokenId}
+                  onSuccess={setTransationData}
+                  onError={setError}
+                />
+              </>
+            )}
           </DialogContent>
         )}
         {transationData && (
@@ -130,130 +154,115 @@ const Sell = forwardRef<
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
->(
-  (
-    {
-      className,
-      tokenAddress,
-      tokenId,
-      onSuccess,
-      onError,
-      ...props
-    },
-    ref,
-  ) => {
-    const account = useAccount();
-    const [amount, setAmount] = useState(1);
+>(({ className, tokenAddress, tokenId, onSuccess, onError, ...props }, ref) => {
+  const account = useAccount();
+  const [amount, setAmount] = useState(1);
 
-    const {
-      sell,
-      transactionReceipt,
-      status,
-      writeError,
-      transationError,
-      waiting,
-      writing,
-      isSuccess,
-    } = useATTFactoryContractSell(tokenAddress, tokenId);
+  const {
+    sell,
+    transactionReceipt,
+    status,
+    writeError,
+    transationError,
+    waiting,
+    writing,
+    isSuccess,
+  } = useATTFactoryContractSell(tokenAddress, tokenId);
 
-    useEffect(() => {
-      if (isSuccess && transactionReceipt && token && nftPrice) {
-        const transationData = {
-          chain: ATT_CONTRACT_CHAIN,
-          transactionReceipt,
-          description: (
-            <View className="flex-row items-center gap-2">
-              <Text className="text-white">
-                Sell {amount} badges and receive
-              </Text>
-              <TokenWithValue token={token} value={nftPrice} />
-            </View>
-          ),
-        };
-        onSuccess?.(transationData);
-      }
-    }, [isSuccess]);
-
-    useEffect(() => {
-      if (writeError || transationError) {
-        onError?.(
-          writeError?.message || transationError?.message || "Something Wrong!",
-        );
-      }
-    }, [writeError, transationError]);
-
-    const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
-    const { data: balance } = nftBalanceOf(account?.address);
-
-    const { getBurnNFTPriceAfterFee, getPaymentToken } =
-      useATTFactoryContractInfo(tokenAddress);
-
-    const { paymentToken } = getPaymentToken();
-    const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
-      undefined,
-    );
-    useEffect(() => {
-      if (paymentToken && account?.address)
-        getTokenInfo({
-          address: paymentToken,
-          chainId: ATT_CONTRACT_CHAIN.id,
-          account: account?.address,
-        }).then((tokenInfo) => {
-          setToken(tokenInfo);
-        });
-    }, [paymentToken, account?.address]);
-    const { nftPrice } = getBurnNFTPriceAfterFee(amount);
-    return (
-      <View className="flex gap-4">
-        <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
-        <View className="flex-row items-center justify-between">
-          <View>
-            <Text className="text-lg font-medium">Quantity</Text>
-            {nftPrice && amount && token && token.decimals ? (
-              <Text className="text-xs">
-                {formatUnits(nftPrice / BigInt(amount), token.decimals)}
-                {token?.symbol} per badge
-              </Text>
-            ) : (
-              <Text className="text-xs">calculating price...</Text>
-            )}
+  useEffect(() => {
+    if (isSuccess && transactionReceipt && token && nftPrice) {
+      const transationData = {
+        chain: ATT_CONTRACT_CHAIN,
+        transactionReceipt,
+        description: (
+          <View className="flex-row items-center gap-2">
+            <Text className="text-white">Sell {amount} badges and receive</Text>
+            <TokenWithValue token={token} value={nftPrice} />
           </View>
-          <NumberField
-            defaultValue={1}
-            minValue={1}
-            maxValue={Number(balance)}
-            onChange={setAmount}
-          />
-        </View>
-        <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-medium">Receive:</Text>
+        ),
+      };
+      onSuccess?.(transationData);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (writeError || transationError) {
+      onError?.(
+        writeError?.message || transationError?.message || "Something Wrong!",
+      );
+    }
+  }, [writeError, transationError]);
+
+  const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
+  const { data: balance } = nftBalanceOf(account?.address);
+
+  const { getBurnNFTPriceAfterFee, getPaymentToken } =
+    useATTFactoryContractInfo(tokenAddress);
+
+  const { paymentToken } = getPaymentToken();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
+  useEffect(() => {
+    if (paymentToken && account?.address)
+      getTokenInfo({
+        address: paymentToken,
+        chainId: ATT_CONTRACT_CHAIN.id,
+        account: account?.address,
+      }).then((tokenInfo) => {
+        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
+        setToken(tokenInfo);
+      });
+  }, [paymentToken, account?.address]);
+  const { nftPrice } = getBurnNFTPriceAfterFee(amount);
+  return (
+    <View className="flex gap-4">
+      <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
+      <View className="flex-row items-center justify-between">
+        <View>
+          <Text className="text-lg font-medium">Quantity</Text>
           {nftPrice && amount && token && token.decimals ? (
-            <Text className="text-md">
-              {formatUnits(nftPrice, token.decimals)} {token.symbol}
+            <Text className="text-xs">
+              {formatUnits(nftPrice / BigInt(amount), token.decimals)}
+              {token?.symbol} per badge
             </Text>
           ) : (
-            <Text className="text-md">fetching price...</Text>
+            <Text className="text-xs">calculating price...</Text>
           )}
         </View>
-        <OnChainActionButtonWarper
-          variant="secondary"
-          className="w-full"
-          targetChainId={ATT_CONTRACT_CHAIN.id}
-          warpedButton={
-            <Button
-              variant="secondary"
-              className="w-full"
-              disabled={!account || waiting || writing || !balance}
-              onPress={() => sell(amount)}
-            >
-              <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
-            </Button>
-          }
+        <NumberField
+          defaultValue={1}
+          minValue={1}
+          maxValue={Number(balance)}
+          onChange={setAmount}
         />
       </View>
-    );
-  },
-);
+      <View className="flex-row items-center justify-between">
+        <Text className="text-lg font-medium">Receive:</Text>
+        {nftPrice && amount && token && token.decimals ? (
+          <Text className="text-md">
+            {formatUnits(nftPrice, token.decimals)} {token.symbol}
+          </Text>
+        ) : (
+          <Text className="text-md">fetching price...</Text>
+        )}
+      </View>
+      <OnChainActionButtonWarper
+        variant="secondary"
+        className="w-full"
+        targetChainId={ATT_CONTRACT_CHAIN.id}
+        warpedButton={
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={!account || waiting || writing || !balance}
+            onPress={() => sell(amount)}
+          >
+            <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
+          </Button>
+        }
+      />
+    </View>
+  );
+});
 
 export function BuyButton({
   tokenAddress,
@@ -314,6 +323,7 @@ export function BuyDialog({
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
+  const [showDetails, setShowDetails] = useState(false);
   return (
     <Dialog
       open={open}
@@ -325,24 +335,44 @@ export function BuyDialog({
     >
       {!transationData && !error && (
         <DialogContent className="w-screen">
-          <DialogHeader
-            className={cn("mr-4 flex-row items-center justify-between gap-2")}
-          >
-            <DialogTitle>Mint Channel NFT</DialogTitle>
+          <DialogHeader className={cn("mr-4 flex-row items-center")}>
+            <Pressable
+              disabled={!showDetails}
+              onPress={() => setShowDetails(false)}
+            >
+              <Text className={showDetails ? "text-secondary" : "text-white"}>
+                Mint Channel NFT
+              </Text>
+            </Pressable>
+            <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
+            <Pressable
+              disabled={showDetails}
+              onPress={() => setShowDetails(true)}
+            >
+              <Text className={!showDetails ? "text-secondary" : "text-white"}>
+                Details
+              </Text>
+            </Pressable>
           </DialogHeader>
-          <View className="flex-row items-center justify-between gap-2">
-            <Text>Active Wallet</Text>
-            <UserWalletSelect />
-          </View>
-          <Buy
-            tokenAddress={tokenAddress}
-            tokenId={tokenId}
-            onSuccess={setTransationData}
-            onError={setError}
-          />
-          <DialogFooter>
-            <About title={SHARE_TITLE} info={SHARE_INFO} />
-          </DialogFooter>
+          {showDetails ? (
+            <Details tokenAddress={tokenAddress} tokenId={tokenId} />
+          ) : (
+            <>
+              <View className="flex-row items-center justify-between gap-2">
+                <Text>Active Wallet</Text>
+                <UserWalletSelect />
+              </View>
+              <Buy
+                tokenAddress={tokenAddress}
+                tokenId={tokenId}
+                onSuccess={setTransationData}
+                onError={setError}
+              />
+              <DialogFooter>
+                <About title={SHARE_TITLE} info={SHARE_INFO} />
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       )}
       {transationData && (
@@ -381,149 +411,130 @@ const Buy = forwardRef<
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
->(
-  (
-    {
-      className,
-      tokenAddress,
-      tokenId,
-      onSuccess,
-      onError,
-      ...props
-    },
-    ref,
-  ) => {
-    const account = useAccount();
-    const [amount, setAmount] = useState(1);
-    const {
-      buy,
-      transactionReceipt,
-      status,
-      writeError,
-      transationError,
-      waiting,
-      writing,
-      isSuccess,
-    } = useATTFactoryContractBuy(tokenAddress, tokenId);
+>(({ className, tokenAddress, tokenId, onSuccess, onError, ...props }, ref) => {
+  const account = useAccount();
+  const [amount, setAmount] = useState(1);
+  const {
+    buy,
+    transactionReceipt,
+    status,
+    writeError,
+    transationError,
+    waiting,
+    writing,
+    isSuccess,
+  } = useATTFactoryContractBuy(tokenAddress, tokenId);
 
-    // const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
-    // const { data: balance } = nftBalanceOf(account?.address);
+  const { getMintNFTPriceAfterFee, getPaymentToken } =
+    useATTFactoryContractInfo(tokenAddress);
 
-    const { getMintNFTPriceAfterFee, getPaymentToken } =
-      useATTFactoryContractInfo(tokenAddress);
-
-    const { paymentToken } = getPaymentToken();
-    const [token, setToken] = useState<TokenWithTradeInfo | undefined>(
-      undefined,
-    );
-    useEffect(() => {
-      if (paymentToken && account?.address)
-        getTokenInfo({
-          address: paymentToken,
-          chainId: ATT_CONTRACT_CHAIN.id,
-          account: account?.address,
-        }).then((tokenInfo) => {
-          console.log("paymentToken tokenInfo", tokenInfo);
-          setToken(tokenInfo);
-        });
-    }, [paymentToken, account?.address]);
-    const { nftPrice, adminFee } = getMintNFTPriceAfterFee(amount);
-    const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
-    const perBadgePrice = fetchedPrice
-      ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-      : "";
-    // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
-    useEffect(() => {
-      if (isSuccess && transactionReceipt && token && nftPrice) {
-        const transationData = {
-          chain: ATT_CONTRACT_CHAIN,
-          transactionReceipt,
-          description: (
-            <View className="flex-row items-center gap-2">
-              <Text>Buy {amount} badges and cost</Text>
-              <TokenWithValue token={token} value={nftPrice} />
-            </View>
-          ),
-        };
-        onSuccess?.(transationData);
-      }
-    }, [isSuccess]);
-
-    useEffect(() => {
-      if (writeError || transationError) {
-        onError?.(
-          writeError?.message || transationError?.message || "Something Wrong!",
-        );
-      }
-    }, [writeError, transationError]);
-
-    const allowanceParams =
-      account?.address && token?.address && nftPrice && adminFee !== undefined
-        ? {
-            owner: account.address,
-            tokenAddress: token?.address,
-            spender: ATT_FACTORY_CONTRACT_ADDRESS,
-            value: nftPrice + adminFee,
-          }
-        : undefined;
-    return (
-      <View className="flex gap-4">
-        <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
-        <View className="flex-row items-center justify-between">
-          <View>
-            <Text className="text-lg font-medium">Quantity</Text>
-            {fetchedPrice ? (
-              <Text className="text-xs">
-                {perBadgePrice}
-                {token?.symbol} per badge
-              </Text>
-            ) : (
-              <Text className="text-xs text-secondary">
-                calculating price...
-              </Text>
-            )}
+  const { paymentToken } = getPaymentToken();
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
+  useEffect(() => {
+    if (paymentToken && account?.address)
+      getTokenInfo({
+        address: paymentToken,
+        chainId: ATT_CONTRACT_CHAIN.id,
+        account: account?.address,
+      }).then((tokenInfo) => {
+        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
+        setToken(tokenInfo);
+      });
+  }, [paymentToken, account?.address]);
+  const { nftPrice } = getMintNFTPriceAfterFee(amount);
+  const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
+  const perBadgePrice = fetchedPrice
+    ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
+    : "";
+  // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
+  useEffect(() => {
+    if (isSuccess && transactionReceipt && token && nftPrice) {
+      const transationData = {
+        chain: ATT_CONTRACT_CHAIN,
+        transactionReceipt,
+        description: (
+          <View className="flex-row items-center gap-2">
+            <Text>Buy {amount} badges and cost</Text>
+            <TokenWithValue token={token} value={nftPrice} />
           </View>
-          <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
-        </View>
-        <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-medium">Total Cost</Text>
-          {fetchedPrice && nftPrice && adminFee !== undefined ? (
-            <Text>
-              {formatUnits(nftPrice + adminFee, token.decimals!)} {token.symbol}
+        ),
+      };
+      onSuccess?.(transationData);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (writeError || transationError) {
+      onError?.(
+        writeError?.message || transationError?.message || "Something Wrong!",
+      );
+    }
+  }, [writeError, transationError]);
+
+  const allowanceParams =
+    account?.address && token?.address && nftPrice
+      ? {
+          owner: account.address,
+          tokenAddress: token?.address,
+          spender: ATT_FACTORY_CONTRACT_ADDRESS,
+          value: nftPrice,
+        }
+      : undefined;
+  return (
+    <View className="flex gap-4">
+      <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
+      <View className="flex-row items-center justify-between">
+        <View>
+          <Text className="text-lg font-medium">Quantity</Text>
+          {fetchedPrice ? (
+            <Text className="text-xs">
+              {perBadgePrice}
+              {token?.symbol} per badge
             </Text>
           ) : (
-            <Text>fetching price...</Text>
+            <Text className="text-xs text-secondary">calculating price...</Text>
           )}
         </View>
-        <OnChainActionButtonWarper
-          variant="secondary"
-          className="w-full"
-          targetChainId={ATT_CONTRACT_CHAIN.id}
-          allowanceParams={allowanceParams}
-          warpedButton={
-            <Button
-              variant="secondary"
-              className="w-full"
-              disabled={
-                !account ||
-                !nftPrice ||
-                waiting ||
-                writing ||
-                Number(token?.rawBalance || 0) < Number(nftPrice)
-              }
-              onPress={() => {
-                if (nftPrice && adminFee !== undefined)
-                  buy(amount, nftPrice + adminFee);
-              }}
-            >
-              <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
-            </Button>
-          }
-        />
+        <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
       </View>
-    );
-  },
-);
+      <View className="flex-row items-center justify-between">
+        <Text className="text-lg font-medium">Total Cost</Text>
+        {fetchedPrice && nftPrice ? (
+          <Text>
+            {formatUnits(nftPrice, token.decimals!)} {token.symbol}
+          </Text>
+        ) : (
+          <Text>fetching price...</Text>
+        )}
+      </View>
+      <OnChainActionButtonWarper
+        variant="secondary"
+        className="w-full"
+        targetChainId={ATT_CONTRACT_CHAIN.id}
+        allowanceParams={allowanceParams}
+        warpedButton={
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={
+              !account ||
+              !nftPrice ||
+              waiting ||
+              writing ||
+              Number(token?.rawBalance || 0) < Number(nftPrice)
+            }
+            onPress={() => {
+              if (nftPrice)
+                buy(amount, nftPrice);
+            }}
+          >
+            <Text>{waiting || writing ? "Confirming..." : "Buy"}</Text>
+          </Button>
+        }
+      />
+    </View>
+  );
+});
 
 export const SHARE_TITLE = "About channel badge";
 export const SHARE_INFO = [
@@ -551,14 +562,14 @@ export function CreateTokenButton({
         setLoading(true);
         const resp = await createToken(channelId);
         console.log(resp);
-        const attentionTokenAddr = resp.data?.data?.attentionTokenAddr;
+        const attentionTokenAddr = resp.data?.data?.dn42069TokenAddress;
         if (attentionTokenAddr) {
           Toast.show({
             type: "success",
             text1: "Token Created",
             text2: "You can now trade your token",
           });
-          onComplete(resp.data.data.attentionTokenAddr);
+          onComplete(resp.data.data.dn42069TokenAddress);
         } else {
           Toast.show({
             type: "error",
@@ -589,7 +600,7 @@ function NFTImage({
   const [imageURI, setimageURI] = useState("");
 
   useEffect(() => {
-    console.log("tokenURI", tokenAddress, tokenId, tokenURI, image);
+    // console.log("tokenURI", tokenAddress, tokenId, tokenURI, image);
     if (image) {
       setimageURI(image);
     } else if (tokenURI) {
@@ -614,5 +625,21 @@ function NFTImage({
         }}
       />
     </AspectRatio>
+  );
+}
+
+function Details({
+  tokenAddress,
+  tokenId,
+}: {
+  tokenAddress: Address;
+  tokenId: number;
+}) {
+  return (
+    <View>
+      <Text>
+        Details of {tokenAddress} No. {tokenId}
+      </Text>
+    </View>
   );
 }
