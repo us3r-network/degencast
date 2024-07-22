@@ -25,6 +25,6 @@ export const mockProposals = [
     finalizeTime: 1234567892,
     mintedCount: 9999,
     tokenId: 1,
-    tokenURI: "http://arweave.net/jSe5Y-WIrmFoXvxA_zx35PWC-t9zkSc7pvsXUxo_RoQ",
+    tokenURI: "https://arweave.net/jSe5Y-WIrmFoXvxA_zx35PWC-t9zkSc7pvsXUxo_RoQ",
   },
 ];
