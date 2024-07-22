@@ -12,6 +12,6 @@ export type AttentionTokenEntity = {
   holders: number;
   tokenStandard: string;
   tokenContract: string;
-  danConstract: Address;
+  danContract: Address;
   chain: string;
 };

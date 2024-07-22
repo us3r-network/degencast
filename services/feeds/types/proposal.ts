@@ -30,5 +30,5 @@ export type ProposalEntity = {
   // tokenId
   tokenId: number;
   // metadata URI
-  tokenURI: `0x${string}`;
+  tokenURI: string;
 };
