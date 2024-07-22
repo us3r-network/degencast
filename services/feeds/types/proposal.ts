@@ -19,8 +19,6 @@ export enum ProposalResult {
 }
 
 export type ProposalEntity = {
-  // 发起提案调用的合约地址
-  contractAddress: string;
   // 提案阶段状态
   status: ProposalStatus;
   // 当前的结果
@@ -29,4 +27,8 @@ export type ProposalEntity = {
   finalizeTime: number;
   // 提案通过的cast,被mint过的数量
   mintedCount?: number;
+  // tokenId
+  tokenId: number;
+  // metadata URI
+  tokenURI: `0x${string}`;
 };

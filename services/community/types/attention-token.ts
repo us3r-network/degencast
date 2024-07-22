@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 export type AttentionTokenEntity = {
   name: string;
   logo: string;
@@ -10,5 +12,6 @@ export type AttentionTokenEntity = {
   holders: number;
   tokenStandard: string;
   tokenContract: string;
+  danConstract: Address;
   chain: string;
 };
