@@ -15,7 +15,7 @@ export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
     badge.tokenId || 0,
   );
   const { data: balance } = nftBalanceOf(account?.address);
-  console.log("CommunityBadge", badge, account?.address, balance);
+  // console.log("CommunityBadge", badge, account?.address, balance);
   return (
     <View className="flex-row items-center justify-between">
       <Link href={`/communities/${badge.channelId}/shares`} asChild>
@@ -29,15 +29,11 @@ export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
         {balance !== undefined &&
           (balance > 0 ? (
             <SellButton
-              logo={badge.logo}
-              name={badge.name}
               tokenAddress={badge.tokenAddress}
               tokenId={1} //todo: use cast tokenId from api
             />
           ) : (
             <BuyButton
-              logo={badge.logo}
-              name={badge.name}
               tokenAddress={badge.tokenAddress}
               tokenId={1} //todo: use cast tokenId from api
             />

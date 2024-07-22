@@ -1,9 +1,8 @@
 import React, { forwardRef, useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import { CommunityInfo } from "~/components/common/CommunityInfo";
 import NumberField from "~/components/common/NumberField";
 import { Button } from "~/components/ui/button";
 import {
@@ -33,6 +32,7 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import About from "../common/About";
 import { TokenWithValue } from "../common/TokenInfo";
 import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
+import { AspectRatio } from "../ui/aspect-ratio";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
@@ -41,13 +41,9 @@ import {
 } from "./TranasactionResult";
 
 export function SellButton({
-  logo,
-  name,
   tokenAddress,
   tokenId,
 }: {
-  logo?: string;
-  name?: string;
   tokenAddress: Address;
   tokenId: number;
 }) {
@@ -91,8 +87,6 @@ export function SellButton({
               <UserWalletSelect />
             </View>
             <Sell
-              logo={logo}
-              name={name}
               tokenAddress={tokenAddress}
               tokenId={tokenId}
               onSuccess={setTransationData}
@@ -131,8 +125,6 @@ export function SellButton({
 const Sell = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
-    logo?: string;
-    name?: string;
     tokenAddress: Address;
     tokenId: number;
     onSuccess?: (data: TransationData) => void;
@@ -142,8 +134,6 @@ const Sell = forwardRef<
   (
     {
       className,
-      logo,
-      name,
       tokenAddress,
       tokenId,
       onSuccess,
@@ -215,10 +205,7 @@ const Sell = forwardRef<
     const { nftPrice } = getBurnNFTPriceAfterFee(amount);
     return (
       <View className="flex gap-4">
-        <View className="flex-row items-center justify-between">
-          <CommunityInfo name={name} logo={logo} />
-          <Text className="text-sm">{Number(balance)} badges</Text>
-        </View>
+        <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-lg font-medium">Quantity</Text>
@@ -269,14 +256,10 @@ const Sell = forwardRef<
 );
 
 export function BuyButton({
-  logo,
-  name,
   tokenAddress,
   tokenId,
   renderButton,
 }: {
-  logo?: string;
-  name?: string;
   tokenAddress: Address;
   tokenId: number;
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
@@ -308,8 +291,6 @@ export function BuyButton({
 
       {account.address && (
         <BuyDialog
-          logo={logo}
-          name={name}
           tokenAddress={tokenAddress}
           tokenId={tokenId}
           open={open}
@@ -321,15 +302,11 @@ export function BuyButton({
 }
 
 export function BuyDialog({
-  logo,
-  name,
   tokenAddress,
   tokenId,
   open,
   onOpenChange,
 }: {
-  logo?: string;
-  name?: string;
   tokenAddress: Address;
   tokenId: number;
   open: boolean;
@@ -351,15 +328,13 @@ export function BuyDialog({
           <DialogHeader
             className={cn("mr-4 flex-row items-center justify-between gap-2")}
           >
-            <DialogTitle>Buy Badges & get allowance</DialogTitle>
+            <DialogTitle>Mint Channel NFT</DialogTitle>
           </DialogHeader>
           <View className="flex-row items-center justify-between gap-2">
             <Text>Active Wallet</Text>
             <UserWalletSelect />
           </View>
           <Buy
-            logo={logo}
-            name={name}
             tokenAddress={tokenAddress}
             tokenId={tokenId}
             onSuccess={setTransationData}
@@ -401,8 +376,6 @@ export function BuyDialog({
 const Buy = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
-    logo?: string;
-    name?: string;
     tokenAddress: Address;
     tokenId: number;
     onSuccess?: (data: TransationData) => void;
@@ -412,8 +385,6 @@ const Buy = forwardRef<
   (
     {
       className,
-      logo,
-      name,
       tokenAddress,
       tokenId,
       onSuccess,
@@ -435,8 +406,8 @@ const Buy = forwardRef<
       isSuccess,
     } = useATTFactoryContractBuy(tokenAddress, tokenId);
 
-    const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
-    const { data: balance } = nftBalanceOf(account?.address);
+    // const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
+    // const { data: balance } = nftBalanceOf(account?.address);
 
     const { getMintNFTPriceAfterFee, getPaymentToken } =
       useATTFactoryContractInfo(tokenAddress);
@@ -497,10 +468,7 @@ const Buy = forwardRef<
         : undefined;
     return (
       <View className="flex gap-4">
-        <View className="flex-row items-center justify-between">
-          <CommunityInfo name={name} logo={logo} />
-          <Text>{Number(balance)}</Text>
-        </View>
+        <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-lg font-medium">Quantity</Text>
@@ -604,5 +572,47 @@ export function CreateTokenButton({
     >
       <Text>Create</Text>
     </Button>
+  );
+}
+
+function NFTImage({
+  tokenAddress,
+  tokenId,
+  image = "https://arseed.web3infra.dev/JVOOPz-rL_4jaSpcpQF8PEshFrpmXtHIi9L3bvzHhHM", //todo delete the default image
+}: {
+  tokenAddress: Address;
+  tokenId: number;
+  image?: string;
+}) {
+  const { uri } = useATTContractInfo(tokenAddress, tokenId);
+  const { data: tokenURI } = uri();
+  const [imageURI, setimageURI] = useState("");
+
+  useEffect(() => {
+    console.log("tokenURI", tokenAddress, tokenId, tokenURI, image);
+    if (image) {
+      setimageURI(image);
+    } else if (tokenURI) {
+      fetch(tokenURI)
+        .then((response) => response.json())
+        .then((json) => json.image as string)
+        .catch((err) => console.log("Request NFT Metadata Failed", err));
+    }
+  }, [tokenURI, image]);
+
+  return (
+    <AspectRatio ratio={1}>
+      <Image
+        source={{
+          uri: imageURI,
+        }}
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: 10,
+          resizeMode: "contain",
+        }}
+      />
+    </AspectRatio>
   );
 }

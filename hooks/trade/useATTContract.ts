@@ -57,6 +57,15 @@ export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
     return { data: data as bigint, status };
   };
 
+  const uri = () => {
+    const { data, status } = useReadContract({
+      ...contract,
+      functionName: "uri",
+      args: [BigInt(tokenId)],
+    });
+    return { data: data as string, status };
+  };
+
   const nftBalanceOf = (owner: Address | undefined) => {
     if (!owner) {
       return { data: 0n, status: "error" };
@@ -71,6 +80,7 @@ export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
 
   return {
     // balanceOf,
+    uri,
     nftBalanceOf,
     // totalSupply,
     // MAX_SUPPLY,

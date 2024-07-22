@@ -211,8 +211,6 @@ function Item({
         if (item.attentionTokenAddress) {
           return (
             <BuyButton
-              name={item.name}
-              logo={item.image_url}
               tokenAddress={item.attentionTokenAddress}
               tokenId={1} //todo: use cast tokenId from api
             />

@@ -70,8 +70,6 @@ export function BuyChannelBadgeWithUpvoteButton({
     <BuyButton
       tokenAddress={attentionTokenAddress}
       tokenId={attentionTokenId}
-      logo={communityInfo.logo}
-      name={communityInfo.name}
       renderButton={(props) => (
         <BuyChannelBadgeButtonStyled {...props}>
           <BuyChannelBadgeTextStyled>
@@ -98,8 +96,6 @@ export function BuyChannelBadgeWithIconButton({
     <BuyButton
       tokenAddress={attentionTokenAddress}
       tokenId={attentionTokenId}
-      logo={communityInfo.logo}
-      name={communityInfo.name}
       renderButton={(props) => (
         <ActionButton
           className={cn(
@@ -153,8 +149,6 @@ function BuyChannelBadgeButton({
 
   return (
     <BuyButton
-      logo={logo}
-      name={name}
       tokenAddress={tokenAddress}
       tokenId={tokenId}
       renderButton={(props) => (
