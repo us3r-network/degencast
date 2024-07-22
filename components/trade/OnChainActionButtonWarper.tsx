@@ -64,7 +64,7 @@ function ApproveButtonWarper({
     tokenAddress,
     spender,
   });
-  console.log("allowance", allowance);
+  // console.log("allowance", allowance);
   if (allowance === 0n || (!!allowance && allowance < value))
     return (
       <Button
