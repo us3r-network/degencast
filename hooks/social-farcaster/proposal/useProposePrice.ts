@@ -17,15 +17,18 @@ export default function useProposePrice({
     "idle" | "pending" | "error" | "success"
   >("idle");
   const isLoading = status === "pending";
+  const isRejected = status === "error";
   useEffect(() => {
     const fetchPrice = async () => {
       try {
         setStatus("pending");
-        if (!publicClient) {
-          throw new Error("Client not connected");
-        }
-        const price = await getProposePrice({
+        console.log({
           publicClient,
+          contractAddress,
+          castHash,
+        });
+        const price = await getProposePrice({
+          publicClient: publicClient!,
           contractAddress,
           castHash,
         });
@@ -34,6 +37,7 @@ export default function useProposePrice({
       } catch (error) {
         setError(error);
         setStatus("error");
+        console.error("getProposePrice error", error);
       }
     };
     if (status === "idle") {
@@ -44,5 +48,6 @@ export default function useProposePrice({
     price,
     error,
     isLoading,
+    isRejected,
   };
 }

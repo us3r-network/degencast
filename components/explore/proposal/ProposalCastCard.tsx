@@ -19,7 +19,7 @@ type ChannelCardProps = {
   proposal: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 };
-const ProposeCastCard = React.forwardRef<
+const ProposalCastCard = React.forwardRef<
   ViewRef,
   React.ComponentPropsWithoutRef<typeof View> & ChannelCardProps
 >(({ channel, cast, tokenInfo, className }, ref) => {
@@ -45,4 +45,4 @@ const ProposeCastCard = React.forwardRef<
   );
 });
 
-export default ProposeCastCard;
+export default ProposalCastCard;

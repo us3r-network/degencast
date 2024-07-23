@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { usePublicClient } from "wagmi";
-import { getDisputePrice } from "./proposal-helper";
+import { getPaymentToken } from "./proposal-helper";
 
-export default function useDisputePrice({
+export default function usePaymentTokenAddress({
   contractAddress,
   castHash,
 }: {
@@ -11,38 +11,36 @@ export default function useDisputePrice({
   castHash: string;
 }) {
   const publicClient = usePublicClient();
-  const [price, setPrice] = useState<bigint>();
+  const [paymentTokenAddress, setPaymentTokenAddress] =
+    useState<`0x${string}`>();
   const [error, setError] = useState<any>();
   const [status, setStatus] = useState<
     "idle" | "pending" | "error" | "success"
   >("idle");
   const isLoading = status === "pending";
-  const isRejected = status === "error";
   useEffect(() => {
-    const fetchPrice = async () => {
+    const fetchTokenAddress = async () => {
       try {
         setStatus("pending");
-        const price = await getDisputePrice({
+        const paymentTokenAddress = await getPaymentToken({
           publicClient: publicClient!,
           contractAddress,
-          castHash,
         });
-        setPrice(price);
+        setPaymentTokenAddress(paymentTokenAddress);
         setStatus("success");
       } catch (error) {
         setError(error);
         setStatus("error");
-        console.error("getDisputePrice error", error);
+        console.error("getPaymentToken error", error);
       }
     };
     if (status === "idle") {
-      fetchPrice();
+      fetchTokenAddress();
     }
   }, [publicClient, contractAddress, castHash, status]);
   return {
-    price,
+    paymentTokenAddress,
     error,
     isLoading,
-    isRejected,
   };
 }

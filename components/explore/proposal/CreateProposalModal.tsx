@@ -16,13 +16,12 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import ProposeCastCard from "./ProposeCastCard";
-import { Button } from "~/components/ui/button";
+import ProposalCastCard from "./ProposalCastCard";
 import { Image } from "react-native";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import { formatUnits } from "viem";
-import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
-import { ATT_CONTRACT_CHAIN } from "~/constants/att";
+import ProposeWriteButton from "./CreateProposalWriteButton";
+import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 
 const getAboutInfo = () => {
   return [
@@ -44,7 +43,7 @@ export type CastProposeStatusProps = {
   tokenInfo?: AttentionTokenEntity;
 };
 
-export default function ProposeModal({
+export default function CreateProposalModal({
   cast,
   channel,
   proposal,
@@ -59,6 +58,11 @@ export default function ProposeModal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
+    usePaymentTokenInfo({
+      contractAddress: tokenInfo?.danContract!,
+      castHash: cast.hash,
+    });
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -77,7 +81,7 @@ export default function ProposeModal({
           <Text>Active Wallet</Text>
           <UserWalletSelect />
         </View>
-        <ProposeCastCard
+        <ProposalCastCard
           channel={channel}
           cast={cast}
           proposal={proposal}
@@ -92,25 +96,18 @@ export default function ProposeModal({
               style={{ width: 20, height: 20 }}
             />
             <Text className="font-normal">
-              {isLoading || !price ? "--" : formatUnits(price, 18)} DEGEN
+              {isLoading || !price
+                ? "--"
+                : formatUnits(price, paymentTokenInfo?.decimals || 18)}{" "}
+              {paymentTokenInfo?.symbol}
             </Text>
           </View>
         </View>
-        <OnChainActionButtonWarper
-          variant="secondary"
-          className="w-full"
-          targetChainId={ATT_CONTRACT_CHAIN.id}
-          warpedButton={
-            <Button
-              variant={"secondary"}
-              className="w-full rounded-md"
-              onPress={() => {
-                alert("TODO");
-              }}
-            >
-              <Text>Propose</Text>
-            </Button>
-          }
+        <ProposeWriteButton
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
         />
 
         <DialogFooter>
