@@ -4,16 +4,37 @@ import {
   getOnchainActivities,
 } from "~/services/community/api/activity";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { ERC42069Token } from "~/services/trade/types";
 
 const PAGE_SIZE = 20;
+
+export enum OnchainActivityType {
+  BUY = "buy",
+  SELL = "sell",
+  WITHDRAW = "withdraw",
+  DEPOSIT = "deposit",
+  SWAP = "swap",
+  MINT = "mint",
+  BURN = "burn",
+}
+
+export enum OnchainActivityFilterType {
+  ALL = "all",
+  POWERUSERS = "powerusers",
+  MINE = "mine",
+  FOLLOWING = "following",
+}
+
 export default function useLoadOnchainActivities(props?: {
   channelId?: string;
-  type?: string;
+  token?: ERC42069Token;
+  type?: OnchainActivityFilterType;
 }) {
   const [items, setItems] = useState<OnchainActivitiesData>([]);
   const [status, setStatus] = useState(AsyncRequestStatus.IDLE);
   const channelIdRef = useRef(props?.channelId || "");
   const typeRef = useRef(props?.type || "");
+  const tokenRef = useRef(props?.token || undefined);
   const pageInfoRef = useRef({
     hasNextPage: true,
     nextPageNumber: 1,
@@ -23,6 +44,7 @@ export default function useLoadOnchainActivities(props?: {
 
   const loadItems = async () => {
     const channelId = channelIdRef.current;
+    const token = tokenRef.current;
     const type = typeRef.current;
     const { hasNextPage, nextPageNumber } = pageInfoRef.current;
 
@@ -37,6 +59,9 @@ export default function useLoadOnchainActivities(props?: {
       };
       if (channelId) {
         Object.assign(params, { channelId });
+      }
+      if (token) {
+        Object.assign(params, { token });
       }
       if (type) {
         Object.assign(params, { type });

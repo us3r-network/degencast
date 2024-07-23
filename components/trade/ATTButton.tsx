@@ -40,6 +40,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import { Separator } from "../ui/separator";
+import Activities from "../activity/Activities";
 
 export function SellButton({
   tokenAddress,
@@ -101,7 +102,7 @@ export function SellButton({
               </Pressable>
             </DialogHeader>
             {showDetails ? (
-              <Details tokenAddress={tokenAddress} tokenId={tokenId} />
+              <Details contractAddress={tokenAddress} tokenId={tokenId} />
             ) : (
               <>
                 <View className="flex-row items-center justify-between gap-2">
@@ -355,7 +356,7 @@ export function BuyDialog({
             </Pressable>
           </DialogHeader>
           {showDetails ? (
-            <Details tokenAddress={tokenAddress} tokenId={tokenId} />
+            <Details contractAddress={tokenAddress} tokenId={tokenId} />
           ) : (
             <>
               <View className="flex-row items-center justify-between gap-2">
@@ -631,17 +632,15 @@ function NFTImage({
 }
 
 function Details({
-  tokenAddress,
+  contractAddress,
   tokenId,
 }: {
-  tokenAddress: Address;
+  contractAddress: Address;
   tokenId: number;
 }) {
   return (
-    <View>
-      <Text>
-        Details of {tokenAddress} No. {tokenId}
-      </Text>
+    <View className="h-full">
+      <Activities token={{ contractAddress, tokenId }} />
     </View>
   );
 }
