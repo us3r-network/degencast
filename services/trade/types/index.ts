@@ -56,5 +56,6 @@ export type BadgeInfo = {
 };
 
 export type CreateTokenResp = {
-  attentionTokenAddr: Address;
+  dn42069TokenAddress: Address;
+  danAddress: Address;
 };

@@ -23,10 +23,8 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
       functionName: "getMintNFTPriceAfterFee",
       args: [tokenAddress, BigInt(amount)],
     });
-    // const nftPrice = data ? (data as bigint[])[0] : undefined;
-    // const adminFee = data ? (data as bigint[])[1] : undefined;
     const nftPrice = data ? (data as bigint) : undefined;
-    return { nftPrice, adminFee: 0n, status };
+    return { nftPrice, status };
   };
 
   const getBurnNFTPriceAfterFee = (amount: number = 1) => {
@@ -35,9 +33,32 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
       functionName: "getBurnNFTPriceAfterFee",
       args: [tokenAddress, BigInt(amount)],
     });
+    const nftPrice = data ? (data as bigint) : undefined;
+    return { nftPrice, status };
+  };
+
+  const getMintNFTPriceAndFee = (amount: number = 1) => {
+    const { data, status } = useReadContract({
+      ...contract,
+      functionName: "getMintNFTPriceAfterFee",
+      args: [tokenAddress, BigInt(amount)],
+    });
+    const nftPrice = data ? (data as bigint[])[0] : undefined;
+    const adminFee = 0n;
+    const treasuryFee = 0n;
+    return { nftPrice, adminFee, treasuryFee, status };
+  };
+
+  const getBurnNFTPriceAndFee = (amount: number = 1) => {
+    const { data, status } = useReadContract({
+      ...contract,
+      functionName: "getBurnNFTPriceAfterFee",
+      args: [tokenAddress, BigInt(amount)],
+    });
     const nftPrice = data ? (data as bigint[])[0] : undefined;
     const adminFee = data ? (data as bigint[])[1] : undefined;
-    return { nftPrice, adminFee, status };
+    const treasuryFee = data ? (data as bigint[])[2] : undefined;
+    return { nftPrice, adminFee, treasuryFee, status };
   };
 
   const getPaymentToken = () => {
@@ -53,7 +74,9 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
 
   return {
     getMintNFTPriceAfterFee,
+    getMintNFTPriceAndFee,
     getBurnNFTPriceAfterFee,
+    getBurnNFTPriceAndFee,
     getPaymentToken,
   };
 }

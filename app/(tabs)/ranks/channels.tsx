@@ -9,7 +9,11 @@ import {
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import { BuyButton, CreateTokenButton } from "~/components/trade/BadgeButton";
+import {
+  BuyButton,
+  CreateTokenButton,
+  SellButton,
+} from "~/components/trade/ATTButton";
 import { TradeButton } from "~/components/trade/TradeButton";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
@@ -33,7 +37,7 @@ export default function ChannelsScreen() {
   return (
     <PageContent>
       <CardWarper>
-        <View className="flex gap-4 h-full">
+        <View className="flex h-full gap-4">
           <OrderSelect setOrderParams={setOrderParams} />
           {loading && items.length === 0 ? (
             <Loading />
@@ -210,12 +214,16 @@ function Item({
       case CommunityRankOrderBy.MEMBERS:
         if (item.attentionTokenAddress) {
           return (
-            <BuyButton
-              name={item.name}
-              logo={item.image_url}
-              tokenAddress={item.attentionTokenAddress}
-              tokenId={1} //todo: use cast tokenId from api
-            />
+            <>
+              <BuyButton
+                tokenAddress={item.attentionTokenAddress}
+                tokenId={1} //todo: use cast tokenId from api
+              />
+              <SellButton
+                tokenAddress={item.attentionTokenAddress}
+                tokenId={1} //todo: use cast tokenId from api
+              />
+            </>
           );
         } else {
           return (
