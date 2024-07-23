@@ -141,7 +141,7 @@ function DisputeProposalWrite({
   return (
     <>
       <View className="flex flex-row items-center justify-between">
-        <Text>Successfully challenge:</Text>
+        <Text>The cost for a successful challenge:</Text>
         <View className="flex flex-row items-center gap-1">
           <Image
             source={require("~/assets/images/degen-icon-2.png")}
@@ -149,9 +149,11 @@ function DisputeProposalWrite({
             style={{ width: 20, height: 20 }}
           />
           <Text className="font-normal">
-            {isLoading || !price
+            {isLoading || !price || !paymentTokenInfo?.decimals
               ? "--"
-              : formatUnits(price, paymentTokenInfo?.decimals || 18)}{" "}
+              : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
+                  2,
+                )}{" "}
             {paymentTokenInfo?.symbol}
           </Text>
         </View>
@@ -200,9 +202,11 @@ function ProposeProposalWrite({
             style={{ width: 20, height: 20 }}
           />
           <Text className="font-normal">
-            {isLoading || !price
+            {isLoading || !price || !paymentTokenInfo?.decimals
               ? "--"
-              : formatUnits(price, paymentTokenInfo?.decimals || 18)}{" "}
+              : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
+                  2,
+                )}{" "}
             {paymentTokenInfo?.symbol}
           </Text>
         </View>

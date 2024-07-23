@@ -84,10 +84,17 @@ function Proposed({
   const { result, finalizeTime, upvoteCount, downvoteCount } = proposal;
   return (
     <View className="flex w-full flex-row items-center gap-4">
-      <Text className="mr-auto text-sm text-secondary">
-        {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
-        {dayjs(finalizeTime).date(1).format("HH:mm")}
-      </Text>
+      {!downvoteCount ? (
+        <Text className="mr-auto text-sm text-secondary">
+          24:00 Choose your stance
+        </Text>
+      ) : (
+        <Text className="mr-auto text-sm text-secondary">
+          {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
+          {dayjs(finalizeTime).date(1).format("HH:mm")}
+        </Text>
+      )}
+
       <FCastExploreActions cast={cast} communityInfo={channel as any} />
       {!downvoteCount ? (
         <>
