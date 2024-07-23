@@ -4,7 +4,7 @@ import {
   getOnchainActivities,
 } from "~/services/community/api/activity";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
-import { ERC40629Token } from "~/services/trade/types";
+import { ERC42069Token } from "~/services/trade/types";
 
 const PAGE_SIZE = 20;
 
@@ -27,7 +27,7 @@ export enum OnchainActivityFilterType {
 
 export default function useLoadOnchainActivities(props?: {
   channelId?: string;
-  token?: ERC40629Token;
+  token?: ERC42069Token;
   type?: OnchainActivityFilterType;
 }) {
   const [items, setItems] = useState<OnchainActivitiesData>([]);

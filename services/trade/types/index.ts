@@ -61,7 +61,7 @@ export type CreateTokenResp = {
 };
 
 
-export type ERC40629Token = {
+export type ERC42069Token = {
   contractAddress: string;
   tokenId: number;
   uri?: string;

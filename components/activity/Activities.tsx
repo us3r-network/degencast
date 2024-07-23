@@ -3,7 +3,7 @@ import { FlatList, View } from "react-native";
 import useLoadOnchainActivities, { OnchainActivityFilterType } from "~/hooks/activity/useLoadOnchainActivities";
 import { Loading } from "../common/Loading";
 import ActivityItem from "./ActivityItem";
-import { ERC40629Token } from "~/services/trade/types";
+import { ERC42069Token } from "~/services/trade/types";
 // import ActivitiesTable from "./ActivitiesTable";
 export default function Activities({
   channelId,
@@ -13,7 +13,7 @@ export default function Activities({
 }: {
   channelId?: string;
   fid?: number;
-  token?: ERC40629Token;
+  token?: ERC42069Token;
   type?: OnchainActivityFilterType;
 }) {
   const { items, loading, loadItems } = useLoadOnchainActivities({
