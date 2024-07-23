@@ -1,20 +1,15 @@
+import { View } from "react-native";
 import { PropsWithChildren, useState } from "react";
-import { TabView, SceneMap } from "react-native-tab-view";
-import AllActivities from "~/components/activity/All";
-import FollowingActivities from "~/components/activity/Following";
-import PowerusersActivities from "~/components/activity/Powerusers";
+import { SceneMap, TabView } from "react-native-tab-view";
+import AllActivities from "~/components/activity/Activities";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/tab-view/PageTabBar";
-import { Card, CardContent } from "~/components/ui/card";
+import UserSignin from "~/components/portfolio/user/UserSignin";
+import { OnchainActivityFilterType } from "~/hooks/activity/useLoadOnchainActivities";
+import useAuth from "~/hooks/user/useAuth";
 
 function ActivitiesPageContent({ children }: PropsWithChildren) {
-  return (
-    <PageContent>
-      <Card className="h-full w-full rounded-2xl rounded-b-none p-4 pb-0">
-        <CardContent className="h-full w-full p-0">{children}</CardContent>
-      </Card>
-    </PageContent>
-  );
+  return <PageContent>{children}</PageContent>;
 }
 
 function AllActivitiesPage() {
@@ -24,34 +19,59 @@ function AllActivitiesPage() {
     </ActivitiesPageContent>
   );
 }
-
+function MyActivitiesPage() {
+  const { ready, authenticated } = useAuth();
+  if (!ready) {
+    return null;
+  }
+  return (
+    <ActivitiesPageContent>
+      {authenticated ? (
+        <AllActivities type={OnchainActivityFilterType.MINE} />
+      ) : (
+        <View className="flex h-full w-full items-center justify-center">
+          <View>
+            <UserSignin
+              onSuccess={() => {}}
+              onFail={(error) => {
+                console.error(error);
+              }}
+            />
+          </View>
+        </View>
+      )}
+    </ActivitiesPageContent>
+  );
+}
+/*
 function PowerusersActivitiesPage() {
   return (
     <ActivitiesPageContent>
-      <PowerusersActivities />
+      <AllActivities type={OnchainActivityFilterType.POWERUSERS} />
     </ActivitiesPageContent>
   );
 }
-
 function FollowingActivitiesPage() {
   return (
     <ActivitiesPageContent>
-      <FollowingActivities />
+      <AllActivities type={OnchainActivityFilterType.FOLLOWING} />
     </ActivitiesPageContent>
   );
 }
-
+*/
 export default function ActivitiesLayout() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "all", title: "All" },
-    { key: "powerusers", title: "Powerusers" },
-    { key: "following", title: "Following" },
+    { key: "all", title: "Global activities" },
+    { key: "mine", title: "My activities" },
+    // { key: "powerusers", title: "Powerusers" },
+    // { key: "following", title: "Following" },
   ]);
   const renderScene = SceneMap({
     all: AllActivitiesPage,
-    powerusers: PowerusersActivitiesPage,
-    following: FollowingActivitiesPage,
+    mine: MyActivitiesPage,
+    // powerusers: PowerusersActivitiesPage,
+    // following: FollowingActivitiesPage,
   });
   return (
     <TabView

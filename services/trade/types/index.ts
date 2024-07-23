@@ -59,3 +59,16 @@ export type CreateTokenResp = {
   dn42069TokenAddress: Address;
   danAddress: Address;
 };
+
+
+export type ERC40629Token = {
+  contractAddress: string;
+  tokenId: number;
+  uri?: string;
+  balance?: string;
+  nftBalance?: string;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  logoUri?: string;
+};
