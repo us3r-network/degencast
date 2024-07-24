@@ -1,36 +1,19 @@
 import { useRef, useState } from "react";
 import {
-  OnchainActivitiesData,
-  getOnchainActivities,
+  getActivities,
 } from "~/services/community/api/activity";
+import { ActivityEntity, ActivityFilterType } from "~/services/community/types/activity";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 import { ERC42069Token } from "~/services/trade/types";
 
 const PAGE_SIZE = 20;
 
-export enum OnchainActivityType {
-  BUY = "buy",
-  SELL = "sell",
-  WITHDRAW = "withdraw",
-  DEPOSIT = "deposit",
-  SWAP = "swap",
-  MINT = "mint",
-  BURN = "burn",
-}
-
-export enum OnchainActivityFilterType {
-  ALL = "all",
-  POWERUSERS = "powerusers",
-  MINE = "mine",
-  FOLLOWING = "following",
-}
-
 export default function useLoadOnchainActivities(props?: {
   channelId?: string;
   token?: ERC42069Token;
-  type?: OnchainActivityFilterType;
+  type?: ActivityFilterType;
 }) {
-  const [items, setItems] = useState<OnchainActivitiesData>([]);
+  const [items, setItems] = useState<Array<ActivityEntity>>([]);
   const [status, setStatus] = useState(AsyncRequestStatus.IDLE);
   const channelIdRef = useRef(props?.channelId || "");
   const typeRef = useRef(props?.type || "");
@@ -66,7 +49,7 @@ export default function useLoadOnchainActivities(props?: {
       if (type) {
         Object.assign(params, { type });
       }
-      const resp = await getOnchainActivities(params);
+      const resp = await getActivities(params);
       if (resp.data.code !== ApiRespCode.SUCCESS) {
         throw new Error(resp.data.msg);
       }

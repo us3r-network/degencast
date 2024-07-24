@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { FlatList, View } from "react-native";
-import useLoadOnchainActivities, { OnchainActivityFilterType } from "~/hooks/activity/useLoadOnchainActivities";
+import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
 import { Loading } from "../common/Loading";
 import ActivityItem from "./ActivityItem";
 import { ERC42069Token } from "~/services/trade/types";
-// import ActivitiesTable from "./ActivitiesTable";
+import { ActivityFilterType } from "~/services/community/types/activity";
+
 export default function Activities({
   channelId,
   fid,
@@ -14,7 +15,7 @@ export default function Activities({
   channelId?: string;
   fid?: number;
   token?: ERC42069Token;
-  type?: OnchainActivityFilterType;
+  type?: ActivityFilterType;
 }) {
   const { items, loading, loadItems } = useLoadOnchainActivities({
     channelId,

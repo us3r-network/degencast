@@ -1,12 +1,12 @@
-import { View } from "react-native";
 import { PropsWithChildren, useState } from "react";
+import { View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import AllActivities from "~/components/activity/Activities";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/tab-view/PageTabBar";
 import UserSignin from "~/components/portfolio/user/UserSignin";
-import { OnchainActivityFilterType } from "~/hooks/activity/useLoadOnchainActivities";
 import useAuth from "~/hooks/user/useAuth";
+import { ActivityFilterType } from "~/services/community/types/activity";
 
 function ActivitiesPageContent({ children }: PropsWithChildren) {
   return <PageContent>{children}</PageContent>;
@@ -27,7 +27,7 @@ function MyActivitiesPage() {
   return (
     <ActivitiesPageContent>
       {authenticated ? (
-        <AllActivities type={OnchainActivityFilterType.MINE} />
+        <AllActivities type={ActivityFilterType.MINE} />
       ) : (
         <View className="flex h-full w-full items-center justify-center">
           <View>
@@ -47,14 +47,14 @@ function MyActivitiesPage() {
 function PowerusersActivitiesPage() {
   return (
     <ActivitiesPageContent>
-      <AllActivities type={OnchainActivityFilterType.POWERUSERS} />
+      <AllActivities type={ActivityFilterType.POWERUSERS} />
     </ActivitiesPageContent>
   );
 }
 function FollowingActivitiesPage() {
   return (
     <ActivitiesPageContent>
-      <AllActivities type={OnchainActivityFilterType.FOLLOWING} />
+      <AllActivities type={ActivityFilterType.FOLLOWING} />
     </ActivitiesPageContent>
   );
 }
