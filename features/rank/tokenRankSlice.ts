@@ -1,17 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import uniqBy from "lodash/uniqBy";
-import { fetchRankCommunities } from "~/services/rank/api";
-import { RankOrderBy, OrderParams } from "~/services/rank/types";
+import { fetchRankTokens } from "~/services/rank/api";
+import { OrderParams, RankOrderBy } from "~/services/rank/types";
 import { Channel } from "~/services/farcaster/types";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
 export const DEFAULT_ORDER_PARAMS: OrderParams = {
   order: "DESC",
-  orderBy: RankOrderBy.CREATED_DATE,
+  orderBy: RankOrderBy.MARKET_CAP,
 };
 
-type CommunityRankState = {
+type TokenRankState = {
   items: Channel[];
   orderBy: RankOrderBy;
   order: "ASC" | "DESC";
@@ -20,7 +20,7 @@ type CommunityRankState = {
   error: string | undefined;
 };
 
-const communityRankState: CommunityRankState = {
+const tokenRankState: TokenRankState = {
   items: [],
   orderBy: DEFAULT_ORDER_PARAMS.orderBy,
   order: DEFAULT_ORDER_PARAMS.order,
@@ -31,24 +31,24 @@ const communityRankState: CommunityRankState = {
 
 const PAGE_SIZE = 30;
 export const fetchItems = createAsyncThunk(
-  "communityRank/fetchItems",
+  "tokenRank/fetchItems",
   async ({ order, orderBy }: OrderParams, thunkAPI) => {
-    const { communityRank } = thunkAPI.getState() as {
-      communityRank: CommunityRankState;
+    const { tokenRank } = thunkAPI.getState() as {
+      tokenRank: TokenRankState;
     };
-    const response = await fetchRankCommunities({
+    const response = await fetchRankTokens({
       orderBy: orderBy || DEFAULT_ORDER_PARAMS.orderBy,
       order: order || DEFAULT_ORDER_PARAMS.order,
       pageSize: PAGE_SIZE,
-      pageNumber: communityRank.nextPageNumber || 1,
+      pageNumber: tokenRank.nextPageNumber || 1,
     });
     return response.data;
   },
 );
 
-export const communityRankSlice = createSlice({
-  name: "communityRank",
-  initialState: communityRankState,
+export const tokenRankSlice = createSlice({
+  name: "tokenRank",
+  initialState: tokenRankState,
   reducers: {},
   extraReducers(builder) {
     builder
@@ -80,5 +80,5 @@ export const communityRankSlice = createSlice({
       });
   },
 });
-export const selectCommunityRank = (state: RootState) => state.communityRank;
-export default communityRankSlice.reducer;
+export const selectTokenRank = (state: RootState) => state.tokenRank;
+export default tokenRankSlice.reducer;
