@@ -9,10 +9,7 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "../types/proposal";
 import { mockProposals } from "../mocks/proposal";
 
-const mockChannelsFeedRequest = async ({
-  pageSize,
-  pageNumber,
-}: ExploreSelectionFeeds) => {
+const mockChannelsFeedRequest = async (props: any) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const mockChannelsData = mockChannels
@@ -40,23 +37,24 @@ const mockChannelsFeedRequest = async ({
   } as unknown as RequestPromise<ApiResp<ExploreSelectionFeedsData>>;
 };
 
-const mockCastsFeedRequest = async ({
-  pageSize,
-  pageNumber,
-}: ExploreSelectionFeeds) => {
-  mockCasts;
+const mockCastsFeedRequest = async ({ limit, cursor }: any) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return {
     data: {
       code: 0,
       msg: "",
-      data: [...mockProposals, mockProposals[0]].map((proposal, idx) => ({
-        channel: idx === mockProposals.length - 1 ? undefined : mockChannels[0],
-        tokenInfo: mockAttentionToken,
-        proposal,
-        cast: mockCasts[0],
-      })),
+      data: {
+        casts: [...mockProposals, mockProposals[0]].map((proposal, idx) => ({
+          channel: mockChannels[0],
+          tokenInfo: mockAttentionToken,
+          proposal,
+          cast: mockCasts[Number(cursor)],
+        })),
+        next: {
+          cursor: Number(cursor) + 1,
+        },
+      },
     },
   } as unknown as RequestPromise<ApiResp<ExploreCastFeedsData>>;
 };
@@ -79,14 +77,14 @@ export function getExploreSelectionFeeds(
   params: ExploreSelectionFeeds,
 ): RequestPromise<ApiResp<ExploreSelectionFeedsData>> {
   return mockChannelsFeedRequest(params);
-  //   return request({
-  //     url: `/topics/channels/feed/selection`,
-  //     method: "get",
-  //     params,
-  //     headers: {
-  //       needToken: true,
-  //     },
-  //   });
+  // return request({
+  //   url: `/topics/channels/feed/selection`,
+  //   method: "get",
+  //   params,
+  //   headers: {
+  //     needToken: true,
+  //   },
+  // });
 }
 
 export type ExploreProposalFeeds = {
@@ -102,36 +100,41 @@ export function getExploreProposalFeeds(
   params: ExploreProposalFeeds,
 ): RequestPromise<ApiResp<ExploreProposalFeedsData>> {
   return mockChannelsFeedRequest(params);
-  //   return request({
-  //     url: `/topics/channels/feed/proposal`,
-  //     method: "get",
-  //     params,
-  //     headers: {
-  //       needToken: true,
-  //     },
-  //   });
+  // return request({
+  //   url: `/topics/channels/feed/proposal`,
+  //   method: "get",
+  //   params,
+  //   headers: {
+  //     needToken: true,
+  //   },
+  // });
 }
 
 export type ExploreCastFeeds = {
-  pageSize?: number;
-  pageNumber?: number;
+  limit?: number;
+  cursor?: string;
 };
-export type ExploreCastFeedsData = Array<
-  ProposalCast & {
-    channel: CommunityEntity;
-    tokenInfo: AttentionTokenEntity;
-  }
->;
+export type ExploreCastFeedsData = {
+  casts: Array<
+    ProposalCast & {
+      channel: CommunityEntity;
+      tokenInfo: AttentionTokenEntity;
+    }
+  >;
+  next: {
+    cursor: string;
+  };
+};
 export function getExploreCastFeeds(
   params: ExploreCastFeeds,
 ): RequestPromise<ApiResp<ExploreCastFeedsData>> {
   return mockCastsFeedRequest(params);
-  //   return request({
-  //     url: `/topics/channels/feed/cast`,
-  //     method: "get",
-  //     params,
-  //     headers: {
-  //       needToken: true,
-  //     },
-  //   });
+  // return request({
+  //   url: `/topics/channels/feed/cast`,
+  //   method: "get",
+  //   params,
+  //   headers: {
+  //     needToken: true,
+  //   },
+  // });
 }

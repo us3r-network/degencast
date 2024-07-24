@@ -7,19 +7,28 @@ import { useAccount } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import useProposeProposal from "~/hooks/social-farcaster/proposal/useProposeProposal";
 import useDisputeProposal from "~/hooks/social-farcaster/proposal/useDisputeProposal";
+import { TransactionReceipt } from "viem";
 
 export function ProposeProposalWriteButton({
   cast,
   tokenInfo,
   price,
+  text,
+  onProposeSuccess,
+  onProposeError,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
     price: bigint;
+    text?: string;
+    onProposeSuccess?: (proposal: TransactionReceipt) => void;
+    onProposeError?: (error: any) => void;
   }) {
   const { isLoading, propose } = useProposeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
+    onProposeSuccess,
+    onProposeError,
   });
   const account = useAccount();
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
@@ -60,7 +69,7 @@ export function ProposeProposalWriteButton({
           }}
           {...props}
         >
-          <Text>Challenge</Text>
+          <Text>{text || "Upvote & Accelerate Countdown"}</Text>
         </Button>
       }
     />
@@ -71,14 +80,22 @@ export function DisputeProposalWriteButton({
   cast,
   tokenInfo,
   price,
+  text,
+  onDisputeSuccess,
+  onDisputeError,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
     price: bigint;
+    text?: string;
+    onDisputeSuccess?: (proposal: TransactionReceipt) => void;
+    onDisputeError?: (error: any) => void;
   }) {
   const { isLoading, dispute } = useDisputeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
+    onDisputeSuccess,
+    onDisputeError,
   });
   const account = useAccount();
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
@@ -119,7 +136,7 @@ export function DisputeProposalWriteButton({
           }}
           {...props}
         >
-          <Text>Challenge</Text>
+          <Text>{text || "Challenge"}</Text>
         </Button>
       }
     />

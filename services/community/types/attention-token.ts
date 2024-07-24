@@ -14,4 +14,7 @@ export type AttentionTokenEntity = {
   tokenContract: string;
   danContract: Address;
   chain: string;
+  bondingCurve: {
+    basePrice: number;
+  };
 };

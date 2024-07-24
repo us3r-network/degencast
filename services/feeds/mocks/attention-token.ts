@@ -14,4 +14,7 @@ export const mockAttentionToken = {
   tokenContract: "0x0000000000000000000000000000000000000000",
   danContract: "0x71510a95dd455565979e86fde0f309adeeefb847",
   chain: "Base",
+  bondingCurve: {
+    basePrice: 10,
+  },
 } as unknown as AttentionTokenEntity;

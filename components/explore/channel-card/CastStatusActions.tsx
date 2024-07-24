@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import CreateProposalButton from "../proposal/CreateProposalButton";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import ChallengeProposalButton from "../proposal/ChallengeProposalButton";
+import UpvoteProposalButton from "../proposal/UpvoteProposalButton";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
@@ -64,7 +65,6 @@ function NotProposed({
   return (
     <View className="flex w-full flex-row items-center gap-4">
       <Text className="mr-auto text-sm text-secondary">Promising</Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
       <CreateProposalButton
         cast={cast}
         channel={channel}
@@ -94,14 +94,19 @@ function Proposed({
           {dayjs(finalizeTime).date(1).format("HH:mm")}
         </Text>
       )}
-
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
-      {!downvoteCount ? (
+      {upvoteCount < 2 ? (
+        <UpvoteProposalButton
+          proposal={{ ...proposal, result: ProposalResult.Downvote }}
+          cast={cast}
+          channel={channel}
+          tokenInfo={tokenInfo}
+        />
+      ) : !downvoteCount ? (
         <>
-          <ChallengeProposalButton
+          <UpvoteProposalButton
+            proposal={{ ...proposal, result: ProposalResult.Downvote }}
             cast={cast}
             channel={channel}
-            proposal={{ ...proposal, result: ProposalResult.Downvote }}
             tokenInfo={tokenInfo}
           />
           <ChallengeProposalButton
@@ -129,7 +134,6 @@ function Accepted({ cast, channel, proposal }: CastStatusActionsProps) {
       <Text className="mr-auto text-sm text-secondary">
         {mintedCount ? `${mintedCount} mint` : `First mint`}
       </Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
       <ActionButton
         onPress={() => {
           alert("TODO");
@@ -145,7 +149,6 @@ function Rejected({ cast, channel, proposal }: CastStatusActionsProps) {
   return (
     <View className="flex w-full flex-row items-center gap-4">
       <Text className="mr-auto text-sm text-secondary">Rebuffed</Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
     </View>
   );
 }

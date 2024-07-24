@@ -10,16 +10,26 @@ import useCreateProposal from "~/hooks/social-farcaster/proposal/useCreatePropos
 import { useAccount } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
+import { TransactionReceipt } from "viem";
 
 export default function CreateProposalWriteButton({
   cast,
   channel,
-  proposal,
   tokenInfo,
+  text,
+  onCreateProposalSuccess,
+  onCreateProposalError,
   ...props
-}: ButtonProps & CastProposeStatusProps) {
+}: ButtonProps &
+  CastProposeStatusProps & {
+    text?: string;
+    onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
+    onCreateProposalError?: (error: any) => void;
+  }) {
   const { isLoading, create } = useCreateProposal({
     contractAddress: tokenInfo?.danContract!,
+    onCreateProposalSuccess,
+    onCreateProposalError,
   });
   const account = useAccount();
   const { price, isLoading: priceLoading } = useProposePrice({
@@ -72,7 +82,7 @@ export default function CreateProposalWriteButton({
           }}
           {...props}
         >
-          <Text>Propose</Text>
+          <Text>{text || "Propose"}</Text>
         </Button>
       }
     />

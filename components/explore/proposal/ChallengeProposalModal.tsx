@@ -20,15 +20,17 @@ import {
   ProposalResult,
 } from "~/services/feeds/types/proposal";
 import ProposalCastCard from "./ProposalCastCard";
-import { Image } from "react-native";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
-import { formatUnits } from "viem";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import {
   ProposeProposalWriteButton,
   DisputeProposalWriteButton,
-} from "./ChallengeProposalWriteButton";
+} from "./ProposalWriteButton";
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
+import PriceRow from "./PriceRow";
+import Toast from "react-native-toast-message";
+import { formatUnits, TransactionReceipt } from "viem";
+import { Slider } from "~/components/ui/slider";
 
 const getAboutInfo = () => {
   return [
@@ -85,12 +87,7 @@ export default function ChallengeProposalModal({
           </Text>
         </View>
 
-        <ProposalCastCard
-          channel={channel}
-          cast={cast}
-          proposal={proposal}
-          tokenInfo={tokenInfo}
-        />
+        <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
 
         {proposal.result === ProposalResult.Upvote ? (
           <DisputeProposalWrite
@@ -98,6 +95,20 @@ export default function ChallengeProposalModal({
             channel={channel}
             proposal={proposal}
             tokenInfo={tokenInfo}
+            onDisputeSuccess={() => {
+              setOpen(false);
+              Toast.show({
+                type: "success",
+                text1: "Submitted",
+              });
+            }}
+            onDisputeError={() => {
+              setOpen(false);
+              Toast.show({
+                type: "error",
+                text1: "Challenges cannot be repeated this round",
+              });
+            }}
           />
         ) : (
           <ProposeProposalWrite
@@ -105,6 +116,20 @@ export default function ChallengeProposalModal({
             channel={channel}
             proposal={proposal}
             tokenInfo={tokenInfo}
+            onProposeSuccess={() => {
+              setOpen(false);
+              Toast.show({
+                type: "success",
+                text1: "Submitted",
+              });
+            }}
+            onProposeError={() => {
+              setOpen(false);
+              Toast.show({
+                type: "error",
+                text1: "Challenges cannot be repeated this round",
+              });
+            }}
           />
         )}
 
@@ -121,7 +146,12 @@ function DisputeProposalWrite({
   channel,
   proposal,
   tokenInfo,
-}: CastProposeStatusProps) {
+  onDisputeSuccess,
+  onDisputeError,
+}: CastProposeStatusProps & {
+  onDisputeSuccess?: (proposal: TransactionReceipt) => void;
+  onDisputeError?: (error: any) => void;
+}) {
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
@@ -138,32 +168,50 @@ function DisputeProposalWrite({
       setSelectPrice(price);
     }
   }, [price, isLoading]);
+
+  const priceNumber =
+    price && paymentTokenInfo?.decimals
+      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
+      : 0;
+  const selectPriceNumber =
+    selectPrice && paymentTokenInfo?.decimals
+      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
+      : 0;
+  const priceSliderConfig = {
+    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
+    max: Number(paymentTokenInfo?.balance || 0),
+    min: paymentTokenInfo?.balance
+      ? tokenInfo?.bondingCurve?.basePrice || 0
+      : 0,
+    step: priceNumber / 100,
+  };
   return (
     <>
-      <View className="flex flex-row items-center justify-between">
-        <Text>The cost for a successful challenge:</Text>
-        <View className="flex flex-row items-center gap-1">
-          <Image
-            source={require("~/assets/images/degen-icon-2.png")}
-            resizeMode="contain"
-            style={{ width: 20, height: 20 }}
-          />
-          <Text className="font-normal">
-            {isLoading || !price || !paymentTokenInfo?.decimals
-              ? "--"
-              : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
-                  2,
-                )}{" "}
-            {paymentTokenInfo?.symbol}
-          </Text>
-        </View>
-      </View>
+      <PriceRow
+        title={"The cost for a successful challenge:"}
+        paymentTokenInfo={paymentTokenInfo}
+        price={price}
+        isLoading={isLoading || paymentTokenInfoLoading}
+      />
+      <Slider
+        {...priceSliderConfig}
+        onValueChange={(v) => {
+          if (!isNaN(Number(v))) {
+            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
+            const vInt = Math.round(Number(v));
+            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
+          }
+        }}
+      />
+      <PriceRangeRow {...priceSliderConfig} />
       <DisputeProposalWriteButton
         cast={cast}
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
         price={selectPrice!}
+        onDisputeSuccess={onDisputeSuccess}
+        onDisputeError={onDisputeError}
       />
     </>
   );
@@ -174,7 +222,12 @@ function ProposeProposalWrite({
   channel,
   proposal,
   tokenInfo,
-}: CastProposeStatusProps) {
+  onProposeSuccess,
+  onProposeError,
+}: CastProposeStatusProps & {
+  onProposeSuccess?: (proposal: TransactionReceipt) => void;
+  onProposeError?: (error: any) => void;
+}) {
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
@@ -187,37 +240,75 @@ function ProposeProposalWrite({
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
   useEffect(() => {
     if (!isLoading && price) {
-      console.log("price", price);
       setSelectPrice(price);
     }
   }, [price, isLoading]);
+
+  const priceNumber =
+    price && paymentTokenInfo?.decimals
+      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
+      : 0;
+  const selectPriceNumber =
+    selectPrice && paymentTokenInfo?.decimals
+      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
+      : 0;
+  const priceSliderConfig = {
+    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
+    max: Number(paymentTokenInfo?.balance || 0),
+    min: paymentTokenInfo?.balance
+      ? tokenInfo?.bondingCurve?.basePrice || 0
+      : 0,
+    step: priceNumber / 100,
+  };
   return (
     <>
-      <View className="flex flex-row items-center justify-between">
-        <Text>The cost for a successful challenge:</Text>
-        <View className="flex flex-row items-center gap-1">
-          <Image
-            source={require("~/assets/images/degen-icon-2.png")}
-            resizeMode="contain"
-            style={{ width: 20, height: 20 }}
-          />
-          <Text className="font-normal">
-            {isLoading || !price || !paymentTokenInfo?.decimals
-              ? "--"
-              : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
-                  2,
-                )}{" "}
-            {paymentTokenInfo?.symbol}
-          </Text>
-        </View>
-      </View>
+      <PriceRow
+        title={"The cost for a successful challenge:"}
+        paymentTokenInfo={paymentTokenInfo}
+        price={price}
+        isLoading={isLoading || paymentTokenInfoLoading}
+      />
+      <Slider
+        {...priceSliderConfig}
+        onValueChange={(v) => {
+          if (!isNaN(Number(v))) {
+            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
+            const vInt = Math.round(Number(v));
+            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
+          }
+        }}
+      />
+      <PriceRangeRow {...priceSliderConfig} />
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
         price={selectPrice!}
+        onProposeSuccess={onProposeSuccess}
+        onProposeError={onProposeError}
       />
     </>
+  );
+}
+
+const displayValue = (value: number) => {
+  return new Intl.NumberFormat("en-US", {}).format(Number(value));
+};
+export function PriceRangeRow({
+  max,
+  min,
+  value,
+}: {
+  max: number;
+  min: number;
+  value: number;
+}) {
+  return (
+    <View className="flex flex-row items-center justify-between">
+      <Text className="text-xs font-normal">{displayValue(min)}</Text>
+      <Text className="text-xs font-normal">{displayValue(value)}</Text>
+      <Text className="text-xs font-normal">{displayValue(max)}</Text>
+    </View>
   );
 }

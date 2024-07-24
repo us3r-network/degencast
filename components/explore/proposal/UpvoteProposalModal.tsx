@@ -15,14 +15,13 @@ import { cn } from "~/lib/utils";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalCastCard from "./ProposalCastCard";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
-import { TransactionReceipt } from "viem";
-import ProposeWriteButton from "./CreateProposalWriteButton";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
-import Toast from "react-native-toast-message";
+import { ProposeProposalWriteButton } from "./ProposalWriteButton";
 import PriceRow from "./PriceRow";
+import { TransactionReceipt } from "viem";
+import Toast from "react-native-toast-message";
 
 export const getAboutInfo = () => {
   return [
@@ -40,21 +39,18 @@ export const getAboutInfo = () => {
 export type CastProposeStatusProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
-  proposal?: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 };
 
-export default function CreateProposalModal({
+export default function UpvoteProposalModal({
   cast,
   channel,
-  proposal,
   tokenInfo,
   triggerButton,
 }: CastProposeStatusProps & {
   triggerButton: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -64,23 +60,23 @@ export default function CreateProposalModal({
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
-        <CreateProposalModalContentBody
+        <UpvoteProposalModalContentBody
           cast={cast}
           channel={channel}
-          proposal={proposal}
           tokenInfo={tokenInfo}
-          onCreateProposalSuccess={() => {
+          onProposeSuccess={() => {
             Toast.show({
               type: "success",
-              text1: "Proposal created",
+              text1: "Voting speeds up success",
             });
             setOpen(false);
           }}
-          onCreateProposalError={(error) => {
+          onProposeError={(error) => {
             Toast.show({
               type: "error",
-              text1: "Proposal already exists",
+              text1: "Voting failed",
             });
+            setOpen(false);
           }}
         />
       </DialogContent>
@@ -88,32 +84,31 @@ export default function CreateProposalModal({
   );
 }
 
-function CreateProposalModalContentBody({
+export function UpvoteProposalModalContentBody({
   cast,
   channel,
-  proposal,
   tokenInfo,
-  onCreateProposalSuccess,
-  onCreateProposalError,
+  onProposeSuccess,
+  onProposeError,
 }: CastProposeStatusProps & {
-  onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
-  onCreateProposalError?: (error: any) => void;
+  onProposeSuccess?: (proposal: TransactionReceipt) => void;
+  onProposeError?: (error: any) => void;
 }) {
-  const { price, isLoading } = useProposePrice({
-    contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
-  });
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
+  const { price, isLoading } = useProposePrice({
+    contractAddress: tokenInfo?.danContract!,
+    castHash: cast.hash,
+  });
   return (
     <>
       <DialogHeader
         className={cn("mr-4 flex-row items-center justify-between gap-2")}
       >
-        <DialogTitle>Propose</DialogTitle>
+        <DialogTitle>Upvote</DialogTitle>
       </DialogHeader>
       <View className="flex-row items-center justify-between gap-2">
         <Text>Active Wallet</Text>
@@ -125,21 +120,16 @@ function CreateProposalModalContentBody({
         price={price}
         isLoading={isLoading || paymentTokenInfoLoading}
       />
-      <ProposeWriteButton
+      <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
-        proposal={proposal}
         tokenInfo={tokenInfo}
-        onCreateProposalSuccess={onCreateProposalSuccess}
-        onCreateProposalError={onCreateProposalError}
-        text={!price ? "Proposal already exists" : ""}
+        price={price!}
+        onProposeSuccess={onProposeSuccess}
+        onProposeError={onProposeError}
       />
-
       <DialogFooter>
-        <About
-          title="About Proposal, upvote & channel NFT"
-          info={getAboutInfo()}
-        />
+        <About title="About Proposal & channel NFT" info={getAboutInfo()} />
       </DialogFooter>
     </>
   );

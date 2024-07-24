@@ -7,12 +7,12 @@ import { ApiRespCode } from "~/services/shared/types";
 
 export default function useCreateProposal({
   contractAddress,
-  onProposalCreated,
-  onProposalError,
+  onCreateProposalSuccess,
+  onCreateProposalError,
 }: {
   contractAddress: Address;
-  onProposalCreated?: (proposal: TransactionReceipt) => void;
-  onProposalError?: (error: any) => void;
+  onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
+  onCreateProposalError?: (error: any) => void;
 }) {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
@@ -50,14 +50,14 @@ export default function useCreateProposal({
           });
           setTransactionReceipt(receipt);
           setStatus("success");
-          onProposalCreated?.(receipt);
+          onCreateProposalSuccess?.(receipt);
         } else {
           throw new Error("Cast proposal metadata not found");
         }
       } catch (error) {
         setError(error);
         setStatus("error");
-        onProposalError?.(error);
+        onCreateProposalError?.(error);
         console.error("createProposal error", error);
       }
     },
@@ -65,8 +65,8 @@ export default function useCreateProposal({
       contractAddress,
       publicClient,
       walletClient,
-      onProposalCreated,
-      onProposalError,
+      onCreateProposalSuccess,
+      onCreateProposalError,
     ],
   );
   return {

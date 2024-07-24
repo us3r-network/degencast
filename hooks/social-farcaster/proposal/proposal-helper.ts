@@ -1,7 +1,50 @@
 import { PublicClient, WalletClient } from "viem";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
-import DanJson from "~/services/proposal/abi/Dan.json";
-const DanAbi = DanJson.abi;
+import DanAbi from "~/services/proposal/abi/DanAbi.json";
+
+export enum ProposalState {
+  Proposed = 0,
+  Accepted = 1,
+  Disputed = 2,
+  ReadyToMint = 3,
+  Abandoned = 4,
+}
+export type ProposalsInfo = {
+  castHash: string;
+  castCreator: `0x${string}`;
+  proposeWeight: bigint;
+  disputeWeight: bigint;
+  contentURI: string;
+  deadline: bigint;
+  state: ProposalState;
+  roundIndex: number;
+};
+export const getProposals = async ({
+  publicClient,
+  contractAddress,
+  castHash,
+}: {
+  publicClient: PublicClient;
+  contractAddress: `0x${string}`;
+  castHash: string;
+}) => {
+  if (!publicClient) {
+    throw new Error("Client not connected");
+  }
+  if (!contractAddress) {
+    throw new Error("Contract address is required");
+  }
+  if (!castHash) {
+    throw new Error("Cast hash is required");
+  }
+  const proposals = await publicClient.readContract({
+    abi: DanAbi,
+    address: contractAddress,
+    functionName: "proposals",
+    args: [castHash],
+  });
+  return proposals as ProposalsInfo;
+};
 
 export const getProposePrice = async ({
   publicClient,
@@ -160,7 +203,7 @@ type HandleProposalCommonOpts = {
   castHash: string;
   paymentPrice?: bigint;
 };
-const handleProposal = async ({
+const challengeProposal = async ({
   publicClient,
   walletClient,
   contractAddress,
@@ -228,15 +271,15 @@ const handleProposal = async ({
 };
 
 export const proposeProposal = async (opts: HandleProposalCommonOpts) => {
-  return await handleProposal({
+  return await challengeProposal({
     ...opts,
     functionName: "proposeProposal",
   });
 };
 
 export const disputeProposal = async (opts: HandleProposalCommonOpts) => {
-  return await handleProposal({
+  return await challengeProposal({
     ...opts,
-    functionName: "proposeProposal",
+    functionName: "disputeProposal",
   });
 };
