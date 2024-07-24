@@ -10,6 +10,7 @@ import {
 } from "~/components/common/SvgIcons";
 import TabBar from "~/components/layout/tabBar/TabBar";
 import useCommunityRank from "~/hooks/rank/useCommunityRank";
+import useTokenRank from "~/hooks/rank/useTokenRank";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import useAuth from "~/hooks/user/useAuth";
 import { logGA } from "~/utils/firebase/analytics.web";
@@ -18,6 +19,7 @@ const AUTH_PROTECTED_ROUTES = ["portfolio"];
 export default function TabLayout() {
   useCommunityTokens();
   useCommunityRank();
+  useTokenRank();
   useEffect(() => {
     if (Platform.OS === "web") logGA("app_open", {});
   }, []);

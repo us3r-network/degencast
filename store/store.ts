@@ -11,6 +11,8 @@ import { enableMapSet } from "immer";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
 import communityRank from "~/features/rank/communityRankSlice";
+import tokenRank from "~/features/rank/tokenRankSlice";
+// import curatorRank from "~/features/rank/curatorRankSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
 import userChannels from "~/features/user/userChannelsSlice";
 import userCasts from "~/features/user/userCastsSlice";
@@ -50,6 +52,8 @@ export const store = configureStore({
     castCollection,
     communityTokens,
     communityRank,
+    tokenRank,
+    // curatorRank,
     userCommunityTokens,
     userChannels,
     userCasts,

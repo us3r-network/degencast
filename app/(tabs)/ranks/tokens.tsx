@@ -1,33 +1,26 @@
 import { Link } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
-import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
-import CommunityJoinButton from "~/components/community/CommunityJoinButton";
+import { TokenInfo } from "~/components/common/TokenInfo";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import {
-  BuyButton,
-  CreateTokenButton,
-  SellButton,
-} from "~/components/trade/ATTButton";
+import { TradeButton } from "~/components/trade/TradeButton";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_ORDER_PARAMS } from "~/features/rank/communityRankSlice";
-import useCommunityRank from "~/hooks/rank/useCommunityRank";
+import { DEFAULT_ORDER_PARAMS } from "~/features/rank/tokenRankSlice";
+import useTokenRank from "~/hooks/rank/useTokenRank";
 import { Channel } from "~/services/farcaster/types";
-import { RankOrderBy, OrderParams } from "~/services/rank/types";
+import { OrderParams, RankOrderBy } from "~/services/rank/types";
 import { OrderSelect } from ".";
 
 const RankOrderByList = [
-  { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
-  { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
-  { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
-  { label: "New Casts", value: RankOrderBy.NEW_CASTS },
-  { label: "Members", value: RankOrderBy.MEMBERS },
-  { label: "Created Date", value: RankOrderBy.CREATED_DATE },
+  { label: "Market Cap", value: RankOrderBy.MARKET_CAP },
+  { label: "Token Price", value: RankOrderBy.TOKEN_PRICE },
+  { label: "Number of Trade", value: RankOrderBy.NUMBER_OF_TRADE },
+  { label: "Growth Rate", value: RankOrderBy.GROWTH_RATE },
 ];
 
-export default function ChannelsScreen() {
-  const { loading, items, load, hasMore } = useCommunityRank();
+export default function TokensScreen() {
+  const { loading, items, load, hasMore } = useTokenRank();
   const [orderParams, setOrderParams] =
     useState<OrderParams>(DEFAULT_ORDER_PARAMS);
 
@@ -97,54 +90,38 @@ function Item({
 }) {
   const data = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.NEW_CASTS:
-        return item.newCastCount || "-";
-      case RankOrderBy.MEMBERS:
-        return item.follower_count || "-";
-      case RankOrderBy.CREATED_DATE:
-        if (item.created_at)
-          return new Intl.DateTimeFormat("en-US").format(
-            new Date(item.created_at),
-          );
+      case RankOrderBy.MARKET_CAP:
+        const mc = item.tokenInfo?.tradeInfo?.stats?.fdv_usd;
+        if (Number(mc) > 0)
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            notation: "compact",
+          }).format(Number(mc));
+        else return "-";
+      case RankOrderBy.TOKEN_PRICE:
+        const price = item.tokenInfo?.tradeInfo?.stats?.token_price_usd;
+        if (Number(price) > 0)
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            notation: "compact",
+          }).format(Number(price));
+        else return "-";
+      case RankOrderBy.NUMBER_OF_TRADE:
+        const trade = item.tokenInfo?.tradeInfo?.stats?.transactions?.h24;
+        if (!trade) return 0;
+        return trade.buys + trade.sells;
+      case RankOrderBy.GROWTH_RATE:
+        const growthRate =
+          item.tokenInfo?.tradeInfo?.stats?.price_change_percentage?.h24;
+        if (growthRate) return `${growthRate}%`;
         else return "-";
       default:
         return "";
     }
   }, [item, orderBy]);
-  const button = useMemo(() => {
-    switch (orderBy) {
-      case RankOrderBy.NEW_CASTS:
-      case RankOrderBy.MEMBERS:
-        if (item.attentionTokenAddress) {
-          return (
-            <>
-              <BuyButton
-                tokenAddress={item.attentionTokenAddress}
-                tokenId={1} //todo: use cast tokenId from api
-              />
-              <SellButton
-                tokenAddress={item.attentionTokenAddress}
-                tokenId={1} //todo: use cast tokenId from api
-              />
-            </>
-          );
-        } else {
-          return (
-            <CreateTokenButton
-              channelId={item.id}
-              onComplete={(tokenAddress) => {
-                console.log("tokenAddress", tokenAddress);
-                item.attentionTokenAddress = tokenAddress;
-              }}
-            />
-          );
-        }
-      case RankOrderBy.CREATED_DATE:
-        return <CommunityJoinButton channelId={item.id} />;
-      default:
-        return <CommunityJoinButton channelId={item.id} />;
-    }
-  }, [item, orderBy, item.attentionTokenAddress]);
+
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
@@ -155,13 +132,17 @@ function Item({
           asChild
         >
           <Pressable>
-            <CommunityInfo name={item.name} logo={item.image_url} />
+            <TokenInfo
+              name={item.tokenInfo?.name}
+              symbol={item.tokenInfo?.symbol}
+              logo={item.tokenInfo?.logoURI}
+            />
           </Pressable>
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
         <Text className="text-sm">{data}</Text>
-        {button}
+        <TradeButton token2={item.tokenInfo} />
       </View>
     </View>
   );

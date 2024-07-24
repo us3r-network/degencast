@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   DEFAULT_ORDER_PARAMS,
   fetchItems,
-  selectCommunityRank,
-} from "~/features/rank/communityRankSlice";
+  selectTokenRank,
+} from "~/features/rank/tokenRankSlice";
 import { RankOrderBy } from "~/services/rank/types";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useCommunityRank() {
+export default function useTokenRank() {
   const dispatch = useDispatch();
   const {
     items,
@@ -18,7 +18,7 @@ export default function useCommunityRank() {
     nextPageNumber,
     order: currentOrder,
     orderBy: currentOrderBy,
-  } = useSelector(selectCommunityRank);
+  } = useSelector(selectTokenRank);
 
   useEffect(() => {
     if (status === AsyncRequestStatus.IDLE) {
