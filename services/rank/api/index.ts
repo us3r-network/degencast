@@ -1,10 +1,10 @@
 import { Channel } from "~/services/farcaster/types";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp } from "~/services/shared/types";
-import { CommunityRankOrderBy, TokenRankOrderBy } from "../types";
+import { RankOrderBy } from "../types";
 
 type RankParams = {
-    orderBy: CommunityRankOrderBy | TokenRankOrderBy;
+    orderBy: RankOrderBy;
     order: "ASC" | "DESC";
     pageSize?: number;
     pageNumber?: number;
