@@ -11,13 +11,13 @@ export enum ProposalState {
 }
 export type ProposalsInfo = {
   castHash: string;
+  contentURI: string;
   castCreator: `0x${string}`;
   proposeWeight: bigint;
   disputeWeight: bigint;
-  contentURI: string;
   deadline: bigint;
+  roundIndex: bigint;
   state: ProposalState;
-  roundIndex: number;
 };
 export const getProposals = async ({
   publicClient,
@@ -37,13 +37,23 @@ export const getProposals = async ({
   if (!castHash) {
     throw new Error("Cast hash is required");
   }
-  const proposals = await publicClient.readContract({
+  const proposals = (await publicClient.readContract({
     abi: DanAbi,
     address: contractAddress,
     functionName: "proposals",
     args: [castHash],
-  });
-  return proposals as ProposalsInfo;
+  })) as Array<any>;
+
+  return {
+    castHash: proposals[0],
+    contentURI: proposals[1],
+    castCreator: proposals[2],
+    proposeWeight: proposals[3],
+    disputeWeight: proposals[4],
+    deadline: proposals[5],
+    roundIndex: proposals[6],
+    state: proposals[7],
+  } as ProposalsInfo;
 };
 
 export const getProposePrice = async ({
@@ -126,7 +136,7 @@ export const createProposal = async ({
   walletClient,
   contractAddress,
   proposalConfig,
-  proposePrice,
+  paymentPrice,
 }: {
   publicClient: PublicClient;
   walletClient: WalletClient;
@@ -136,7 +146,7 @@ export const createProposal = async ({
     castCreator: `0x${string}`;
     contentURI: string;
   };
-  proposePrice?: bigint;
+  paymentPrice: bigint;
 }) => {
   if (!contractAddress) {
     throw new Error("Contract address is required");
@@ -165,14 +175,6 @@ export const createProposal = async ({
   if (!account) {
     throw new Error("Wallet is not connected");
   }
-  let payment = proposePrice;
-  if (!proposePrice) {
-    payment = await getProposePrice({
-      publicClient,
-      contractAddress,
-      castHash: proposalConfig.castHash,
-    });
-  }
 
   const { request: simulateRequest } = await publicClient.simulateContract({
     abi: DanAbi,
@@ -180,7 +182,7 @@ export const createProposal = async ({
     chain: ATT_CONTRACT_CHAIN,
     account,
     functionName: "createProposal",
-    args: [proposalConfig, payment],
+    args: [proposalConfig, paymentPrice],
   });
 
   const hash = await walletClient.writeContract(simulateRequest);

@@ -45,7 +45,12 @@ const mockCastsFeedRequest = async ({ limit, cursor }: any) => {
       code: 0,
       msg: "",
       data: {
-        casts: [...mockProposals, mockProposals[0]].map((proposal, idx) => ({
+        casts: [
+          ...mockProposals,
+          mockProposals[mockProposals.length - 1],
+          mockProposals[mockProposals.length - 1],
+          mockProposals[mockProposals.length - 1],
+        ].map((proposal, idx) => ({
           channel: mockChannels[0],
           tokenInfo: mockAttentionToken,
           proposal,
