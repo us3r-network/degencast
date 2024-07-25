@@ -74,7 +74,10 @@ const ChannelCardCasts = forwardRef(function (
                     cast={cast}
                     channel={channel}
                   />
-                  {!!channel?.channelId && channel.channelId !== "home" ? (
+                  {!!channel?.channelId &&
+                  channel.channelId !== "home" &&
+                  !!tokenInfo?.danContract &&
+                  !!tokenInfo?.bondingCurve?.basePrice ? (
                     <CastStatusActions
                       cast={cast}
                       channel={channel}

@@ -74,7 +74,7 @@ export default function UpvoteProposalModal({
           onProposeError={(error) => {
             Toast.show({
               type: "error",
-              text1: "Voting failed",
+              text1: error.message,
             });
             setOpen(false);
           }}

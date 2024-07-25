@@ -24,10 +24,13 @@ export default function useCreateProposal({
   >("idle");
   const isLoading = status === "pending";
   const create = useCallback(
-    async (proposalConfig: {
-      castHash: string;
-      castCreator: `0x${string}`;
-    }) => {
+    async (
+      proposalConfig: {
+        castHash: string;
+        castCreator: `0x${string}`;
+      },
+      paymentPrice: bigint,
+    ) => {
       try {
         setStatus("pending");
         if (!publicClient || !walletClient) {
@@ -47,6 +50,7 @@ export default function useCreateProposal({
               ...proposalConfig,
               contentURI: arUrl,
             },
+            paymentPrice,
           });
           setTransactionReceipt(receipt);
           setStatus("success");

@@ -8,6 +8,9 @@ import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTok
 import useProposeProposal from "~/hooks/social-farcaster/proposal/useProposeProposal";
 import useDisputeProposal from "~/hooks/social-farcaster/proposal/useDisputeProposal";
 import { TransactionReceipt } from "viem";
+import { Loading } from "~/components/common/Loading";
+import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
+import Toast from "react-native-toast-message";
 
 export function ProposeProposalWriteButton({
   cast,
@@ -36,22 +39,21 @@ export function ProposeProposalWriteButton({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
+  const disabled =
+    !tokenInfo?.danContract ||
+    !paymentTokenInfo?.address ||
+    paymentTokenInfoLoading ||
+    isLoading ||
+    !price;
   const allowanceParams =
-    account?.address &&
-    tokenInfo?.danContract &&
-    paymentTokenInfo?.address &&
-    price
+    !disabled && account?.address
       ? {
           owner: account.address,
           tokenAddress: paymentTokenInfo?.address,
-          spender: tokenInfo?.danContract!,
+          spender: tokenInfo?.danContract,
           value: price,
         }
       : undefined;
-
-  console.log("account?.address", account?.address);
-  console.log("paymentTokenInfo?.address", paymentTokenInfo?.address);
-  console.log("price", price);
 
   return (
     <OnChainActionButtonWarper
@@ -59,17 +61,22 @@ export function ProposeProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
+      disabled={disabled}
       warpedButton={
         <Button
           variant={"secondary"}
           className="w-full rounded-md"
-          disabled={!price || paymentTokenInfoLoading || isLoading}
+          disabled={disabled}
           onPress={() => {
             propose();
           }}
           {...props}
         >
-          <Text>{text || "Upvote & Accelerate Countdown"}</Text>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <Text>{text || "Upvote & Accelerate Countdown"}</Text>
+          )}
         </Button>
       }
     />
@@ -91,6 +98,10 @@ export function DisputeProposalWriteButton({
     onDisputeSuccess?: (proposal: TransactionReceipt) => void;
     onDisputeError?: (error: any) => void;
   }) {
+  const { proposals, isLoading: proposalsLoading } = useProposals({
+    contractAddress: tokenInfo?.danContract!,
+    castHash: cast.hash,
+  });
   const { isLoading, dispute } = useDisputeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
@@ -103,22 +114,22 @@ export function DisputeProposalWriteButton({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
+  const disabled =
+    proposalsLoading ||
+    !tokenInfo?.danContract ||
+    !paymentTokenInfo?.address ||
+    paymentTokenInfoLoading ||
+    isLoading ||
+    !price;
   const allowanceParams =
-    account?.address &&
-    tokenInfo?.danContract &&
-    paymentTokenInfo?.address &&
-    price
+    !disabled && account?.address
       ? {
           owner: account.address,
           tokenAddress: paymentTokenInfo?.address,
-          spender: tokenInfo?.danContract!,
+          spender: tokenInfo?.danContract,
           value: price,
         }
       : undefined;
-
-  console.log("account?.address", account?.address);
-  console.log("paymentTokenInfo?.address", paymentTokenInfo?.address);
-  console.log("price", price);
 
   return (
     <OnChainActionButtonWarper
@@ -126,17 +137,25 @@ export function DisputeProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
+      disabled={disabled}
       warpedButton={
         <Button
           variant={"secondary"}
           className="w-full rounded-md"
-          disabled={!price || paymentTokenInfoLoading || isLoading}
+          disabled={disabled}
           onPress={() => {
-            dispute();
+            if (Number(proposals?.roundIndex)) {
+              Toast.show({
+                type: "error",
+                text1: "Dispute is not allowed in the first round",
+              });
+            } else {
+              dispute();
+            }
           }}
           {...props}
         >
-          <Text>{text || "Challenge"}</Text>
+          {isLoading ? <Loading /> : <Text>{text || "Challenge"}</Text>}
         </Button>
       }
     />

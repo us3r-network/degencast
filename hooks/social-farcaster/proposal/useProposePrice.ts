@@ -22,7 +22,7 @@ export default function useProposePrice({
     const fetchPrice = async () => {
       try {
         setStatus("pending");
-        console.log({
+        console.log("castHash", {
           publicClient,
           contractAddress,
           castHash,

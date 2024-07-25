@@ -31,6 +31,7 @@ import PriceRow from "./PriceRow";
 import Toast from "react-native-toast-message";
 import { formatUnits, TransactionReceipt } from "viem";
 import { Slider } from "~/components/ui/slider";
+import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 
 const getAboutInfo = () => {
   return [
@@ -102,11 +103,12 @@ export default function ChallengeProposalModal({
                 text1: "Submitted",
               });
             }}
-            onDisputeError={() => {
+            onDisputeError={(error) => {
               setOpen(false);
               Toast.show({
                 type: "error",
-                text1: "Challenges cannot be repeated this round",
+                // text1: "Challenges cannot be repeated this round",
+                text1: error.message,
               });
             }}
           />
@@ -123,11 +125,12 @@ export default function ChallengeProposalModal({
                 text1: "Submitted",
               });
             }}
-            onProposeError={() => {
+            onProposeError={(error) => {
               setOpen(false);
               Toast.show({
                 type: "error",
-                text1: "Challenges cannot be repeated this round",
+                // text1: "Challenges cannot be repeated this round",
+                text1: error.message,
               });
             }}
           />

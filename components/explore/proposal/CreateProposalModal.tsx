@@ -17,12 +17,12 @@ import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalCastCard from "./ProposalCastCard";
-import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import { TransactionReceipt } from "viem";
 import ProposeWriteButton from "./CreateProposalWriteButton";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import Toast from "react-native-toast-message";
 import PriceRow from "./PriceRow";
+import { getProposalMinPrice } from "./utils";
 
 export const getAboutInfo = () => {
   return [
@@ -79,7 +79,8 @@ export default function CreateProposalModal({
           onCreateProposalError={(error) => {
             Toast.show({
               type: "error",
-              text1: "Proposal already exists",
+              // text1: "Proposal creation failed",
+              text1: error.message,
             });
           }}
         />
@@ -99,10 +100,6 @@ function CreateProposalModalContentBody({
   onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
   onCreateProposalError?: (error: any) => void;
 }) {
-  const { price, isLoading } = useProposePrice({
-    contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
-  });
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
@@ -122,8 +119,8 @@ function CreateProposalModalContentBody({
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       <PriceRow
         paymentTokenInfo={paymentTokenInfo}
-        price={price}
-        isLoading={isLoading || paymentTokenInfoLoading}
+        price={getProposalMinPrice(tokenInfo, paymentTokenInfo)}
+        isLoading={paymentTokenInfoLoading}
       />
       <ProposeWriteButton
         cast={cast}
@@ -132,7 +129,6 @@ function CreateProposalModalContentBody({
         tokenInfo={tokenInfo}
         onCreateProposalSuccess={onCreateProposalSuccess}
         onCreateProposalError={onCreateProposalError}
-        text={!price ? "Proposal already exists" : ""}
       />
 
       <DialogFooter>
