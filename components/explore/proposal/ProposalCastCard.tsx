@@ -6,7 +6,6 @@ import { ViewRef } from "~/components/primitives/types";
 import { Separator } from "~/components/ui/separator";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";
-import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import FCast from "../channel-card/FCast";
 import ChannelMetaInfo, {
@@ -16,10 +15,9 @@ import ChannelMetaInfo, {
 type ChannelCardProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
-  proposal: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 };
-const ProposeCastCard = React.forwardRef<
+const ProposalCastCard = React.forwardRef<
   ViewRef,
   React.ComponentPropsWithoutRef<typeof View> & ChannelCardProps
 >(({ channel, cast, tokenInfo, className }, ref) => {
@@ -45,4 +43,4 @@ const ProposeCastCard = React.forwardRef<
   );
 });
 
-export default ProposeCastCard;
+export default ProposalCastCard;

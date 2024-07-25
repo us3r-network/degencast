@@ -69,22 +69,23 @@ const ChannelCardCasts = forwardRef(function (
                   key={index.toString()}
                   className="flex h-full w-full flex-col gap-4 px-4"
                 >
-                  <FCast className="flex-1 overflow-hidden" cast={cast} />
-                  {!!channel?.channelId && channel.channelId !== "home" ? (
+                  <FCast
+                    className="flex-1 overflow-hidden"
+                    cast={cast}
+                    channel={channel}
+                  />
+                  {!!channel?.channelId &&
+                  channel.channelId !== "home" &&
+                  !!tokenInfo?.danContract &&
+                  !!tokenInfo?.bondingCurve?.basePrice &&
+                  proposal ? (
                     <CastStatusActions
                       cast={cast}
                       channel={channel}
                       tokenInfo={tokenInfo}
                       proposal={proposal}
                     />
-                  ) : (
-                    <View className="ml-auto">
-                      <FCastExploreActions
-                        cast={cast}
-                        communityInfo={channel as any}
-                      />
-                    </View>
-                  )}
+                  ) : null}
                 </View>
               );
             }}

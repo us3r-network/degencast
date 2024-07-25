@@ -2,20 +2,18 @@ import { useAccount } from "wagmi";
 import { ActionButton } from "~/components/post/PostActions";
 import { Text } from "~/components/ui/text";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
-import ProposeModal, { CastProposeStatusProps } from "./ProposeModal";
-import { ProposalResult } from "~/services/feeds/types/proposal";
+import { CastProposeStatusProps } from "./ChallengeProposalModal";
 import { ButtonProps } from "~/components/ui/button";
+import UpvoteProposalModal from "./UpvoteProposalModal";
 
-export default function ProposeButton({
+export default function UpvoteProposalButton({
   cast,
   channel,
-  proposal,
   tokenInfo,
   ...props
 }: ButtonProps & CastProposeStatusProps) {
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
-  const { result, finalizeTime } = proposal;
   if (!account.address) {
     return (
       <ActionButton
@@ -23,24 +21,19 @@ export default function ProposeButton({
         className="rounded-full"
         onPress={() => connectWallet()}
       >
-        <Text className="text-sm">
-          {result === ProposalResult.Downvote ? "👎" : "👍"}
-        </Text>
+        <Text className="text-sm">👍</Text>
       </ActionButton>
     );
   }
 
   return (
-    <ProposeModal
+    <UpvoteProposalModal
       cast={cast}
       channel={channel}
-      proposal={proposal}
       tokenInfo={tokenInfo}
       triggerButton={
         <ActionButton size={"icon"} className="rounded-full" {...props}>
-          <Text className="text-sm">
-            {result === ProposalResult.Downvote ? "👎" : "👍"}
-          </Text>
+          <Text className="text-sm">👍</Text>
         </ActionButton>
       }
     />

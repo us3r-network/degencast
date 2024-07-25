@@ -71,3 +71,15 @@ export function arUploadMetadata(
     },
   });
 }
+
+export function arCheckCastProposalMetadata(
+  castHash: string,
+): RequestPromise<ApiResp<ARUploadResult>> {
+  return request({
+    url: `/arweave/check-cast-proposal-metadata/${castHash}`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}

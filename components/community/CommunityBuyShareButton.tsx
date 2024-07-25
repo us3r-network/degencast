@@ -20,7 +20,7 @@ export default function CommunityBuyShareButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
-  const attentionTokenId = 1; //todo use cast tokenId from api
+  const attentionTokenId = 0; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
@@ -41,7 +41,7 @@ export function ExploreBuyShareIconButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
-  const attentionTokenId = 1; //todo use cast tokenId from api
+  const attentionTokenId = 0; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
@@ -62,7 +62,7 @@ export function BuyChannelBadgeWithUpvoteButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
-  const attentionTokenId = 1; //todo use cast tokenId from api
+  const attentionTokenId = 0; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }
@@ -88,7 +88,7 @@ export function BuyChannelBadgeWithIconButton({
   communityInfo: CommunityInfo;
 }) {
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
-  const attentionTokenId = 1; //todo use cast tokenId from api
+  const attentionTokenId = 0; //todo use cast tokenId from api
   if (!attentionTokenAddress) {
     return null;
   }

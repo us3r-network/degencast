@@ -29,7 +29,6 @@ export default function ChannelMetaInfo({
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, memberInfo, channelId } = channel;
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const progressNumber = Number(tokenInfo?.progress.replace("%", ""));
 
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
@@ -71,16 +70,24 @@ export default function ChannelMetaInfo({
               {channelId && `/${channelId}`}
             </Text>
           </View>
-          <View className="flex flex-row items-center gap-1">
-            <Progress
-              value={progressNumber}
-              className="h-4 w-[100px] bg-[#D6A5EC]"
-              indicatorClassName=" rounded-4 bg-[#9151C3]"
-            />
-            <Text className="text-xl text-foreground">{progressNumber}%</Text>
-          </View>
+          {tokenInfo && <LaunchProgress tokenInfo={tokenInfo} />}
         </View>
       </Pressable>
+    </View>
+  );
+}
+
+function LaunchProgress({ tokenInfo }: { tokenInfo?: AttentionTokenEntity }) {
+  const progress = Number(tokenInfo?.progress?.replace("%", ""));
+  const progressNumber = isNaN(progress) ? 0 : progress;
+  return (
+    <View className="flex flex-row items-center gap-1">
+      <Progress
+        value={progressNumber}
+        className="h-4 w-[100px] bg-[#D6A5EC]"
+        indicatorClassName=" rounded-4 bg-[#9151C3]"
+      />
+      <Text className="text-xl text-foreground">{progressNumber}%</Text>
     </View>
   );
 }

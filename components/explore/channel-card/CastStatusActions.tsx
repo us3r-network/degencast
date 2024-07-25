@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { CommunityEntity } from "~/services/community/types/community";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 import { Text } from "~/components/ui/text";
@@ -11,8 +10,10 @@ import {
   ProposalStatus,
 } from "~/services/feeds/types/proposal";
 import dayjs from "dayjs";
-import ProposeButton from "../proposal/ProposeButton";
+import CreateProposalButton from "../proposal/CreateProposalButton";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import ChallengeProposalButton from "../proposal/ChallengeProposalButton";
+import UpvoteProposalButton from "../proposal/UpvoteProposalButton";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
@@ -64,8 +65,7 @@ function NotProposed({
   return (
     <View className="flex w-full flex-row items-center gap-4">
       <Text className="mr-auto text-sm text-secondary">Promising</Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
-      <ProposeButton
+      <CreateProposalButton
         cast={cast}
         channel={channel}
         proposal={proposal}
@@ -81,20 +81,49 @@ function Proposed({
   proposal,
   tokenInfo,
 }: CastStatusActionsProps) {
-  const { result, finalizeTime } = proposal;
+  const { result, finalizeTime, upvoteCount, downvoteCount } = proposal;
   return (
     <View className="flex w-full flex-row items-center gap-4">
-      <Text className="mr-auto text-sm text-secondary">
-        {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
-        {dayjs(finalizeTime).date(1).format("HH:mm")}
-      </Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
-      <ProposeButton
-        cast={cast}
-        channel={channel}
-        proposal={proposal}
-        tokenInfo={tokenInfo}
-      />
+      {!downvoteCount ? (
+        <Text className="mr-auto text-sm text-secondary">
+          24:00 Choose your stance
+        </Text>
+      ) : (
+        <Text className="mr-auto text-sm text-secondary">
+          {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
+          {dayjs(finalizeTime).date(1).format("HH:mm")}
+        </Text>
+      )}
+      {Number(upvoteCount) < 2 ? (
+        <UpvoteProposalButton
+          proposal={{ ...proposal, result: ProposalResult.Downvote }}
+          cast={cast}
+          channel={channel}
+          tokenInfo={tokenInfo}
+        />
+      ) : !downvoteCount ? (
+        <>
+          <UpvoteProposalButton
+            proposal={{ ...proposal, result: ProposalResult.Downvote }}
+            cast={cast}
+            channel={channel}
+            tokenInfo={tokenInfo}
+          />
+          <ChallengeProposalButton
+            cast={cast}
+            channel={channel}
+            proposal={{ ...proposal, result: ProposalResult.Upvote }}
+            tokenInfo={tokenInfo}
+          />
+        </>
+      ) : (
+        <ChallengeProposalButton
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      )}
     </View>
   );
 }
@@ -105,7 +134,6 @@ function Accepted({ cast, channel, proposal }: CastStatusActionsProps) {
       <Text className="mr-auto text-sm text-secondary">
         {mintedCount ? `${mintedCount} mint` : `First mint`}
       </Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
       <ActionButton
         onPress={() => {
           alert("TODO");
@@ -121,7 +149,6 @@ function Rejected({ cast, channel, proposal }: CastStatusActionsProps) {
   return (
     <View className="flex w-full flex-row items-center gap-4">
       <Text className="mr-auto text-sm text-secondary">Rebuffed</Text>
-      <FCastExploreActions cast={cast} communityInfo={channel as any} />
     </View>
   );
 }
