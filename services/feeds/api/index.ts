@@ -81,15 +81,15 @@ export type ExploreSelectionFeedsData = Array<{
 export function getExploreSelectionFeeds(
   params: ExploreSelectionFeeds,
 ): RequestPromise<ApiResp<ExploreSelectionFeedsData>> {
-  return mockChannelsFeedRequest(params);
-  // return request({
-  //   url: `/topics/channels/feed/selection`,
-  //   method: "get",
-  //   params,
-  //   headers: {
-  //     needToken: true,
-  //   },
-  // });
+  // return mockChannelsFeedRequest(params);
+  return request({
+    url: `/topics/channels/feed/selection`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
 }
 
 export type ExploreProposalFeeds = {
@@ -104,15 +104,15 @@ export type ExploreProposalFeedsData = Array<{
 export function getExploreProposalFeeds(
   params: ExploreProposalFeeds,
 ): RequestPromise<ApiResp<ExploreProposalFeedsData>> {
-  return mockChannelsFeedRequest(params);
-  // return request({
-  //   url: `/topics/channels/feed/proposal`,
-  //   method: "get",
-  //   params,
-  //   headers: {
-  //     needToken: true,
-  //   },
-  // });
+  // return mockChannelsFeedRequest(params);
+  return request({
+    url: `/topics/channels/feed/proposal`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
 }
 
 export type ExploreCastFeeds = {
@@ -133,13 +133,13 @@ export type ExploreCastFeedsData = {
 export function getExploreCastFeeds(
   params: ExploreCastFeeds,
 ): RequestPromise<ApiResp<ExploreCastFeedsData>> {
-  return mockCastsFeedRequest(params);
-  // return request({
-  //   url: `/topics/channels/feed/cast`,
-  //   method: "get",
-  //   params,
-  //   headers: {
-  //     needToken: true,
-  //   },
-  // });
+  // return mockCastsFeedRequest(params);
+  return request({
+    url: `/topics/channels/feed/cast`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
 }
