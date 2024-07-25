@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";
-import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 import { Text } from "~/components/ui/text";
 import { ActionButton } from "~/components/post/PostActions";
 import {
@@ -48,6 +47,8 @@ export default function CastStatusActions({
         />
       );
     case ProposalStatus.Accepted:
+      return <Accepted cast={cast} channel={channel} proposal={proposal} />;
+    case ProposalStatus.ReadyToMint:
       return <Accepted cast={cast} channel={channel} proposal={proposal} />;
     case ProposalStatus.Rejected:
       return <Rejected cast={cast} channel={channel} proposal={proposal} />;

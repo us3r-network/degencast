@@ -7,6 +7,8 @@ export enum ProposalStatus {
   Rejected = 2,
   // 提案被接受
   Accepted = 3,
+  // 可以mint
+  ReadyToMint = 4,
 }
 
 export enum ProposalResult {
