@@ -29,7 +29,8 @@ export default function ChannelMetaInfo({
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, memberInfo, channelId } = channel;
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const progressNumber = Number(tokenInfo?.progress.replace("%", ""));
+  const progress = Number(tokenInfo?.progress.replace("%", ""));
+  const progressNumber = isNaN(progress) ? 0 : progress;
 
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
