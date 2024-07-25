@@ -94,7 +94,7 @@ function Proposed({
           {dayjs(finalizeTime).date(1).format("HH:mm")}
         </Text>
       )}
-      {upvoteCount < 2 ? (
+      {Number(upvoteCount) < 2 ? (
         <UpvoteProposalButton
           proposal={{ ...proposal, result: ProposalResult.Downvote }}
           cast={cast}
