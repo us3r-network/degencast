@@ -69,7 +69,11 @@ const ChannelCardCasts = forwardRef(function (
                   key={index.toString()}
                   className="flex h-full w-full flex-col gap-4 px-4"
                 >
-                  <FCast className="flex-1 overflow-hidden" cast={cast} />
+                  <FCast
+                    className="flex-1 overflow-hidden"
+                    cast={cast}
+                    channel={channel}
+                  />
                   {!!channel?.channelId && channel.channelId !== "home" ? (
                     <CastStatusActions
                       cast={cast}
@@ -77,14 +81,7 @@ const ChannelCardCasts = forwardRef(function (
                       tokenInfo={tokenInfo}
                       proposal={proposal}
                     />
-                  ) : (
-                    <View className="ml-auto">
-                      <FCastExploreActions
-                        cast={cast}
-                        communityInfo={channel as any}
-                      />
-                    </View>
-                  )}
+                  ) : null}
                 </View>
               );
             }}

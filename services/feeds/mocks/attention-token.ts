@@ -12,6 +12,9 @@ export const mockAttentionToken = {
   holders: 2343,
   tokenStandard: "DN-404",
   tokenContract: "0x0000000000000000000000000000000000000000",
-  danContract: "0x37488ac6742ec264765246880bef8ad134fd4d83",
+  danContract: "0x71510a95dd455565979e86fde0f309adeeefb847",
   chain: "Base",
+  bondingCurve: {
+    basePrice: 10,
+  },
 } as unknown as AttentionTokenEntity;

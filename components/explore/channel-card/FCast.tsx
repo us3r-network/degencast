@@ -6,13 +6,17 @@ import NeynarCastText from "~/components/social-farcaster/NeynarCastText";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { useRouter } from "expo-router";
 import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
+import { CommunityEntity } from "~/services/community/types/community";
 
 export default function FCast({
   cast,
+  channel,
   className,
   readOnly,
 }: ViewProps & {
   cast: NeynarCast;
+  channel?: CommunityEntity;
   readOnly?: boolean;
 }) {
   const castHex = getCastHex(cast);
@@ -37,6 +41,7 @@ export default function FCast({
             userData={cast.author}
             timestamp={cast.timestamp}
           />
+          <FCastExploreActions cast={cast} communityInfo={channel as any} />
         </View>
         {/* body - text & embed */}
         <NeynarCastText cast={cast} />

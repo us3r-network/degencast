@@ -6,7 +6,7 @@ import { getExploreCastFeeds } from "~/services/feeds/api";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 export type CastFeedsItem = {
   channel: CommunityEntity;
   tokenInfo: AttentionTokenEntity;
@@ -20,14 +20,14 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
   const typeRef = useRef(props?.type || "");
   const pageInfoRef = useRef({
     hasNextPage: true,
-    nextPageNumber: 1,
+    nextCursor: "",
   });
 
   const loading = status === AsyncRequestStatus.PENDING;
 
   const loadItems = async () => {
     const type = typeRef.current;
-    const { hasNextPage, nextPageNumber } = pageInfoRef.current;
+    const { hasNextPage, nextCursor } = pageInfoRef.current;
 
     if (hasNextPage === false) {
       return;
@@ -35,8 +35,8 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
     setStatus(AsyncRequestStatus.PENDING);
     try {
       const params = {
-        pageSize: PAGE_SIZE,
-        pageNumber: nextPageNumber,
+        limit: PAGE_SIZE,
+        cursor: nextCursor,
         ...(type && { type }),
       };
       const resp = await getExploreCastFeeds(params);
@@ -44,12 +44,14 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
         throw new Error(resp.data.msg);
       }
       const { data } = resp.data;
+      const { casts, next } = data;
+      console.log("casts", casts);
 
-      setItems([...items, ...data]);
+      setItems([...items, ...casts]);
 
       pageInfoRef.current = {
-        hasNextPage: data.length >= PAGE_SIZE,
-        nextPageNumber: nextPageNumber + 1,
+        hasNextPage: casts.length >= PAGE_SIZE,
+        nextCursor: next.cursor,
       };
       setStatus(AsyncRequestStatus.FULFILLED);
     } catch (err) {

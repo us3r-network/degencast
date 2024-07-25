@@ -12,6 +12,7 @@ export default function CastFeeds() {
     casts: item?.cast ? [{ cast: item.cast, proposal: item.proposal }] : [],
     tokenInfo: item.tokenInfo,
   }));
+
   return (
     <ChannelListWithCasts
       items={showItems}

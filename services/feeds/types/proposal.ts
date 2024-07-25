@@ -31,4 +31,6 @@ export type ProposalEntity = {
   tokenId: number;
   // metadata URI
   tokenURI: string;
+  upvoteCount: number;
+  downvoteCount?: number;
 };

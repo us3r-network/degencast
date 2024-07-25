@@ -8,11 +8,27 @@ export const mockProposals = [
     status: 1,
     result: 1,
     finalizeTime: 1234567891,
+    upvoteCount: 1,
+  },
+  {
+    status: 1,
+    result: 1,
+    finalizeTime: 1234567891,
+    upvoteCount: 2,
+  },
+  {
+    status: 1,
+    result: 1,
+    finalizeTime: 1234567891,
+    upvoteCount: 2,
+    downvoteCount: 1,
   },
   {
     status: 1,
     result: 2,
     finalizeTime: 1234567892,
+    upvoteCount: 3,
+    downvoteCount: 1,
   },
   {
     status: 2,
