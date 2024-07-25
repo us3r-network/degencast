@@ -1,18 +1,55 @@
-import { Author } from "~/services/farcaster/types/neynar";
+import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { ERC42069Token } from "~/services/trade/types";
+import { AttentionTokenEntity } from "./attention-token";
+import { CommunityEntity } from "./community";
+import { Address } from "viem";
+
+export type ActivitiesParams = {
+  pageSize?: number;
+  pageNumber?: number;
+  channelId?: string;
+  token?: ERC42069Token;
+  type?: ActivityFilterType;
+};
 
 export enum ActivityOperation {
-  buy = "buy",
-  sell = "sell",
+  BUY = "buy",
+  SELL = "sell",
+  SWAP = "swap",
+  MINT = "mint",
+  BURN = "burn",
+  PROPOSE = "propose",
+  DISPUTE = "dispute",
 }
+
+export enum ActivityFilterType {
+  ALL = "all",
+  POWERUSERS = "powerusers",
+  MINE = "mine",
+  FOLLOWING = "following",
+}
+
 export type ActivityEntity = {
   operation: ActivityOperation;
-  badgeAmount: number;
-  degenAmount: number;
-  channel: {
-    id: string;
-    imageUrl: string;
-  };
+  tokenInfo: TokenEntity | AttentionTokenEntity;
+  tokenAmount: number;
+  paymentTokenInfo: TokenEntity;
+  paymentTokenAmount: number;
   userAddr: string;
   user: Author;
   timestamp: number;
+  // same as explore feed cast
+  channel: CommunityEntity;
+  cast: NeynarCast;
+	proposal: ProposalEntity;
+};
+
+export type TokenEntity = {
+  name: string;
+  logo: string;
+  decimals: number;
+  symbol: string;
+  contractAddress: Address;
+  chainId: number;
 };
