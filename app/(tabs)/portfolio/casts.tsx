@@ -1,25 +1,20 @@
 import { useState } from "react";
 import { SceneMap, TabView } from "react-native-tab-view";
-import { CardWarper, PageContent } from "~/components/layout/content/Content";
+import { PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
-import { CastList } from "~/components/portfolio/posts/UserCasts";
+import {
+  UserCastList,
+  UserCurationCastList,
+} from "~/components/portfolio/posts/UserCasts";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 function CurationFeedsPage({ fid }: { fid: number }) {
-  return (
-    <CardWarper>
-      <CastList fid={fid} />
-    </CardWarper>
-  );
+  return <UserCurationCastList fid={fid} />;
 }
 
 function CastsFeedsPage({ fid }: { fid: number }) {
-  return (
-    <CardWarper>
-      <CastList fid={fid} />
-    </CardWarper>
-  );
+  return <UserCastList fid={fid} />;
 }
 
 export default function MyCastsScreen({ fid }: { fid?: number }) {

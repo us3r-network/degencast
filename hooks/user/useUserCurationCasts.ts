@@ -1,12 +1,12 @@
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchItems, selectUserCasts } from "~/features/user/userCastsSlice";
+import { fetchItems, selectUserCurationCasts } from "~/features/user/userCurationCastsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useUserCasts(fid?: number, viewer_fid?: number) {
   const dispatch = useDispatch();
-  const { items, status, error, next } = useSelector(selectUserCasts);
+  const { items, status, error } = useSelector(selectUserCurationCasts);
 
   useEffect(() => {
     loadItems();
@@ -22,7 +22,6 @@ export default function useUserCasts(fid?: number, viewer_fid?: number) {
     items,
     loading: status === AsyncRequestStatus.PENDING,
     error,
-    hasNext: !!next.cursor,
     loadItems,
   };
 }

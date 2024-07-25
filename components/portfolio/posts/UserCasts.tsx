@@ -1,66 +1,100 @@
-import { Link } from "expo-router";
 import { FlatList, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
-import FcastMiniCard from "~/components/social-farcaster/mini/FcastMiniCard";
-import { CastDetailDataOrigin } from "~/features/cast/castPageSlice";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import ChannelCard from "~/components/explore/channel-card/ChannelCard";
+import { Text } from "~/components/ui/text";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserCasts from "~/hooks/user/useUserCasts";
-import { cn } from "~/lib/utils";
-import { getCastHex } from "~/utils/farcaster/cast-utils";
+import useUserCurationCasts from "~/hooks/user/useUserCurationCasts";
 
-export function CastList({ fid }: { fid: number }) {
+export function UserCastList({ fid }: { fid: number }) {
   const { currFid } = useFarcasterAccount();
-  const { items, loading, loadMore } = useUserCasts(fid, currFid);
-  const { setCastDetailCacheData } = useCastPage();
+  const { items, loading, loadItems } = useUserCasts(fid, currFid);
+  return (
+    <CastList
+      items={items.map((item) => ({
+        channel: item.channel,
+        casts: item?.cast ? [{ cast: item.cast, proposal: item.proposal }] : [],
+        tokenInfo: item.tokenInfo,
+      }))}
+      loading={loading}
+      load={loadItems}
+    />
+  );
+}
+
+export function UserCurationCastList({ fid }: { fid: number }) {
+  const { currFid } = useFarcasterAccount();
+  const { items, loading, loadItems } = useUserCurationCasts(fid, currFid);
+  return (
+    <CastList
+      items={items.map((item) => ({
+        channel: item.channel,
+        casts: item?.cast ? [{ cast: item.cast, proposal: item.proposal }] : [],
+        tokenInfo: item.tokenInfo,
+      }))}
+      loading={loading}
+      load={loadItems}
+    />
+  );
+}
+
+function CastList({
+  items,
+  loading,
+  load,
+}: {
+  items: any[];
+  loading: boolean;
+  load: () => void;
+}) {
   return (
     <View className="container h-full">
       {loading && items.length === 0 ? (
         <Loading />
       ) : (
         <View className="flex-1">
-            <FlatList
-              data={items}
-              numColumns={2}
-              columnWrapperStyle={{ gap: 5 }}
-              showsHorizontalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-              renderItem={({ item, index }) => {
-                const isLastItem = index === items.length - 1;
-                const isOdd = index % 2 === 0;
-                const castHex = getCastHex(item);
+          <FlatList
+            style={{
+              flex: 1,
+            }}
+            showsHorizontalScrollIndicator={false}
+            data={items}
+            keyExtractor={(item, index) => index.toString()}
+            onEndReached={() => {
+              if (loading || (!loading && items?.length === 0)) return;
+              load();
+              return;
+            }}
+            onEndReachedThreshold={1}
+            ItemSeparatorComponent={() => <View className="h-4" />}
+            renderItem={({ item, index }) => {
+              const { channel, casts, tokenInfo } = item;
+              return (
+                <ChannelCard
+                  key={index.toString()}
+                  channel={channel}
+                  tokenInfo={tokenInfo}
+                  casts={casts}
+                />
+              );
+            }}
+            ListFooterComponent={() => {
+              if (loading) {
                 return (
-                  <Link
-                    className={cn(
-                      "flex-1",
-                      isLastItem && isOdd && " w-1/2 flex-none pr-[5px]",
-                    )}
-                    href={`/casts/${castHex}`}
-                    onPress={() => {
-                      setCastDetailCacheData(castHex, {
-                        origin: CastDetailDataOrigin.Protfolio,
-                        cast: item,
-                      });
-                    }}
-                  >
-                    <FcastMiniCard className="flex-1" cast={item} />
-                  </Link>
+                  <>
+                    <View className="ios:pb-0 items-center py-3">
+                      <Text
+                        nativeID="invoice-table"
+                        className="items-center text-sm text-muted-foreground"
+                      >
+                        <Loading />
+                      </Text>
+                    </View>
+                  </>
                 );
-              }}
-              keyExtractor={(item) => item.hash}
-              onEndReached={() => {
-                if (loading) return;
-                loadMore();
-              }}
-              onEndReachedThreshold={1}
-              ListFooterComponent={() => {
-                return loading ? (
-                  <View className="flex items-center justify-center p-5">
-                    <Loading />
-                  </View>
-                ) : null;
-              }}
-            />
+              }
+            }}
+          />
         </View>
       )}
     </View>
