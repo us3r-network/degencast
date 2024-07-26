@@ -1,6 +1,9 @@
+import { Author } from "~/services/farcaster/types/neynar";
+
 export enum RankOrderBy {
   LAUNCH_PROGRESS = "LaunchProgress",
   NFT_PRICE = "NFTPrice",
+  NFT_HOLDING = "NFTHolding",
   NEW_PROPOSALS = "NewProposals",
   NEW_CASTS = "NewCasts",
   MEMBERS = "Members",
@@ -14,4 +17,9 @@ export enum RankOrderBy {
 export type OrderParams = {
   order: "ASC" | "DESC";
   orderBy: RankOrderBy;
+};
+
+export type CuratorEntity = {
+  userInfo: Author;
+  holdingNFTs: number;
 };
