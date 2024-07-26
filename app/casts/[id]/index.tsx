@@ -275,9 +275,11 @@ function CastDetailWithData({
             {cast && community && (
               <FCastExploreActions cast={cast} communityInfo={community} />
             )}
-            {community && (
+            {community?.attentionTokenInfo?.tokenContract && (
               <BuyChannelBadgeWithIconButton
-                communityInfo={community}
+                tokenContract={
+                  community.attentionTokenInfo.tokenContract as any
+                }
                 className="mt-3"
               />
             )}
