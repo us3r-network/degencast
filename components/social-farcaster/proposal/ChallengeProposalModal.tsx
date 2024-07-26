@@ -155,15 +155,29 @@ function DisputeProposalWrite({
   onDisputeSuccess?: (proposal: TransactionReceipt) => void;
   onDisputeError?: (error: any) => void;
 }) {
-  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
-    usePaymentTokenInfo({
-      contractAddress: tokenInfo?.danContract!,
-      castHash: cast.hash,
-    });
-  const { price, isLoading } = useDisputePrice({
+  const {
+    paymentTokenInfo,
+    isLoading: paymentTokenInfoLoading,
+    error: paymentTokenInfoError,
+  } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+  const {
+    price,
+    isLoading,
+    error: priceError,
+  } = useDisputePrice({
+    contractAddress: tokenInfo?.danContract!,
+    castHash: cast.hash,
+  });
+  if (paymentTokenInfoError) {
+    console.error("paymentTokenInfoError", paymentTokenInfoError);
+  }
+  if (priceError) {
+    console.error("priceError", priceError);
+  }
+
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
   useEffect(() => {
     if (!isLoading && price) {
@@ -231,15 +245,28 @@ function ProposeProposalWrite({
   onProposeSuccess?: (proposal: TransactionReceipt) => void;
   onProposeError?: (error: any) => void;
 }) {
-  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
-    usePaymentTokenInfo({
-      contractAddress: tokenInfo?.danContract!,
-      castHash: cast.hash,
-    });
-  const { price, isLoading } = useProposePrice({
+  const {
+    paymentTokenInfo,
+    isLoading: paymentTokenInfoLoading,
+    error: paymentTokenInfoError,
+  } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+  const {
+    price,
+    isLoading,
+    error: priceError,
+  } = useProposePrice({
+    contractAddress: tokenInfo?.danContract!,
+    castHash: cast.hash,
+  });
+  if (paymentTokenInfoError) {
+    console.error("paymentTokenInfoError", paymentTokenInfoError);
+  }
+  if (priceError) {
+    console.error("priceError", priceError);
+  }
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
   useEffect(() => {
     if (!isLoading && price) {

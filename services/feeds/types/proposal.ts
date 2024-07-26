@@ -37,4 +37,6 @@ export type ProposalEntity = {
   upvoteCount?: number;
   // 点踩数量
   downvoteCount?: number;
+  // 当前轮数
+  roundIndex?: number;
 };

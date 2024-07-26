@@ -1,16 +1,16 @@
 import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
-import { ExploreCard } from "../ExploreStyled";
+import { ExploreCard } from "../../explore/ExploreStyled";
 import React from "react";
 import { ViewRef } from "~/components/primitives/types";
 import { Separator } from "~/components/ui/separator";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import FCast from "../channel-card/FCast";
+import FCast from "./FCast";
 import ChannelMetaInfo, {
   HomeChannelMetaInfo,
-} from "../channel-card/ChannelMetaInfo";
+} from "./channel-card/ChannelMetaInfo";
 
 type ChannelCardProps = {
   cast: NeynarCast;

@@ -1,6 +1,7 @@
 import { FarcasterUserData } from "~/services/farcaster/types";
 import { TradeInfo } from "./trade";
 import { Address } from "viem";
+import { AttentionTokenEntity } from "./attention-token";
 
 export type CommunityEntity = {
   id: number;
@@ -42,6 +43,7 @@ export type CommunityEntity = {
     newPostNumber?: number;
     friendMemberNumber?: number;
   };
+  attentionTokenInfo?: AttentionTokenEntity;
 };
 
 export type CommunityStatistics = {

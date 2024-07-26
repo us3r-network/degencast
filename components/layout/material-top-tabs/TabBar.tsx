@@ -1,5 +1,5 @@
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
-import { Animated, View, Pressable } from "react-native";
+import { Animated, View, Pressable, FlatList } from "react-native";
 import { Text } from "~/components/ui/text";
 
 export const getRouteItemRenderConfig = (
@@ -215,6 +215,75 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
           })}
         </>
       )}
+    </View>
+  );
+}
+
+export function ScrollTabBar(props: MaterialTopTabBarProps) {
+  const { state, position, layout } = props;
+  const { routes } = state;
+  const itemGap = 10;
+
+  return (
+    <View className="w-full">
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={routes}
+        keyExtractor={(item, index) => index.toString()}
+        onEndReached={() => {
+          return;
+        }}
+        ItemSeparatorComponent={() => <View style={{ width: itemGap }} />}
+        renderItem={({ item: route, index }) => {
+          const { options, label, isFocused, onPress, onLongPress } =
+            getRouteItemRenderConfig(props, route, index);
+
+          const inputRange = routes.map((_, i) => i);
+
+          const textColor = position.interpolate({
+            inputRange,
+            outputRange: inputRange.map((i) =>
+              i === index ? "#4C2896" : "#FFF",
+            ),
+          });
+          const bgColor = position.interpolate({
+            inputRange,
+            outputRange: inputRange.map((i) =>
+              i === index ? "#FFF" : "rgba(255, 255, 255, 0.40)",
+            ),
+          });
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarTestID}
+              onPress={onPress}
+              onLongPress={onLongPress}
+            >
+              <Animated.View
+                style={{
+                  padding: 8,
+                  backgroundColor: bgColor,
+                  borderRadius: 10,
+                }}
+              >
+                <Animated.Text
+                  style={{
+                    color: textColor,
+                    fontSize: 14,
+                    fontWeight: 500,
+                  }}
+                >
+                  {label as any}
+                </Animated.Text>
+              </Animated.View>
+            </Pressable>
+          );
+        }}
+      />
     </View>
   );
 }

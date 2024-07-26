@@ -56,6 +56,44 @@ export const getProposals = async ({
   } as ProposalsInfo;
 };
 
+export const getRound = async ({
+  publicClient,
+  contractAddress,
+  castHash,
+  roundIndex,
+  walletAddress,
+}: {
+  publicClient: PublicClient;
+  contractAddress: `0x${string}`;
+  castHash: string;
+  roundIndex: bigint;
+  walletAddress: `0x${string}`;
+}) => {
+  if (!publicClient) {
+    throw new Error("Client not connected");
+  }
+  if (!contractAddress) {
+    throw new Error("Contract address is required");
+  }
+  if (!castHash) {
+    throw new Error("Cast hash is required");
+  }
+  if (roundIndex === undefined) {
+    throw new Error("Round index is required");
+  }
+  if (!walletAddress) {
+    throw new Error("Wallet address is required");
+  }
+  const round = (await publicClient.readContract({
+    abi: DanAbi,
+    address: contractAddress,
+    functionName: "round",
+    args: [castHash, roundIndex, walletAddress],
+  })) as boolean;
+
+  return round;
+};
+
 export const getProposePrice = async ({
   publicClient,
   contractAddress,
