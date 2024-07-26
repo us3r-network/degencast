@@ -162,7 +162,10 @@ export function DisputeProposalWriteButton({
           className="w-full rounded-md"
           disabled={disabled}
           onPress={() => {
-            if (Number(proposals?.roundIndex) < 2) {
+            if (
+              Number(proposals?.roundIndex) === 1 &&
+              Number(proposals?.state) === 0
+            ) {
               Toast.show({
                 type: "error",
                 text1: "Dispute is not allowed in the first round",

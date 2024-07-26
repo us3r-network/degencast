@@ -133,14 +133,14 @@ function Proposed({
             .format("HH:mm")}
         </Text>
       )}
-      {roundIndexNumber < 2 ? (
+      {roundIndexNumber < 1 ? (
         <UpvoteProposalButton
           proposal={{ ...proposal, result: ProposalResult.Downvote }}
           cast={cast}
           channel={channel}
           tokenInfo={tokenInfo}
         />
-      ) : roundIndexNumber === 2 ? (
+      ) : roundIndexNumber === 1 ? (
         <>
           <UpvoteProposalButton
             proposal={{ ...proposal, result: ProposalResult.Downvote }}
@@ -155,7 +155,7 @@ function Proposed({
             tokenInfo={tokenInfo}
           />
         </>
-      ) : roundIndexNumber > 2 ? (
+      ) : roundIndexNumber > 1 ? (
         <ChallengeProposalButton
           cast={cast}
           channel={channel}
