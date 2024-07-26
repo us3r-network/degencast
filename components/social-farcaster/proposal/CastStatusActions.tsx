@@ -120,7 +120,10 @@ function Proposed({
     <CastStatusActionsWrapper>
       {roundIndexNumber < 2 ? (
         <Text className="mr-auto text-sm text-secondary">
-          24:00 Choose your stance
+          {dayjs(Number(finalizeTime) * 1000)
+            .date(1)
+            .format("HH:mm")}{" "}
+          Choose your stance
         </Text>
       ) : (
         <Text className="mr-auto text-sm text-secondary">
@@ -130,14 +133,14 @@ function Proposed({
             .format("HH:mm")}
         </Text>
       )}
-      {roundIndexNumber < 2 ? (
+      {roundIndexNumber < 1 ? (
         <UpvoteProposalButton
           proposal={{ ...proposal, result: ProposalResult.Downvote }}
           cast={cast}
           channel={channel}
           tokenInfo={tokenInfo}
         />
-      ) : roundIndexNumber === 2 ? (
+      ) : roundIndexNumber === 1 ? (
         <>
           <UpvoteProposalButton
             proposal={{ ...proposal, result: ProposalResult.Downvote }}
@@ -152,7 +155,7 @@ function Proposed({
             tokenInfo={tokenInfo}
           />
         </>
-      ) : roundIndexNumber > 2 ? (
+      ) : roundIndexNumber > 1 ? (
         <ChallengeProposalButton
           cast={cast}
           channel={channel}
