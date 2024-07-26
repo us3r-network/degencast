@@ -20,10 +20,10 @@ export default function CreateProposalButton({
     return (
       <ActionButton
         size={"icon"}
-        className="rounded-full"
+        className="h-8  rounded-lg"
         onPress={() => connectWallet()}
       >
-        <Text className="text-sm">👍</Text>
+        <Text className="text-sm">Propose</Text>
       </ActionButton>
     );
   }
@@ -35,8 +35,8 @@ export default function CreateProposalButton({
       proposal={proposal}
       tokenInfo={tokenInfo}
       triggerButton={
-        <ActionButton size={"icon"} className="rounded-full" {...props}>
-          <Text className="text-sm">👍</Text>
+        <ActionButton size={"icon"} className="h-8  rounded-lg" {...props}>
+          <Text className="text-sm">Propose</Text>
         </ActionButton>
       }
     />

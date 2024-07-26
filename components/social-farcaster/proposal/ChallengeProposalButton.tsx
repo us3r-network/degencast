@@ -18,16 +18,18 @@ export default function ChallengeProposalButton({
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
   const { result, finalizeTime } = proposal;
+  const resultText =
+    result === ProposalResult.Upvote
+      ? `👎 ${Number(proposal?.downvoteCount) > 0 ? proposal.downvoteCount : ""}`
+      : `👍${Number(proposal?.upvoteCount) > 0 ? proposal.upvoteCount : ""}`;
   if (!account.address) {
     return (
       <ActionButton
         size={"icon"}
-        className="rounded-full"
+        className="h-8  rounded-lg"
         onPress={() => connectWallet()}
       >
-        <Text className="text-sm">
-          {result === ProposalResult.Upvote ? "👎" : "👍"}
-        </Text>
+        <Text className="text-sm">{resultText}</Text>
       </ActionButton>
     );
   }
@@ -39,10 +41,8 @@ export default function ChallengeProposalButton({
       proposal={proposal}
       tokenInfo={tokenInfo}
       triggerButton={
-        <ActionButton size={"icon"} className="rounded-full" {...props}>
-          <Text className="text-sm">
-            {result === ProposalResult.Upvote ? "👎" : "👍"}
-          </Text>
+        <ActionButton size={"icon"} className="h-8  rounded-lg" {...props}>
+          <Text className="text-sm">{resultText}</Text>
         </ActionButton>
       }
     />

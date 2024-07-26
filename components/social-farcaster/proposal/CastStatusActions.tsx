@@ -9,10 +9,10 @@ import {
   ProposalStatus,
 } from "~/services/feeds/types/proposal";
 import dayjs from "dayjs";
-import CreateProposalButton from "../proposal/CreateProposalButton";
+import CreateProposalButton from "../../social-farcaster/proposal/CreateProposalButton";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import ChallengeProposalButton from "../proposal/ChallengeProposalButton";
-import UpvoteProposalButton from "../proposal/UpvoteProposalButton";
+import ChallengeProposalButton from "../../social-farcaster/proposal/ChallengeProposalButton";
+import UpvoteProposalButton from "../../social-farcaster/proposal/UpvoteProposalButton";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
@@ -27,6 +27,13 @@ export default function CastStatusActions({
   proposal,
 }: CastStatusActionsProps) {
   const { status } = proposal;
+  const display =
+    !!channel?.channelId &&
+    channel.channelId !== "home" &&
+    !!tokenInfo?.danContract &&
+    !!tokenInfo?.bondingCurve?.basePrice &&
+    proposal;
+  if (!display) return null;
   switch (status) {
     case ProposalStatus.None:
       return (
@@ -49,7 +56,7 @@ export default function CastStatusActions({
     case ProposalStatus.Accepted:
       return <Accepted cast={cast} channel={channel} proposal={proposal} />;
     case ProposalStatus.ReadyToMint:
-      return <Accepted cast={cast} channel={channel} proposal={proposal} />;
+      return <ReadyToMint cast={cast} channel={channel} proposal={proposal} />;
     case ProposalStatus.Rejected:
       return <Rejected cast={cast} channel={channel} proposal={proposal} />;
     default:
@@ -82,27 +89,31 @@ function Proposed({
   proposal,
   tokenInfo,
 }: CastStatusActionsProps) {
-  const { result, finalizeTime, upvoteCount, downvoteCount } = proposal;
+  const { result, finalizeTime, upvoteCount, downvoteCount, roundIndex } =
+    proposal;
+  const roundIndexNumber = isNaN(Number(roundIndex)) ? 0 : Number(roundIndex);
   return (
     <View className="flex w-full flex-row items-center gap-4">
-      {!downvoteCount ? (
+      {roundIndexNumber < 2 ? (
         <Text className="mr-auto text-sm text-secondary">
           24:00 Choose your stance
         </Text>
       ) : (
         <Text className="mr-auto text-sm text-secondary">
           {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
-          {dayjs(finalizeTime).date(1).format("HH:mm")}
+          {dayjs(Number(finalizeTime) * 1000)
+            .date(1)
+            .format("HH:mm")}
         </Text>
       )}
-      {Number(upvoteCount) < 2 ? (
+      {roundIndexNumber < 2 ? (
         <UpvoteProposalButton
           proposal={{ ...proposal, result: ProposalResult.Downvote }}
           cast={cast}
           channel={channel}
           tokenInfo={tokenInfo}
         />
-      ) : !downvoteCount ? (
+      ) : roundIndexNumber === 2 ? (
         <>
           <UpvoteProposalButton
             proposal={{ ...proposal, result: ProposalResult.Downvote }}
@@ -117,18 +128,33 @@ function Proposed({
             tokenInfo={tokenInfo}
           />
         </>
-      ) : (
+      ) : roundIndexNumber > 2 ? (
         <ChallengeProposalButton
           cast={cast}
           channel={channel}
           proposal={proposal}
           tokenInfo={tokenInfo}
         />
-      )}
+      ) : null}
     </View>
   );
 }
 function Accepted({ cast, channel, proposal }: CastStatusActionsProps) {
+  const { result, finalizeTime } = proposal;
+  return (
+    <View className="flex w-full flex-row items-center gap-4">
+      <Text className="mr-auto text-sm text-secondary">
+        {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
+        {dayjs(Number(finalizeTime) * 1000)
+          .date(1)
+          .format("HH:mm")}
+      </Text>
+      <Text className="text-sm text-secondary">Accepted</Text>
+    </View>
+  );
+}
+
+function ReadyToMint({ cast, channel, proposal }: CastStatusActionsProps) {
   const { mintedCount } = proposal;
   return (
     <View className="flex w-full flex-row items-center gap-4">

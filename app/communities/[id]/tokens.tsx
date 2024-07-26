@@ -17,6 +17,7 @@ import CommunityAttentionTokenInfo from "~/components/community/CommunityAttenti
 import CommunityBuyShareButton, {
   BuyChannelBadgeWithUpvoteButton,
 } from "~/components/community/CommunityBuyShareButton";
+import { Card } from "~/components/ui/card";
 
 export default function TokensScreen() {
   const { community } = useCommunityCtx();
@@ -37,7 +38,7 @@ export default function TokensScreen() {
   const communityInfo = { ...(communityDetail || community) };
   const attentionTokenAddress = communityInfo?.attentionTokenAddress;
   return (
-    <View className="flex-1 flex-col">
+    <Card className="box-border h-full w-full flex-1 flex-col rounded-[20px] rounded-b-none p-4 pb-0">
       {communityToken && communityToken?.tradeInfo ? (
         <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
           <CommunityTokenInfo
@@ -87,7 +88,7 @@ export default function TokensScreen() {
         </>
         // <ShareActivities id={id as string} />
       )}
-    </View>
+    </Card>
   );
 }
 

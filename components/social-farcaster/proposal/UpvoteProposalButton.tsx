@@ -9,6 +9,7 @@ import UpvoteProposalModal from "./UpvoteProposalModal";
 export default function UpvoteProposalButton({
   cast,
   channel,
+  proposal,
   tokenInfo,
   ...props
 }: ButtonProps & CastProposeStatusProps) {
@@ -18,10 +19,12 @@ export default function UpvoteProposalButton({
     return (
       <ActionButton
         size={"icon"}
-        className="rounded-full"
+        className="h-8 rounded-lg"
         onPress={() => connectWallet()}
       >
-        <Text className="text-sm">👍</Text>
+        <Text className="text-sm">
+          👍{Number(proposal?.upvoteCount) > 0 ? proposal.upvoteCount : ""}
+        </Text>
       </ActionButton>
     );
   }
@@ -32,8 +35,10 @@ export default function UpvoteProposalButton({
       channel={channel}
       tokenInfo={tokenInfo}
       triggerButton={
-        <ActionButton size={"icon"} className="rounded-full" {...props}>
-          <Text className="text-sm">👍</Text>
+        <ActionButton size={"icon"} className="h-8  rounded-lg" {...props}>
+          <Text className="text-sm">
+            👍{Number(proposal?.upvoteCount) > 0 ? proposal.upvoteCount : ""}
+          </Text>
         </ActionButton>
       }
     />

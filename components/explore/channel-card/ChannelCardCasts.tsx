@@ -6,12 +6,11 @@ import Carousel, {
   Pagination,
 } from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
-import FCast from "./FCast";
-import CastStatusActions from "./CastStatusActions";
+import FCast from "../../social-farcaster/proposal/FCast";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import CastStatusActions from "~/components/social-farcaster/proposal/CastStatusActions";
 
 const ChannelCardCasts = forwardRef(function (
   {
@@ -74,18 +73,12 @@ const ChannelCardCasts = forwardRef(function (
                     cast={cast}
                     channel={channel}
                   />
-                  {!!channel?.channelId &&
-                  channel.channelId !== "home" &&
-                  !!tokenInfo?.danContract &&
-                  !!tokenInfo?.bondingCurve?.basePrice &&
-                  proposal ? (
-                    <CastStatusActions
-                      cast={cast}
-                      channel={channel}
-                      tokenInfo={tokenInfo}
-                      proposal={proposal}
-                    />
-                  ) : null}
+                  <CastStatusActions
+                    cast={cast}
+                    channel={channel!}
+                    tokenInfo={tokenInfo}
+                    proposal={proposal}
+                  />
                 </View>
               );
             }}

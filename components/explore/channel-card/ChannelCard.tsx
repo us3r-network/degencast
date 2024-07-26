@@ -1,6 +1,5 @@
 import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
-import ChannelMetaInfo, { HomeChannelMetaInfo } from "./ChannelMetaInfo";
 import { ExploreCard } from "../ExploreStyled";
 import ChannelCardCasts from "./ChannelCardCasts";
 import React from "react";
@@ -10,6 +9,9 @@ import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import { ActionButton } from "~/components/post/PostActions";
 import { Link } from "expo-router";
+import ChannelMetaInfo, {
+  HomeChannelMetaInfo,
+} from "~/components/social-farcaster/proposal/channel-card/ChannelMetaInfo";
 
 type ChannelCardProps = ViewProps & SelectionFeedsItem;
 const ChannelCard = React.forwardRef<
@@ -48,9 +50,9 @@ const ChannelCard = React.forwardRef<
         <View className="flex w-full flex-row items-center justify-between px-4">
           <Text>No NFT cast now</Text>
           {channelId && (
-            <Link href={`/communities/${channelId}`} asChild>
+            <Link href={`/communities/${channelId}/casts`} asChild>
               <ActionButton className="w-auto px-3">
-                <Text>Go to propose</Text>
+                <Text>Propose</Text>
               </ActionButton>
             </Link>
           )}
