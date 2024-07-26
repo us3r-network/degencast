@@ -19,7 +19,7 @@ export default function CreateProposalButton({
   if (!account.address) {
     return (
       <ActionButton
-        className="h-8  rounded-lg px-1"
+        className="h-8  w-auto rounded-lg px-1"
         onPress={() => connectWallet()}
       >
         <Text className="text-sm">Propose</Text>
@@ -34,7 +34,7 @@ export default function CreateProposalButton({
       proposal={proposal}
       tokenInfo={tokenInfo}
       triggerButton={
-        <ActionButton className="h-8  rounded-lg px-1" {...props}>
+        <ActionButton className="h-8  w-auto rounded-lg px-1" {...props}>
           <Text className="text-sm">Propose</Text>
         </ActionButton>
       }

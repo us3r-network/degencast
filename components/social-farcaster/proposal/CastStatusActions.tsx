@@ -199,6 +199,16 @@ function ReadyToMint({
         <BuyButton
           tokenAddress={tokenInfo.tokenContract}
           tokenId={Number(proposal.tokenId)}
+          renderButton={(props) => {
+            return (
+              <ActionButton
+                className="h-8  w-auto min-w-[60px] rounded-lg px-1"
+                {...props}
+              >
+                <Text>Mint</Text>
+              </ActionButton>
+            );
+          }}
         />
       )}
     </CastStatusActionsWrapper>

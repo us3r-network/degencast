@@ -13,7 +13,7 @@ export default function useRoundProposals({
   const publicClient = usePublicClient();
   const account = useAccount();
   const walletAddress = account?.address;
-  const [allowedParticipate, setAllowedParticipate] = useState<boolean>(false);
+  const [participated, setParticipated] = useState<boolean>(false);
   const [proposals, setProposals] = useState<ProposalsInfo>();
   const [error, setError] = useState<any>();
   const [status, setStatus] = useState<
@@ -37,14 +37,14 @@ export default function useRoundProposals({
         });
         setProposals(proposals);
         const roundIndex = proposals.roundIndex;
-        const allowedParticipate = await getRound({
+        const participated = await getRound({
           publicClient: publicClient!,
           contractAddress,
           castHash,
           roundIndex,
           walletAddress: walletAddress!,
         });
-        setAllowedParticipate(allowedParticipate);
+        setParticipated(participated);
         setStatus("success");
       } catch (error) {
         setError(error);
@@ -58,7 +58,7 @@ export default function useRoundProposals({
   }, [publicClient, contractAddress, walletAddress, castHash, status]);
   return {
     proposals,
-    allowedParticipate,
+    participated,
     error,
     isLoading,
     isRejected,
