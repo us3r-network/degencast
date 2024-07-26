@@ -120,11 +120,11 @@ function Item({
             <>
               <BuyButton
                 tokenAddress={item.attentionTokenAddress}
-                tokenId={1} //todo: use cast tokenId from api
+                tokenId={0} //todo: use cast tokenId from api
               />
               <SellButton
                 tokenAddress={item.attentionTokenAddress}
-                tokenId={1} //todo: use cast tokenId from api
+                tokenId={0} //todo: use cast tokenId from api
               />
             </>
           );

@@ -60,9 +60,8 @@ export type CreateTokenResp = {
   danAddress: Address;
 };
 
-
 export type ERC42069Token = {
-  contractAddress: string;
+  contractAddress: Address;
   tokenId: number;
   uri?: string;
   balance?: string;

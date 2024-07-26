@@ -30,12 +30,12 @@ export function CommunityBadge({ badge }: { badge: BadgeInfo }) {
           (balance > 0 ? (
             <SellButton
               tokenAddress={badge.tokenAddress}
-              tokenId={1} //todo: use cast tokenId from api
+              tokenId={0} //todo: use cast tokenId from api
             />
           ) : (
             <BuyButton
               tokenAddress={badge.tokenAddress}
-              tokenId={1} //todo: use cast tokenId from api
+              tokenId={0} //todo: use cast tokenId from api
             />
           ))}
       </View>

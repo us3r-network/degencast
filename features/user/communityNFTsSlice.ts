@@ -4,19 +4,19 @@ import {
   ApiRespCode,
   AsyncRequestStatus,
 } from "~/services/shared/types";
-import { TokenWithTradeInfo } from "~/services/trade/types";
-import { myTokens } from "~/services/user/api";
+import { ERC42069Token } from "~/services/trade/types";
+import { myNFTs } from "~/services/user/api";
 import type { RootState } from "../../store/store";
 
-type UserCommunityTokenState = {
-  cache: Map<`0x${string}`, ApiResp<TokenWithTradeInfo[]>>;
+type UserCommunityNFTState = {
+  cache: Map<`0x${string}`, ApiResp<ERC42069Token[]>>;
   address?: `0x${string}`;
-  items: TokenWithTradeInfo[];
+  items: ERC42069Token[];
   status: AsyncRequestStatus;
   error: string | undefined;
 };
 
-const initialUserCommunityTokenState: UserCommunityTokenState = {
+const initialUserCommunityNFTState: UserCommunityNFTState = {
   cache: new Map(),
   address: undefined,
   items: [],
@@ -25,23 +25,23 @@ const initialUserCommunityTokenState: UserCommunityTokenState = {
 };
 
 export const fetchItems = createAsyncThunk(
-  "userCommunityTokens/fetchItems",
+  "userCommunityNFTs/fetchItems",
   async (address: `0x${string}`, thunkAPI) => {
-    const { userCommunityTokens } = thunkAPI.getState() as {
-      userCommunityTokens: UserCommunityTokenState;
+    const { userCommunityNFTs } = thunkAPI.getState() as {
+      userCommunityNFTs: UserCommunityNFTState;
     };
-    if (userCommunityTokens.address !== address) {
-      const existCache = userCommunityTokens.cache.get(address);
+    if (userCommunityNFTs.address !== address) {
+      const existCache = userCommunityNFTs.cache.get(address);
       if (existCache?.data) return existCache;
     }
-    const response = await myTokens(address);
+    const response = await myNFTs(address);
     return response.data;
   },
 );
 
-export const userCommunityTokenSlice = createSlice({
-  name: "userCommunityTokens",
-  initialState: initialUserCommunityTokenState,
+export const userCommunityNFTSlice = createSlice({
+  name: "userCommunityNFTs",
+  initialState: initialUserCommunityNFTState,
   reducers: {},
   extraReducers(builder) {
     builder
@@ -50,9 +50,9 @@ export const userCommunityTokenSlice = createSlice({
         const address = action.meta.arg;
         if (state.address !== address) {
           state.address = address;
-          state.items = initialUserCommunityTokenState.items;
-          state.error = initialUserCommunityTokenState.error;
-          state.status = initialUserCommunityTokenState.status;
+          state.items = initialUserCommunityNFTState.items;
+          state.error = initialUserCommunityNFTState.error;
+          state.status = initialUserCommunityNFTState.status;
         }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
@@ -60,13 +60,7 @@ export const userCommunityTokenSlice = createSlice({
         if (action.payload.code == ApiRespCode.SUCCESS) {
           state.cache.set(action.meta.arg, action.payload);
         }
-        state.items = action.payload.data.filter(
-          (item) =>
-            item.name &&
-            item.balance &&
-            Number(item.balance) > 0 &&
-            item.tradeInfo?.channel,
-        );
+        state.items = action.payload.data
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;
@@ -74,6 +68,6 @@ export const userCommunityTokenSlice = createSlice({
       });
   },
 });
-export const selectUserCommunityTokens = (state: RootState) =>
-  state.userCommunityTokens;
-export default userCommunityTokenSlice.reducer;
+export const selectUserCommunityNFTs = (state: RootState) =>
+  state.userCommunityNFTs;
+export default userCommunityNFTSlice.reducer;

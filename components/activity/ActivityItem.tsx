@@ -11,68 +11,38 @@ import { shortAddress } from "~/utils/shortAddress";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
 import { Card, CardContent } from "../ui/card";
+import { TokenInfo } from "../common/TokenInfo";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
+  if (!data) return;
   return (
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
         <View className="w-full flex-row justify-between">
-          <ActivityItemUser userAddr={data?.userAddr} userData={data.user} />
-          {data?.timestamp && (
+          <ActivityItemUser userAddr={data.userAddr} userData={data.user} />
+          {data.timestamp && (
             <Text className="whitespace-nowrap">
               {dayjs(data.timestamp).fromNow(true)}
             </Text>
           )}
         </View>
-        <Text
-          className={cn(
-            " inline-block align-baseline text-base font-medium",
-            data?.operation === ActivityOperation.buy
-              ? "text-[#F41F4C]"
-              : data?.operation === ActivityOperation.sell
-                ? "text-[#00D1A7]"
-                : "",
-          )}
-        >
-          {capitalize(data?.operation || "")}{" "}
+        <View className="w-full flex-row items-center gap-2">
+          <ActivityItemOperation operation={data.operation} />
           <Text className=" inline-block  align-baseline">
-            {data?.badgeAmount}
-          </Text>{" "}
-          <Link asChild href={`/communities/${data?.channel?.id || ""}`}>
-            <Pressable
-              className="flex-row items-center align-bottom"
-              onPress={(e) => {
-                e.stopPropagation();
-                if (!data?.channel?.id) {
-                  e.preventDefault();
-                }
-              }}
-            >
-              <Avatar
-                alt={"Avatar"}
-                className="h-5 w-5 rounded-full object-cover  "
-              >
-                <AvatarImage source={{ uri: data?.channel?.imageUrl }} />
-                <AvatarFallback>
-                  <Text>{data?.channel?.id || ""}</Text>
-                </AvatarFallback>
-              </Avatar>
-              {data?.channel?.id && (
-                <Text className=" text-base font-medium  text-secondary hover:underline">
-                  /{data?.channel?.id}
-                </Text>
-              )}
-            </Pressable>
-          </Link>
-          <Text> with {data?.degenAmount?.toLocaleString()} Degen</Text>
-        </Text>
+            {data.tokenAmount}
+          </Text>
+          <ActivityItemToken data={data} />
+          <Text>
+            with {data.paymentTokenAmount} {data.paymentTokenInfo?.symbol}
+          </Text>
+        </View>
       </CardContent>
     </Card>
   );
 }
 
-export function ActivityItemUser({
+function ActivityItemUser({
   userAddr,
   userData,
   className,
@@ -129,51 +99,46 @@ export function ActivityItemUser({
   );
 }
 
-export function ActivityItemOperation({ data }: { data: ActivityEntity }) {
+export function ActivityItemOperation({
+  operation,
+}: {
+  operation: ActivityOperation;
+}) {
   return (
     <Text
       className={cn(
-        " inline-block align-baseline",
-        data?.operation === ActivityOperation.buy
+        " inline-block align-baseline text-base font-medium",
+        operation === ActivityOperation.MINT ||
+          operation === ActivityOperation.BUY
           ? "text-[#F41F4C]"
-          : data?.operation === ActivityOperation.sell
+          : operation === ActivityOperation.BURN ||
+              operation === ActivityOperation.SELL
             ? "text-[#00D1A7]"
             : "",
       )}
     >
-      {capitalize(data?.operation || "")} {data?.badgeAmount}
+      {capitalize(operation || "")}
     </Text>
   );
 }
 
-export function ActivityItemChannel({ data }: { data: ActivityEntity }) {
+export function ActivityItemToken({ data }: { data: ActivityEntity }) {
   return (
-    <Link asChild href={`/communities/${data?.channel?.id || ""}`}>
+    <Link asChild href={`/communities/${data.channel?.id || ""}`}>
       <Pressable
         className="flex-row items-center gap-1 align-bottom"
         onPress={(e) => {
           e.stopPropagation();
-          if (!data?.channel?.id) {
+          if (!data.channel?.id) {
             e.preventDefault();
           }
         }}
       >
-        <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full object-cover  ">
-          <AvatarImage source={{ uri: data?.channel?.imageUrl }} />
-          <AvatarFallback>
-            <Text>{data?.channel?.id || ""}</Text>
-          </AvatarFallback>
-        </Avatar>
-        {data?.channel?.id && (
-          <Text className="line-clamp-1 hover:underline">
-            /{data?.channel?.id}
-          </Text>
-        )}
+        <TokenInfo
+          name={data.tokenInfo.name || data.channel.name}
+          logo={data.tokenInfo.logo || data.channel.logo}
+        />
       </Pressable>
     </Link>
   );
-}
-
-export function ActivityItemDegenAmount({ data }: { data: ActivityEntity }) {
-  return <Text>{data?.degenAmount?.toLocaleString()}</Text>;
 }
