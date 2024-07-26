@@ -1,11 +1,11 @@
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import { Text } from "~/components/ui/text";
+import Curators from "~/components/rank/Curators";
 
 export default function CuratorsScreen() {
   return (
     <PageContent>
       <CardWarper>
-        <Text>Coming Soon!</Text>
+        <Curators />
       </CardWarper>
     </PageContent>
   );
