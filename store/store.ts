@@ -19,6 +19,7 @@ import userCasts from "~/features/user/userCastsSlice";
 import userCurationCasts from "~/features/user/userCurationCastsSlice";
 import userHostChannels from "~/features/user/userHostChannelsSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
+import userCommunityNFTs from "~/features/user/communityNFTsSlice";
 import userAction from "~/features/user/userActionSlice";
 import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
@@ -56,6 +57,7 @@ export const store = configureStore({
     tokenRank,
     // curatorRank,
     userCommunityTokens,
+    userCommunityNFTs,
     userChannels,
     userCasts,
     userCurationCasts,

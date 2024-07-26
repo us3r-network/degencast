@@ -60,7 +60,7 @@ export const userCurationCastsSlice = createSlice({
         state.status = AsyncRequestStatus.FULFILLED;
         const responseData = action.payload.data.data;
         const casts = uniqBy(
-          [...state.items, ...responseData.casts],
+          [...state.items, ...responseData.casts||[]],
           "cast.hash",
         );
         state.items = casts;
