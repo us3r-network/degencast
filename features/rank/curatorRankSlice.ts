@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import uniqBy from "lodash/uniqBy";
 import { fetchRankCurators } from "~/services/rank/api";
-import { RankOrderBy, OrderParams, CuratorEntity } from "~/services/rank/types";
+import { CuratorEntity, OrderParams, RankOrderBy } from "~/services/rank/types";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
@@ -79,7 +79,6 @@ export const curatorRankSlice = createSlice({
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
         const newItems = action.payload.data;
-        console.log("newItems", newItems);
         state.items = uniqBy(state.items.concat(newItems), "userInfo.fid");
         if (newItems.length >= PAGE_SIZE) {
           state.nextPageNumber += 1;
