@@ -36,6 +36,12 @@ export default function useCreateProposal({
         if (!publicClient || !walletClient) {
           throw new Error("Client not connected");
         }
+        if (!proposalConfig.castHash) {
+          throw new Error("Cast hash is required");
+        }
+        if (!proposalConfig.castCreator) {
+          throw new Error("Cast creator address is required");
+        }
         const arRes = await arCheckCastProposalMetadata(
           proposalConfig.castHash,
         );

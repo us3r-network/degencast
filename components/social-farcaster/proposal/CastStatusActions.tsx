@@ -120,7 +120,10 @@ function Proposed({
     <CastStatusActionsWrapper>
       {roundIndexNumber < 2 ? (
         <Text className="mr-auto text-sm text-secondary">
-          24:00 Choose your stance
+          {dayjs(Number(finalizeTime) * 1000)
+            .date(1)
+            .format("HH:mm")}{" "}
+          Choose your stance
         </Text>
       ) : (
         <Text className="mr-auto text-sm text-secondary">
