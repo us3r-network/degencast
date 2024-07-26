@@ -11,6 +11,7 @@ import { TransactionReceipt } from "viem";
 import { Loading } from "~/components/common/Loading";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import Toast from "react-native-toast-message";
+import useRoundProposals from "~/hooks/social-farcaster/proposal/useRoundProposals";
 
 export function ProposeProposalWriteButton({
   cast,
@@ -27,6 +28,10 @@ export function ProposeProposalWriteButton({
     onProposeSuccess?: (proposal: TransactionReceipt) => void;
     onProposeError?: (error: any) => void;
   }) {
+  const { participated, isLoading: proposalsLoading } = useRoundProposals({
+    contractAddress: tokenInfo?.danContract!,
+    castHash: cast.hash,
+  });
   const { isLoading, propose } = useProposeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
@@ -40,6 +45,8 @@ export function ProposeProposalWriteButton({
       castHash: cast.hash,
     });
   const disabled =
+    participated ||
+    proposalsLoading ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     paymentTokenInfoLoading ||
@@ -75,7 +82,9 @@ export function ProposeProposalWriteButton({
           {isLoading ? (
             <Loading />
           ) : (
-            <Text>{text || "Upvote & Accelerate Countdown"}</Text>
+            <Text>
+              {participated ? "Voted" : text || "Upvote & Accelerate Countdown"}
+            </Text>
           )}
         </Button>
       }
@@ -98,10 +107,18 @@ export function DisputeProposalWriteButton({
     onDisputeSuccess?: (proposal: TransactionReceipt) => void;
     onDisputeError?: (error: any) => void;
   }) {
-  const { proposals, isLoading: proposalsLoading } = useProposals({
+  const {
+    proposals,
+    isLoading: proposalsLoading,
+    participated,
+  } = useRoundProposals({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+  // const { proposals, isLoading: proposalsLoading } = useProposals({
+  //   contractAddress: tokenInfo?.danContract!,
+  //   castHash: cast.hash,
+  // });
   const { isLoading, dispute } = useDisputeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
@@ -115,6 +132,7 @@ export function DisputeProposalWriteButton({
       castHash: cast.hash,
     });
   const disabled =
+    participated ||
     proposalsLoading ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
@@ -155,7 +173,11 @@ export function DisputeProposalWriteButton({
           }}
           {...props}
         >
-          {isLoading ? <Loading /> : <Text>{text || "Challenge"}</Text>}
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <Text>{participated ? "Disputed" : text || "Challenge"}</Text>
+          )}
         </Button>
       }
     />

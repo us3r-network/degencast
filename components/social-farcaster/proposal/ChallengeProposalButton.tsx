@@ -25,8 +25,7 @@ export default function ChallengeProposalButton({
   if (!account.address) {
     return (
       <ActionButton
-        size={"icon"}
-        className="h-8  rounded-lg"
+        className="h-8  w-auto min-w-[60px] rounded-lg px-1"
         onPress={() => connectWallet()}
       >
         <Text className="text-sm">{resultText}</Text>

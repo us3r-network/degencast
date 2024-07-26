@@ -52,7 +52,7 @@ export const ExploreCard = React.forwardRef<
   return (
     <Card
       className={cn(
-        "box-border h-full w-full flex-col gap-4 rounded-[20px] border-none p-4",
+        "box-border w-full flex-col gap-4 rounded-[20px] border-none p-4",
         className,
       )}
       ref={ref}

@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 // import { Image } from "expo-image";
 
-export default function EmbedImgs({ imgs }: { imgs: Embeds["imgs"] }) {
+export default function EmbedImgs({
+  imgs,
+  maxHeight,
+}: {
+  imgs: Embeds["imgs"];
+  maxHeight?: number;
+}) {
   const [imgsInfo, setImgsInfo] = useState<
     Array<{
       ratio: number;
@@ -35,6 +41,7 @@ export default function EmbedImgs({ imgs }: { imgs: Embeds["imgs"] }) {
                 width: "100%",
                 height: "100%",
                 resizeMode: "contain",
+                ...(maxHeight ? { maxHeight } : {}),
               }}
             />
           </AspectRatio>

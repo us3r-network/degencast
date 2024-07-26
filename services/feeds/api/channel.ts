@@ -1,4 +1,4 @@
-import { RequestPromise } from "~/services/shared/api/request";
+import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 import { mockCasts } from "../mocks/casts";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
@@ -68,15 +68,15 @@ export function getChannelSelectionFeeds({
 }: ChannelSelectionFeedsParams): RequestPromise<
   ApiResp<ChannelSelectionFeedsData>
 > {
-  return mockFeedRequest(params);
-  //   return request({
-  //     url: `/topics/channels/${channelId}/feed/selection`,
-  //     method: "get",
-  //     params,
-  //     headers: {
-  //       needToken: true,
-  //     },
-  //   });
+  // return mockFeedRequest(params);
+  return request({
+    url: `/topics/channels/${channelId}/feed/selection`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
 }
 
 export type ChannelProposalFeedsParams = {
@@ -91,15 +91,15 @@ export function getChannelProposalFeeds({
 }: ChannelProposalFeedsParams): RequestPromise<
   ApiResp<ChannelProposalFeedsData>
 > {
-  return mockFeedRequest(params);
-  //   return request({
-  //     url: `/topics/channels/${channelId}/feed/proposal`,
-  //     method: "get",
-  //     params,
-  //     headers: {
-  //       needToken: true,
-  //     },
-  //   });
+  // return mockFeedRequest(params);
+  return request({
+    url: `/topics/channels/${channelId}/feed/proposal`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
 }
 
 export type ChannelCastFeedsParams = {
@@ -117,13 +117,13 @@ export function getChannelCastFeeds({
   channelId,
   ...params
 }: ChannelCastFeedsParams): RequestPromise<ApiResp<ChannelCastFeedsData>> {
-  return mockCastsFeedRequest(params);
-  //   return request({
-  //     url: `/topics/channels/${channelId}/feed/cast`,
-  //     method: "get",
-  //     params,
-  //     headers: {
-  //       needToken: true,
-  //     },
-  //   });
+  // return mockCastsFeedRequest(params);
+  return request({
+    url: `/topics/channels/${channelId}/feed/cast`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
 }

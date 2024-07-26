@@ -41,12 +41,8 @@ export default function ProposalCastList({
       renderItem={({ item, index }) => {
         const { cast, proposal } = item;
         return (
-          <CardWrapper className="flex h-[298px] w-full flex-col gap-4 px-4">
-            <FCast
-              className="flex-1 overflow-hidden"
-              cast={cast}
-              channel={channel}
-            />
+          <CardWrapper className="w-full flex-col gap-4 px-4">
+            <FCast cast={cast} channel={channel} />
             <CastStatusActions
               cast={cast}
               channel={channel}

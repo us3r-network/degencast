@@ -11,7 +11,7 @@ import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { useAccount } from "wagmi";
 import { TextProps } from "react-native";
-import { ActionButton } from "../post/PostActions";
+import { ActionButton, MintButton } from "../post/PostActions";
 
 export default function CommunityBuyShareButton({
   communityInfo,
@@ -82,30 +82,26 @@ export function BuyChannelBadgeWithUpvoteButton({
 }
 
 export function BuyChannelBadgeWithIconButton({
-  communityInfo,
+  tokenContract,
   className,
 }: ButtonProps & {
-  communityInfo: CommunityInfo;
+  tokenContract: `0x${string}`;
 }) {
-  const attentionTokenAddress = communityInfo?.attentionTokenAddress;
-  const attentionTokenId = 0; //todo use cast tokenId from api
-  if (!attentionTokenAddress) {
+  const attentionTokenId = 1; //todo use cast tokenId from api
+  if (!tokenContract) {
     return null;
   }
   return (
     <BuyButton
-      tokenAddress={attentionTokenAddress}
+      tokenAddress={tokenContract}
       tokenId={attentionTokenId}
       renderButton={(props) => (
-        <ActionButton
-          className={cn(
-            "z-10 h-[50px] w-[50px] shadow-md shadow-primary",
-            className,
-          )}
+        <MintButton
+          variant={"outline"}
+          iconSize={15}
+          className=" h-10 w-10"
           {...props}
-        >
-          <Text className=" text-xl font-bold">👍</Text>
-        </ActionButton>
+        />
       )}
     />
   );

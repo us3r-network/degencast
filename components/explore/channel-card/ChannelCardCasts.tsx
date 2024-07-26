@@ -6,12 +6,15 @@ import Carousel, {
   Pagination,
 } from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
-import FCast from "../../social-farcaster/proposal/FCast";
+import FCast, { FCastHeight } from "../../social-farcaster/proposal/FCast";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import CastStatusActions from "~/components/social-farcaster/proposal/CastStatusActions";
+import CastStatusActions, {
+  CastStatusActionsHeight,
+} from "~/components/social-farcaster/proposal/CastStatusActions";
 
+const itemHeight = FCastHeight + CastStatusActionsHeight + 15;
 const ChannelCardCasts = forwardRef(function (
   {
     channel,
@@ -29,8 +32,7 @@ const ChannelCardCasts = forwardRef(function (
 ) {
   const showCasts = casts.slice(0, 10);
 
-  const [layout, setLayout] = useState<LayoutRectangle>();
-  const itemWidth = layout?.width || 0;
+  const [itemWidth, setItemWidth] = useState<number>(0);
 
   const carouselRef = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
@@ -45,13 +47,16 @@ const ChannelCardCasts = forwardRef(function (
     });
   };
   return (
-    <View className="relative flex h-full w-full flex-col gap-4">
+    <View className="relative flex w-full flex-col gap-4">
       <View
-        className="w-full flex-1"
+        className="w-full"
+        style={{
+          height: itemHeight,
+        }}
         onLayout={(e) => {
           const layout = e.nativeEvent.layout;
           if (layout.width === 0 && layout.height === 0) return;
-          setLayout(layout);
+          setItemWidth(layout.width);
         }}
       >
         {itemWidth && (
@@ -66,10 +71,13 @@ const ChannelCardCasts = forwardRef(function (
               return (
                 <View
                   key={index.toString()}
-                  className="flex h-full w-full flex-col gap-4 px-4"
+                  style={{
+                    height: itemHeight,
+                  }}
+                  className="flex w-full flex-col gap-4 px-4"
                 >
                   <FCast
-                    className="flex-1 overflow-hidden"
+                    className="overflow-hidden"
                     cast={cast}
                     channel={channel}
                   />

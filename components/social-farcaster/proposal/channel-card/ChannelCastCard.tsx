@@ -25,7 +25,7 @@ const ChannelCastCard = React.forwardRef<
   const { channelId } = channel || {};
   return (
     <CardWrapper
-      className={cn("flex h-[298px] flex-col gap-4 px-0", className)}
+      className={cn("flex flex-col gap-4 px-0", className)}
       ref={ref}
     >
       <View className={cn("w-full flex-col gap-4 px-4")}>
@@ -37,12 +37,8 @@ const ChannelCastCard = React.forwardRef<
       </View>
       <Separator className="bg-primary/20" />
 
-      <View className="flex h-full w-full flex-col gap-4 px-4">
-        <FCast
-          className="flex-1 overflow-hidden"
-          cast={cast}
-          channel={channel}
-        />
+      <View className="flex w-full flex-col gap-4 px-4">
+        <FCast cast={cast} channel={channel} />
         <CastStatusActions
           cast={cast}
           channel={channel}

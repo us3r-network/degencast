@@ -22,11 +22,7 @@ const ChannelCard = React.forwardRef<
   const attentionTokenAddress = channel?.attentionTokenAddress;
   return (
     <ExploreCard
-      className={cn(
-        "flex flex-col gap-4 px-0",
-        casts.length > 0 ? "h-[298px]" : "h-auto",
-        className,
-      )}
+      className={cn("flex flex-col gap-4 px-0", className)}
       ref={ref}
     >
       <View className={cn("w-full flex-col gap-4 px-4")}>
@@ -39,7 +35,7 @@ const ChannelCard = React.forwardRef<
       <Separator className="bg-primary/20" />
 
       {casts.length > 0 ? (
-        <View className="w-full flex-1">
+        <View className="w-full">
           <ChannelCardCasts
             channel={channel}
             tokenInfo={tokenInfo}

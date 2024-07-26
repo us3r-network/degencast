@@ -13,6 +13,9 @@ import CreateProposalButton from "../../social-farcaster/proposal/CreateProposal
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import ChallengeProposalButton from "../../social-farcaster/proposal/ChallengeProposalButton";
 import UpvoteProposalButton from "../../social-farcaster/proposal/UpvoteProposalButton";
+import { BuyButton } from "~/components/trade/ATTButton";
+import { displayProposalActions } from "./utils";
+import { PropsWithChildren } from "react";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
@@ -20,6 +23,7 @@ type CastStatusActionsProps = {
   proposal: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 };
+export const CastStatusActionsHeight = 56;
 export default function CastStatusActions({
   cast,
   channel,
@@ -27,12 +31,11 @@ export default function CastStatusActions({
   proposal,
 }: CastStatusActionsProps) {
   const { status } = proposal;
-  const display =
-    !!channel?.channelId &&
-    channel.channelId !== "home" &&
-    !!tokenInfo?.danContract &&
-    !!tokenInfo?.bondingCurve?.basePrice &&
-    proposal;
+  const display = displayProposalActions({
+    channel,
+    tokenInfo,
+    proposal,
+  });
   if (!display) return null;
   switch (status) {
     case ProposalStatus.None:
@@ -54,11 +57,32 @@ export default function CastStatusActions({
         />
       );
     case ProposalStatus.Accepted:
-      return <Accepted cast={cast} channel={channel} proposal={proposal} />;
+      return (
+        <Accepted
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      );
     case ProposalStatus.ReadyToMint:
-      return <ReadyToMint cast={cast} channel={channel} proposal={proposal} />;
+      return (
+        <ReadyToMint
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      );
     case ProposalStatus.Rejected:
-      return <Rejected cast={cast} channel={channel} proposal={proposal} />;
+      return (
+        <Rejected
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      );
     default:
       return null;
   }
@@ -71,7 +95,7 @@ function NotProposed({
   tokenInfo,
 }: CastStatusActionsProps) {
   return (
-    <View className="flex w-full flex-row items-center gap-4">
+    <CastStatusActionsWrapper>
       <Text className="mr-auto text-sm text-secondary">Promising</Text>
       <CreateProposalButton
         cast={cast}
@@ -79,7 +103,7 @@ function NotProposed({
         proposal={proposal}
         tokenInfo={tokenInfo}
       />
-    </View>
+    </CastStatusActionsWrapper>
   );
 }
 
@@ -93,7 +117,7 @@ function Proposed({
     proposal;
   const roundIndexNumber = isNaN(Number(roundIndex)) ? 0 : Number(roundIndex);
   return (
-    <View className="flex w-full flex-row items-center gap-4">
+    <CastStatusActionsWrapper>
       {roundIndexNumber < 2 ? (
         <Text className="mr-auto text-sm text-secondary">
           24:00 Choose your stance
@@ -136,13 +160,13 @@ function Proposed({
           tokenInfo={tokenInfo}
         />
       ) : null}
-    </View>
+    </CastStatusActionsWrapper>
   );
 }
 function Accepted({ cast, channel, proposal }: CastStatusActionsProps) {
   const { result, finalizeTime } = proposal;
   return (
-    <View className="flex w-full flex-row items-center gap-4">
+    <CastStatusActionsWrapper>
       <Text className="mr-auto text-sm text-secondary">
         {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
         {dayjs(Number(finalizeTime) * 1000)
@@ -150,32 +174,64 @@ function Accepted({ cast, channel, proposal }: CastStatusActionsProps) {
           .format("HH:mm")}
       </Text>
       <Text className="text-sm text-secondary">Accepted</Text>
-    </View>
+    </CastStatusActionsWrapper>
   );
 }
 
-function ReadyToMint({ cast, channel, proposal }: CastStatusActionsProps) {
+function ReadyToMint({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastStatusActionsProps) {
   const { mintedCount } = proposal;
+  console.log("mintedCount", mintedCount);
+  console.log("tokenInfo?.tokenContract", tokenInfo?.tokenContract);
+  console.log("proposal.tokenId", proposal.tokenId);
+  console.log("tokenInfo", tokenInfo);
+
   return (
-    <View className="flex w-full flex-row items-center gap-4">
+    <CastStatusActionsWrapper>
       <Text className="mr-auto text-sm text-secondary">
         {mintedCount ? `${mintedCount} mint` : `First mint`}
       </Text>
-      <ActionButton
-        onPress={() => {
-          alert("TODO");
-        }}
-      >
-        <Text className="text-sm">Mint</Text>
-      </ActionButton>
-    </View>
+      {tokenInfo?.tokenContract && proposal.tokenId && (
+        <BuyButton
+          tokenAddress={tokenInfo.tokenContract}
+          tokenId={Number(proposal.tokenId)}
+          renderButton={(props) => {
+            return (
+              <ActionButton
+                className="h-8  w-auto min-w-[60px] rounded-lg px-1"
+                {...props}
+              >
+                <Text>Mint</Text>
+              </ActionButton>
+            );
+          }}
+        />
+      )}
+    </CastStatusActionsWrapper>
   );
 }
 
 function Rejected({ cast, channel, proposal }: CastStatusActionsProps) {
   return (
-    <View className="flex w-full flex-row items-center gap-4">
+    <CastStatusActionsWrapper>
       <Text className="mr-auto text-sm text-secondary">Rebuffed</Text>
+    </CastStatusActionsWrapper>
+  );
+}
+
+function CastStatusActionsWrapper({ children }: PropsWithChildren) {
+  return (
+    <View
+      className="flex w-full flex-row items-center gap-4"
+      style={{
+        height: CastStatusActionsHeight,
+      }}
+    >
+      {children}
     </View>
   );
 }

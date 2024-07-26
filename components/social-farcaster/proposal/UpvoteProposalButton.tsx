@@ -19,7 +19,7 @@ export default function UpvoteProposalButton({
     return (
       <ActionButton
         size={"icon"}
-        className="h-8 rounded-lg"
+        className="h-8  w-auto min-w-[60px] rounded-lg px-1"
         onPress={() => connectWallet()}
       >
         <Text className="text-sm">
@@ -35,7 +35,10 @@ export default function UpvoteProposalButton({
       channel={channel}
       tokenInfo={tokenInfo}
       triggerButton={
-        <ActionButton size={"icon"} className="h-8  rounded-lg" {...props}>
+        <ActionButton
+          className="h-8  w-auto min-w-[60px] rounded-lg px-1"
+          {...props}
+        >
           <Text className="text-sm">
             👍{Number(proposal?.upvoteCount) > 0 ? proposal.upvoteCount : ""}
           </Text>

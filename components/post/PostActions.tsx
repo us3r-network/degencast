@@ -388,11 +388,9 @@ export const ExplorePostActions = forwardRef(function (
           translateXAnimatedValue,
         }}
       >
-        {/* <ActionMenuItem
-        index={5}
-      >
-        <GiftButton  onPress={onGift} />
-      </ActionMenuItem> */}
+        <ActionMenuItem index={5}>
+          <GiftButton onPress={onGift} />
+        </ActionMenuItem>
         <ActionMenuItem index={4}>
           <Link
             href={`/create${channelId ? "?channelId=" + channelId : ""}`}
