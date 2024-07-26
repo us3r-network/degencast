@@ -1,5 +1,5 @@
 import { ApiResp } from "~/services/shared/types";
-import { TokenWithTradeInfo } from "~/services/trade/types";
+import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
 import {
   InvitationCodeRespEntity,
@@ -8,6 +8,7 @@ import {
   UserActionData,
   UserActionPointConfig,
 } from "../types";
+import { mockMyNFTs } from "../mocks/mynfts";
 
 export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
   return request({
@@ -98,6 +99,34 @@ export function myTokens(
 ): RequestPromise<ApiResp<TokenWithTradeInfo[]>> {
   return request({
     url: `topics/my-tokens`,
+    method: "get",
+    params: {
+      pubkey,
+    },
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+const mockMyNFTRequest = async ({ pubkey }: any) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    data: {
+      code: 0,
+      msg: "",
+      data: mockMyNFTs,
+    },
+  } as unknown as RequestPromise<ApiResp<ERC42069Token[]>>;
+};
+
+export function myNFTs(
+  pubkey: `0x${string}`,
+): RequestPromise<ApiResp<ERC42069Token[]>> {
+  return mockMyNFTRequest(pubkey);
+  return request({
+    url: `topics/my-nfts`,
     method: "get",
     params: {
       pubkey,

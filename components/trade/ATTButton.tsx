@@ -589,7 +589,7 @@ export function CreateTokenButton({
   );
 }
 
-function NFTImage({
+export function NFTImage({
   tokenAddress,
   tokenId,
   image = "https://arseed.web3infra.dev/JVOOPz-rL_4jaSpcpQF8PEshFrpmXtHIi9L3bvzHhHM", //todo delete the default image
