@@ -592,7 +592,7 @@ export function CreateTokenButton({
 export function NFTImage({
   tokenAddress,
   tokenId,
-  image = "https://arseed.web3infra.dev/JVOOPz-rL_4jaSpcpQF8PEshFrpmXtHIi9L3bvzHhHM", //todo delete the default image
+  image,
 }: {
   tokenAddress: Address;
   tokenId: number;
@@ -609,7 +609,7 @@ export function NFTImage({
     } else if (tokenURI) {
       fetch(tokenURI)
         .then((response) => response.json())
-        .then((json) => json.image as string)
+        .then((json) => setimageURI(json.image as string))
         .catch((err) => console.log("Request NFT Metadata Failed", err));
     }
   }, [tokenURI, image]);

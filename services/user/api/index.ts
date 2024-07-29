@@ -124,7 +124,7 @@ const mockMyNFTRequest = async ({ pubkey }: any) => {
 export function myNFTs(
   pubkey: `0x${string}`,
 ): RequestPromise<ApiResp<ERC42069Token[]>> {
-  return mockMyNFTRequest(pubkey);
+  // return mockMyNFTRequest(pubkey);
   return request({
     url: `topics/my-nfts`,
     method: "get",
