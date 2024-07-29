@@ -603,7 +603,7 @@ export function NFTImage({
   const [imageURI, setimageURI] = useState("");
 
   useEffect(() => {
-    console.log("tokenURI", tokenAddress, tokenId, tokenURI, image);
+    // console.log("tokenURI", tokenAddress, tokenId, tokenURI, image);
     if (image) {
       setimageURI(image);
     } else if (tokenURI) {
