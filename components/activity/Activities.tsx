@@ -1,33 +1,80 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
+import {
+  ActivityFilterType,
+  ActivityOperationCatagery,
+} from "~/services/community/types/activity";
 import { Loading } from "../common/Loading";
 import ActivityItem from "./ActivityItem";
-import { ERC42069Token } from "~/services/trade/types";
-import { ActivityFilterType } from "~/services/community/types/activity";
+import { SceneMap, TabView } from "react-native-tab-view";
+import { OutlineTabBar } from "../layout/tab-view/TabBar";
 
 export default function Activities({
-  channelId,
   fid,
-  token,
   type,
 }: {
-  channelId?: string;
   fid?: number;
-  token?: ERC42069Token;
-  type?: ActivityFilterType;
+  type: ActivityFilterType;
+}) {
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "proposal", title: "Proposal" },
+    { key: "nfts", title: "NFTs" },
+    { key: "rewards", title: "Rewards" },
+  ]);
+  const renderScene = SceneMap({
+    proposal: () => (
+      <ActivitieList
+        fid={fid}
+        type={type}
+        operationCatagery={ActivityOperationCatagery.PROPOSAL}
+      />
+    ),
+    nfts: () => (
+      <ActivitieList
+        fid={fid}
+        type={type}
+        operationCatagery={ActivityOperationCatagery.NFT}
+      />
+    ),
+    rewards: () => (
+      <ActivitieList
+        fid={fid}
+        type={type}
+        operationCatagery={ActivityOperationCatagery.PROPOSAL}
+      />
+    ),
+  });
+  return (
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      renderTabBar={OutlineTabBar}
+    />
+  );
+}
+
+export function ActivitieList({
+  fid,
+  type,
+  operationCatagery,
+}: {
+  fid?: number;
+  type: ActivityFilterType;
+  operationCatagery?: ActivityOperationCatagery;
 }) {
   const { items, loading, loadItems } = useLoadOnchainActivities({
-    channelId,
-    token,
     type,
+    operationCatagery,
   });
   useEffect(() => {
     loadItems();
   }, []);
   return (
     <FlatList
-      className="flex-1 h-full gap-4"
+      className="h-full flex-1 gap-4"
       contentContainerClassName="flex gap-4"
       showsHorizontalScrollIndicator={false}
       data={items}

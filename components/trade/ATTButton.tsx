@@ -640,7 +640,7 @@ function Details({
 }) {
   return (
     <View className="h-full">
-      <Activities token={{ contractAddress, tokenId }} />
+      {/* <Activities token={{ contractAddress, tokenId }} /> */}
     </View>
   );
 }

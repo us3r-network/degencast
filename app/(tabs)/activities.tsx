@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from "react";
 import { View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
-import AllActivities from "~/components/activity/Activities";
+import Activities from "~/components/activity/Activities";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/tab-view/PageTabBar";
 import UserSignin from "~/components/portfolio/user/UserSignin";
@@ -15,7 +15,7 @@ function ActivitiesPageContent({ children }: PropsWithChildren) {
 function AllActivitiesPage() {
   return (
     <ActivitiesPageContent>
-      <AllActivities />
+      <Activities  type={ActivityFilterType.ALL} />
     </ActivitiesPageContent>
   );
 }
@@ -27,7 +27,7 @@ function MyActivitiesPage() {
   return (
     <ActivitiesPageContent>
       {authenticated ? (
-        <AllActivities type={ActivityFilterType.MINE} />
+        <Activities type={ActivityFilterType.MINE} />
       ) : (
         <View className="flex h-full w-full items-center justify-center">
           <View>
