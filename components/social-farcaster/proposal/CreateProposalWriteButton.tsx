@@ -28,7 +28,7 @@ export default function CreateProposalWriteButton({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
-  const { isLoading, create } = useCreateProposal({
+  const { isLoading: createLoading, create } = useCreateProposal({
     contractAddress: tokenInfo?.danContract!,
     onCreateProposalSuccess,
     onCreateProposalError,
@@ -42,12 +42,12 @@ export default function CreateProposalWriteButton({
     });
   const price = getProposalMinPrice(tokenInfo, paymentTokenInfo);
   const isCreated = Number(proposals?.roundIndex) > 0;
+  const isLoading =
+    createLoading || proposalsLoading || paymentTokenInfoLoading;
   const disabled =
-    proposalsLoading ||
     isCreated ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
-    paymentTokenInfoLoading ||
     isLoading ||
     !price;
   const allowanceParams =
