@@ -8,9 +8,8 @@ import { Address } from "viem";
 export type ActivitiesParams = {
   pageSize?: number;
   pageNumber?: number;
-  channelId?: string;
-  token?: ERC42069Token;
   type?: ActivityFilterType;
+  operationCatagery?: ActivityOperationCatagery;
 };
 
 export enum ActivityOperation {
@@ -28,6 +27,12 @@ export enum ActivityFilterType {
   POWERUSERS = "powerusers",
   MINE = "mine",
   FOLLOWING = "following",
+}
+
+export enum ActivityOperationCatagery {
+  PROPOSAL = "proposal",
+  NFT = "nft",
+  REWARD = "reward",
 }
 
 export type ActivityEntity = {

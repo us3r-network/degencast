@@ -11,7 +11,7 @@ export default function OnchainScreen() {
   const { id: channelId } = globalParams as { id: string };
   return (
     <View className="h-full w-full">
-      <AllActivities channelId={channelId}/>
+      {/* <AllActivities channelId={channelId}/> */}
     </View>
   );
 }

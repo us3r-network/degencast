@@ -47,9 +47,8 @@ export function fetchRankCurators(
   params: RankParams,
   channel?: string,
 ): RequestPromise<ApiResp<CuratorEntity[]>> {
-  return mockCuratorsRequest();
   return request({
-    url: `/topics/curators/rank`,
+    url: `/topics/channels/curators`,
     method: "get",
     params: {
       ...params,
