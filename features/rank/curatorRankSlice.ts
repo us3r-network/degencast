@@ -78,8 +78,10 @@ export const curatorRankSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
-        const newItems = action.payload.data;
-        state.items = uniqBy(state.items.concat(newItems), "userInfo.fid");
+        const newItems = action.payload.data.filter(
+          (item: CuratorEntity) => !!item.user?.fid,
+        );
+        state.items = uniqBy(state.items.concat(newItems), "user.fid");
         if (newItems.length >= PAGE_SIZE) {
           state.nextPageNumber += 1;
         } else {

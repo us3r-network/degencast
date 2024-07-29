@@ -33,7 +33,10 @@ export default function Curators({ channel }: { channel?: string }) {
               item: CuratorEntity;
               index: number;
             }) => {
-              return <Item key={item.userInfo?.fid} item={item} index={index + 1} />;
+              if (!item.user?.fid) return null;
+              return (
+                <Item key={item.user?.fid} item={item} index={index + 1} />
+              );
             }}
             onEndReached={() => {
               if (loading || !hasMore) return;
@@ -50,19 +53,18 @@ export default function Curators({ channel }: { channel?: string }) {
   );
 }
 function Item({ item, index }: { item: CuratorEntity; index: number }) {
-  const data = item.holdingNFTs;
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
         <Text className="w-6 text-center text-xs font-medium">{index}</Text>
-        <Link className="flex-1" href={`/u/${item.userInfo.fid}/wallets`} asChild>
+        <Link className="flex-1" href={`/u/${item.user.fid}/wallets`} asChild>
           <Pressable>
-            <UserInfo userInfo={item.userInfo} />
+            <UserInfo userInfo={item.user} />
           </Pressable>
         </Link>
       </View>
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm">{data} NFT</Text>
+        <Text className="text-sm">{item.count} NFT</Text>
       </View>
     </View>
   );
@@ -70,17 +72,19 @@ function Item({ item, index }: { item: CuratorEntity; index: number }) {
 
 function UserInfo({ userInfo }: { userInfo: Author }) {
   return (
-    <View className="flex-1 flex-row gap-2 items-center">
+    <View className="flex-1 flex-row items-center gap-2">
       <Avatar
         alt={userInfo.username}
         className="size-10 border-2 border-secondary bg-secondary/10"
       >
         <AvatarImage source={{ uri: userInfo.pfp_url }} />
         <AvatarFallback className="bg-white">
-          <User className="size-16 fill-primary/80 font-medium text- " />
+          <User className="text- size-16 fill-primary/80 font-medium " />
         </AvatarFallback>
       </Avatar>
-      <Text className="text-base">{userInfo.display_name || userInfo.username}</Text>
+      <Text className="text-base">
+        {userInfo.display_name || userInfo.username}
+      </Text>
     </View>
   );
 }

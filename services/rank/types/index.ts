@@ -20,6 +20,6 @@ export type OrderParams = {
 };
 
 export type CuratorEntity = {
-  userInfo: Author;
-  holdingNFTs: number;
+  user: Author;
+  count: number;
 };
