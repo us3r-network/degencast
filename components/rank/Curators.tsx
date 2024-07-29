@@ -14,7 +14,6 @@ export default function Curators({ channel }: { channel?: string }) {
   useEffect(() => {
     load();
   }, []);
-  console.log(items);
   return (
     <View className="flex h-full gap-4">
       {loading && items.length === 0 ? (
