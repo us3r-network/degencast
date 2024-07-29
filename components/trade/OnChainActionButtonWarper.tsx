@@ -1,9 +1,10 @@
 import { Address } from "viem";
-import { useChainId, useChains, useSwitchChain } from "wagmi";
+import { useAccount, useChainId, useChains, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_ADDRESS } from "~/constants";
 import { useERC20Approve } from "~/hooks/trade/useERC20Contract";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 type OnChainActionButtonWarperProps = React.ComponentPropsWithoutRef<
   typeof Button
@@ -89,11 +90,26 @@ function SwitchChainButtonWarper({
   targetChainId,
   ...props
 }: OnChainActionButtonWarperProps & SwitchChainButtonProps) {
+  const { connectWallet } = useWalletAccount();
+  const { address, isConnected } = useAccount();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const chainId = useChainId();
   const chains = useChains();
   const targetChain = chains.find((c) => c.id === targetChainId);
-  if (targetChainId && targetChain && targetChainId !== chainId)
+  if (targetChainId && targetChain && targetChainId !== chainId) {
+    if (!isConnected) {
+      return (
+        <Button
+          disabled={switchChainStatus === "pending"}
+          onPress={async () => {
+            connectWallet();
+          }}
+          {...props}
+        >
+          <Text>Connect Wallet</Text>
+        </Button>
+      );
+    }
     return (
       <Button
         disabled={switchChainStatus === "pending"}
@@ -105,5 +121,5 @@ function SwitchChainButtonWarper({
         <Text>Switch to {targetChain.name}</Text>
       </Button>
     );
-  else return warpedButton;
+  } else return warpedButton;
 }

@@ -5,8 +5,8 @@ import useWalletAccount from "~/hooks/user/useWalletAccount";
 import ChallengeProposalModal, {
   CastProposeStatusProps,
 } from "./ChallengeProposalModal";
-import { ProposalResult } from "~/services/feeds/types/proposal";
 import { ButtonProps } from "~/components/ui/button";
+import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 
 export default function ChallengeProposalButton({
   cast,
@@ -15,14 +15,14 @@ export default function ChallengeProposalButton({
   tokenInfo,
   ...props
 }: ButtonProps & CastProposeStatusProps) {
-  const account = useAccount();
+  const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
-  const { result, finalizeTime } = proposal;
+  const { status, finalizeTime } = proposal;
   const resultText =
-    result === ProposalResult.Upvote
+    status === ProposalState.Accepted
       ? `👎 ${Number(proposal?.downvoteCount) > 0 ? proposal.downvoteCount : ""}`
       : `👍${Number(proposal?.upvoteCount) > 0 ? proposal.upvoteCount : ""}`;
-  if (!account.address) {
+  if (!isConnected) {
     return (
       <ActionButton
         className="h-8  w-auto min-w-[60px] rounded-lg px-1"

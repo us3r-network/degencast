@@ -12,6 +12,7 @@ import { Loading } from "~/components/common/Loading";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import Toast from "react-native-toast-message";
 import useRoundProposals from "~/hooks/social-farcaster/proposal/useRoundProposals";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export function ProposeProposalWriteButton({
   cast,
@@ -38,7 +39,8 @@ export function ProposeProposalWriteButton({
     onProposeSuccess,
     onProposeError,
   });
-  const account = useAccount();
+  const { address, isConnected } = useAccount();
+  const { connectWallet } = useWalletAccount();
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
@@ -53,9 +55,9 @@ export function ProposeProposalWriteButton({
     isLoading ||
     !price;
   const allowanceParams =
-    !disabled && account?.address
+    !disabled && !!address && isConnected
       ? {
-          owner: account.address,
+          owner: address,
           tokenAddress: paymentTokenInfo?.address,
           spender: tokenInfo?.danContract,
           value: price,
@@ -75,12 +77,18 @@ export function ProposeProposalWriteButton({
           className="w-full rounded-md"
           disabled={disabled}
           onPress={() => {
+            if (!isConnected) {
+              connectWallet();
+              return;
+            }
             propose();
           }}
           {...props}
         >
           {isLoading ? (
             <Loading />
+          ) : !isConnected ? (
+            <Text>Connect Wallet</Text>
           ) : (
             <Text>
               {participated ? "Voted" : text || "Upvote & Accelerate Countdown"}
@@ -125,7 +133,8 @@ export function DisputeProposalWriteButton({
     onDisputeSuccess,
     onDisputeError,
   });
-  const account = useAccount();
+  const { address, isConnected } = useAccount();
+  const { connectWallet } = useWalletAccount();
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
@@ -140,9 +149,9 @@ export function DisputeProposalWriteButton({
     isLoading ||
     !price;
   const allowanceParams =
-    !disabled && account?.address
+    !disabled && !!address && isConnected
       ? {
-          owner: account.address,
+          owner: address,
           tokenAddress: paymentTokenInfo?.address,
           spender: tokenInfo?.danContract,
           value: price,
@@ -162,22 +171,18 @@ export function DisputeProposalWriteButton({
           className="w-full rounded-md"
           disabled={disabled}
           onPress={() => {
-            if (
-              Number(proposals?.roundIndex) === 1 &&
-              Number(proposals?.state) === 0
-            ) {
-              Toast.show({
-                type: "error",
-                text1: "Dispute is not allowed in the first round",
-              });
-            } else {
-              dispute();
+            if (!isConnected) {
+              connectWallet();
+              return;
             }
+            dispute();
           }}
           {...props}
         >
           {isLoading ? (
             <Loading />
+          ) : !isConnected ? (
+            <Text>Connect Wallet</Text>
           ) : (
             <Text>{participated ? "Disputed" : text || "Challenge"}</Text>
           )}

@@ -14,9 +14,9 @@ export default function CreateProposalButton({
   tokenInfo,
   ...props
 }: ButtonProps & CastProposeStatusProps) {
-  const account = useAccount();
+  const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
-  if (!account.address) {
+  if (!isConnected) {
     return (
       <ActionButton
         className="h-8  w-auto rounded-lg px-1"

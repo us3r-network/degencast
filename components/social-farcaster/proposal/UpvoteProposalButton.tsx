@@ -13,9 +13,9 @@ export default function UpvoteProposalButton({
   tokenInfo,
   ...props
 }: ButtonProps & CastProposeStatusProps) {
-  const account = useAccount();
+  const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
-  if (!account.address) {
+  if (!isConnected) {
     return (
       <ActionButton
         size={"icon"}
