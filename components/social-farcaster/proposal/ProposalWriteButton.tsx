@@ -36,7 +36,7 @@ export function ProposeProposalWriteButton({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
-  const { isLoading, propose } = useProposeProposal({
+  const { isLoading: proposeLoading, propose } = useProposeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
     onProposeSuccess,
@@ -49,15 +49,15 @@ export function ProposeProposalWriteButton({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
+  const isLoading =
+    proposeLoading || proposalsLoading || paymentTokenInfoLoading;
   const disabled =
     participated ||
-    proposalsLoading ||
     proposals?.state === ProposalState.Abandoned ||
     proposals?.state === ProposalState.Accepted ||
     proposals?.state === ProposalState.ReadyToMint ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
-    paymentTokenInfoLoading ||
     isLoading ||
     !price;
   const allowanceParams =
@@ -94,7 +94,11 @@ export function ProposeProposalWriteButton({
           {isLoading ? (
             <Loading />
           ) : participated ? (
-            <Text>Voted</Text>
+            proposals?.state === ProposalState.Accepted ? (
+              <Text>You have already voted.</Text>
+            ) : (
+              <Text>You can only vote once in this round.</Text>
+            )
           ) : proposals?.state === ProposalState.ReadyToMint ? (
             <Text>The proposal has been passed</Text>
           ) : proposals?.state === ProposalState.Abandoned ? (
@@ -139,7 +143,7 @@ export function DisputeProposalWriteButton({
   //   contractAddress: tokenInfo?.danContract!,
   //   castHash: cast.hash,
   // });
-  const { isLoading, dispute } = useDisputeProposal({
+  const { isLoading: disputeLoading, dispute } = useDisputeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
     onDisputeSuccess,
@@ -152,15 +156,15 @@ export function DisputeProposalWriteButton({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
+  const isLoading =
+    disputeLoading || proposalsLoading || paymentTokenInfoLoading;
   const disabled =
     participated ||
-    proposalsLoading ||
     proposals?.state === ProposalState.Abandoned ||
     proposals?.state === ProposalState.Disputed ||
     proposals?.state === ProposalState.ReadyToMint ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
-    paymentTokenInfoLoading ||
     isLoading ||
     !price;
   const allowanceParams =
@@ -197,7 +201,11 @@ export function DisputeProposalWriteButton({
           {isLoading ? (
             <Loading />
           ) : participated ? (
-            <Text>Disputed</Text>
+            proposals?.state === ProposalState.Disputed ? (
+              <Text>You have already disputed</Text>
+            ) : (
+              <Text>You can only vote once in this round.</Text>
+            )
           ) : proposals?.state === ProposalState.ReadyToMint ? (
             <Text>The proposal has been passed</Text>
           ) : proposals?.state === ProposalState.Abandoned ? (
