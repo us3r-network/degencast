@@ -10,6 +10,7 @@ import { TransactionReceipt } from "viem";
 import { getProposalMinPrice } from "./utils";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { Loading } from "~/components/common/Loading";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function CreateProposalWriteButton({
   cast,
@@ -32,26 +33,27 @@ export default function CreateProposalWriteButton({
     onCreateProposalSuccess,
     onCreateProposalError,
   });
-  const account = useAccount();
+  const { address, isConnected } = useAccount();
+  const { connectWallet } = useWalletAccount();
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
   const price = getProposalMinPrice(tokenInfo, paymentTokenInfo);
+  const isCreated = Number(proposals?.roundIndex) > 0;
   const disabled =
     proposalsLoading ||
-    Number(proposals?.roundIndex) > 0 ||
+    isCreated ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     paymentTokenInfoLoading ||
     isLoading ||
     !price;
-  const { address, isConnected } = account;
   const allowanceParams =
-    !disabled && account?.address && isConnected
+    !disabled && address && isConnected
       ? {
-          owner: account.address,
+          owner: address,
           tokenAddress: paymentTokenInfo?.address,
           spender: tokenInfo?.danContract!,
           value: price,
@@ -71,6 +73,10 @@ export default function CreateProposalWriteButton({
           className="w-full rounded-md"
           disabled={disabled}
           onPress={() => {
+            if (!isConnected) {
+              connectWallet();
+              return;
+            }
             create(
               {
                 castHash: cast.hash,
@@ -85,12 +91,12 @@ export default function CreateProposalWriteButton({
         >
           {isLoading ? (
             <Loading />
+          ) : isCreated ? (
+            <Text>Proposal created</Text>
+          ) : !isConnected ? (
+            <Text>Connect your wallet first</Text>
           ) : (
-            <Text>
-              {Number(proposals?.roundIndex) > 0
-                ? "Proposal already exists"
-                : "Propose"}
-            </Text>
+            <Text>Propose</Text>
           )}
         </Button>
       }

@@ -9,10 +9,9 @@ import useProposeProposal from "~/hooks/social-farcaster/proposal/useProposeProp
 import useDisputeProposal from "~/hooks/social-farcaster/proposal/useDisputeProposal";
 import { TransactionReceipt } from "viem";
 import { Loading } from "~/components/common/Loading";
-import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
-import Toast from "react-native-toast-message";
 import useRoundProposals from "~/hooks/social-farcaster/proposal/useRoundProposals";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 
 export function ProposeProposalWriteButton({
   cast,
@@ -29,7 +28,11 @@ export function ProposeProposalWriteButton({
     onProposeSuccess?: (proposal: TransactionReceipt) => void;
     onProposeError?: (error: any) => void;
   }) {
-  const { participated, isLoading: proposalsLoading } = useRoundProposals({
+  const {
+    participated,
+    isLoading: proposalsLoading,
+    proposals,
+  } = useRoundProposals({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
@@ -49,6 +52,9 @@ export function ProposeProposalWriteButton({
   const disabled =
     participated ||
     proposalsLoading ||
+    proposals?.state === ProposalState.Abandoned ||
+    proposals?.state === ProposalState.Accepted ||
+    proposals?.state === ProposalState.ReadyToMint ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     paymentTokenInfoLoading ||
@@ -87,12 +93,18 @@ export function ProposeProposalWriteButton({
         >
           {isLoading ? (
             <Loading />
+          ) : participated ? (
+            <Text>Voted</Text>
+          ) : proposals?.state === ProposalState.ReadyToMint ? (
+            <Text>The proposal has been passed</Text>
+          ) : proposals?.state === ProposalState.Abandoned ? (
+            <Text>The proposal has been abandoned</Text>
+          ) : proposals?.state === ProposalState.Accepted ? (
+            <Text>The proposal has been accepted</Text>
           ) : !isConnected ? (
-            <Text>Connect Wallet</Text>
+            <Text>Connect your wallet first</Text>
           ) : (
-            <Text>
-              {participated ? "Voted" : text || "Upvote & Accelerate Countdown"}
-            </Text>
+            <Text>Upvote & Accelerate Countdown</Text>
           )}
         </Button>
       }
@@ -143,6 +155,9 @@ export function DisputeProposalWriteButton({
   const disabled =
     participated ||
     proposalsLoading ||
+    proposals?.state === ProposalState.Abandoned ||
+    proposals?.state === ProposalState.Disputed ||
+    proposals?.state === ProposalState.ReadyToMint ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     paymentTokenInfoLoading ||
@@ -181,10 +196,18 @@ export function DisputeProposalWriteButton({
         >
           {isLoading ? (
             <Loading />
+          ) : participated ? (
+            <Text>Disputed</Text>
+          ) : proposals?.state === ProposalState.ReadyToMint ? (
+            <Text>The proposal has been passed</Text>
+          ) : proposals?.state === ProposalState.Abandoned ? (
+            <Text>The proposal has been abandoned</Text>
+          ) : proposals?.state === ProposalState.Disputed ? (
+            <Text>The proposal has been disputed</Text>
           ) : !isConnected ? (
             <Text>Connect Wallet</Text>
           ) : (
-            <Text>{participated ? "Disputed" : text || "Challenge"}</Text>
+            <Text>Challenge</Text>
           )}
         </Button>
       }

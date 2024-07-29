@@ -110,12 +110,6 @@ export function UpvoteProposalModalContentBody({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
-  if (paymentTokenInfoError) {
-    console.error("paymentTokenInfoError", paymentTokenInfoError);
-  }
-  if (priceError) {
-    console.error("priceError", priceError);
-  }
   return (
     <>
       <DialogHeader

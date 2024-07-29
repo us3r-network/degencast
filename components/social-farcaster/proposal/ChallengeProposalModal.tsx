@@ -213,7 +213,7 @@ function DisputeProposalWrite({
         onValueChange={(v) => {
           if (!isNaN(Number(v))) {
             const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-            const vInt = Math.round(Number(v));
+            const vInt = Math.ceil(Number(v));
             setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
           }
         }}
@@ -301,7 +301,7 @@ function ProposeProposalWrite({
         onValueChange={(v) => {
           if (!isNaN(Number(v))) {
             const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-            const vInt = Math.round(Number(v));
+            const vInt = Math.ceil(Number(v));
             setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
           }
         }}
