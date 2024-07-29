@@ -3,6 +3,7 @@ import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import DanAbi from "~/services/proposal/abi/DanAbi.json";
 
 export enum ProposalState {
+  NotProposed = -1,
   Proposed = 0,
   Accepted = 1,
   Disputed = 2,

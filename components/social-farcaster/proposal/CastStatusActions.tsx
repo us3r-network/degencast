@@ -3,11 +3,7 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";
 import { Text } from "~/components/ui/text";
 import { ActionButton } from "~/components/post/PostActions";
-import {
-  ProposalEntity,
-  ProposalResult,
-  ProposalStatus,
-} from "~/services/feeds/types/proposal";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 import dayjs from "dayjs";
 import CreateProposalButton from "../../social-farcaster/proposal/CreateProposalButton";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
@@ -16,6 +12,7 @@ import UpvoteProposalButton from "../../social-farcaster/proposal/UpvoteProposal
 import { BuyButton } from "~/components/trade/ATTButton";
 import { displayProposalActions } from "./utils";
 import { PropsWithChildren } from "react";
+import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
@@ -35,10 +32,11 @@ export default function CastStatusActions({
     channel,
     tokenInfo,
     proposal,
+    cast,
   });
   if (!display) return null;
   switch (status) {
-    case ProposalStatus.None:
+    case ProposalState.NotProposed:
       return (
         <NotProposed
           cast={cast}
@@ -47,7 +45,7 @@ export default function CastStatusActions({
           tokenInfo={tokenInfo}
         />
       );
-    case ProposalStatus.Proposed:
+    case ProposalState.Proposed:
       return (
         <Proposed
           cast={cast}
@@ -56,16 +54,17 @@ export default function CastStatusActions({
           tokenInfo={tokenInfo}
         />
       );
-    case ProposalStatus.Accepted:
+    case ProposalState.Accepted:
+    case ProposalState.Disputed:
       return (
-        <Accepted
+        <ProposalInProgress
           cast={cast}
           channel={channel}
           proposal={proposal}
           tokenInfo={tokenInfo}
         />
       );
-    case ProposalStatus.ReadyToMint:
+    case ProposalState.ReadyToMint:
       return (
         <ReadyToMint
           cast={cast}
@@ -74,9 +73,9 @@ export default function CastStatusActions({
           tokenInfo={tokenInfo}
         />
       );
-    case ProposalStatus.Rejected:
+    case ProposalState.Abandoned:
       return (
-        <Rejected
+        <Abandoned
           cast={cast}
           channel={channel}
           proposal={proposal}
@@ -113,37 +112,51 @@ function Proposed({
   proposal,
   tokenInfo,
 }: CastStatusActionsProps) {
-  const { result, finalizeTime, upvoteCount, downvoteCount, roundIndex } =
-    proposal;
+  const { finalizeTime } = proposal;
+  return (
+    <CastStatusActionsWrapper>
+      <Text className="mr-auto text-sm text-secondary">
+        {dayjs(Number(finalizeTime) * 1000)
+          .date(1)
+          .format("HH:mm")}{" "}
+        Choose your stance
+      </Text>
+      <UpvoteProposalButton
+        proposal={{ ...proposal, status: ProposalState.Disputed }}
+        cast={cast}
+        channel={channel}
+        tokenInfo={tokenInfo}
+      />
+      <ChallengeProposalButton
+        cast={cast}
+        channel={channel}
+        proposal={{ ...proposal, status: ProposalState.Accepted }}
+        tokenInfo={tokenInfo}
+      />
+    </CastStatusActionsWrapper>
+  );
+}
+
+function ProposalInProgress({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastStatusActionsProps) {
+  const { status, finalizeTime, roundIndex } = proposal;
   const roundIndexNumber = isNaN(Number(roundIndex)) ? 0 : Number(roundIndex);
   return (
     <CastStatusActionsWrapper>
-      {roundIndexNumber < 2 ? (
-        <Text className="mr-auto text-sm text-secondary">
-          {dayjs(Number(finalizeTime) * 1000)
-            .date(1)
-            .format("HH:mm")}{" "}
-          Choose your stance
-        </Text>
-      ) : (
-        <Text className="mr-auto text-sm text-secondary">
-          {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
-          {dayjs(Number(finalizeTime) * 1000)
-            .date(1)
-            .format("HH:mm")}
-        </Text>
-      )}
-      {roundIndexNumber < 1 ? (
-        <UpvoteProposalButton
-          proposal={{ ...proposal, result: ProposalResult.Downvote }}
-          cast={cast}
-          channel={channel}
-          tokenInfo={tokenInfo}
-        />
-      ) : roundIndexNumber === 1 ? (
+      <Text className="mr-auto text-sm text-secondary">
+        {status === ProposalState.Disputed ? "👎" : "👍"} finalize in{" "}
+        {dayjs(Number(finalizeTime) * 1000)
+          .date(1)
+          .format("HH:mm")}
+      </Text>
+      {roundIndexNumber <= 1 ? (
         <>
           <UpvoteProposalButton
-            proposal={{ ...proposal, result: ProposalResult.Downvote }}
+            proposal={{ ...proposal, status: ProposalState.Disputed }}
             cast={cast}
             channel={channel}
             tokenInfo={tokenInfo}
@@ -151,7 +164,7 @@ function Proposed({
           <ChallengeProposalButton
             cast={cast}
             channel={channel}
-            proposal={{ ...proposal, result: ProposalResult.Upvote }}
+            proposal={{ ...proposal, status: ProposalState.Accepted }}
             tokenInfo={tokenInfo}
           />
         </>
@@ -166,20 +179,6 @@ function Proposed({
     </CastStatusActionsWrapper>
   );
 }
-function Accepted({ cast, channel, proposal }: CastStatusActionsProps) {
-  const { result, finalizeTime } = proposal;
-  return (
-    <CastStatusActionsWrapper>
-      <Text className="mr-auto text-sm text-secondary">
-        {result === ProposalResult.Downvote ? "👎" : "👍"} finalize in{" "}
-        {dayjs(Number(finalizeTime) * 1000)
-          .date(1)
-          .format("HH:mm")}
-      </Text>
-      <Text className="text-sm text-secondary">Accepted</Text>
-    </CastStatusActionsWrapper>
-  );
-}
 
 function ReadyToMint({
   cast,
@@ -188,10 +187,6 @@ function ReadyToMint({
   tokenInfo,
 }: CastStatusActionsProps) {
   const { mintedCount } = proposal;
-  console.log("mintedCount", mintedCount);
-  console.log("tokenInfo?.tokenContract", tokenInfo?.tokenContract);
-  console.log("proposal.tokenId", proposal.tokenId);
-  console.log("tokenInfo", tokenInfo);
 
   return (
     <CastStatusActionsWrapper>
@@ -218,7 +213,7 @@ function ReadyToMint({
   );
 }
 
-function Rejected({ cast, channel, proposal }: CastStatusActionsProps) {
+function Abandoned({ cast, channel, proposal }: CastStatusActionsProps) {
   return (
     <CastStatusActionsWrapper>
       <Text className="mr-auto text-sm text-secondary">Rebuffed</Text>

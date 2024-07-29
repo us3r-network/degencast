@@ -47,8 +47,9 @@ export default function CreateProposalWriteButton({
     paymentTokenInfoLoading ||
     isLoading ||
     !price;
+  const { address, isConnected } = account;
   const allowanceParams =
-    !disabled && account?.address
+    !disabled && account?.address && isConnected
       ? {
           owner: account.address,
           tokenAddress: paymentTokenInfo?.address,

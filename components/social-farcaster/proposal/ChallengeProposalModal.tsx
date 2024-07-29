@@ -15,10 +15,7 @@ import { cn } from "~/lib/utils";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import {
-  ProposalEntity,
-  ProposalResult,
-} from "~/services/feeds/types/proposal";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalCastCard from "./ProposalCastCard";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
@@ -32,6 +29,7 @@ import Toast from "react-native-toast-message";
 import { formatUnits, TransactionReceipt } from "viem";
 import { Slider } from "~/components/ui/slider";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
+import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 
 const getAboutInfo = () => {
   return [
@@ -84,13 +82,13 @@ export default function ChallengeProposalModal({
         <View className="flex-row items-center justify-between gap-2">
           <Text>The current stance on the proposal is:</Text>
           <Text className="text-sm">
-            {proposal.result === ProposalResult.Downvote ? "👎" : "👍"}
+            {proposal.status === ProposalState.Disputed ? "👎" : "👍"}
           </Text>
         </View>
 
         <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
 
-        {proposal.result === ProposalResult.Upvote ? (
+        {proposal.status === ProposalState.Accepted ? (
           <DisputeProposalWrite
             cast={cast}
             channel={channel}
