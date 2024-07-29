@@ -7,6 +7,7 @@ import {
 import { ERC42069Token } from "~/services/trade/types";
 import { myNFTs } from "~/services/user/api";
 import type { RootState } from "../../store/store";
+import { uniqWith } from "lodash";
 
 type UserCommunityNFTState = {
   cache: Map<`0x${string}`, ApiResp<ERC42069Token[]>>;
@@ -60,7 +61,11 @@ export const userCommunityNFTSlice = createSlice({
         if (action.payload.code == ApiRespCode.SUCCESS) {
           state.cache.set(action.meta.arg, action.payload);
         }
-        state.items = action.payload.data
+        state.items = uniqWith(action.payload.data, (a, b) => {
+          return (
+            a.contractAddress === b.contractAddress && a.tokenId === b.tokenId
+          );
+        });
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;
