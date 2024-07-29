@@ -11,8 +11,9 @@ import ChallengeProposalButton from "../../social-farcaster/proposal/ChallengePr
 import UpvoteProposalButton from "../../social-farcaster/proposal/UpvoteProposalButton";
 import { BuyButton } from "~/components/trade/ATTButton";
 import { displayProposalActions } from "./utils";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
+import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
 
 type CastStatusActionsProps = {
   cast: NeynarCast;
@@ -27,7 +28,14 @@ export default function CastStatusActions({
   tokenInfo,
   proposal,
 }: CastStatusActionsProps) {
-  const { status } = proposal;
+  const { proposals } = useCacheCastProposal();
+  const cachedProposal = proposals?.[cast.hash] || null;
+  const updatedProposal = cachedProposal
+    ? { ...proposal, ...cachedProposal }
+    : proposal;
+
+  const { status } = updatedProposal;
+
   const display = displayProposalActions({
     channel,
     tokenInfo,
@@ -41,7 +49,7 @@ export default function CastStatusActions({
         <NotProposed
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
@@ -50,7 +58,7 @@ export default function CastStatusActions({
         <Proposed
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
@@ -60,7 +68,7 @@ export default function CastStatusActions({
         <ProposalInProgress
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
@@ -69,7 +77,7 @@ export default function CastStatusActions({
         <ReadyToMint
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
@@ -78,7 +86,7 @@ export default function CastStatusActions({
         <Abandoned
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );

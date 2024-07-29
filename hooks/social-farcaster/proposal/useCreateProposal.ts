@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { createProposal } from "./proposal-helper";
+import { createProposal, getProposals } from "./proposal-helper";
 import { arCheckCastProposalMetadata } from "~/services/upload";
 import { ApiRespCode } from "~/services/shared/types";
+import useCacheCastProposal from "./useCacheCastProposal";
 
 export default function useCreateProposal({
   contractAddress,
@@ -23,6 +24,7 @@ export default function useCreateProposal({
     "idle" | "pending" | "error" | "success"
   >("idle");
   const isLoading = status === "pending";
+  const { upsertOneToProposals } = useCacheCastProposal();
   const create = useCallback(
     async (
       proposalConfig: {
@@ -61,6 +63,17 @@ export default function useCreateProposal({
           setTransactionReceipt(receipt);
           setStatus("success");
           onCreateProposalSuccess?.(receipt);
+          const proposals = await getProposals({
+            publicClient,
+            contractAddress,
+            castHash: proposalConfig.castHash,
+          });
+          upsertOneToProposals(proposalConfig.castHash as any, {
+            status: proposals.state,
+            finalizeTime: Number(proposals.deadline),
+            upvoteCount: 1,
+            roundIndex: Number(proposals.roundIndex),
+          });
         } else {
           throw new Error("Cast proposal metadata not found");
         }
@@ -77,6 +90,7 @@ export default function useCreateProposal({
       walletClient,
       onCreateProposalSuccess,
       onCreateProposalError,
+      upsertOneToProposals,
     ],
   );
   return {

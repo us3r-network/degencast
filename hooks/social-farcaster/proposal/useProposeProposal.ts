@@ -1,7 +1,12 @@
 import { useCallback, useState } from "react";
 import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { proposeProposal } from "./proposal-helper";
+import {
+  getProposals,
+  ProposalState,
+  proposeProposal,
+} from "./proposal-helper";
+import useCacheCastProposal from "./useCacheCastProposal";
 
 export default function useProposeProposal({
   contractAddress,
@@ -23,6 +28,8 @@ export default function useProposeProposal({
     "idle" | "pending" | "error" | "success"
   >("idle");
   const isLoading = status === "pending";
+
+  const { upsertOneToProposals } = useCacheCastProposal();
   const propose = useCallback(async () => {
     try {
       setStatus("pending");
@@ -35,6 +42,17 @@ export default function useProposeProposal({
       setTransactionReceipt(receipt);
       setStatus("success");
       onProposeSuccess?.(receipt);
+
+      const proposals = await getProposals({
+        publicClient: publicClient!,
+        contractAddress,
+        castHash,
+      });
+      upsertOneToProposals(castHash as any, {
+        status: proposals.state,
+        finalizeTime: Number(proposals.deadline),
+        roundIndex: Number(proposals.roundIndex),
+      });
     } catch (error) {
       setError(error);
       setStatus("error");
