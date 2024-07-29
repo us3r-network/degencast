@@ -143,8 +143,7 @@ function ProposalInProgress({
   proposal,
   tokenInfo,
 }: CastStatusActionsProps) {
-  const { status, finalizeTime, roundIndex } = proposal;
-  const roundIndexNumber = isNaN(Number(roundIndex)) ? 0 : Number(roundIndex);
+  const { status, finalizeTime } = proposal;
   return (
     <CastStatusActionsWrapper>
       <Text className="mr-auto text-sm text-secondary">
@@ -153,29 +152,12 @@ function ProposalInProgress({
           .date(1)
           .format("HH:mm")}
       </Text>
-      {roundIndexNumber <= 1 ? (
-        <>
-          <UpvoteProposalButton
-            proposal={{ ...proposal, status: ProposalState.Disputed }}
-            cast={cast}
-            channel={channel}
-            tokenInfo={tokenInfo}
-          />
-          <ChallengeProposalButton
-            cast={cast}
-            channel={channel}
-            proposal={{ ...proposal, status: ProposalState.Accepted }}
-            tokenInfo={tokenInfo}
-          />
-        </>
-      ) : roundIndexNumber > 1 ? (
-        <ChallengeProposalButton
-          cast={cast}
-          channel={channel}
-          proposal={proposal}
-          tokenInfo={tokenInfo}
-        />
-      ) : null}
+      <ChallengeProposalButton
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
     </CastStatusActionsWrapper>
   );
 }
