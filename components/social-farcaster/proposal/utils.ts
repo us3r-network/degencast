@@ -28,11 +28,13 @@ export const displayProposalActions = ({
   proposal: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 }) => {
-  return !!(!!channel?.channelId &&
+  return !!(
+    !!channel?.channelId &&
     channel.channelId !== "home" &&
     !!tokenInfo?.danContract &&
     !!tokenInfo?.bondingCurve?.basePrice &&
-    proposal,
-  cast.author?.verified_addresses?.eth_addresses.length > 0 &&
-    cast.author?.verified_addresses?.eth_addresses?.[0]);
+    !!proposal &&
+    cast.author?.verified_addresses?.eth_addresses.length > 0 &&
+    cast.author?.verified_addresses?.eth_addresses?.[0]
+  );
 };
