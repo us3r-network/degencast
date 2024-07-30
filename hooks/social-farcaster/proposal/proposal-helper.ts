@@ -11,9 +11,11 @@ export enum ProposalState {
   Abandoned = 4,
 }
 export type ProposalsInfo = {
-  castHash: string;
+  currentKey: string;
+  uuid: string;
+  contentHash: string;
   contentURI: string;
-  castCreator: `0x${string}`;
+  contentCreator: `0x${string}`;
   proposeWeight: bigint;
   disputeWeight: bigint;
   deadline: bigint;
@@ -45,15 +47,29 @@ export const getProposals = async ({
     args: [castHash],
   })) as Array<any>;
 
+  const [
+    currentKey,
+    uuid,
+    contentHash,
+    contentURI,
+    contentCreator,
+    proposeWeight,
+    disputeWeight,
+    deadline,
+    roundIndex,
+    state,
+  ] = proposals;
   return {
-    castHash: proposals[0],
-    contentURI: proposals[1],
-    castCreator: proposals[2],
-    proposeWeight: proposals[3],
-    disputeWeight: proposals[4],
-    deadline: proposals[5],
-    roundIndex: proposals[6],
-    state: proposals[7],
+    currentKey,
+    uuid,
+    contentHash,
+    contentURI,
+    contentCreator,
+    proposeWeight,
+    disputeWeight,
+    deadline,
+    roundIndex,
+    state,
   } as ProposalsInfo;
 };
 
@@ -215,13 +231,19 @@ export const createProposal = async ({
     throw new Error("Wallet is not connected");
   }
 
+  const config = {
+    contentHash: proposalConfig.castHash,
+    contentCreator: proposalConfig.castCreator,
+    contentURI: proposalConfig.contentURI,
+  };
+
   const { request: simulateRequest } = await publicClient.simulateContract({
     abi: DanAbi,
     address: contractAddress,
     chain: ATT_CONTRACT_CHAIN,
     account,
     functionName: "createProposal",
-    args: [proposalConfig, paymentPrice],
+    args: [config, paymentPrice],
   });
 
   const hash = await walletClient.writeContract(simulateRequest);

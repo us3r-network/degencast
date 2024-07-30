@@ -51,6 +51,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "string",
+        "name": "uuid",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "newContentHash",
+        "type": "string"
+      }
+    ],
+    "name": "ContentHashUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint64",
         "name": "version",
@@ -64,64 +83,73 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dan",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "proposer",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "contentURI",
+            "type": "string"
+          },
+          {
+            "internalType": "enum Dan.ProposalState",
+            "name": "state",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "proposeWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "disputeWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "roundIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "string",
-        "name": "castHash",
-        "type": "string"
+        "internalType": "struct Dan.ProposalEventData",
+        "name": "data",
+        "type": "tuple"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "castCreator",
+        "name": "contentCreator",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "proposer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "contentURI",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum Dan.ProposalState",
-        "name": "state",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "proposalWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "disputeWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "roundIndex",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "ProposalCreated",
@@ -131,52 +159,67 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dan",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "proposer",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "contentURI",
+            "type": "string"
+          },
+          {
+            "internalType": "enum Dan.ProposalState",
+            "name": "state",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "proposeWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "disputeWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "roundIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "string",
-        "name": "castHash",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "disputer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum Dan.ProposalState",
-        "name": "state",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "proposalWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "disputeWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "roundIndex",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
+        "internalType": "struct Dan.ProposalEventData",
+        "name": "data",
+        "type": "tuple"
       }
     ],
     "name": "ProposalDisputed",
@@ -186,52 +229,67 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dan",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "proposer",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "contentURI",
+            "type": "string"
+          },
+          {
+            "internalType": "enum Dan.ProposalState",
+            "name": "state",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "proposeWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "disputeWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "roundIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "string",
-        "name": "castHash",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "proposer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum Dan.ProposalState",
-        "name": "state",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "proposalWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "disputeWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "roundIndex",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
+        "internalType": "struct Dan.ProposalEventData",
+        "name": "data",
+        "type": "tuple"
       }
     ],
     "name": "ProposalProposed",
@@ -242,8 +300,14 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "dan",
+        "type": "address"
+      },
+      {
+        "indexed": true,
         "internalType": "string",
-        "name": "castHash",
+        "name": "contentHash",
         "type": "string"
       },
       {
@@ -386,12 +450,17 @@
         "components": [
           {
             "internalType": "string",
-            "name": "castHash",
+            "name": "uuid",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
             "type": "string"
           },
           {
             "internalType": "address",
-            "name": "castCreator",
+            "name": "contentCreator",
             "type": "address"
           },
           {
@@ -432,7 +501,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_castHash",
+        "name": "_contentHash",
         "type": "string"
       },
       {
@@ -479,7 +548,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_castHash",
+        "name": "_contentHash",
         "type": "string"
       }
     ],
@@ -491,8 +560,54 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getContent",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "uuid",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "contentURI",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct Dan.Content",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
-        "name": "_castHash",
+        "name": "_contentHash",
         "type": "string"
       }
     ],
@@ -534,49 +649,8 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getNFTCast",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "castHash",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "creator",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "createAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "contentURI",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct Dan.Cast",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "string",
-        "name": "castHash",
+        "name": "key",
         "type": "string"
       }
     ],
@@ -586,7 +660,17 @@
         "components": [
           {
             "internalType": "string",
-            "name": "castHash",
+            "name": "currentKey",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uuid",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
             "type": "string"
           },
           {
@@ -596,7 +680,7 @@
           },
           {
             "internalType": "address",
-            "name": "castCreator",
+            "name": "contentCreator",
             "type": "address"
           },
           {
@@ -642,7 +726,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_castHash",
+        "name": "_contentHash",
         "type": "string"
       }
     ],
@@ -762,8 +846,8 @@
             "type": "string"
           }
         ],
-        "internalType": "struct IDan.CastZero",
-        "name": "_castZero",
+        "internalType": "struct IDan.ContentZero",
+        "name": "_ContentZero",
         "type": "tuple"
       },
       {
@@ -816,11 +900,40 @@
         "type": "string"
       }
     ],
+    "name": "proposalCurrentKey",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "name": "proposals",
     "outputs": [
       {
         "internalType": "string",
-        "name": "castHash",
+        "name": "currentKey",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "uuid",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "contentHash",
         "type": "string"
       },
       {
@@ -830,7 +943,7 @@
       },
       {
         "internalType": "address",
-        "name": "castCreator",
+        "name": "contentCreator",
         "type": "address"
       },
       {
@@ -866,7 +979,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_castHash",
+        "name": "_contentHash",
         "type": "string"
       },
       {
@@ -930,11 +1043,16 @@
         "type": "uint256"
       }
     ],
-    "name": "tokenIdToCast",
+    "name": "tokenIdToContent",
     "outputs": [
       {
         "internalType": "string",
-        "name": "castHash",
+        "name": "uuid",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "contentHash",
         "type": "string"
       },
       {
@@ -983,6 +1101,24 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_uuid",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_contentHash",
+        "type": "string"
+      }
+    ],
+    "name": "updateContentHash",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
