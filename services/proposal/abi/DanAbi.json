@@ -305,13 +305,13 @@
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "string",
         "name": "contentHash",
         "type": "string"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"

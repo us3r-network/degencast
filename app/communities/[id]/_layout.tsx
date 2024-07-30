@@ -19,6 +19,7 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import SelectionFeeds from "./selections";
 import ProposalFeeds from "./proposal";
 import CastFeeds from "./casts";
+import LaunchProgress from "~/components/community/LaunchProgress";
 
 const initialRouteName = "selection";
 
@@ -101,7 +102,7 @@ export default function CommunityDetail() {
                   )}
                 </View>
               </View>
-              <View className="flex flex-row items-center gap-[10px]">
+              <View className="flex flex-row items-center gap-[10px] max-sm:hidden">
                 <Link
                   href={`/create${channelId ? "?channelId=" + channelId : ""}`}
                   asChild
@@ -111,6 +112,14 @@ export default function CommunityDetail() {
                   </Button>
                 </Link>
               </View>
+              {tokenInfo && (
+                <View className="sm:hidden">
+                  <LaunchProgress
+                    textClassName="text-white"
+                    tokenInfo={tokenInfo}
+                  />
+                </View>
+              )}
             </View>
           ),
         }}
