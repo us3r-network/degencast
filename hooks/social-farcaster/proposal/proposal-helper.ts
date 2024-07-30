@@ -215,13 +215,19 @@ export const createProposal = async ({
     throw new Error("Wallet is not connected");
   }
 
+  const config = {
+    contentHash: proposalConfig.castHash,
+    contentCreator: proposalConfig.castCreator,
+    contentURI: proposalConfig.contentURI,
+  };
+
   const { request: simulateRequest } = await publicClient.simulateContract({
     abi: DanAbi,
     address: contractAddress,
     chain: ATT_CONTRACT_CHAIN,
     account,
     functionName: "createProposal",
-    args: [proposalConfig, paymentPrice],
+    args: [config, paymentPrice],
   });
 
   const hash = await walletClient.writeContract(simulateRequest);
