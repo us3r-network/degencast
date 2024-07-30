@@ -113,8 +113,7 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.NEW_CASTS:
-      case RankOrderBy.MEMBERS:
+      case RankOrderBy.CREATED_DATE:
         if (item.attentionTokenAddress) {
           return (
             <>
@@ -139,8 +138,6 @@ function Item({
             />
           );
         }
-      case RankOrderBy.CREATED_DATE:
-        return <CommunityJoinButton channelId={item.id} />;
       default:
         return <CommunityJoinButton channelId={item.id} />;
     }
