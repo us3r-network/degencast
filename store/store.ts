@@ -25,6 +25,7 @@ import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 import castReactions from "~/features/cast/castReactionsSlice";
+import castProposal from "~/features/cast/castProposalSlice";
 import embedCasts from "~/features/cast/embedCastsSlice";
 import castCollection from "~/features/cast/castCollectionSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
@@ -76,6 +77,7 @@ export const store = configureStore({
     castReactions,
     embedCasts,
     appSettings,
+    castProposal,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>

@@ -76,7 +76,6 @@ export function ProposeProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
-      disabled={disabled}
       warpedButton={
         <Button
           variant={"secondary"}
@@ -183,7 +182,6 @@ export function DisputeProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
-      disabled={disabled}
       warpedButton={
         <Button
           variant={"secondary"}
