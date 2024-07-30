@@ -12,10 +12,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Text } from "../ui/text";
 import { Card, CardContent } from "../ui/card";
 import { TokenInfo } from "../common/TokenInfo";
+import { formatUnits } from "viem";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
   if (!data) return;
+  const paymentAmount = formatUnits(
+    BigInt(data.paymentTokenAmount),
+    data.paymentTokenInfo?.decimals,
+  );
+  const paymentText = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+  }).format(Number(paymentAmount));
   return (
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
@@ -33,9 +41,11 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             {data.tokenAmount}
           </Text>
           <ActivityItemToken data={data} />
-          <Text>
-            with {data.paymentTokenAmount} {data.paymentTokenInfo?.symbol}
-          </Text>
+          {data.paymentTokenAmount && data.paymentTokenInfo && (
+            <Text>
+              {`cast with ${paymentText} ${data.paymentTokenInfo.symbol}`}
+            </Text>
+          )}
         </View>
       </CardContent>
     </Card>
@@ -109,10 +119,12 @@ export function ActivityItemOperation({
       className={cn(
         " inline-block align-baseline text-base font-medium",
         operation === ActivityOperation.MINT ||
-          operation === ActivityOperation.BUY
+          operation === ActivityOperation.BUY ||
+          operation === ActivityOperation.PROPOSE
           ? "text-[#F41F4C]"
           : operation === ActivityOperation.BURN ||
-              operation === ActivityOperation.SELL
+              operation === ActivityOperation.SELL ||
+              operation === ActivityOperation.DISPUTE
             ? "text-[#00D1A7]"
             : "",
       )}

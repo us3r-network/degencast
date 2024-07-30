@@ -20,7 +20,7 @@ import { OrderSelect } from ".";
 const RankOrderByList = [
   { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
   { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
-  { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
+  // { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
   { label: "New Casts", value: RankOrderBy.NEW_CASTS },
   { label: "Members", value: RankOrderBy.MEMBERS },
   { label: "Created Date", value: RankOrderBy.CREATED_DATE },
