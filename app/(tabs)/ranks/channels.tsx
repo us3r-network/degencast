@@ -20,7 +20,7 @@ import { OrderSelect } from ".";
 const RankOrderByList = [
   { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
   { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
-  { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
+  // { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
   { label: "New Casts", value: RankOrderBy.NEW_CASTS },
   { label: "Members", value: RankOrderBy.MEMBERS },
   { label: "Created Date", value: RankOrderBy.CREATED_DATE },
@@ -113,8 +113,7 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.NEW_CASTS:
-      case RankOrderBy.MEMBERS:
+      case RankOrderBy.CREATED_DATE:
         if (item.attentionTokenAddress) {
           return (
             <>
@@ -139,8 +138,6 @@ function Item({
             />
           );
         }
-      case RankOrderBy.CREATED_DATE:
-        return <CommunityJoinButton channelId={item.id} />;
       default:
         return <CommunityJoinButton channelId={item.id} />;
     }

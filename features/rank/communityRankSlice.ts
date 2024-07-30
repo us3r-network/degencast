@@ -8,7 +8,7 @@ import type { RootState } from "../../store/store";
 
 export const DEFAULT_ORDER_PARAMS: OrderParams = {
   order: "DESC",
-  orderBy: RankOrderBy.CREATED_DATE,
+  orderBy: RankOrderBy.LAUNCH_PROGRESS,
 };
 
 type CommunityRankState = {
