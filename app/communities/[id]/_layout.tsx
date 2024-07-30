@@ -19,6 +19,8 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import SelectionFeeds from "./selections";
 import ProposalFeeds from "./proposal";
 import CastFeeds from "./casts";
+import CuratorsScreen from "./curators";
+import ActivitiesScreen from "./activities";
 
 const initialRouteName = "selection";
 
@@ -46,7 +48,9 @@ const routes = [
   { key: "selection", title: "Selections", component: SelectionFeeds },
   { key: "proposal", title: "Proposal", component: ProposalFeeds },
   { key: "casts", title: "Cast", component: CastFeeds },
+  { key: "activities", title: "Activities", component: ActivitiesScreen },
   { key: "tokens", title: "Tokens", component: TokensScreen },
+  { key: "curators", title: "Curators", component: CuratorsScreen },
 ];
 export default function CommunityDetail() {
   const headerHeight = DEFAULT_HEADER_HEIGHT;
@@ -127,6 +131,10 @@ export default function CommunityDetail() {
                 value={{ community, tokenInfo, loading }}
               >
                 <Tab.Navigator
+                  screenOptions={{
+                    lazy: true,
+                    lazyPreloadDistance: 1,
+                  }}
                   initialRouteName={initialRouteName}
                   tabBar={(props) => <ScrollTabBar {...props} />}
                   sceneContainerStyle={{

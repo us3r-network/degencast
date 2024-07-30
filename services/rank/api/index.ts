@@ -45,14 +45,14 @@ const mockCuratorsRequest = async () => {
 
 export function fetchRankCurators(
   params: RankParams,
-  channel?: string,
+  channelId?: string,
 ): RequestPromise<ApiResp<CuratorEntity[]>> {
   return request({
     url: `/topics/channels/curators`,
     method: "get",
     params: {
       ...params,
-      channel: channel || "",
+      channelId: channelId || "",
     },
   });
 }

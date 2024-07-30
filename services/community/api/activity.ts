@@ -14,3 +14,17 @@ export function getActivities(
     },
   });
 }
+
+export function getChannelActivities(
+  params: ActivitiesParams,
+  channelId: string,
+): RequestPromise<ApiResp<Array<ActivityEntity>>> {
+  return request({
+    url: `/topics/channels/${channelId}/onchain`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
