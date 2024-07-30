@@ -2,6 +2,7 @@ import { FarcasterUserData } from "~/services/farcaster/types";
 import { TradeInfo } from "./trade";
 import { Address } from "viem";
 import { AttentionTokenEntity } from "./attention-token";
+import { Author } from "~/services/farcaster/types/neynar";
 
 export type CommunityEntity = {
   id: number;
@@ -37,7 +38,7 @@ export type CommunityEntity = {
   }>;
   channelId?: string;
   attentionTokenAddress: Address;
-  hostUserData?: Array<FarcasterUserData>;
+  hostUserData?: Author;
   memberInfo?: {
     totalNumber?: number;
     newPostNumber?: number;
