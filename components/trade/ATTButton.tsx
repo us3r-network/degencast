@@ -152,7 +152,7 @@ const BurnNFT = forwardRef<
   const [amount, setAmount] = useState(1);
 
   const {
-    sell,
+    burn,
     transactionReceipt,
     status,
     writeError,
@@ -247,7 +247,7 @@ const BurnNFT = forwardRef<
             variant="secondary"
             className="w-full"
             disabled={!account || waiting || writing || !balance}
-            onPress={() => sell(amount)}
+            onPress={() => burn(amount)}
           >
             <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
           </Button>
@@ -397,7 +397,7 @@ const MintNFT = forwardRef<
   const account = useAccount();
   const [amount, setAmount] = useState(1);
   const {
-    buy,
+    mint,
     transactionReceipt,
     status,
     writeError,
@@ -506,7 +506,7 @@ const MintNFT = forwardRef<
               Number(token?.rawBalance || 0) < Number(nftPrice)
             }
             onPress={() => {
-              if (nftPrice) buy(amount, nftPrice);
+              if (nftPrice) mint(amount, nftPrice);
             }}
           >
             <Text>{waiting || writing ? "Confirming..." : "Mint"}</Text>

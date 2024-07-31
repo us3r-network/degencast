@@ -100,8 +100,8 @@ export function useATTFactoryContractMint(
   } = useWaitForTransactionReceipt({
     hash,
   });
-  const buy = async (amount: number, maxPayment: bigint) => {
-    console.log("buy", token, amount, maxPayment);
+  const mint = async (amount: number, maxPayment: bigint) => {
+    console.log("mint", token, amount, maxPayment);
     writeContract({
       ...contract,
       functionName: "mintNFT",
@@ -110,7 +110,7 @@ export function useATTFactoryContractMint(
   };
 
   return {
-    buy,
+    mint,
     transactionReceipt,
     status,
     writeError,
@@ -131,8 +131,8 @@ export function useATTFactoryContractBurn(
     error: writeError,
   } = useWriteContract();
 
-  const sell = async (amount: number) => {
-    console.log("sell", token, amount);
+  const burn = async (amount: number) => {
+    console.log("burn", token, amount);
     writeContract({
       ...contract,
       functionName: "burnNFT",
@@ -150,7 +150,7 @@ export function useATTFactoryContractBurn(
     hash,
   });
   return {
-    sell,
+    burn,
     transactionReceipt,
     status,
     writeError,
