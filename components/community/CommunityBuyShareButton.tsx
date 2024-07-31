@@ -55,32 +55,6 @@ export function ExploreBuyShareIconButton({
   );
 }
 
-export function BuyChannelBadgeWithUpvoteButton({
-  communityInfo,
-  className,
-}: ButtonProps & {
-  communityInfo: CommunityInfo;
-}) {
-  const attentionTokenAddress = communityInfo?.attentionTokenAddress;
-  const attentionTokenId = 0; //todo use cast tokenId from api
-  if (!attentionTokenAddress) {
-    return null;
-  }
-  return (
-    <BuyButton
-      tokenAddress={attentionTokenAddress}
-      tokenId={attentionTokenId}
-      renderButton={(props) => (
-        <BuyChannelBadgeButtonStyled {...props}>
-          <BuyChannelBadgeTextStyled>
-            Upvote Channel 👍
-          </BuyChannelBadgeTextStyled>
-        </BuyChannelBadgeButtonStyled>
-      )}
-    />
-  );
-}
-
 export function BuyChannelBadgeWithIconButton({
   tokenContract,
   className,

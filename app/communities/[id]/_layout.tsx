@@ -1,5 +1,12 @@
 import { Stack, useLocalSearchParams, useNavigation, Link } from "expo-router";
-import { createContext, useContext, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
 import { EditIcon } from "~/components/common/SvgIcons";
@@ -11,7 +18,6 @@ import { DEFAULT_HEADER_HEIGHT } from "~/constants";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import { CommunityData } from "~/services/community/api/community";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import TokensScreen from "./tokens";
 import { ScrollTabBar } from "~/components/layout/material-top-tabs/TabBar";
 import { ScreenLoading } from "~/components/common/Loading";
 import NotFoundChannel from "~/components/community/NotFoundChannel";
@@ -19,6 +25,10 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import SelectionFeeds from "./selections";
 import ProposalFeeds from "./proposal";
 import CastFeeds from "./casts";
+import CuratorsScreen from "./curators";
+import ActivitiesScreen from "./activities";
+import AttentionTokenScreen from "./attention-token";
+import TokensScreen from "./tokens/[contract]";
 import LaunchProgress from "~/components/community/LaunchProgress";
 
 const initialRouteName = "selection";
@@ -27,6 +37,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const CommunityContext = createContext<{
   community: CommunityData | null | undefined;
+  tokens?: CommunityData["tokens"];
   tokenInfo?: AttentionTokenEntity | null | undefined;
   loading: boolean;
 }>({
@@ -43,12 +54,6 @@ export function useCommunityCtx() {
   return context;
 }
 
-const routes = [
-  { key: "selection", title: "Selections", component: SelectionFeeds },
-  { key: "proposal", title: "Proposal", component: ProposalFeeds },
-  { key: "casts", title: "Cast", component: CastFeeds },
-  { key: "tokens", title: "Tokens", component: TokensScreen },
-];
 export default function CommunityDetail() {
   const headerHeight = DEFAULT_HEADER_HEIGHT;
   const navigation = useNavigation();
@@ -61,9 +66,48 @@ export default function CommunityDetail() {
     rejected,
     loadCommunityDetail,
   } = useLoadCommunityDetail(channelId);
+  const [routes, setRoutes] = useState<any[]>([
+    { key: "selection", title: "Selections", component: SelectionFeeds },
+    { key: "proposal", title: "Proposal", component: ProposalFeeds },
+    { key: "casts", title: "Cast", component: CastFeeds },
+    { key: "activities", title: "Activities", component: ActivitiesScreen },
+    {
+      key: "attention-token",
+      title: "Attention Token",
+      component: AttentionTokenScreen,
+    },
+    { key: "curators", title: "Curators", component: CuratorsScreen },
+  ]);
 
   const community = communityDetail || communityBasic;
   const tokenInfo = communityDetail?.attentionTokenInfo;
+  const tokenContracts = useRef(new Set<string>());
+  const tokens = useMemo(() => {
+    return (
+      communityDetail?.tokens?.filter((token) => {
+        if (!token.tradeInfo || tokenContracts.current.has(token.contract)) {
+          return false;
+        }
+        tokenContracts.current.add(token.contract);
+        return true;
+      }) || []
+    );
+  }, [communityDetail?.tokens]);
+  useEffect(() => {
+    if (tokens.length > 0) {
+      setRoutes((pre) => {
+        const tokenRoutes = tokens.map((token) => {
+          return {
+            key: `${token.contract}`,
+            title: `${token.tradeInfo.name} Token`,
+            component: TokensScreen,
+            initParams: { contract: token.contract },
+          };
+        });
+        return [...pre, ...tokenRoutes];
+      });
+    }
+  }, [tokens]);
 
   useEffect(() => {
     if (loading || rejected || communityDetail) return;
@@ -133,9 +177,13 @@ export default function CommunityDetail() {
             />
             <View className="box-border w-full flex-1">
               <CommunityContext.Provider
-                value={{ community, tokenInfo, loading }}
+                value={{ community, tokenInfo, loading, tokens }}
               >
                 <Tab.Navigator
+                  screenOptions={{
+                    lazy: true,
+                    lazyPreloadDistance: 1,
+                  }}
                   initialRouteName={initialRouteName}
                   tabBar={(props) => <ScrollTabBar {...props} />}
                   sceneContainerStyle={{
@@ -149,6 +197,9 @@ export default function CommunityDetail() {
                         key={route.key}
                         name={route.key}
                         component={route.component}
+                        {...(route.initParams
+                          ? { initialParams: route.initParams }
+                          : {})}
                         options={{
                           title: route.title,
                         }}

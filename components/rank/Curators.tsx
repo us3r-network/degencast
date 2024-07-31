@@ -15,6 +15,27 @@ export default function Curators({ channel }: { channel?: string }) {
     load();
   }, []);
   return (
+    <CuratorsList
+      loading={loading}
+      items={items}
+      load={load}
+      hasMore={hasMore}
+    />
+  );
+}
+
+export function CuratorsList({
+  loading,
+  items,
+  load,
+  hasMore,
+}: {
+  loading: boolean;
+  items: CuratorEntity[];
+  load: () => void;
+  hasMore: boolean;
+}) {
+  return (
     <View className="flex h-full gap-4">
       {loading && items.length === 0 ? (
         <Loading />

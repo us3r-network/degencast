@@ -130,7 +130,7 @@ export function ExploreTradeButton({
     );
 }
 
-export function ChannelExploreTradeButton({
+export function TradeChannelTokenButton({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
   ...props
@@ -143,9 +143,10 @@ export function ChannelExploreTradeButton({
 
   const symbol = token2?.symbol || "";
   const logo = token2?.logoURI || "";
+
   if (!account.address)
     return (
-      <ChannelExploreTradeStyledButton
+      <TradeChannelTokenStyledButton
         name={symbol}
         logo={logo}
         onPress={() => connectWallet()}
@@ -158,7 +159,7 @@ export function ChannelExploreTradeButton({
         token1={token1}
         token2={token2}
         triggerButton={
-          <ChannelExploreTradeStyledButton
+          <TradeChannelTokenStyledButton
             name={symbol}
             logo={logo}
             disabled={
@@ -212,7 +213,7 @@ const ExploreTradeStyledButton = forwardRef(function (
   );
 });
 
-const ChannelExploreTradeStyledButton = forwardRef(function (
+const TradeChannelTokenStyledButton = forwardRef(function (
   {
     name,
     logo,
