@@ -32,7 +32,6 @@ export const fetchItems = createAsyncThunk(
       userCurationCasts: UserCurationCastsState;
     };
     if (userCurationCasts.fid !== fid) userCurationCasts.pageNumber = 1;
-    console.log("user curation casts fetchItems", userCurationCasts);
     if (userCurationCasts.pageNumber) {
       const response = await getUserCurationCasts({
         fid,
@@ -64,7 +63,6 @@ export const userCurationCastsSlice = createSlice({
         state.status = AsyncRequestStatus.FULFILLED;
         if (action.payload) {
           const responseData = action.payload.data.data;
-          console.log("user curation casts fetchItems fulfilled", responseData);
           const casts = uniqBy(
             [...state.items, ...(responseData || [])],
             "cast.hash",
