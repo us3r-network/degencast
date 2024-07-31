@@ -31,7 +31,7 @@ export type UserCurationCastsParams = {
 };
 export function getUserCurationCasts(
   params: UserCurationCastsParams,
-): RequestPromise<ApiResp<UserCastsData>> {
+): RequestPromise<ApiResp<Array<CastData>>> {
   return request({
     url: `/topics/channels/curator/casts`,
     method: "get",
