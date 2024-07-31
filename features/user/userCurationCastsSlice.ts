@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash";
-import { PageInfo } from "~/services/farcaster/types/neynar";
 import { CastData, getUserCurationCasts } from "~/services/feeds/api/user";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
@@ -18,7 +17,7 @@ type UserCurationCastsState = {
 const initialUserCurationCastsState: UserCurationCastsState = {
   fid: undefined,
   items: [],
-  pageNumber: 0,
+  pageNumber: 1,
   status: AsyncRequestStatus.IDLE,
   error: undefined,
 };
@@ -32,14 +31,19 @@ export const fetchItems = createAsyncThunk(
     const { userCurationCasts } = thunkAPI.getState() as {
       userCurationCasts: UserCurationCastsState;
     };
-    if (userCurationCasts.fid !== fid) userCurationCasts.pageNumber = 0;
-    const response = await getUserCurationCasts({
-      fid,
-      viewer_fid,
-      pageSize: MAX_PAGE_SIZE,
-      pageNumber: userCurationCasts.pageNumber || 0,
-    });
-    return response;
+    if (userCurationCasts.fid !== fid) userCurationCasts.pageNumber = 1;
+    console.log("user curation casts fetchItems", userCurationCasts);
+    if (userCurationCasts.pageNumber) {
+      const response = await getUserCurationCasts({
+        fid,
+        viewer_fid,
+        pageSize: MAX_PAGE_SIZE,
+        pageNumber: userCurationCasts.pageNumber,
+      });
+      return response;
+    } else {
+      return null;
+    }
   },
 );
 
@@ -58,13 +62,18 @@ export const userCurationCastsSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
-        const responseData = action.payload.data.data;
-        const casts = uniqBy(
-          [...state.items, ...responseData.casts||[]],
-          "cast.hash",
-        );
-        state.items = casts;
-        state.pageNumber = state.pageNumber + 1;
+        if (action.payload) {
+          const responseData = action.payload.data.data;
+          console.log("user curation casts fetchItems fulfilled", responseData);
+          const casts = uniqBy(
+            [...state.items, ...(responseData || [])],
+            "cast.hash",
+          );
+          state.items = casts;
+          if (responseData?.length === MAX_PAGE_SIZE)
+            state.pageNumber = state.pageNumber + 1;
+          else state.pageNumber = 0;
+        }
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;
@@ -72,5 +81,6 @@ export const userCurationCastsSlice = createSlice({
       });
   },
 });
-export const selectUserCurationCasts = (state: RootState) => state.userCurationCasts;
+export const selectUserCurationCasts = (state: RootState) =>
+  state.userCurationCasts;
 export default userCurationCastsSlice.reducer;
