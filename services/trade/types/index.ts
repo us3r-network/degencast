@@ -45,16 +45,6 @@ export type TokenWithTradeInfo = {
   balance?: number | string | undefined;
 };
 
-export type BadgeInfo = {
-  tokenAddress: `0x${string}`;
-  tokenId: number;
-  name?: string | undefined;
-  channelId: string;
-  logo?: string;
-  priceETH?: string;
-  amount?: number;
-};
-
 export type CreateTokenResp = {
   dn42069TokenAddress: Address;
   danAddress: Address;

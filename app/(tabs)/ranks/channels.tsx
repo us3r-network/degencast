@@ -113,17 +113,21 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.CREATED_DATE:
+      case RankOrderBy.CREATED_DATE: // remove this later
         if (item.attentionTokenAddress) {
           return (
             <>
               <BuyButton
-                tokenAddress={item.attentionTokenAddress}
-                tokenId={0} //todo: use cast tokenId from api
+                token={{
+                  contractAddress: item.attentionTokenAddress,
+                  tokenId: 0,
+                }}
               />
               <SellButton
-                tokenAddress={item.attentionTokenAddress}
-                tokenId={0} //todo: use cast tokenId from api
+                token={{
+                  contractAddress: item.attentionTokenAddress,
+                  tokenId: 0,
+                }}
               />
             </>
           );

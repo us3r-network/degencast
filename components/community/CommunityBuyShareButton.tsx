@@ -67,8 +67,7 @@ export function BuyChannelBadgeWithIconButton({
   }
   return (
     <BuyButton
-      tokenAddress={tokenContract}
-      tokenId={attentionTokenId}
+      token={{ contractAddress: tokenContract, tokenId: attentionTokenId }}
       renderButton={(props) => (
         <MintButton
           variant={"outline"}
@@ -119,8 +118,7 @@ function BuyChannelBadgeButton({
 
   return (
     <BuyButton
-      tokenAddress={tokenAddress}
-      tokenId={tokenId}
+      token={{ contractAddress: tokenAddress, tokenId }}
       renderButton={(props) => (
         <BuyChannelBadgeButtonStyled {...props}>
           <BuyChannelBadgeTextStyled>

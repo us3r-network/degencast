@@ -1,20 +1,15 @@
 import { useRef, useState } from "react";
-import {
-  getActivities,
-} from "~/services/community/api/activity";
-import { ActivityEntity, ActivityFilterType, ActivityOperationCatagery } from "~/services/community/types/activity";
+import { getTokenActivities } from "~/services/community/api/activity";
+import { ActivityEntity } from "~/services/community/types/activity";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { ERC42069Token } from "~/services/trade/types";
 
 const PAGE_SIZE = 20;
 
-export default function useLoadOnchainActivities(props?: {
-  type: ActivityFilterType;
-  operationCatagery?: ActivityOperationCatagery;
-}) {
+export default function useLoadTokenOnchainActivities(token: ERC42069Token) {
   const [items, setItems] = useState<Array<ActivityEntity>>([]);
   const [status, setStatus] = useState(AsyncRequestStatus.IDLE);
-  const operationCatageryRef = useRef(props?.operationCatagery);
-  const typeRef = useRef(props?.type);
+  const toeknRef = useRef(token);
   const pageInfoRef = useRef({
     hasNextPage: true,
     nextPageNumber: 1,
@@ -23,11 +18,10 @@ export default function useLoadOnchainActivities(props?: {
   const loading = status === AsyncRequestStatus.PENDING;
 
   const loadItems = async () => {
-    const operationCatagery = operationCatageryRef.current;
-    const type = typeRef.current;
+    const currentToken = toeknRef.current;
     const { hasNextPage, nextPageNumber } = pageInfoRef.current;
 
-    if (hasNextPage === false) {
+    if (hasNextPage === false || !token) {
       return;
     }
     setStatus(AsyncRequestStatus.PENDING);
@@ -36,13 +30,7 @@ export default function useLoadOnchainActivities(props?: {
         pageSize: PAGE_SIZE,
         pageNumber: nextPageNumber,
       };
-      if (operationCatagery) {
-        Object.assign(params, { operationCatagery });
-      }
-      if (type) {
-        Object.assign(params, { type });
-      }
-      const resp = await getActivities(params);
+      const resp = await getTokenActivities(params, currentToken);
       if (resp.data.code !== ApiRespCode.SUCCESS) {
         throw new Error(resp.data.msg);
       }

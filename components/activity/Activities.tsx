@@ -9,6 +9,8 @@ import { Loading } from "../common/Loading";
 import ActivityItem from "./ActivityItem";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { OutlineTabBar } from "../layout/tab-view/TabBar";
+import { ERC42069Token } from "~/services/trade/types";
+import useLoadTokenOnchainActivities from "~/hooks/activity/useLoadTokenOnchainActivities";
 
 export default function Activities({
   fid,
@@ -69,6 +71,37 @@ export function ActivitieList({
     type,
     operationCatagery,
   });
+  useEffect(() => {
+    loadItems();
+  }, []);
+  return (
+    <FlatList
+      className="h-full flex-1 gap-4"
+      contentContainerClassName="flex gap-4"
+      showsHorizontalScrollIndicator={false}
+      data={items}
+      renderItem={({ item }) => {
+        return <ActivityItem data={item} />;
+      }}
+      keyExtractor={(item, index) => index.toString()}
+      onEndReached={() => {
+        if (loading || (!loading && items?.length === 0)) return;
+        loadItems();
+        return;
+      }}
+      onEndReachedThreshold={0.1}
+      ListFooterComponent={() => {
+        if (loading) {
+          return <Loading />;
+        }
+        return <View className="mb-10" />;
+      }}
+    />
+  );
+}
+
+export function TokenActivitieList({ token }: { token: ERC42069Token }) {
+  const { items, loading, loadItems } = useLoadTokenOnchainActivities(token);
   useEffect(() => {
     loadItems();
   }, []);

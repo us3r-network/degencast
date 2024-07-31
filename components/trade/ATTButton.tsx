@@ -28,26 +28,24 @@ import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { createToken } from "~/services/trade/api";
-import { TokenWithTradeInfo } from "~/services/trade/types";
+import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
+import { TokenActivitieList } from "../activity/Activities";
 import About from "../common/About";
 import { TokenWithValue } from "../common/TokenInfo";
 import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import { AspectRatio } from "../ui/aspect-ratio";
+import { Separator } from "../ui/separator";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import { Separator } from "../ui/separator";
-import Activities from "../activity/Activities";
 
 export function SellButton({
-  tokenAddress,
-  tokenId,
+  token,
 }: {
-  tokenAddress: Address;
-  tokenId: number;
+  token: ERC42069Token;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -86,7 +84,7 @@ export function SellButton({
                 onPress={() => setShowDetails(false)}
               >
                 <Text className={showDetails ? "text-secondary" : "text-white"}>
-                  Mint Channel NFT
+                  Burn Channel NFT
                 </Text>
               </Pressable>
               <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
@@ -102,7 +100,7 @@ export function SellButton({
               </Pressable>
             </DialogHeader>
             {showDetails ? (
-              <Details contractAddress={tokenAddress} tokenId={tokenId} />
+                <TokenActivitieList token={token} />
             ) : (
               <>
                 <View className="flex-row items-center justify-between gap-2">
@@ -110,8 +108,8 @@ export function SellButton({
                   <UserWalletSelect />
                 </View>
                 <Sell
-                  tokenAddress={tokenAddress}
-                  tokenId={tokenId}
+                  tokenAddress={token.contractAddress}
+                  tokenId={token.tokenId}
                   onSuccess={setTransationData}
                   onError={setError}
                 />
@@ -266,12 +264,10 @@ const Sell = forwardRef<
 });
 
 export function BuyButton({
-  tokenAddress,
-  tokenId,
+  token,
   renderButton,
 }: {
-  tokenAddress: Address;
-  tokenId: number;
+  token: ERC42069Token;
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
   const account = useAccount();
@@ -301,8 +297,8 @@ export function BuyButton({
 
       {account.address && (
         <BuyDialog
-          tokenAddress={tokenAddress}
-          tokenId={tokenId}
+          tokenAddress={token.contractAddress}
+          tokenId={token.tokenId}
           open={open}
           onOpenChange={setOpen}
         />
@@ -356,7 +352,7 @@ export function BuyDialog({
             </Pressable>
           </DialogHeader>
           {showDetails ? (
-            <Details contractAddress={tokenAddress} tokenId={tokenId} />
+            <TokenActivitieList token={{contractAddress:tokenAddress,tokenId}} />
           ) : (
             <>
               <View className="flex-row items-center justify-between gap-2">
@@ -628,19 +624,5 @@ export function NFTImage({
         }}
       />
     </AspectRatio>
-  );
-}
-
-function Details({
-  contractAddress,
-  tokenId,
-}: {
-  contractAddress: Address;
-  tokenId: number;
-}) {
-  return (
-    <View className="h-full">
-      {/* <Activities token={{ contractAddress, tokenId }} /> */}
-    </View>
   );
 }
