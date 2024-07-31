@@ -190,7 +190,7 @@ const BurnNFT = forwardRef<
   const { data: balance } = nftBalanceOf(account?.address);
 
   const { getBurnNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(nft.contractAddress);
+    useATTFactoryContractInfo(nft);
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
@@ -407,8 +407,8 @@ const MintNFT = forwardRef<
     isSuccess,
   } = useATTFactoryContractMint(nft);
 
-  const { getMintNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(nft.contractAddress);
+  const { getMintNFTPrice, getPaymentToken } =
+    useATTFactoryContractInfo(nft);
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
@@ -423,9 +423,9 @@ const MintNFT = forwardRef<
         setToken(tokenInfo);
       });
   }, [paymentToken, account?.address]);
-  const { nftPrice } = getMintNFTPriceAfterFee(amount);
+  const { nftPrice } = getMintNFTPrice(amount);
   const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
-  const perBadgePrice = fetchedPrice
+  const perNFTPrice = fetchedPrice
     ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
     : "";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
@@ -470,7 +470,7 @@ const MintNFT = forwardRef<
           <Text className="text-lg font-medium">Quantity</Text>
           {fetchedPrice ? (
             <Text className="text-xs">
-              {perBadgePrice}
+              {perNFTPrice}
               {token?.symbol} per badge
             </Text>
           ) : (
