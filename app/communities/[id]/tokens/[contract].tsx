@@ -8,9 +8,6 @@ export default function TokensScreen({ route }: { route: any }) {
   const { community, tokens } = useCommunityCtx();
   const { contract } = route.params;
   const token = tokens!.find((token) => token.contract === contract);
-  console.log("route.params", route.params);
-  console.log("contract", contract);
-  console.log("tokens", tokens);
 
   return (
     <Card className="box-border h-full w-full flex-1 flex-col rounded-[20px] rounded-b-none p-4 pb-0">
