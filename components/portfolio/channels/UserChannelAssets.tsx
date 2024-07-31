@@ -14,7 +14,6 @@ import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { Channel } from "~/services/farcaster/types";
-import { CommunityBadge } from "../tokens/UserCommunityBadges";
 
 export default function UserChannelAssets({
   channel,
@@ -60,16 +59,9 @@ export default function UserChannelAssets({
           {channel.tokenInfo && (
             <CommunityToken token={channel.tokenInfo} withSwapButton />
           )}
-          {channel.attentionTokenAddress && (
-            <CommunityBadge
-              badge={{
-                tokenAddress: channel.attentionTokenAddress,
-                name: channel.name,
-                channelId: channel.id,
-                logo: channel.image_url,
-              }}
-            />
-          )}
+          {/* {channel.attentionTokenAddress && (
+            todo: add ATT token info
+          )} */}
           <MyPoints />
         </View>
       </DialogContent>

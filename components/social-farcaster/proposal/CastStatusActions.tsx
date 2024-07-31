@@ -185,8 +185,7 @@ function ReadyToMint({
       </Text>
       {tokenInfo?.tokenContract && proposal.tokenId && (
         <BuyButton
-          tokenAddress={tokenInfo.tokenContract}
-          tokenId={Number(proposal.tokenId)}
+          token = {{contractAddress: tokenInfo.tokenContract, tokenId: Number(proposal.tokenId)}}
           renderButton={(props) => {
             return (
               <ActionButton
