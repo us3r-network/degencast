@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import uniqBy from "lodash/uniqBy";
-import { fetchRankCommunities } from "~/services/rank/api";
+import { fetchRankChannels } from "~/services/rank/api";
 import { RankOrderBy, OrderParams } from "~/services/rank/types";
 import { Channel } from "~/services/farcaster/types";
 import { AsyncRequestStatus } from "~/services/shared/types";
@@ -11,7 +11,7 @@ export const DEFAULT_ORDER_PARAMS: OrderParams = {
   orderBy: RankOrderBy.LAUNCH_PROGRESS,
 };
 
-type CommunityRankState = {
+type ChannelRankState = {
   items: Channel[];
   orderBy: RankOrderBy;
   order: "ASC" | "DESC";
@@ -20,7 +20,7 @@ type CommunityRankState = {
   error: string | undefined;
 };
 
-const communityRankState: CommunityRankState = {
+const channelRankState: ChannelRankState = {
   items: [],
   orderBy: DEFAULT_ORDER_PARAMS.orderBy,
   order: DEFAULT_ORDER_PARAMS.order,
@@ -31,24 +31,24 @@ const communityRankState: CommunityRankState = {
 
 const PAGE_SIZE = 30;
 export const fetchItems = createAsyncThunk(
-  "communityRank/fetchItems",
+  "channelRank/fetchItems",
   async ({ order, orderBy }: OrderParams, thunkAPI) => {
-    const { communityRank } = thunkAPI.getState() as {
-      communityRank: CommunityRankState;
+    const { channelRank } = thunkAPI.getState() as {
+      channelRank: ChannelRankState;
     };
-    const response = await fetchRankCommunities({
+    const response = await fetchRankChannels({
       orderBy: orderBy || DEFAULT_ORDER_PARAMS.orderBy,
       order: order || DEFAULT_ORDER_PARAMS.order,
       pageSize: PAGE_SIZE,
-      pageNumber: communityRank.nextPageNumber || 1,
+      pageNumber: channelRank.nextPageNumber || 1,
     });
     return response.data;
   },
 );
 
-export const communityRankSlice = createSlice({
-  name: "communityRank",
-  initialState: communityRankState,
+export const channelRankSlice = createSlice({
+  name: "channelRank",
+  initialState: channelRankState,
   reducers: {},
   extraReducers(builder) {
     builder
@@ -66,6 +66,7 @@ export const communityRankSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
+        console.log(action.payload.data);
         const newItems = action.payload.data.filter((item) => !!item.id);
         state.items = uniqBy(state.items.concat(newItems), "id");
         if (newItems.length >= PAGE_SIZE) {
@@ -80,5 +81,5 @@ export const communityRankSlice = createSlice({
       });
   },
 });
-export const selectCommunityRank = (state: RootState) => state.communityRank;
-export default communityRankSlice.reducer;
+export const selectChannelRank = (state: RootState) => state.channelRank;
+export default channelRankSlice.reducer;

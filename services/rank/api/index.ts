@@ -11,7 +11,7 @@ type RankParams = {
   pageNumber?: number;
 };
 
-export function fetchRankCommunities(
+export function fetchRankChannels(
   params: RankParams,
 ): RequestPromise<ApiResp<Channel[]>> {
   return request({
