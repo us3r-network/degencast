@@ -16,6 +16,8 @@ import useChannelRank from "~/hooks/rank/useChannelRank";
 import { Channel } from "~/services/farcaster/types";
 import { RankOrderBy, OrderParams } from "~/services/rank/types";
 import { OrderSelect } from ".";
+import { formatUnits } from "viem";
+import { DEGEN_METADATA } from "~/constants";
 
 const RankOrderByList = [
   { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
@@ -99,8 +101,12 @@ function Item({
     switch (orderBy) {
       case RankOrderBy.LAUNCH_PROGRESS:
         return item.progress || "-";
-      case RankOrderBy.NFT_PRICE:
-        return item.price || "-";
+      case RankOrderBy.NFT_PRICE: //todo use payment token from api
+        return item.price
+          ? `${formatUnits(BigInt(item.price), DEGEN_METADATA.decimals!)} ${
+              DEGEN_METADATA.symbol
+            }`
+          : "-";
       case RankOrderBy.NEW_CASTS:
         return item.newCastCount || "-";
       case RankOrderBy.MEMBERS:
