@@ -49,7 +49,7 @@ export default function CommunityNFTs({ address }: { address: Address }) {
           items
             .slice(DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <NFTImage
+              <NFTItem
                 key={`${item.contractAddress}-${item.tokenId}`}
                 nft={item}
               />
