@@ -17,6 +17,9 @@ import {
 import { ChevronDown } from "../common/Icons";
 import { Button } from "../ui/button";
 import { Link } from "expo-router";
+import { ChannelDetailLaunchProgress } from "./LaunchProgress";
+import useLoadAttentionTokenInfo from "~/hooks/community/useLoadAttentionTokenInfo";
+import { Separator } from "../ui/separator";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -33,13 +36,6 @@ export default function CommunityDetailMetaInfo({
 }) {
   const { name, logo, description, memberInfo, hostUserData } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const fid = hostUserData?.[0]?.fid;
-  const hostUserDataObjArr = hostUserData?.length
-    ? userDataObjFromArr(hostUserData)
-    : null;
-  const hostUserDataObj = hostUserDataObjArr
-    ? hostUserDataObjArr[fid as string]
-    : null;
 
   return (
     <View className={cn("w-full flex-row gap-3", className)} {...props}>
@@ -71,16 +67,13 @@ export default function CommunityDetailMetaInfo({
             </Text>
           </View>
         </View>
-        {!!hostUserDataObj && (
-          <Link
-            href={`/u/${hostUserDataObj.fid}`}
-            className="flex flex-row gap-1"
-          >
+        {!!hostUserData && (
+          <Link href={`/u/${hostUserData.fid}`} className="flex flex-row gap-1">
             <Text className="text-sm font-medium leading-none text-secondary">
               Host
             </Text>
             <Text className="text-sm font-medium leading-none text-primary-foreground hover:underline">
-              @{hostUserDataObj?.userName}
+              @{hostUserData?.username}
             </Text>
           </Link>
         )}
@@ -108,14 +101,12 @@ export function CommunityDetailMetaInfo2({
   const { name, logo, description, memberInfo, hostUserData, channelId } =
     communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const fid = hostUserData?.[0]?.fid;
-  const hostUserDataObjArr = hostUserData?.length
-    ? userDataObjFromArr(hostUserData)
-    : null;
-  const hostUserDataObj = hostUserDataObjArr
-    ? hostUserDataObjArr[fid as string]
-    : null;
-
+  const { tokenInfo, loading, rejected, loadTokenInfo } =
+    useLoadAttentionTokenInfo({ channelId: channelId! });
+  useEffect(() => {
+    if (rejected || loading || tokenInfo) return;
+    loadTokenInfo();
+  }, [tokenInfo, loading, rejected, loadTokenInfo]);
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
       <View className="w-full flex-row gap-3">
@@ -129,26 +120,9 @@ export function CommunityDetailMetaInfo2({
           <Text className="text-xl font-bold leading-6 text-primary-foreground">
             {name}
           </Text>
-
-          {!!hostUserDataObj && (
-            <Link
-              href={`/u/${hostUserDataObj.fid}`}
-              className="flex flex-row gap-1"
-              onPress={(e) => {
-                e.stopPropagation();
-                if (navigateBefore) {
-                  navigateBefore();
-                }
-              }}
-            >
-              <Text className="text-sm font-normal leading-6 text-primary-foreground ">
-                Host
-              </Text>
-              <Text className="text-sm font-normal leading-6 text-secondary">
-                @{hostUserDataObj?.userName}
-              </Text>
-            </Link>
-          )}
+          <Text className="text-sm font-normal leading-6 text-primary-foreground">
+            {channelId && `/${channelId}`}
+          </Text>
         </View>
       </View>
       <Text className="text-sm font-normal leading-6 text-primary-foreground">
@@ -160,7 +134,7 @@ export function CommunityDetailMetaInfo2({
             {displayValue(totalNumber || 0)}
           </Text>
           <Text className="text-sm font-normal leading-none text-primary-foreground">
-            Members
+            Followers
           </Text>
         </View>
         <View className="flex-row gap-1">
@@ -168,10 +142,51 @@ export function CommunityDetailMetaInfo2({
             {displayValue(newPostNumber || 0)}
           </Text>
           <Text className="text-sm font-normal leading-none text-primary-foreground">
-            Casts
+            New Casts
           </Text>
         </View>
       </View>
+      {!!hostUserData && (
+        <Link
+          href={`/u/${hostUserData.fid}`}
+          className="flex flex-row gap-1"
+          onPress={(e) => {
+            e.stopPropagation();
+            if (navigateBefore) {
+              navigateBefore();
+            }
+          }}
+        >
+          <Text className="text-sm font-normal leading-6 text-primary-foreground ">
+            Host
+          </Text>
+          <Text className="text-sm font-normal leading-6 text-secondary">
+            @{hostUserData?.username}
+          </Text>
+        </Link>
+      )}
+      {(communityInfo?.attentionTokenInfo || !!tokenInfo) && (
+        <Separator className="bg-secondary/20" />
+      )}
+
+      {communityInfo?.attentionTokenInfo && (
+        <ChannelDetailLaunchProgress
+          tokenInfo={communityInfo?.attentionTokenInfo}
+        />
+      )}
+
+      {tokenInfo && (
+        <View className="flex flex-row items-center justify-between">
+          <Text className={cn("text-sm text-primary-foreground")}>
+            Channel NFT Prices
+          </Text>
+          <Text className={cn("text-sm text-primary-foreground")}>
+            {tokenInfo.price.toLocaleString()} DEGEN
+          </Text>
+        </View>
+      )}
+
+      <Separator className="bg-secondary/20" />
       <View className="flex-row gap-4">
         <CommunityJoinButton
           channelId={communityInfo?.channelId || ""}

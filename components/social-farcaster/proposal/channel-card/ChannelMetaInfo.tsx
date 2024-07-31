@@ -6,8 +6,8 @@ import { CommunityAvatarJoinIconButton } from "~/components/community/CommunityJ
 import useCommunityPage from "~/hooks/community/useCommunityPage";
 import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import { Progress } from "~/components/ui/progress";
 import { Home } from "~/components/common/Icons";
+import LaunchProgress from "~/components/community/LaunchProgress";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -73,21 +73,6 @@ export default function ChannelMetaInfo({
           {tokenInfo && <LaunchProgress tokenInfo={tokenInfo} />}
         </View>
       </Pressable>
-    </View>
-  );
-}
-
-function LaunchProgress({ tokenInfo }: { tokenInfo?: AttentionTokenEntity }) {
-  const progress = Number(tokenInfo?.progress?.replace("%", ""));
-  const progressNumber = isNaN(progress) ? 0 : progress;
-  return (
-    <View className="flex flex-row items-center gap-1">
-      <Progress
-        value={progressNumber}
-        className="h-4 w-[100px] bg-[#D6A5EC]"
-        indicatorClassName=" rounded-4 bg-[#9151C3]"
-      />
-      <Text className="text-xl text-foreground">{progressNumber}%</Text>
     </View>
   );
 }
