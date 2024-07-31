@@ -2,7 +2,8 @@ import React from "react";
 import { View } from "react-native";
 import { Address } from "viem";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
-import { NFTImage, SellButton } from "~/components/trade/ATTButton";
+import NFTImage from "~/components/common/NFTImage";
+import { SellButton } from "~/components/trade/ATTButton";
 import {
   Collapsible,
   CollapsibleContent,
@@ -39,7 +40,7 @@ export default function CommunityNFTs({ address }: { address: Address }) {
             .map((item) => (
               <NFTItem
                 key={`${item.contractAddress}-${item.tokenId}`}
-                token={item}
+                nft={item}
               />
             ))}
       </View>
@@ -50,8 +51,7 @@ export default function CommunityNFTs({ address }: { address: Address }) {
             .map((item) => (
               <NFTImage
                 key={`${item.contractAddress}-${item.tokenId}`}
-                tokenAddress={item.contractAddress}
-                tokenId={item.tokenId}
+                nft={item}
               />
             ))}
       </CollapsibleContent>
@@ -59,12 +59,12 @@ export default function CommunityNFTs({ address }: { address: Address }) {
   );
 }
 
-function NFTItem({ token }: { token: ERC42069Token }) {
+function NFTItem({ nft }: { nft: ERC42069Token }) {
   return (
     <View className="relative w-full">
-      <NFTImage tokenAddress={token.contractAddress} tokenId={token.tokenId} />
+      <NFTImage nft={nft} />
       <View className="absolute bottom-2 right-2">
-        <SellButton token={token} />
+        <SellButton token={nft} />
       </View>
     </View>
   );

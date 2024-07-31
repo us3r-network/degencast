@@ -9,6 +9,7 @@ import {
   ATT_FACTORY_CONTRACT_ADDRESS,
 } from "~/constants/att";
 import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
+import { ERC42069Token } from "~/services/trade/types";
 
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
@@ -81,9 +82,8 @@ export function useATTFactoryContractInfo(tokenAddress: Address) {
   };
 }
 
-export function useATTFactoryContractBuy(
-  tokenAddress: Address,
-  tokenId: number,
+export function useATTFactoryContractMint(
+  token:ERC42069Token
 ) {
   const {
     writeContract,
@@ -101,11 +101,11 @@ export function useATTFactoryContractBuy(
     hash,
   });
   const buy = async (amount: number, maxPayment: bigint) => {
-    console.log("buy", tokenAddress, amount, maxPayment);
+    console.log("buy", token, amount, maxPayment);
     writeContract({
       ...contract,
       functionName: "mintNFT",
-      args: [tokenAddress, BigInt(tokenId), BigInt(amount), maxPayment],
+      args: [token.contractAddress, BigInt(token.tokenId), BigInt(amount), maxPayment],
     });
   };
 
@@ -121,9 +121,8 @@ export function useATTFactoryContractBuy(
   };
 }
 
-export function useATTFactoryContractSell(
-  tokenAddress: Address,
-  tokenId: number,
+export function useATTFactoryContractBurn(
+  token:ERC42069Token
 ) {
   const {
     writeContract,
@@ -133,11 +132,11 @@ export function useATTFactoryContractSell(
   } = useWriteContract();
 
   const sell = async (amount: number) => {
-    console.log("sell", tokenAddress, amount);
+    console.log("sell", token, amount);
     writeContract({
       ...contract,
       functionName: "burnNFT",
-      args: [tokenAddress, BigInt(tokenId), BigInt(amount)],
+      args: [token.contractAddress, BigInt(token.tokenId), BigInt(amount)],
     });
   };
 
