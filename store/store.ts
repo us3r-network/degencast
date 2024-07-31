@@ -10,7 +10,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
-import communityRank from "~/features/rank/communityRankSlice";
+import channelRank from "~/features/rank/channelRankSlice";
 import tokenRank from "~/features/rank/tokenRankSlice";
 import curatorRank from "~/features/rank/curatorRankSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
@@ -54,7 +54,7 @@ export const store = configureStore({
     castPage,
     castCollection,
     communityTokens,
-    communityRank,
+    channelRank,
     tokenRank,
     curatorRank,
     userCommunityTokens,

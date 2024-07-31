@@ -11,8 +11,8 @@ import {
   SellButton,
 } from "~/components/trade/ATTButton";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_ORDER_PARAMS } from "~/features/rank/communityRankSlice";
-import useCommunityRank from "~/hooks/rank/useCommunityRank";
+import { DEFAULT_ORDER_PARAMS } from "~/features/rank/channelRankSlice";
+import useChannelRank from "~/hooks/rank/useChannelRank";
 import { Channel } from "~/services/farcaster/types";
 import { RankOrderBy, OrderParams } from "~/services/rank/types";
 import { OrderSelect } from ".";
@@ -21,13 +21,13 @@ const RankOrderByList = [
   { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
   { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
   // { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
-  { label: "New Casts", value: RankOrderBy.NEW_CASTS },
+  // { label: "New Casts", value: RankOrderBy.NEW_CASTS },
   { label: "Members", value: RankOrderBy.MEMBERS },
   { label: "Created Date", value: RankOrderBy.CREATED_DATE },
 ];
 
 export default function ChannelsScreen() {
-  const { loading, items, load, hasMore } = useCommunityRank();
+  const { loading, items, load, hasMore } = useChannelRank();
   const [orderParams, setOrderParams] =
     useState<OrderParams>(DEFAULT_ORDER_PARAMS);
 
@@ -97,6 +97,10 @@ function Item({
 }) {
   const data = useMemo(() => {
     switch (orderBy) {
+      case RankOrderBy.LAUNCH_PROGRESS:
+        return item.progress || "-";
+      case RankOrderBy.NFT_PRICE:
+        return item.price || "-";
       case RankOrderBy.NEW_CASTS:
         return item.newCastCount || "-";
       case RankOrderBy.MEMBERS:
@@ -113,17 +117,21 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.CREATED_DATE:
+      case RankOrderBy.CREATED_DATE: // remove this later
         if (item.attentionTokenAddress) {
           return (
             <>
               <BuyButton
-                tokenAddress={item.attentionTokenAddress}
-                tokenId={0} //todo: use cast tokenId from api
+                token={{
+                  contractAddress: item.attentionTokenAddress,
+                  tokenId: 0,
+                }}
               />
               <SellButton
-                tokenAddress={item.attentionTokenAddress}
-                tokenId={0} //todo: use cast tokenId from api
+                token={{
+                  contractAddress: item.attentionTokenAddress,
+                  tokenId: 0,
+                }}
               />
             </>
           );
