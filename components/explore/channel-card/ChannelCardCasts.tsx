@@ -91,6 +91,10 @@ const ChannelCardCasts = forwardRef(function (
               );
             }}
             style={{ flex: 1 }}
+            onConfigurePanGesture={(panGestureHandler) => {
+              panGestureHandler.activeOffsetX([-20, 20]);
+              panGestureHandler.failOffsetY([-20, 20]);
+            }}
           />
         )}
       </View>

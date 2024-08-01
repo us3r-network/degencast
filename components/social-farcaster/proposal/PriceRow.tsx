@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Image } from "react-native";
 import { formatUnits } from "viem";
 import { Text } from "~/components/ui/text";
@@ -9,11 +9,13 @@ export default function PriceRow({
   paymentTokenInfo,
   price,
   isLoading,
+  onClickPriceValue,
 }: {
   title?: string;
   paymentTokenInfo?: TokenWithTradeInfo;
   price?: bigint;
   isLoading?: boolean;
+  onClickPriceValue?: () => void;
 }) {
   return (
     <View className="flex flex-row items-center justify-between">
@@ -24,14 +26,16 @@ export default function PriceRow({
           resizeMode="contain"
           style={{ width: 20, height: 20 }}
         />
-        <Text className="font-normal">
-          {isLoading || !price || !paymentTokenInfo?.decimals
-            ? "--"
-            : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
-                2,
-              )}{" "}
-          {paymentTokenInfo?.symbol}
-        </Text>
+        <Pressable onPress={onClickPriceValue}>
+          <Text className="font-normal">
+            {isLoading || !price || !paymentTokenInfo?.decimals
+              ? "--"
+              : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
+                  2,
+                )}{" "}
+            {paymentTokenInfo?.symbol}
+          </Text>
+        </Pressable>
       </View>
     </View>
   );

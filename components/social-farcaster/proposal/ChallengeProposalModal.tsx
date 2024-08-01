@@ -284,6 +284,11 @@ function DisputeProposalWrite({
         paymentTokenInfo={paymentTokenInfo}
         price={price}
         isLoading={isLoading || paymentTokenInfoLoading}
+        onClickPriceValue={() => {
+          if (price) {
+            setSelectPrice(price);
+          }
+        }}
       />
       <Slider
         {...priceSliderConfig}
@@ -372,6 +377,11 @@ function ProposeProposalWrite({
         paymentTokenInfo={paymentTokenInfo}
         price={price}
         isLoading={isLoading || paymentTokenInfoLoading}
+        onClickPriceValue={() => {
+          if (price) {
+            setSelectPrice(price);
+          }
+        }}
       />
       <Slider
         {...priceSliderConfig}
