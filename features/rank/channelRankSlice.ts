@@ -66,7 +66,6 @@ export const channelRankSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
-        console.log(action.payload.data);
         const newItems = action.payload.data.filter((item) => !!item.id);
         state.items = uniqBy(state.items.concat(newItems), "id");
         if (newItems.length >= PAGE_SIZE) {
