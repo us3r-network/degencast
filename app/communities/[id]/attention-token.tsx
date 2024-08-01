@@ -9,6 +9,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import ApplyLaunchButton from "~/components/common/ApplyLaunchButton";
 import CommunityAttentionTokenInfo from "~/components/community/CommunityAttentionTokenInfo";
 import { Card } from "~/components/ui/card";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 
 export default function AttentionTokenScreen() {
   const { community } = useCommunityCtx();
@@ -25,13 +26,23 @@ export default function AttentionTokenScreen() {
     );
   }
   const communityInfo = { ...(communityDetail || community) };
-  const attentionTokenAddress = communityInfo?.attentionTokenAddress;
+  const attentionTokenInfo = communityInfo.attentionTokenInfo;
+  const attentionTokenAddress = attentionTokenInfo?.tokenContract;
   return (
     <Card className="box-border h-full w-full flex-1 flex-col rounded-[20px] rounded-b-none p-4 pb-0">
       {attentionTokenAddress ? (
         <>
           <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
-            <CommunityAttentionTokenInfo channelId={id} />
+            <CommunityAttentionTokenInfo
+              channelId={id}
+              attentionTokenInfo={{
+                ...attentionTokenInfo!,
+                name: communityInfo.channelId || communityInfo.name,
+                logo: communityInfo.logo,
+                tokenStandard: "DN-420",
+                chain: ATT_CONTRACT_CHAIN.name,
+              }}
+            />
           </ScrollView>
         </>
       ) : (
