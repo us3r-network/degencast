@@ -13,9 +13,11 @@ export default function useATTNftPrice({
   nftAmount?: number;
 }) {
   const account = useAccount();
-  const { getMintNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(tokenContract);
-  const { nftPrice } = getMintNFTPriceAfterFee(nftAmount);
+  const { getMintNFTPrice, getPaymentToken } = useATTFactoryContractInfo({
+    contractAddress: tokenContract,
+    tokenId: 0,
+  });
+  const { nftPrice } = getMintNFTPrice(nftAmount);
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
   useEffect(() => {
