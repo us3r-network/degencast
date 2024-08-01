@@ -31,6 +31,20 @@ export function getChannelActivities(
   });
 }
 
+export function getCastActivities(
+  params: ActivitiesParams,
+  castHash: string,
+): RequestPromise<ApiResp<Array<ActivityEntity>>> {
+  return request({
+    url: `/topics/casts/${castHash}/onchain`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
 export function getTokenActivities(
   params: ActivitiesParams,
   token: ERC42069Token,

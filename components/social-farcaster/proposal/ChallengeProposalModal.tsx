@@ -1,17 +1,14 @@
-import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { createContext, useContext, useEffect, useState } from "react";
+import { ScrollView, View } from "react-native";
 import About from "~/components/common/About";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { cn } from "~/lib/utils";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
@@ -30,6 +27,12 @@ import { formatUnits, TransactionReceipt } from "viem";
 import { Slider } from "~/components/ui/slider";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
+import {
+  CastActivitiesList,
+  DialogCastActivitiesList,
+} from "~/components/activity/Activities";
+import { SceneMap, TabView } from "react-native-tab-view";
+import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 
 const getAboutInfo = () => {
   return [
@@ -51,6 +54,19 @@ export type CastProposeStatusProps = {
   tokenInfo?: AttentionTokenEntity;
 };
 
+const ChallengeProposalCtx = createContext<
+  | (CastProposeStatusProps & {
+      setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    })
+  | undefined
+>(undefined);
+const useChallengeProposalCtx = () => {
+  const ctx = useContext(ChallengeProposalCtx);
+  if (!ctx) {
+    throw new Error("useChallengeProposalCtx must be used within a provider");
+  }
+  return ctx;
+};
 export default function ChallengeProposalModal({
   cast,
   channel,
@@ -61,6 +77,17 @@ export default function ChallengeProposalModal({
   triggerButton: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "challenge", title: "Challenge" },
+    { key: "details", title: "Details" },
+  ]);
+
+  const renderScene = SceneMap({
+    challenge: ChallengeProposalContentBodyScene,
+    details: CastActivitiesListScene,
+  });
+
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -70,75 +97,125 @@ export default function ChallengeProposalModal({
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
-        <DialogHeader
-          className={cn("mr-4 flex-row items-center justify-between gap-2")}
+        <ChallengeProposalCtx.Provider
+          value={{
+            cast,
+            channel,
+            proposal,
+            tokenInfo,
+            setOpen,
+          }}
         >
-          <DialogTitle>Challenge</DialogTitle>
-        </DialogHeader>
-        <View className="flex-row items-center justify-between gap-2">
-          <Text>Active Wallet</Text>
-          <UserWalletSelect />
-        </View>
-        <View className="flex-row items-center justify-between gap-2">
-          <Text>The current stance on the proposal is:</Text>
-          <Text className="text-sm">
-            {proposal.status === ProposalState.Disputed ? "👎" : "👍"}
-          </Text>
-        </View>
-
-        <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-
-        {proposal.status === ProposalState.Accepted ? (
-          <DisputeProposalWrite
-            cast={cast}
-            channel={channel}
-            proposal={proposal}
-            tokenInfo={tokenInfo}
-            onDisputeSuccess={() => {
-              setOpen(false);
-              Toast.show({
-                type: "success",
-                text1: "Submitted",
-              });
-            }}
-            onDisputeError={(error) => {
-              setOpen(false);
-              Toast.show({
-                type: "error",
-                // text1: "Challenges cannot be repeated this round",
-                text1: error.message,
-              });
-            }}
+          <TabView
+            swipeEnabled={false}
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            renderTabBar={DialogTabBar}
           />
-        ) : (
-          <ProposeProposalWrite
-            cast={cast}
-            channel={channel}
-            proposal={proposal}
-            tokenInfo={tokenInfo}
-            onProposeSuccess={() => {
-              setOpen(false);
-              Toast.show({
-                type: "success",
-                text1: "Submitted",
-              });
-            }}
-            onProposeError={(error) => {
-              setOpen(false);
-              Toast.show({
-                type: "error",
-                // text1: "Challenges cannot be repeated this round",
-                text1: error.message,
-              });
-            }}
-          />
-        )}
-
-        <DialogFooter>
-          <About title="About Proposal & channel NFT" info={getAboutInfo()} />
-        </DialogFooter>
+        </ChallengeProposalCtx.Provider>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ChallengeProposalContentBodyScene() {
+  const { cast, channel, proposal, tokenInfo, setOpen } =
+    useChallengeProposalCtx();
+  return (
+    <ChallengeProposalContentBody
+      cast={cast}
+      channel={channel}
+      proposal={proposal}
+      tokenInfo={tokenInfo}
+      onClose={() => {
+        setOpen(false);
+      }}
+    />
+  );
+}
+function CastActivitiesListScene() {
+  const { cast } = useChallengeProposalCtx();
+  return (
+    <View className="h-[500px] w-full">
+      <DialogCastActivitiesList castHash={cast.hash} />
+    </View>
+  );
+}
+function ChallengeProposalContentBody({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+  onClose,
+}: CastProposeStatusProps & {
+  onClose: () => void;
+}) {
+  return (
+    <View className="flex w-full flex-col gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Active Wallet</Text>
+        <UserWalletSelect />
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>The current stance on the proposal is:</Text>
+        <Text className="text-sm">
+          {proposal.status === ProposalState.Disputed ? "👎" : "👍"}
+        </Text>
+      </View>
+
+      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+
+      {proposal.status === ProposalState.Accepted ? (
+        <DisputeProposalWrite
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+          onDisputeSuccess={() => {
+            onClose();
+            Toast.show({
+              type: "success",
+              text1: "Submitted",
+            });
+          }}
+          onDisputeError={(error) => {
+            onClose();
+            Toast.show({
+              type: "error",
+              // text1: "Challenges cannot be repeated this round",
+              text1: error.message,
+            });
+          }}
+        />
+      ) : (
+        <ProposeProposalWrite
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+          onProposeSuccess={() => {
+            onClose();
+            Toast.show({
+              type: "success",
+              text1: "Submitted",
+            });
+          }}
+          onProposeError={(error) => {
+            onClose();
+            Toast.show({
+              type: "error",
+              // text1: "Challenges cannot be repeated this round",
+              text1: error.message,
+            });
+          }}
+        />
+      )}
+
+      <DialogFooter>
+        <About title="About Proposal & channel NFT" info={getAboutInfo()} />
+      </DialogFooter>
+    </View>
   );
 }
 
