@@ -1,15 +1,26 @@
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchItems, selectUserCurationCasts } from "~/features/user/userCurationCastsSlice";
+import {
+  fetchItems,
+  selectUserCurationCasts,
+} from "~/features/user/userCurationCastsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserCurationCasts(fid?: number, viewer_fid?: number) {
+export default function useUserCurationCasts(
+  fid?: number,
+  viewer_fid?: number,
+) {
   const dispatch = useDispatch();
-  const { items, status, error } = useSelector(selectUserCurationCasts);
+  const {
+    items,
+    status,
+    error,
+    fid: currentFid,
+  } = useSelector(selectUserCurationCasts);
 
   useEffect(() => {
-    loadItems();
+    if (items?.length === 0 || fid !== currentFid) loadItems();
   }, [fid, viewer_fid]);
 
   const loadItems = () => {

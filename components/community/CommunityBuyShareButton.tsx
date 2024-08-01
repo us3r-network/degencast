@@ -94,7 +94,7 @@ function BuyChannelBadgeButton({
   const account = useAccount();
   const amount = 1;
   const { getMintNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(tokenAddress);
+    useATTFactoryContractInfo({contractAddress:tokenAddress, tokenId});
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);

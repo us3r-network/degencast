@@ -14,7 +14,17 @@
                 },
                 {
                     "internalType": "address",
-                    "name": "_dn42069TokenTemplate",
+                    "name": "_quoter",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_router02",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_tokenTemplate",
                     "type": "address"
                 },
                 {
@@ -71,7 +81,7 @@
                     "type": "uint256"
                 }
             ],
-            "name": "DN42069__MaxPaymentExceeded",
+            "name": "CommunityCuration__MaxPaymentExceeded",
             "type": "error"
         },
         {
@@ -144,7 +154,7 @@
                     "type": "string"
                 }
             ],
-            "name": "DN42069Created",
+            "name": "CommunityCurationCreated",
             "type": "event"
         },
         {
@@ -185,6 +195,12 @@
                     "internalType": "uint128",
                     "name": "totalLiquidity",
                     "type": "uint128"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "pool",
+                    "type": "address"
                 }
             ],
             "name": "LiquidityAdded",
@@ -216,6 +232,18 @@
                     "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "totalSupply",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "totalNftSupply",
+                    "type": "uint256"
                 }
             ],
             "name": "NFTBurned",
@@ -246,6 +274,18 @@
                     "indexed": false,
                     "internalType": "uint256",
                     "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "totalSupply",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "totalNftSupply",
                     "type": "uint256"
                 }
             ],
@@ -299,33 +339,72 @@
         },
         {
             "inputs": [],
-            "name": "ADMIN_FEE_BIP",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "ADMIN_LIQUIDITY_FEE_BIP",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
             "name": "BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "CHANNEL_HOST_FEE_BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "CREATOR_FEE_BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "CURATOR_FEE_BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "DEGENCAST_FEE_BIP",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "DEGENCAST_LIQUIDITY_FEE_BIP",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -370,19 +449,6 @@
                     "internalType": "uint24",
                     "name": "",
                     "type": "uint24"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "TREASURY_FEE_BIP",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -444,6 +510,40 @@
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "calculateFees",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "protocolFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "channelHostFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "creatorFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "curatorFee",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "pure",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "cancelOwnershipHandover",
             "outputs": [],
@@ -488,13 +588,60 @@
                             "type": "uint256"
                         },
                         {
+                            "internalType": "uint256",
+                            "name": "maxTokensPerIdPerUser",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "proposalStake",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "proposalPeriod",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "deadlineDuration",
+                            "type": "uint256"
+                        },
+                        {
                             "internalType": "contract IERC20",
                             "name": "paymentToken",
                             "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "channelHost",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "protocolAddr",
+                            "type": "address"
                         }
                     ],
-                    "internalType": "struct DN42069LiqManager.DN42069Config",
+                    "internalType": "struct CommunityCurationLiqManager.CommunityCurationConfig",
                     "name": "_tokenConfig",
+                    "type": "tuple"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "creator",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "contentURI",
+                            "type": "string"
+                        }
+                    ],
+                    "internalType": "struct IDan.ContentZero",
+                    "name": "_contentZero",
                     "type": "tuple"
                 },
                 {
@@ -506,7 +653,7 @@
             "name": "createToken",
             "outputs": [
                 {
-                    "internalType": "contract DN42069",
+                    "internalType": "contract CommunityCuration",
                     "name": "",
                     "type": "address"
                 }
@@ -539,20 +686,67 @@
                             "type": "uint256"
                         },
                         {
+                            "internalType": "uint256",
+                            "name": "maxTokensPerIdPerUser",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "proposalStake",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "proposalPeriod",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "deadlineDuration",
+                            "type": "uint256"
+                        },
+                        {
                             "internalType": "contract IERC20",
                             "name": "paymentToken",
                             "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "channelHost",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "protocolAddr",
+                            "type": "address"
                         }
                     ],
-                    "internalType": "struct DN42069LiqManager.DN42069Config",
+                    "internalType": "struct CommunityCurationLiqManager.CommunityCurationConfig",
                     "name": "_tokenConfig",
+                    "type": "tuple"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "creator",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "contentURI",
+                            "type": "string"
+                        }
+                    ],
+                    "internalType": "struct IDan.ContentZero",
+                    "name": "_contentZero",
                     "type": "tuple"
                 }
             ],
             "name": "createTokenDefaultCurve",
             "outputs": [
                 {
-                    "internalType": "contract DN42069",
+                    "internalType": "contract CommunityCuration",
                     "name": "",
                     "type": "address"
                 }
@@ -587,19 +781,6 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "dn42069TokenTemplate",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -608,7 +789,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "_tokenId",
+                    "name": "_amount",
                     "type": "uint256"
                 }
             ],
@@ -645,12 +826,22 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "adminFee",
+                    "name": "protocolFee",
                     "type": "uint256"
                 },
                 {
                     "internalType": "uint256",
-                    "name": "treasuryFee",
+                    "name": "channelHostFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "creatorFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "totalCuratorFee",
                     "type": "uint256"
                 }
             ],
@@ -700,6 +891,50 @@
                     "internalType": "uint256",
                     "name": "nftPrice",
                     "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "protocolFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "channelHostFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "creatorFee",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "totalCuratorFee",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getMintNFTPriceFromUniV3",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -723,7 +958,7 @@
                             "type": "address"
                         },
                         {
-                            "internalType": "contract DN42069",
+                            "internalType": "contract CommunityCuration",
                             "name": "token",
                             "type": "address"
                         },
@@ -758,7 +993,7 @@
                             "type": "bool"
                         }
                     ],
-                    "internalType": "struct DN42069LiqManager.TokenInfo",
+                    "internalType": "struct CommunityCurationLiqManager.TokenInfo",
                     "name": "",
                     "type": "tuple"
                 }
@@ -829,6 +1064,34 @@
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_paymentAmount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "mintNFTFromUniV3",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "owner",
             "outputs": [
@@ -862,6 +1125,19 @@
         },
         {
             "inputs": [],
+            "name": "protocolFeeAddr",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "renounceOwnership",
             "outputs": [],
             "stateMutability": "payable",
@@ -872,6 +1148,19 @@
             "name": "requestOwnershipHandover",
             "outputs": [],
             "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokenTemplate",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -890,7 +1179,7 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "contract DN42069",
+                    "internalType": "contract CommunityCuration",
                     "name": "token",
                     "type": "address"
                 },

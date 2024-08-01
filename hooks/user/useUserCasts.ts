@@ -6,10 +6,16 @@ import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useUserCasts(fid?: number, viewer_fid?: number) {
   const dispatch = useDispatch();
-  const { items, status, error, next } = useSelector(selectUserCasts);
+  const {
+    items,
+    status,
+    error,
+    next,
+    fid: currentFid,
+  } = useSelector(selectUserCasts);
 
   useEffect(() => {
-    loadItems();
+    if (items?.length === 0 || fid !== currentFid) loadItems();
   }, [fid, viewer_fid]);
 
   const loadItems = () => {

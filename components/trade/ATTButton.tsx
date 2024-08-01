@@ -1,9 +1,13 @@
 import React, { forwardRef, useEffect, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
+import About from "~/components/common/About";
+import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
+import { TokenWithValue } from "~/components/common/TokenInfo";
+import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -13,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import {
   ATT_CONTRACT_CHAIN,
@@ -20,9 +25,9 @@ import {
 } from "~/constants/att";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import {
-  useATTFactoryContractBuy,
+  useATTFactoryContractBurn,
   useATTFactoryContractInfo,
-  useATTFactoryContractSell,
+  useATTFactoryContractMint,
 } from "~/hooks/trade/useATTFactoryContract";
 import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
@@ -30,11 +35,6 @@ import { cn } from "~/lib/utils";
 import { createToken } from "~/services/trade/api";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import { TokenActivitieList } from "../activity/Activities";
-import About from "../common/About";
-import { TokenWithValue } from "../common/TokenInfo";
-import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
-import { AspectRatio } from "../ui/aspect-ratio";
-import { Separator } from "../ui/separator";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
@@ -42,11 +42,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 
-export function SellButton({
-  token,
-}: {
-  token: ERC42069Token;
-}) {
+export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   const account = useAccount();
@@ -100,16 +96,15 @@ export function SellButton({
               </Pressable>
             </DialogHeader>
             {showDetails ? (
-                <TokenActivitieList token={token} />
+              <TokenActivitieList token={token} />
             ) : (
               <>
                 <View className="flex-row items-center justify-between gap-2">
                   <Text>Active Wallet</Text>
                   <UserWalletSelect />
                 </View>
-                <Sell
-                  tokenAddress={token.contractAddress}
-                  tokenId={token.tokenId}
+                <BurnNFT
+                  nft={token}
                   onSuccess={setTransationData}
                   onError={setError}
                 />
@@ -145,20 +140,19 @@ export function SellButton({
     );
 }
 
-const Sell = forwardRef<
+const BurnNFT = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
-    tokenAddress: Address;
-    tokenId: number;
+    nft: ERC42069Token;
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
->(({ className, tokenAddress, tokenId, onSuccess, onError, ...props }, ref) => {
+>(({ className, nft, onSuccess, onError, ...props }, ref) => {
   const account = useAccount();
   const [amount, setAmount] = useState(1);
 
   const {
-    sell,
+    burn,
     transactionReceipt,
     status,
     writeError,
@@ -166,7 +160,7 @@ const Sell = forwardRef<
     waiting,
     writing,
     isSuccess,
-  } = useATTFactoryContractSell(tokenAddress, tokenId);
+  } = useATTFactoryContractBurn(nft);
 
   useEffect(() => {
     if (isSuccess && transactionReceipt && token && nftPrice) {
@@ -192,11 +186,11 @@ const Sell = forwardRef<
     }
   }, [writeError, transationError]);
 
-  const { nftBalanceOf } = useATTContractInfo(tokenAddress, tokenId);
+  const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: balance } = nftBalanceOf(account?.address);
 
   const { getBurnNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(tokenAddress);
+    useATTFactoryContractInfo(nft);
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
@@ -214,7 +208,7 @@ const Sell = forwardRef<
   const { nftPrice } = getBurnNFTPriceAfterFee(amount);
   return (
     <View className="flex gap-4">
-      <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
+      <NFTImage nft={nft} />
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
@@ -253,7 +247,7 @@ const Sell = forwardRef<
             variant="secondary"
             className="w-full"
             disabled={!account || waiting || writing || !balance}
-            onPress={() => sell(amount)}
+            onPress={() => burn(amount)}
           >
             <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
           </Button>
@@ -296,25 +290,18 @@ export function BuyButton({
       )}
 
       {account.address && (
-        <BuyDialog
-          tokenAddress={token.contractAddress}
-          tokenId={token.tokenId}
-          open={open}
-          onOpenChange={setOpen}
-        />
+        <BuyDialog token={token} open={open} onOpenChange={setOpen} />
       )}
     </Pressable>
   );
 }
 
 export function BuyDialog({
-  tokenAddress,
-  tokenId,
+  token,
   open,
   onOpenChange,
 }: {
-  tokenAddress: Address;
-  tokenId: number;
+  token: ERC42069Token;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -352,16 +339,15 @@ export function BuyDialog({
             </Pressable>
           </DialogHeader>
           {showDetails ? (
-            <TokenActivitieList token={{contractAddress:tokenAddress,tokenId}} />
+            <TokenActivitieList token={token} />
           ) : (
             <>
               <View className="flex-row items-center justify-between gap-2">
                 <Text>Active Wallet</Text>
                 <UserWalletSelect />
               </View>
-              <Buy
-                tokenAddress={tokenAddress}
-                tokenId={tokenId}
+              <MintNFT
+                nft={token}
                 onSuccess={setTransationData}
                 onError={setError}
               />
@@ -400,19 +386,18 @@ export function BuyDialog({
   );
 }
 
-const Buy = forwardRef<
+const MintNFT = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
-    tokenAddress: Address;
-    tokenId: number;
+    nft: ERC42069Token;
     onSuccess?: (data: TransationData) => void;
     onError?: (error: string) => void;
   }
->(({ className, tokenAddress, tokenId, onSuccess, onError, ...props }, ref) => {
+>(({ className, nft, onSuccess, onError, ...props }, ref) => {
   const account = useAccount();
   const [amount, setAmount] = useState(1);
   const {
-    buy,
+    mint,
     transactionReceipt,
     status,
     writeError,
@@ -420,10 +405,10 @@ const Buy = forwardRef<
     waiting,
     writing,
     isSuccess,
-  } = useATTFactoryContractBuy(tokenAddress, tokenId);
+  } = useATTFactoryContractMint(nft);
 
-  const { getMintNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(tokenAddress);
+  const { getMintNFTPrice, getPaymentToken } =
+    useATTFactoryContractInfo(nft);
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
@@ -438,9 +423,9 @@ const Buy = forwardRef<
         setToken(tokenInfo);
       });
   }, [paymentToken, account?.address]);
-  const { nftPrice } = getMintNFTPriceAfterFee(amount);
+  const { nftPrice } = getMintNFTPrice(amount);
   const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
-  const perBadgePrice = fetchedPrice
+  const perNFTPrice = fetchedPrice
     ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
     : "";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
@@ -479,13 +464,13 @@ const Buy = forwardRef<
       : undefined;
   return (
     <View className="flex gap-4">
-      <NFTImage tokenAddress={tokenAddress} tokenId={tokenId} />
+      <NFTImage nft={nft} />
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
           {fetchedPrice ? (
             <Text className="text-xs">
-              {perBadgePrice}
+              {perNFTPrice}
               {token?.symbol} per badge
             </Text>
           ) : (
@@ -521,7 +506,7 @@ const Buy = forwardRef<
               Number(token?.rawBalance || 0) < Number(nftPrice)
             }
             onPress={() => {
-              if (nftPrice) buy(amount, nftPrice);
+              if (nftPrice) mint(amount, nftPrice);
             }}
           >
             <Text>{waiting || writing ? "Confirming..." : "Mint"}</Text>
@@ -582,47 +567,5 @@ export function CreateTokenButton({
     >
       <Text>Create</Text>
     </Button>
-  );
-}
-
-export function NFTImage({
-  tokenAddress,
-  tokenId,
-  image,
-}: {
-  tokenAddress: Address;
-  tokenId: number;
-  image?: string;
-}) {
-  const { uri } = useATTContractInfo(tokenAddress, tokenId);
-  const { data: tokenURI } = uri();
-  const [imageURI, setimageURI] = useState("");
-
-  useEffect(() => {
-    // console.log("tokenURI", tokenAddress, tokenId, tokenURI, image);
-    if (image) {
-      setimageURI(image);
-    } else if (tokenURI) {
-      fetch(tokenURI)
-        .then((response) => response.json())
-        .then((json) => setimageURI(json.image as string))
-        .catch((err) => console.log("Request NFT Metadata Failed", err));
-    }
-  }, [tokenURI, image]);
-
-  return (
-    <AspectRatio ratio={1}>
-      <Image
-        source={{
-          uri: imageURI,
-        }}
-        style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: 10,
-          resizeMode: "contain",
-        }}
-      />
-    </AspectRatio>
   );
 }

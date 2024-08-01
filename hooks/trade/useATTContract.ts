@@ -3,14 +3,15 @@ import { useReadContract, useReadContracts } from "wagmi";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import ATT_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionToken.json";
 import { ReadContractReturnType } from "./types";
+import { ERC42069Token } from "~/services/trade/types";
 
 const chainId = ATT_CONTRACT_CHAIN.id;
 const abi = ATT_CONTRACT_ABI_JSON.abi;
 
-export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
+export function useATTContractInfo(token:ERC42069Token) {
   const contract = {
     abi,
-    address: tokenAddress,
+    address: token.contractAddress,
     chainId,
   };
   const balanceOf = (owner: Address | undefined) => {
@@ -61,7 +62,7 @@ export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
     const { data, status } = useReadContract({
       ...contract,
       functionName: "uri",
-      args: [BigInt(tokenId)],
+      args: [BigInt(token.tokenId)],
     });
     return { data: data as string, status };
   };
@@ -73,7 +74,7 @@ export function useATTContractInfo(tokenAddress: Address, tokenId: number) {
     const { data, status } = useReadContract({
       ...contract,
       functionName: "nftBalanceOf",
-      args: [owner, BigInt(tokenId)],
+      args: [owner, BigInt(token.tokenId)],
     });
     return { data: data ? (data as bigint) : undefined, status };
   };
