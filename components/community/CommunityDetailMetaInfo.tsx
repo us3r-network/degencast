@@ -20,6 +20,8 @@ import { Link } from "expo-router";
 import { ChannelDetailLaunchProgress } from "./LaunchProgress";
 import useLoadAttentionTokenInfo from "~/hooks/community/useLoadAttentionTokenInfo";
 import { Separator } from "../ui/separator";
+import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
+import { formatUnits } from "viem";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -101,12 +103,18 @@ export function CommunityDetailMetaInfo2({
   const { name, logo, description, memberInfo, hostUserData, channelId } =
     communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
-  const { tokenInfo, loading, rejected, loadTokenInfo } =
-    useLoadAttentionTokenInfo({ channelId: channelId! });
-  useEffect(() => {
-    if (rejected || loading || tokenInfo) return;
-    loadTokenInfo();
-  }, [tokenInfo, loading, rejected, loadTokenInfo]);
+  // const { tokenInfo, loading, rejected, loadTokenInfo } =
+  //   useLoadAttentionTokenInfo({ channelId: channelId! });
+  // useEffect(() => {
+  //   if (rejected || loading || tokenInfo) return;
+  //   loadTokenInfo();
+  // }, [tokenInfo, loading, rejected, loadTokenInfo]);
+  const tokenInfo = communityInfo?.attentionTokenInfo;
+
+  const { fetchedPrice, nftPrice, token } = useATTNftPrice({
+    tokenContract: tokenInfo?.tokenContract!,
+    nftAmount: 1,
+  });
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
       <View className="w-full flex-row gap-3">
@@ -175,13 +183,15 @@ export function CommunityDetailMetaInfo2({
         />
       )}
 
-      {tokenInfo && (
+      {communityInfo?.attentionTokenInfo && (
         <View className="flex flex-row items-center justify-between">
           <Text className={cn("text-sm text-primary-foreground")}>
             Channel NFT Prices
           </Text>
           <Text className={cn("text-sm text-primary-foreground")}>
-            {tokenInfo.price.toLocaleString()} DEGEN
+            {fetchedPrice && !!nftPrice && !!token
+              ? `${formatUnits(nftPrice, token.decimals!)} ${token.symbol}`
+              : "-- --"}
           </Text>
         </View>
       )}

@@ -1,51 +1,62 @@
 import { View, Image, Animated } from "react-native";
 import { Text } from "../ui/text";
 import { shortAddress } from "~/utils/shortAddress";
-import useLoadAttentionTokenInfo from "~/hooks/community/useLoadAttentionTokenInfo";
-import { useEffect, useRef } from "react";
-import { Loading } from "../common/Loading";
+// import useLoadAttentionTokenInfo from "~/hooks/community/useLoadAttentionTokenInfo";
+import { useEffect, useRef, useState } from "react";
+// import { Loading } from "../common/Loading";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+// import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Progress } from "../ui/progress";
-import { cn } from "~/lib/utils";
-import { TrendingDown, TrendingUp } from "../common/Icons";
+// import { cn } from "~/lib/utils";
+// import { TrendingDown, TrendingUp } from "../common/Icons";
+// import { useATTFactoryContractInfo } from "~/hooks/trade/useATTFactoryContract";
+// import { TokenWithTradeInfo } from "~/services/trade/types";
+// import { useAccount } from "wagmi";
+// import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
+// import { ATT_CONTRACT_CHAIN } from "~/constants/att";
+import { formatUnits } from "viem";
+import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
 
 export default function CommunityAttentionTokenInfo({
   channelId,
+  attentionTokenInfo,
 }: {
   channelId: string;
+  attentionTokenInfo: AttentionTokenEntity;
 }) {
-  const { tokenInfo, loading, rejected, loadTokenInfo } =
-    useLoadAttentionTokenInfo({ channelId });
-  useEffect(() => {
-    if (rejected || loading || tokenInfo) return;
-    loadTokenInfo();
-  }, [tokenInfo, loading, rejected, loadTokenInfo]);
-  if (loading) {
-    return (
-      <View className="h-80 flex-col items-center justify-center">
-        <Loading />
-      </View>
-    );
-  }
-  if (rejected || !tokenInfo) return null;
+  // const { tokenInfo, loading, rejected, loadTokenInfo } =
+  //   useLoadAttentionTokenInfo({ channelId });
+  // useEffect(() => {
+  //   if (rejected || loading || tokenInfo) return;
+  //   loadTokenInfo();
+  // }, [tokenInfo, loading, rejected, loadTokenInfo]);
+  // if (loading) {
+  //   return (
+  //     <View className="h-80 flex-col items-center justify-center">
+  //       <Loading />
+  //     </View>
+  //   );
+  // }
+  // if (rejected || !tokenInfo) return null;
   return (
     <View className="w-full flex-col gap-4">
-      <View className="flex-row items-center gap-1">
+      {/* <View className="flex-row items-center gap-1">
         <Avatar
-          alt={tokenInfo.name || ""}
+          alt={attentionTokenInfo.name || ""}
           className="size-[36px] border border-secondary"
         >
-          <AvatarImage source={{ uri: tokenInfo.logo || "" }} />
+          <AvatarImage source={{ uri: attentionTokenInfo.logo || "" }} />
           <AvatarFallback className="border-primary bg-secondary">
-            <Text className="text-sm font-bold">{tokenInfo.name}</Text>
+            <Text className="text-sm font-bold">{attentionTokenInfo.name}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className=" text-base font-medium">{tokenInfo.name}</Text>
-      </View>
-      <TokenLaunchProgress tokenInfo={tokenInfo} />
-      <TokenPrice tokenInfo={tokenInfo} />
-      <TokenInfo tokenInfo={tokenInfo} />
+        <Text className=" text-base font-medium">
+          {attentionTokenInfo.name}
+        </Text>
+      </View> */}
+      <TokenLaunchProgress tokenInfo={attentionTokenInfo} />
+      <TokenPrice tokenInfo={attentionTokenInfo} />
+      <TokenInfo tokenInfo={attentionTokenInfo} />
     </View>
   );
 }
@@ -105,17 +116,26 @@ function TokenLaunchProgress({
 }
 
 function TokenPrice({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
-  const priceTrend = Number(tokenInfo.priceTrend.replace("%", ""));
+  // const priceTrend = Number(tokenInfo.priceTrend.replace("%", ""));
+
+  const { fetchedPrice, nftPrice, token } = useATTNftPrice({
+    tokenContract: tokenInfo.tokenContract,
+    nftAmount: 1,
+  });
   return (
     <View className="flex-row items-center justify-between">
-      <View className=" flex-1 flex-row items-center gap-1">
-        <Text className=" text-sm leading-none text-secondary">Price</Text>
-        <Text className=" text-2xl font-bold">
-          {tokenInfo.price.toLocaleString()} DEGEN
-        </Text>
+      <View className=" flex-1 flex-row items-center justify-between gap-1">
+        <Text className=" leading-none text-secondary">Price</Text>
+        {fetchedPrice && nftPrice && token ? (
+          <Text className=" text-2xl font-bold">
+            {formatUnits(nftPrice, token.decimals!)} {token.symbol}
+          </Text>
+        ) : (
+          <Text className=" text-2xl font-bold">-- --</Text>
+        )}
       </View>
 
-      <View
+      {/* <View
         className={cn(
           " flex-row gap-3 rounded px-2 py-1",
           priceTrend > 0 ? "bg-[#00D1A7]" : "bg-[#FF5C5C]",
@@ -127,7 +147,7 @@ function TokenPrice({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
           <TrendingDown size="16px" color="white" />
         )}
         <Text className=" leading-none text-white ">{priceTrend}%</Text>
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -138,22 +158,22 @@ const numberToMillion = (num: number) => {
 };
 function TokenInfo({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
   const data = [
-    {
-      label: "Market Cap",
-      value: `$${numberToMillion(Number(tokenInfo.marketCap) || 0)}M`,
-    },
-    {
-      label: "Buys (24H)",
-      value: `${tokenInfo.buy24h || 0}`,
-    },
-    {
-      label: "Sells (24H)",
-      value: `${tokenInfo.sell24h || 0}`,
-    },
-    {
-      label: "Holders",
-      value: `${tokenInfo.holders || 0}`,
-    },
+    // {
+    //   label: "Market Cap",
+    //   value: `$${numberToMillion(Number(tokenInfo.marketCap) || 0)}M`,
+    // },
+    // {
+    //   label: "Buys (24H)",
+    //   value: `${tokenInfo.buy24h || 0}`,
+    // },
+    // {
+    //   label: "Sells (24H)",
+    //   value: `${tokenInfo.sell24h || 0}`,
+    // },
+    // {
+    //   label: "Holders",
+    //   value: `${tokenInfo.holders || 0}`,
+    // },
     {
       label: "Token Standard",
       value: tokenInfo.tokenStandard,

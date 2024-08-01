@@ -30,6 +30,7 @@ import ActivitiesScreen from "./activities";
 import AttentionTokenScreen from "./attention-token";
 import TokensScreen from "./tokens/[contract]";
 import LaunchProgress from "~/components/community/LaunchProgress";
+import { isDesktop } from "react-device-detect";
 
 const initialRouteName = "selection";
 
@@ -71,11 +72,15 @@ export default function CommunityDetail() {
     { key: "proposal", title: "Proposal", component: ProposalFeeds },
     { key: "casts", title: "Cast", component: CastFeeds },
     { key: "activities", title: "Activities", component: ActivitiesScreen },
-    {
-      key: "attention-token",
-      title: "Attention Token",
-      component: AttentionTokenScreen,
-    },
+    ...(isDesktop
+      ? [
+          {
+            key: "attention-token",
+            title: "Attention Token",
+            component: AttentionTokenScreen,
+          },
+        ]
+      : []),
     { key: "curators", title: "Curators", component: CuratorsScreen },
   ]);
 
