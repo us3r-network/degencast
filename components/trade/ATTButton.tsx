@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, LegacyRef, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
@@ -8,7 +8,7 @@ import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
-import { Button } from "~/components/ui/button";
+import { Button, ButtonProps } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -407,8 +407,7 @@ const MintNFT = forwardRef<
     isSuccess,
   } = useATTFactoryContractMint(nft);
 
-  const { getMintNFTPrice, getPaymentToken } =
-    useATTFactoryContractInfo(nft);
+  const { getMintNFTPrice, getPaymentToken } = useATTFactoryContractInfo(nft);
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
@@ -528,18 +527,26 @@ export const ATT_INFO = [
   "Channel NFT holders could claim airdrops after channel token launch.",
 ];
 
-export function CreateTokenButton({
-  channelId,
-  onComplete,
-}: {
-  channelId: string;
-  onComplete: (tokenAddress: Address) => void;
-}) {
+export const CreateTokenButton = forwardRef(function (
+  {
+    channelId,
+    onComplete,
+    text,
+    renderBottonContent,
+    ...props
+  }: ButtonProps & {
+    channelId: string;
+    onComplete?: (tokenAddress: Address) => void;
+    text?: string;
+    renderBottonContent?: () => React.ReactNode;
+  },
+  ref: LegacyRef<typeof Button>,
+) {
   const [loading, setLoading] = useState(false);
   return (
     <Button
-      className="w-14"
       size="sm"
+      className="w-14"
       variant="secondary"
       disabled={loading}
       onPress={async () => {
@@ -553,7 +560,7 @@ export function CreateTokenButton({
             text1: "Token Created",
             text2: "You can now trade your token",
           });
-          onComplete(resp.data.data.dn42069TokenAddress);
+          onComplete?.(resp.data.data.dn42069TokenAddress);
         } else {
           Toast.show({
             type: "error",
@@ -564,8 +571,13 @@ export function CreateTokenButton({
           return;
         }
       }}
+      {...props}
     >
-      <Text>Create</Text>
+      {renderBottonContent ? (
+        renderBottonContent()
+      ) : (
+        <Text>{text || `Create`}</Text>
+      )}
     </Button>
   );
-}
+});

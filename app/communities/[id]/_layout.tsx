@@ -31,6 +31,9 @@ import AttentionTokenScreen from "./attention-token";
 import TokensScreen from "./tokens/[contract]";
 import LaunchProgress from "~/components/community/LaunchProgress";
 import { isDesktop } from "react-device-detect";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useUserHostChannels from "~/hooks/user/useUserHostChannels";
+import { CreateTokenButton } from "~/components/trade/ATTButton";
 
 const initialRouteName = "selection";
 
@@ -119,6 +122,11 @@ export default function CommunityDetail() {
     loadCommunityDetail();
   }, [loading, rejected, communityDetail, loadCommunityDetail]);
 
+  const { currFid } = useFarcasterAccount();
+  const { channels } = useUserHostChannels(Number(currFid));
+  const isChannelHost =
+    !!channelId && !!channels.find((channel) => channel.id === channelId);
+
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: headerHeight }}
@@ -161,14 +169,26 @@ export default function CommunityDetail() {
                   </Button>
                 </Link>
               </View>
-              {tokenInfo && (
+              {tokenInfo ? (
                 <View className="sm:hidden">
                   <LaunchProgress
                     textClassName="text-white"
                     tokenInfo={tokenInfo}
                   />
                 </View>
-              )}
+              ) : isChannelHost ? (
+                <View className="sm:hidden">
+                  <CreateTokenButton
+                    channelId={channelId}
+                    onComplete={() => {
+                      loadCommunityDetail();
+                    }}
+                    className="h-8"
+                    variant={"secondary"}
+                    text="Launch Token"
+                  />
+                </View>
+              ) : null}
             </View>
           ),
         }}
