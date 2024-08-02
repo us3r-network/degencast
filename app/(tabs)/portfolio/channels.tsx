@@ -1,13 +1,28 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
 import ChannelList from "~/components/portfolio/channels/UserChannels";
+import { UserCurationCastList } from "~/components/portfolio/posts/UserCasts";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import { UserChannelsType } from "~/features/user/userChannelsSlice";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
-function FollowingChannelsPage({ fid }: { fid: number }) {
+export type UserChannelsProps = {
+  fid: number;
+};
+
+const UserChannelsCtx = createContext<UserChannelsProps | undefined>(undefined);
+const useUserChannelsCtx = () => {
+  const ctx = useContext(UserChannelsCtx);
+  if (!ctx) {
+    throw new Error("useUserChannelsCtx must be used within a provider");
+  }
+  return ctx;
+};
+
+function FollowingChannelsScene() {
+  const { fid } = useUserChannelsCtx();
   return (
     <CardWarper>
       <ChannelList fid={fid} type={UserChannelsType.FOLLOWING} />
@@ -15,7 +30,8 @@ function FollowingChannelsPage({ fid }: { fid: number }) {
   );
 }
 
-function HoldingChannelsPage({ fid }: { fid: number }) {
+function HoldingChannelsScene() {
+  const { fid } = useUserChannelsCtx();
   return (
     <CardWarper>
       <ChannelList fid={fid} type={UserChannelsType.HOLDING} />
@@ -31,18 +47,20 @@ export default function UserChannelsScreen({ fid }: { fid?: number }) {
     { key: "following", title: "Following" },
   ]);
   const renderScene = SceneMap({
-    following: () => <FollowingChannelsPage fid={fid || currFid || 0} />,
-    holding: () => <HoldingChannelsPage fid={fid || currFid || 0} />,
+    following: FollowingChannelsScene,
+    holding: HoldingChannelsScene,
   });
   return (
     <PageContent>
       {currFid ? (
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          renderTabBar={OutlineTabBar}
-        />
+        <UserChannelsCtx.Provider value={{ fid: fid || currFid || 0 }}>
+          <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            renderTabBar={OutlineTabBar}
+          />
+        </UserChannelsCtx.Provider>
       ) : (
         <LinkFarcaster />
       )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
@@ -9,15 +9,30 @@ import {
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
-function CurationFeedsPage({ fid }: { fid: number }) {
+export type MyCastsProps = {
+  fid: number;
+};
+
+const MyCastsCtx = createContext<MyCastsProps | undefined>(undefined);
+const useMyCastsCtx = () => {
+  const ctx = useContext(MyCastsCtx);
+  if (!ctx) {
+    throw new Error("useMyCastsCtx must be used within a provider");
+  }
+  return ctx;
+};
+
+function CurationFeedsScene() {
+  const { fid } = useMyCastsCtx();
   return <UserCurationCastList fid={fid} />;
 }
 
-function CastsFeedsPage({ fid }: { fid: number }) {
+function MyCastsFeedsScene() {
+  const { fid } = useMyCastsCtx();
   return <UserCastList fid={fid} />;
 }
 
-export default function MyCastsScreen({ fid }: { fid?: number }) {
+export default function MyCastsScreen({ fid }: MyCastsProps) {
   const { currFid } = useFarcasterAccount();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -25,18 +40,20 @@ export default function MyCastsScreen({ fid }: { fid?: number }) {
     { key: "curation", title: "Curation" },
   ]);
   const renderScene = SceneMap({
-    curation: () => <CurationFeedsPage fid={fid || currFid || 0} />,
-    casts: () => <CastsFeedsPage fid={fid || currFid || 0} />,
+    curation: CurationFeedsScene,
+    casts: MyCastsFeedsScene,
   });
   return (
     <PageContent>
       {currFid ? (
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          renderTabBar={OutlineTabBar}
-        />
+        <MyCastsCtx.Provider value={{ fid: fid || currFid || 0 }}>
+          <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            renderTabBar={OutlineTabBar}
+          />
+        </MyCastsCtx.Provider>
       ) : (
         <LinkFarcaster />
       )}
