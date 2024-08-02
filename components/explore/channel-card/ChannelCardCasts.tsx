@@ -1,11 +1,12 @@
 import { forwardRef, LegacyRef, useRef, useState } from "react";
-import { LayoutRectangle, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  View,
+  ViewabilityConfigCallbackPairs,
+} from "react-native";
 import { CommunityEntity } from "~/services/community/types/community";
-import Carousel, {
-  ICarouselInstance,
-  Pagination,
-} from "react-native-reanimated-carousel";
-import { useSharedValue } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import FCast, { FCastHeight } from "../../social-farcaster/proposal/FCast";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
@@ -33,19 +34,32 @@ const ChannelCardCasts = forwardRef(function (
   const showCasts = casts.slice(0, 10);
 
   const [itemWidth, setItemWidth] = useState<number>(0);
-
-  const carouselRef = useRef<ICarouselInstance>(null);
-  const progress = useSharedValue<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const flatListRef =
+    useRef<FlatList<{ cast: NeynarCast; proposal: ProposalEntity }>>(null);
   const onPressPagination = (index: number) => {
-    carouselRef.current?.scrollTo({
-      /**
-       * Calculate the difference between the current index and the target index
-       * to ensure that the carousel scrolls to the nearest index
-       */
-      count: index - progress.value,
-      animated: true,
-    });
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        index,
+        animated: true,
+      });
+    }
   };
+  const viewabilityConfigCallbackPairs = useRef<ViewabilityConfigCallbackPairs>(
+    [
+      {
+        viewabilityConfig: {
+          itemVisiblePercentThreshold: 80,
+        },
+        onViewableItemsChanged: ({ viewableItems }) => {
+          if (viewableItems.length > 0) {
+            const index = Number(viewableItems[0].index);
+            setCurrentIndex(index);
+          }
+        },
+      },
+    ],
+  );
   return (
     <View className="relative flex w-full flex-col gap-4">
       <View
@@ -60,21 +74,32 @@ const ChannelCardCasts = forwardRef(function (
         }}
       >
         {itemWidth && (
-          <Carousel
-            ref={carouselRef}
-            width={itemWidth}
-            loop={false}
+          <Animated.FlatList
+            horizontal
+            disableIntervalMomentum={true}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            ref={flatListRef}
             data={showCasts}
-            onProgressChange={progress}
+            viewabilityConfigCallbackPairs={
+              viewabilityConfigCallbackPairs.current
+            }
+            getItemLayout={(data, index) => ({
+              length: itemWidth,
+              offset: itemWidth * index,
+              index,
+            })}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
               const { cast, proposal } = item;
               return (
                 <View
                   key={index.toString()}
                   style={{
+                    width: itemWidth,
                     height: itemHeight,
                   }}
-                  className="flex w-full flex-col gap-4 px-4"
+                  className="flex flex-col gap-4 px-4"
                 >
                   <FCast
                     className="overflow-hidden"
@@ -90,31 +115,13 @@ const ChannelCardCasts = forwardRef(function (
                 </View>
               );
             }}
-            style={{ flex: 1 }}
-            onConfigurePanGesture={(panGestureHandler) => {
-              panGestureHandler.activeOffsetX([-20, 20]);
-              panGestureHandler.failOffsetY([-20, 20]);
-            }}
           />
         )}
       </View>
       {showCasts.length > 1 && (
-        <Pagination.Basic
-          progress={progress}
+        <Pagination
+          index={currentIndex}
           data={showCasts}
-          dotStyle={{
-            width: 10,
-            height: 10,
-            backgroundColor: "rgba(163, 110, 254, 0.20)",
-            borderRadius: 5,
-          }}
-          activeDotStyle={{
-            width: 10,
-            height: 10,
-            backgroundColor: "#4C2896",
-            borderRadius: 5,
-          }}
-          containerStyle={{ height: "auto", gap: 15 }}
           onPress={onPressPagination}
         />
       )}
@@ -122,3 +129,48 @@ const ChannelCardCasts = forwardRef(function (
   );
 });
 export default ChannelCardCasts;
+
+function Pagination({
+  data,
+  index,
+  onPress,
+}: {
+  data: any[];
+  index: number;
+  onPress: (index: number) => void;
+}) {
+  const itemGap = 15;
+  return (
+    <View className="flex w-full flex-row items-center justify-center">
+      <View
+        className="flex w-fit flex-row items-center justify-center"
+        style={{ gap: itemGap }}
+      >
+        {data.map((_, idx) => {
+          return (
+            <Pressable
+              key={idx.toString()}
+              className="overflow-hidden rounded-full bg-secondary/20"
+              style={{
+                width: 10,
+                height: 10,
+              }}
+              onPress={() => {
+                onPress(idx);
+              }}
+            >
+              <View
+                className="h-full w-full rounded-full bg-primary transition-all"
+                style={{
+                  width: 10,
+                  height: 10,
+                  opacity: index === idx ? 1 : 0,
+                }}
+              />
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}

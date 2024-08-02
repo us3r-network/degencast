@@ -48,15 +48,17 @@ export default function FCast({
       >
         {/* header - user info */}
         <View
-          className="flex flex-row items-center justify-between gap-6"
+          className="flex flex-row items-center gap-6"
           style={{
             height: FCastUserHeight,
           }}
         >
-          <NeynarCastUserInfo
-            userData={cast.author}
-            timestamp={cast.timestamp}
-          />
+          <View className="flex-1">
+            <NeynarCastUserInfo
+              userData={cast.author}
+              timestamp={cast.timestamp}
+            />
+          </View>
           <FCastExploreActions cast={cast} communityInfo={channel as any} />
         </View>
         {/* body - text & embed */}
