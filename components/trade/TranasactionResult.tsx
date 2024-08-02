@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Chain, TransactionReceipt } from "viem";
+import { Chain, TransactionReceipt, WalletCallReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { ExternalLink } from "../common/ExternalLink";
@@ -11,7 +11,9 @@ import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 const EXPLORE_URL = "https://www.onceupon.xyz";
 export type TransationData = {
   chain: Chain;
-  transactionReceipt?: TransactionReceipt;
+  transactionReceipt?:
+    | TransactionReceipt
+    | WalletCallReceipt<bigint, "success" | "reverted">;
   description: ReactNode;
 };
 
@@ -28,10 +30,18 @@ export function TransactionInfo({
   buttonAction,
   navigateToCreatePageAfter,
 }: TransactionInfoProps) {
-  // console.log("TransactionSuccessInfo", data);
+  console.log("TransactionSuccessInfo", data);
+  const transactionHash =
+    (data.transactionReceipt as TransactionReceipt)?.transactionHash ||
+    (
+      data.transactionReceipt as WalletCallReceipt<
+        bigint,
+        "success" | "reverted"
+      >
+    )?.transactionHash;
   return (
     <View className="flex w-full items-center gap-6">
-      {data.transactionReceipt?.transactionHash ? (
+      {transactionHash ? (
         <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
           <Check className="size-8 text-[green]" />
         </View>
@@ -42,18 +52,16 @@ export function TransactionInfo({
         </View>
       )}
       <Text className="max-w-full font-medium">
-        {data.transactionReceipt?.transactionHash
-          ? "Transaction Completed!"
-          : "Confirm Transaction!"}
+        {transactionHash ? "Transaction Completed!" : "Confirm Transaction!"}
       </Text>
       {data.description}
-      {data.transactionReceipt?.transactionHash ? (
+      {transactionHash ? (
         <View className="w-full flex-row justify-items-stretch gap-2">
           {data.chain?.blockExplorers && (
             <ExternalLink
               className="flex-1/2 text-primary-foreground/80"
               // href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
-              href={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+              href={`${EXPLORE_URL}/${transactionHash}`}
               target="_blank"
             >
               <Button variant="secondary">
@@ -73,7 +81,7 @@ export function TransactionInfo({
           </Button>
           <TransactionResultSharingButton
             type={ONCHAIN_ACTION_TYPE.SWAP}
-            transactionDetailURL={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+            transactionDetailURL={`${EXPLORE_URL}/${transactionHash}`}
             navigateToCreatePageAfter={navigateToCreatePageAfter}
           />
         </View>

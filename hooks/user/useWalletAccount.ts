@@ -7,8 +7,9 @@ import {
   useWallets,
 } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useAccount } from "wagmi";
+import { useCapabilities } from "wagmi/experimental";
 
 export default function useWalletAccount() {
   const { user, linkWallet, unlinkWallet } = usePrivy();
@@ -58,6 +59,23 @@ export default function useWalletAccount() {
         !(account.type === "wallet" && account.connectorType === "embedded"),
     ).length || 0;
 
+  const { address } = useAccount();
+  const { data: capabilities } = useCapabilities({
+    account: address,
+  });
+  const supportAtomicBatch = useCallback(
+    (chainId: number) => {
+      if (capabilities && chainId) {
+        const capability = capabilities[chainId];
+        if (capability && capability.atomicBatch?.supported) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [capabilities],
+  );
+  // console.log("supportAtomicBatch", supportAtomicBatch);
   return {
     connectWallet,
     linkWallet,
@@ -70,6 +88,7 @@ export default function useWalletAccount() {
     embededWallet,
     connectedExternalWallet,
     unconnectedLinkedWallets,
+    supportAtomicBatch,
   };
 }
 

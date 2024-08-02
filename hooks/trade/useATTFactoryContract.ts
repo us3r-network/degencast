@@ -1,10 +1,11 @@
 import { useCallback } from "react";
-import { Address } from "viem";
+import { Address, erc20Abi } from "viem";
 import {
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { useCallsStatus, useWriteContracts } from "wagmi/experimental";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -37,6 +38,7 @@ export function useATTFactoryContractInfo(token: ERC42069Token) {
     });
     // console.log("getMintNFTPriceFromUniV3", data, status);
     const nftPrice = data ? (data as bigint) : undefined;
+    // return { nftPrice:1000000000000000000000n, status };
     return { nftPrice, status };
   };
 
@@ -91,6 +93,7 @@ export function useATTFactoryContractInfo(token: ERC42069Token) {
       functionName: "tokens",
       args: [token.contractAddress],
     });
+    // console.log("getGraduated", data, status);
     const graduated = data ? ((data as unknown[])[7] as Boolean) : undefined;
 
     return { graduated, status };
@@ -99,7 +102,7 @@ export function useATTFactoryContractInfo(token: ERC42069Token) {
   const { graduated } = getGraduated();
   const getMintNFTPrice = useCallback(
     (amount: number) => {
-      console.log("getMintNFTPrice", amount, graduated);
+      // console.log("getMintNFTPrice", amount, graduated);
       if (!graduated) {
         return getMintNFTPriceAfterFee(amount);
       } else {
@@ -124,13 +127,13 @@ export function useATTFactoryContractMint(token: ERC42069Token) {
   const {
     writeContract,
     data: hash,
-    isPending: writing,
+    isPending: writePending,
     error: writeError,
   } = useWriteContract();
   const {
     data: transactionReceipt,
     error: transationError,
-    isLoading: waiting,
+    isLoading: transactionPending,
     isSuccess,
     status,
   } = useWaitForTransactionReceipt({
@@ -161,9 +164,92 @@ export function useATTFactoryContractMint(token: ERC42069Token) {
     status,
     writeError,
     transationError,
-    waiting,
-    writing,
+    isPending: writePending || transactionPending,
     isSuccess,
+  };
+}
+
+export function useATTFactoryContractMintAA(token: ERC42069Token) {
+  const {
+    writeContracts,
+    data: id,
+    isPending: writePending,
+    error: writeError,
+  } = useWriteContracts();
+  const {
+    data: callsStatus,
+    error: transationError,
+    isSuccess,
+  } = useCallsStatus({
+    id: id as string,
+    query: {
+      enabled: !!id,
+      // Poll every second until the calls are confirmed
+      refetchInterval: (data) =>
+        data.state.data?.status === "CONFIRMED" ? false : 1000,
+    },
+  });
+  const { getGraduated } = useATTFactoryContractInfo(token);
+  const { graduated } = getGraduated();
+  const mint = useCallback(
+    async (
+      amount: number,
+      maxPayment: bigint,
+      paymentTokenAddress?: Address,
+    ) => {
+      console.log(
+        "mint with AA wallet",
+        token,
+        amount,
+        maxPayment,
+        paymentTokenAddress,
+      );
+      const contracts: any[] = [];
+      if (paymentTokenAddress)
+        contracts.push({
+          address: paymentTokenAddress,
+          abi: erc20Abi,
+          functionName: "approve",
+          args: [ATT_FACTORY_CONTRACT_ADDRESS, maxPayment],
+        });
+      contracts.push({
+        address: ATT_FACTORY_CONTRACT_ADDRESS,
+        abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
+        chainId: ATT_CONTRACT_CHAIN.id,
+        functionName: graduated ? "mintNFTFromUniV3" : "mintNFT",
+        args: [
+          token.contractAddress,
+          BigInt(token.tokenId),
+          BigInt(amount),
+          maxPayment,
+        ],
+      });
+      writeContracts({
+        contracts,
+      });
+    },
+    [graduated],
+  );
+  const transactionReceipt =
+    callsStatus?.receipts && callsStatus.receipts.length > 0
+      ? callsStatus?.receipts[callsStatus.receipts.length - 1]
+      : undefined;
+
+  console.log(
+    "mintAA status",
+    writePending,
+    isSuccess,
+    callsStatus,
+    transactionReceipt,
+  );
+  return {
+    mint,
+    transactionReceipt,
+    writeError,
+    transationError,
+    isPending:
+      writePending || (id && !callsStatus) || callsStatus?.status === "PENDING",
+    isSuccess: callsStatus?.status === "CONFIRMED",
   };
 }
 
