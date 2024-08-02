@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, ScrollView, View } from "react-native";
+import { SceneMap, TabView } from "react-native-tab-view";
+import useLoadCastOnchainActivities from "~/hooks/activity/useLoadCastOnchainActivities";
 import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
+import useLoadTokenOnchainActivities from "~/hooks/activity/useLoadTokenOnchainActivities";
 import {
   ActivityFilterType,
   ActivityOperationCatagery,
 } from "~/services/community/types/activity";
-import { Loading } from "../common/Loading";
-import ActivityItem from "./ActivityItem";
-import { SceneMap, TabView } from "react-native-tab-view";
-import { OutlineTabBar } from "../layout/tab-view/TabBar";
-import useLoadCastOnchainActivities from "~/hooks/activity/useLoadCastOnchainActivities";
 import { ERC42069Token } from "~/services/trade/types";
-import useLoadTokenOnchainActivities from "~/hooks/activity/useLoadTokenOnchainActivities";
+import { Loading } from "../common/Loading";
+import { OutlineTabBar } from "../layout/tab-view/TabBar";
+import ActivityItem from "./ActivityItem";
 
 export default function Activities({
   fid,
@@ -45,7 +45,7 @@ export default function Activities({
       <ActivitieList
         fid={fid}
         type={type}
-        operationCatagery={ActivityOperationCatagery.PROPOSAL}
+        operationCatagery={ActivityOperationCatagery.REWARD}
       />
     ),
   });

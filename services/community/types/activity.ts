@@ -1,9 +1,8 @@
+import { Address } from "viem";
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import { ERC42069Token } from "~/services/trade/types";
+import { WarpcastChannel } from "../api/community";
 import { AttentionTokenEntity } from "./attention-token";
-import { CommunityEntity } from "./community";
-import { Address } from "viem";
 
 export type ActivitiesParams = {
   pageSize?: number;
@@ -20,6 +19,7 @@ export enum ActivityOperation {
   BURN = "burn",
   PROPOSE = "propose",
   DISPUTE = "dispute",
+  REWARD = "reward",
 }
 
 export enum ActivityFilterType {
@@ -44,8 +44,9 @@ export type ActivityEntity = {
   userAddr: string;
   user: Author;
   timestamp: number;
+  rewardDescription?: string;
   // same as explore feed cast
-  channel: CommunityEntity;
+  channel: WarpcastChannel;
   cast: NeynarCast;
 	proposal: ProposalEntity;
 };

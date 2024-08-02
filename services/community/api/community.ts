@@ -184,7 +184,12 @@ export type WarpcastChannel = {
   url: string;
   name: string;
   imageUrl: string;
+  description: string;
   createdAt: number;
+  leadFid: number;
+  moderatorFid: number;
+  followerCount: number;
+  tokenSymbol?: string;
 };
 export function fetchWarpcastChannels(): RequestPromise<
   ApiResp<WarpcastChannel[]>
