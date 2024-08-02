@@ -8,6 +8,10 @@ import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { Home } from "~/components/common/Icons";
 import LaunchProgress from "~/components/community/LaunchProgress";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useUserHostChannels from "~/hooks/user/useUserHostChannels";
+import { CreateTokenButton } from "~/components/trade/ATTButton";
+import { useState } from "react";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -29,7 +33,12 @@ export default function ChannelMetaInfo({
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, memberInfo, channelId } = channel;
   const { totalNumber, newPostNumber } = memberInfo || {};
+  const { currFid } = useFarcasterAccount();
+  const { channels } = useUserHostChannels(Number(currFid));
+  const isChannelHost =
+    !!channelId && !!channels.find((channel) => channel.id === channelId);
 
+  const [tokenLaunched, setTokenLaunched] = useState(false);
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
       <Pressable
@@ -70,7 +79,18 @@ export default function ChannelMetaInfo({
               {channelId && `/${channelId}`}
             </Text>
           </View>
-          {tokenInfo && <LaunchProgress tokenInfo={tokenInfo} />}
+          {tokenInfo ? (
+            <LaunchProgress tokenInfo={tokenInfo} />
+          ) : isChannelHost && !tokenLaunched ? (
+            <CreateTokenButton
+              channelId={channelId!}
+              onComplete={() => {
+                setTokenLaunched(true);
+              }}
+              className="h-8"
+              text="Launch Token"
+            />
+          ) : null}
         </View>
       </Pressable>
     </View>

@@ -10,11 +10,13 @@ import ApplyLaunchButton from "~/components/common/ApplyLaunchButton";
 import CommunityAttentionTokenInfo from "~/components/community/CommunityAttentionTokenInfo";
 import { Card } from "~/components/ui/card";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
+import { CreateTokenButton } from "~/components/trade/ATTButton";
 
 export default function AttentionTokenScreen() {
   const { community } = useCommunityCtx();
   const id = community?.channelId || "";
-  const { communityDetail, loading } = useLoadCommunityDetail(id);
+  const { communityDetail, loading, loadCommunityDetail } =
+    useLoadCommunityDetail(id);
   const { currFid } = useFarcasterAccount();
   const { channels } = useUserHostChannels(Number(currFid));
   const isChannelHost = !!id && !!channels.find((channel) => channel.id === id);
@@ -66,7 +68,18 @@ export default function AttentionTokenScreen() {
           </ScrollView>
           {isChannelHost && (
             <View className=" py-5">
-              <ApplyLaunchButton channelId={id} />
+              <CreateTokenButton
+                channelId={id}
+                onComplete={() => {
+                  loadCommunityDetail();
+                }}
+                className="h-14 w-full"
+                renderBottonContent={() => {
+                  return (
+                    <Text className="text-lg font-bold">Launch Token</Text>
+                  );
+                }}
+              />
             </View>
           )}
         </>
