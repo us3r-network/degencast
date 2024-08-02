@@ -354,7 +354,6 @@ function SwapToken({
                     fromTokenBalance < Number(fromAmount) ||
                     fetchingPrice ||
                     fetchingQuote ||
-                    fetchingQuote ||
                     Number(fromAmount) === 0 ||
                     Number(toAmount) === 0 ||
                     transationLoading

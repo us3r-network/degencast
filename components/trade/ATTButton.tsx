@@ -28,6 +28,7 @@ import {
   useATTFactoryContractBurn,
   useATTFactoryContractInfo,
   useATTFactoryContractMint,
+  useATTFactoryContractMintAA,
 } from "~/hooks/trade/useATTFactoryContract";
 import { getTokenInfo } from "~/hooks/trade/useERC20Contract";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
@@ -395,20 +396,10 @@ const MintNFT = forwardRef<
   }
 >(({ className, nft, onSuccess, onError, ...props }, ref) => {
   const account = useAccount();
+  const { supportAtomicBatch } = useWalletAccount();
   const [amount, setAmount] = useState(1);
-  const {
-    mint,
-    transactionReceipt,
-    status,
-    writeError,
-    transationError,
-    waiting,
-    writing,
-    isSuccess,
-  } = useATTFactoryContractMint(nft);
 
-  const { getMintNFTPrice, getPaymentToken } =
-    useATTFactoryContractInfo(nft);
+  const { getMintNFTPrice, getPaymentToken } = useATTFactoryContractInfo(nft);
 
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
@@ -429,29 +420,6 @@ const MintNFT = forwardRef<
     ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
     : "";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
-  useEffect(() => {
-    if (isSuccess && transactionReceipt && token && nftPrice) {
-      const transationData = {
-        chain: ATT_CONTRACT_CHAIN,
-        transactionReceipt,
-        description: (
-          <View className="flex-row items-center gap-2">
-            <Text>Miny {amount} nfts and cost</Text>
-            <TokenWithValue token={token} value={nftPrice} />
-          </View>
-        ),
-      };
-      onSuccess?.(transationData);
-    }
-  }, [isSuccess]);
-
-  useEffect(() => {
-    if (writeError || transationError) {
-      onError?.(
-        writeError?.message || transationError?.message || "Something Wrong!",
-      );
-    }
-  }, [writeError, transationError]);
 
   const allowanceParams =
     account?.address && token?.address && nftPrice
@@ -489,33 +457,170 @@ const MintNFT = forwardRef<
           <Text>fetching price...</Text>
         )}
       </View>
-      <OnChainActionButtonWarper
-        variant="secondary"
-        className="w-full"
-        targetChainId={ATT_CONTRACT_CHAIN.id}
-        allowanceParams={allowanceParams}
-        warpedButton={
-          <Button
+      {token &&
+        !!nftPrice &&
+        !!amount &&
+        (supportAtomicBatch(token?.chainId) ? (
+          <MintButtonAA
+            nft={nft}
+            paymentToken={token}
+            amount={amount}
+            nftPrice={nftPrice}
+            onSuccess={onSuccess}
+            onError={onError}
+          />
+        ) : (
+          <OnChainActionButtonWarper
             variant="secondary"
             className="w-full"
-            disabled={
-              !account ||
-              !nftPrice ||
-              waiting ||
-              writing ||
-              Number(token?.rawBalance || 0) < Number(nftPrice)
+            targetChainId={ATT_CONTRACT_CHAIN.id}
+            allowanceParams={allowanceParams}
+            warpedButton={
+              <MintButton
+                nft={nft}
+                paymentToken={token}
+                amount={amount}
+                nftPrice={nftPrice}
+                onSuccess={onSuccess}
+                onError={onError}
+              />
             }
-            onPress={() => {
-              if (nftPrice) mint(amount, nftPrice);
-            }}
-          >
-            <Text>{waiting || writing ? "Confirming..." : "Mint"}</Text>
-          </Button>
-        }
-      />
+          />
+        ))}
     </View>
   );
 });
+
+function MintButton({
+  nft,
+  paymentToken,
+  amount,
+  nftPrice,
+  onSuccess,
+  onError,
+}: {
+  nft: ERC42069Token;
+  paymentToken: TokenWithTradeInfo;
+  amount: number;
+  nftPrice: bigint;
+  onSuccess?: (data: TransationData) => void;
+  onError?: (error: string) => void;
+}) {
+  const {
+    mint,
+    transactionReceipt,
+    writeError,
+    transationError,
+    isPending,
+    isSuccess,
+  } = useATTFactoryContractMint(nft);
+
+  useEffect(() => {
+    if (isSuccess && transactionReceipt && paymentToken && nftPrice) {
+      const transationData = {
+        chain: ATT_CONTRACT_CHAIN,
+        transactionReceipt,
+        description: (
+          <View className="flex-row items-center gap-2">
+            <Text>Mint {amount} nfts and cost</Text>
+            <TokenWithValue token={paymentToken} value={nftPrice} />
+          </View>
+        ),
+      };
+      onSuccess?.(transationData);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (writeError || transationError) {
+      onError?.(
+        writeError?.message || transationError?.message || "Something Wrong!",
+      );
+    }
+  }, [writeError, transationError]);
+  return (
+    <Button
+      variant="secondary"
+      className="w-full"
+      disabled={
+        !nftPrice ||
+        isPending ||
+        Number(paymentToken?.rawBalance || 0) < Number(nftPrice)
+      }
+      onPress={() => {
+        if (nftPrice && paymentToken) mint(amount, nftPrice);
+      }}
+    >
+      <Text>{isPending ? "Confirming..." : "Mint"}</Text>
+    </Button>
+  );
+}
+
+function MintButtonAA({
+  nft,
+  paymentToken,
+  amount,
+  nftPrice,
+  onSuccess,
+  onError,
+}: {
+  nft: ERC42069Token;
+  paymentToken: TokenWithTradeInfo;
+  amount: number;
+  nftPrice: bigint;
+  onSuccess?: (data: TransationData) => void;
+  onError?: (error: string) => void;
+}) {
+  const {
+    mint,
+    transactionReceipt,
+    writeError,
+    transationError,
+    isPending,
+    isSuccess,
+  } = useATTFactoryContractMintAA(nft);
+
+  useEffect(() => {
+    if (isSuccess && transactionReceipt && paymentToken && nftPrice) {
+      const transationData = {
+        chain: ATT_CONTRACT_CHAIN,
+        transactionReceipt,
+        description: (
+          <View className="flex-row items-center gap-2">
+            <Text>Mint {amount} nfts and cost</Text>
+            <TokenWithValue token={paymentToken} value={nftPrice} />
+          </View>
+        ),
+      };
+      onSuccess?.(transationData);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (writeError || transationError) {
+      onError?.(
+        writeError?.message || transationError?.message || "Something Wrong!",
+      );
+    }
+  }, [writeError, transationError]);
+  return (
+    <Button
+      variant="secondary"
+      className="w-full"
+      disabled={
+        !nftPrice ||
+        isPending ||
+        Number(paymentToken?.rawBalance || 0) < Number(nftPrice)
+      }
+      onPress={() => {
+        if (nftPrice && paymentToken)
+          mint(amount, nftPrice, paymentToken.address);
+      }}
+    >
+      <Text>{isPending ? "Confirming..." : "Mint"}</Text>
+    </Button>
+  );
+}
 
 export const ATT_TITLE = "About Proposal, upvote & channel NFT";
 export const ATT_INFO = [

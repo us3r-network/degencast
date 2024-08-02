@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId, useChains, useSwitchChain } from "wagmi";
+import { useCapabilities } from "wagmi/experimental";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_ADDRESS } from "~/constants";
@@ -20,7 +22,12 @@ export default function OnChainActionButtonWarper({
 }: OnChainActionButtonWarperProps & {
   allowanceParams?: AllowanceProps;
 } & SwitchChainButtonProps) {
-  if (!allowanceParams || allowanceParams.tokenAddress === NATIVE_TOKEN_ADDRESS)
+  const { supportAtomicBatch } = useWalletAccount();
+  if (
+    !allowanceParams ||
+    allowanceParams.tokenAddress === NATIVE_TOKEN_ADDRESS ||
+    (targetChainId && supportAtomicBatch(targetChainId))
+  )
     return (
       <SwitchChainButtonWarper
         targetChainId={targetChainId}
