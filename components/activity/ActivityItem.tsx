@@ -1,18 +1,19 @@
 import dayjs from "dayjs";
 import { Link } from "expo-router";
 import { Pressable, View, ViewProps } from "react-native";
+import { formatUnits } from "viem";
 import { cn } from "~/lib/utils";
+import { WarpcastChannel } from "~/services/community/api/community";
 import {
   ActivityEntity,
   ActivityOperation,
 } from "~/services/community/types/activity";
 import { Author } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
+import { CommunityInfo } from "../common/CommunityInfo";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Text } from "../ui/text";
 import { Card, CardContent } from "../ui/card";
-import { TokenInfo } from "../common/TokenInfo";
-import { formatUnits } from "viem";
+import { Text } from "../ui/text";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
@@ -35,18 +36,31 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             </Text>
           )}
         </View>
-        <View className="w-full flex-row items-center gap-2">
-          <ActivityItemOperation operation={data.operation} />
-          <Text className=" inline-block  align-baseline">
-            {data.tokenAmount}
-          </Text>
-          <ActivityItemToken data={data} />
-          {data.paymentTokenAmount && data.paymentTokenInfo && (
-            <Text>
-              {`cast with ${paymentText} ${data.paymentTokenInfo.symbol}`}
+
+        {data.operation === ActivityOperation.REWARD ? (
+          <View className="w-full flex-row items-center gap-2">
+            <ActivityItemOperation operation={data.operation} />
+            {data.channel && <ActivityItemChannel channel={data.channel} />}
+            {data.paymentTokenAmount && data.paymentTokenInfo && (
+              <Text>
+                {`cast ${data.rewardDescription} with ${paymentText} ${data.paymentTokenInfo.symbol}`}
+              </Text>
+            )}
+          </View>
+        ) : (
+          <View className="w-full flex-row items-center gap-2">
+            <ActivityItemOperation operation={data.operation} />
+            <Text className=" inline-block  align-baseline">
+              {data.tokenAmount}
             </Text>
-          )}
-        </View>
+            {data.channel && <ActivityItemChannel channel={data.channel} />}
+            {data.paymentTokenAmount && data.paymentTokenInfo && (
+              <Text>
+                {`cast with ${paymentText} ${data.paymentTokenInfo.symbol}`}
+              </Text>
+            )}
+          </View>
+        )}
       </CardContent>
     </Card>
   );
@@ -120,7 +134,8 @@ export function ActivityItemOperation({
         " inline-block align-baseline text-base font-medium",
         operation === ActivityOperation.MINT ||
           operation === ActivityOperation.BUY ||
-          operation === ActivityOperation.PROPOSE
+          operation === ActivityOperation.PROPOSE ||
+          operation === ActivityOperation.REWARD
           ? "text-[#F41F4C]"
           : operation === ActivityOperation.BURN ||
               operation === ActivityOperation.SELL ||
@@ -129,27 +144,26 @@ export function ActivityItemOperation({
             : "",
       )}
     >
-      {capitalize(operation || "")}
+      {capitalize(
+        operation === ActivityOperation.REWARD ? "recieved" : operation,
+      )}
     </Text>
   );
 }
 
-export function ActivityItemToken({ data }: { data: ActivityEntity }) {
+export function ActivityItemChannel({ channel }: { channel: WarpcastChannel }) {
   return (
-    <Link asChild href={`/communities/${data.channel?.id || ""}`}>
+    <Link asChild href={`/communities/${channel.id || ""}`}>
       <Pressable
         className="flex-row items-center gap-1 align-bottom"
         onPress={(e) => {
           e.stopPropagation();
-          if (!data.channel?.id) {
+          if (!channel.id) {
             e.preventDefault();
           }
         }}
       >
-        <TokenInfo
-          name={data.tokenInfo.name || data.channel.name}
-          logo={data.tokenInfo.logo || data.channel.logo}
-        />
+        <CommunityInfo name={channel.name} logo={channel.imageUrl} />
       </Pressable>
     </Link>
   );

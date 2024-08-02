@@ -1,25 +1,64 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { FlatList, ScrollView, View } from "react-native";
+import { SceneMap, TabView } from "react-native-tab-view";
+import useLoadCastOnchainActivities from "~/hooks/activity/useLoadCastOnchainActivities";
 import useLoadOnchainActivities from "~/hooks/activity/useLoadOnchainActivities";
+import useLoadTokenOnchainActivities from "~/hooks/activity/useLoadTokenOnchainActivities";
 import {
   ActivityFilterType,
   ActivityOperationCatagery,
 } from "~/services/community/types/activity";
-import { Loading } from "../common/Loading";
-import ActivityItem from "./ActivityItem";
-import { SceneMap, TabView } from "react-native-tab-view";
-import { OutlineTabBar } from "../layout/tab-view/TabBar";
-import useLoadCastOnchainActivities from "~/hooks/activity/useLoadCastOnchainActivities";
 import { ERC42069Token } from "~/services/trade/types";
-import useLoadTokenOnchainActivities from "~/hooks/activity/useLoadTokenOnchainActivities";
+import { Loading } from "../common/Loading";
+import { OutlineTabBar } from "../layout/tab-view/TabBar";
+import ActivityItem from "./ActivityItem";
 
-export default function Activities({
-  fid,
-  type,
-}: {
+export type ActivitiesProps = {
   fid?: number;
   type: ActivityFilterType;
-}) {
+};
+
+const ActivitiesCtx = createContext<ActivitiesProps | undefined>(undefined);
+const useActivitiesCtx = () => {
+  const ctx = useContext(ActivitiesCtx);
+  if (!ctx) {
+    throw new Error("useActivitiesCtx must be used within a provider");
+  }
+  return ctx;
+};
+
+function ProposalActivityScene() {
+  const { fid, type } = useActivitiesCtx();
+  return (
+    <ActivitieList
+      fid={fid}
+      type={type}
+      operationCatagery={ActivityOperationCatagery.PROPOSAL}
+    />
+  );
+}
+function NFTActivityScene() {
+  const { fid, type } = useActivitiesCtx();
+  return (
+    <ActivitieList
+      fid={fid}
+      type={type}
+      operationCatagery={ActivityOperationCatagery.NFT}
+    />
+  );
+}
+function RewardActivityScene() {
+  const { fid, type } = useActivitiesCtx();
+  return (
+    <ActivitieList
+      fid={fid}
+      type={type}
+      operationCatagery={ActivityOperationCatagery.REWARD}
+    />
+  );
+}
+
+export default function Activities({ fid, type }: ActivitiesProps) {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "proposal", title: "Proposal" },
@@ -27,35 +66,24 @@ export default function Activities({
     { key: "rewards", title: "Rewards" },
   ]);
   const renderScene = SceneMap({
-    proposal: () => (
-      <ActivitieList
-        fid={fid}
-        type={type}
-        operationCatagery={ActivityOperationCatagery.PROPOSAL}
-      />
-    ),
-    nfts: () => (
-      <ActivitieList
-        fid={fid}
-        type={type}
-        operationCatagery={ActivityOperationCatagery.NFT}
-      />
-    ),
-    rewards: () => (
-      <ActivitieList
-        fid={fid}
-        type={type}
-        operationCatagery={ActivityOperationCatagery.PROPOSAL}
-      />
-    ),
+    proposal: ProposalActivityScene,
+    nfts: NFTActivityScene,
+    rewards: RewardActivityScene,
   });
   return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      renderTabBar={OutlineTabBar}
-    />
+    <ActivitiesCtx.Provider
+      value={{
+        fid,
+        type,
+      }}
+    >
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        renderTabBar={OutlineTabBar}
+      />
+    </ActivitiesCtx.Provider>
   );
 }
 
