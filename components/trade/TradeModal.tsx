@@ -13,8 +13,12 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, DEFAULT_CHAINID, NATIVE_TOKEN_METADATA } from "~/constants";
-import useSwapToken from "~/hooks/trade/useSwapToken";
+import {
+  DEFAULT_CHAIN,
+  DEFAULT_CHAINID,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
+import { useFetchPrice, useSwapToken } from "~/hooks/trade/use0xSwap";
 import useUserAction from "~/hooks/user/useUserAction";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -135,12 +139,12 @@ function SwapToken({
       });
   }, [token2]);
 
+  const { fetchingPrice, fetchPrice } = useFetchPrice(account.address);
+
   const {
     swaping,
-    fetchingPrice,
     fetchingQuote,
     waitingUserSign,
-    fetchPrice,
     swapToken,
     transactionReceipt,
     transationStatus,

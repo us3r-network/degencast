@@ -14,34 +14,8 @@ type SwapParams = {
   buyAmount?: string;
 };
 
-export default function useSwapToken(takerAddress?: `0x${string}`) {
+export function useFetchPrice(takerAddress?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
-  const [swaping, setSwaping] = useState(false);
-  const [fetchingQuote, setFetchingQuote] = useState(false);
-  const [waitingUserSign, setWaitingUserSign] = useState(false);
-  const [error, setError] = useState<Error | null>();
-  const [fee, setFee] = useState(0);
-  const {
-    data: hash,
-    sendTransactionAsync,
-    error: sendTransactionError,
-    reset: resetSendTransaction,
-  } = useSendTransaction();
-  const {
-    data: transactionReceipt,
-    error: transationError,
-    isLoading: transationLoading,
-    isSuccess,
-    status: transationStatus,
-  } = useWaitForTransactionReceipt({
-    hash,
-  });
-
-  useEffect(() => {
-    if (transationStatus !== "pending") {
-      setSwaping(false);
-    }
-  }, [transationStatus]);
 
   const fetchPrice = async ({
     sellToken,
@@ -87,6 +61,41 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
       allowanceTarget: price?.allowanceTarget,
     };
   };
+
+  return {
+    fetchingPrice,
+    fetchPrice,
+  };
+}
+
+
+export function useSwapToken(takerAddress?: `0x${string}`) {
+  const [swaping, setSwaping] = useState(false);
+  const [fetchingQuote, setFetchingQuote] = useState(false);
+  const [waitingUserSign, setWaitingUserSign] = useState(false);
+  const [error, setError] = useState<Error | null>();
+  const [fee, setFee] = useState(0);
+  const {
+    data: hash,
+    sendTransactionAsync,
+    error: sendTransactionError,
+    reset: resetSendTransaction,
+  } = useSendTransaction();
+  const {
+    data: transactionReceipt,
+    error: transationError,
+    isLoading: transationLoading,
+    isSuccess,
+    status: transationStatus,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  useEffect(() => {
+    if (transationStatus !== "pending") {
+      setSwaping(false);
+    }
+  }, [transationStatus]);
 
   const swapToken = async ({
     sellToken,
@@ -161,18 +170,15 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
   };
 
   const reset = () => {
-    setFetchingPrice(false);
     setSwaping(false);
     setFetchingQuote(false);
     setWaitingUserSign(false);
     resetSendTransaction();
   };
   return {
-    fetchingPrice,
     fetchingQuote,
     waitingUserSign,
     swaping,
-    fetchPrice,
     swapToken,
     fee,
     transactionReceipt,
