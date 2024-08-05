@@ -2,7 +2,6 @@ import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Address, parseUnits } from "viem";
-import { base } from "viem/chains";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,7 +13,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { NATIVE_TOKEN_METADATA } from "~/constants";
+import { DEFAULT_CHAIN, DEFAULT_CHAINID, NATIVE_TOKEN_METADATA } from "~/constants";
 import useSwapToken from "~/hooks/trade/useSwapToken";
 import useUserAction from "~/hooks/user/useUserAction";
 import { cn } from "~/lib/utils";
@@ -27,7 +26,7 @@ import { TokenWithValue } from "../common/TokenInfo";
 import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import CommunityToeknSelect from "./CommunityTokenSelect";
+import CommunityTokenSelect from "./CommunityTokenSelect";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 import {
@@ -206,7 +205,7 @@ function SwapToken({
         (isSuccess && transactionReceipt))
     ) {
       const transationData = {
-        chain: base,
+        chain: DEFAULT_CHAIN,
         transactionReceipt,
         description: (
           <View className="flex w-full items-center gap-2">
@@ -435,9 +434,10 @@ function TokenWithAmount({
             showBalance={false}
           />
         ) : tokenSet.type === TokenType.COMMUNITY_TOKENS ? (
-          <CommunityToeknSelect
+          <CommunityTokenSelect
             defaultToken={tokenSet.defaultToken}
             selectToken={setToken}
+            chainId={DEFAULT_CHAINID}
           />
         ) : (
           <Loading />

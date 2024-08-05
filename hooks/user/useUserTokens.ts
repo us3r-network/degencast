@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { erc20Abi, formatUnits } from "viem";
-import { base } from "viem/chains";
 import { useBalance, useReadContracts } from "wagmi";
 import {
-  DEFAULT_CHAIN,
-  DEGEN_ADDRESS,
-  DEGEN_METADATA,
+  DEFAULT_CHAINID,
+  DEGEN_TOKEN_METADATA,
+  DEGEN_TOKEN_ADDRESS,
   NATIVE_TOKEN_METADATA,
 } from "~/constants";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -17,7 +16,7 @@ export enum TOKENS {
 
 export default function useUserTokens(
   address: `0x${string}` | undefined,
-  chainId: number = base.id,
+  chainId: number = DEFAULT_CHAINID,
 ) {
   if (!address || !chainId)
     return { userTokens: new Map<TOKENS, TokenWithTradeInfo>() };
@@ -29,26 +28,26 @@ export default function useUserTokens(
     allowFailure: false,
     contracts: [
       {
-        address: DEGEN_ADDRESS,
+        address: DEGEN_TOKEN_ADDRESS,
         chainId,
         abi: erc20Abi,
         functionName: "name",
       },
       {
-        address: DEGEN_ADDRESS,
+        address: DEGEN_TOKEN_ADDRESS,
         chainId,
         abi: erc20Abi,
         functionName: "balanceOf",
         args: [address],
       },
       {
-        address: DEGEN_ADDRESS,
+        address: DEGEN_TOKEN_ADDRESS,
         chainId,
         abi: erc20Abi,
         functionName: "decimals",
       },
       {
-        address: DEGEN_ADDRESS,
+        address: DEGEN_TOKEN_ADDRESS,
         chainId,
         abi: erc20Abi,
         functionName: "symbol",
@@ -62,7 +61,7 @@ export default function useUserTokens(
     if (nativeToken)
       tokens.set(TOKENS.NATIVE, {
         ...nativeToken,
-        chainId: DEFAULT_CHAIN.id,
+        chainId: DEFAULT_CHAINID,
         address: NATIVE_TOKEN_METADATA.address,
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: nativeToken.value,
@@ -71,14 +70,14 @@ export default function useUserTokens(
       });
     if (degenToken)
       tokens.set(TOKENS.DEGEN, {
-        chainId: DEFAULT_CHAIN.id,
-        address: DEGEN_METADATA.address,
+        chainId: DEFAULT_CHAINID,
+        address: DEGEN_TOKEN_METADATA.address,
         name: degenToken[0],
         rawBalance: degenToken[1],
         decimals: degenToken[2],
         balance: formatUnits(degenToken[1], degenToken[2]),
         symbol: degenToken[3],
-        logoURI: DEGEN_METADATA.logoURI,
+        logoURI: DEGEN_TOKEN_METADATA.logoURI,
       });
     return tokens;
   }, [nativeToken, degenToken]);
@@ -90,7 +89,7 @@ export default function useUserTokens(
 
 export function useUserNativeToken(
   address: `0x${string}` | undefined,
-  chainId: number = base.id,
+  chainId: number = DEFAULT_CHAINID,
   disable: boolean = false,
 ) {
   if (!address || !chainId || disable) return undefined;
@@ -103,7 +102,7 @@ export function useUserNativeToken(
     () =>
       data && {
         ...data,
-        chainId: DEFAULT_CHAIN.id,
+        chainId: DEFAULT_CHAINID,
         address: NATIVE_TOKEN_METADATA.address,
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: data.value,
@@ -118,7 +117,7 @@ export function useUserNativeToken(
 export function useUserToken(
   address?: `0x${string}` | undefined,
   contractAddress?: `0x${string}` | undefined,
-  chainId: number = base.id,
+  chainId: number = DEFAULT_CHAINID,
 ) {
   // console.log("useUserToken", address, contractAddress, chainId);
   if (

@@ -7,7 +7,6 @@ import {
   isAddress,
   parseEther,
 } from "viem";
-import { base } from "viem/chains";
 import {
   useAccount,
   useSendTransaction,
@@ -121,7 +120,7 @@ const SendToken = forwardRef<
     (transactionReceipt: TransactionReceipt | undefined) => {
       if (token && address && isAddress(address) && Number(amount) > 0) {
         const transationData = {
-          chain: base,
+          chain,
           transactionReceipt,
           description: (
             <View className="flex w-full items-center gap-2">
