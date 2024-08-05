@@ -5,6 +5,7 @@ import { createProposal, getProposals } from "./proposal-helper";
 import { arCheckCastProposalMetadata } from "~/services/upload";
 import { ApiRespCode } from "~/services/shared/types";
 import useCacheCastProposal from "./useCacheCastProposal";
+import { walletActionsEip5792 } from "viem/experimental";
 
 export default function useCreateProposal({
   contractAddress,
@@ -16,7 +17,10 @@ export default function useCreateProposal({
   onCreateProposalError?: (error: any) => void;
 }) {
   const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClientBase } = useWalletClient();
+  const walletClient = walletClientBase
+    ? walletClientBase.extend(walletActionsEip5792())
+    : walletClientBase;
   const [transactionReceipt, setTransactionReceipt] =
     useState<TransactionReceipt>();
   const [error, setError] = useState<any>();
@@ -31,7 +35,11 @@ export default function useCreateProposal({
         castHash: string;
         castCreator: `0x${string}`;
       },
-      paymentPrice: bigint,
+      paymentConfig: {
+        paymentPrice: bigint;
+        enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
+        paymentTokenAddress?: `0x${string}`;
+      },
     ) => {
       try {
         setStatus("pending");
@@ -58,7 +66,7 @@ export default function useCreateProposal({
               ...proposalConfig,
               contentURI: arUrl,
             },
-            paymentPrice,
+            paymentConfig,
           });
           setTransactionReceipt(receipt);
           setStatus("success");
