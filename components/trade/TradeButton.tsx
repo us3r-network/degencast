@@ -1,17 +1,16 @@
-import { base } from "viem/chains";
+import { upperFirst } from "lodash";
+import { LegacyRef, forwardRef } from "react";
+import { View } from "react-native";
 import { useAccount } from "wagmi";
 import { Button, ButtonProps } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
+import { DEFAULT_CHAINID, DEGEN_TOKEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import TradeModal from "./TradeModal";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { upperFirst } from "lodash";
 import { ArrowUpDown } from "../common/Icons";
-import { LegacyRef, forwardRef } from "react";
-import { View } from "react-native";
-import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import TradeModal from "./TradeModal";
 
 export default function SwapButton() {
   const account = useAccount();
@@ -32,7 +31,7 @@ export default function SwapButton() {
     return (
       <TradeModal
         token1={NATIVE_TOKEN_METADATA}
-        token2={DEGEN_METADATA}
+        token2={DEGEN_TOKEN_METADATA}
         triggerButton={
           <Button size={"icon"} className="rounded-full">
             <Text>
@@ -76,8 +75,8 @@ export function TradeButton({
             variant={"secondary"}
             disabled={
               (!token1 && !token2) ||
-              token1.chainId !== base.id ||
-              token2.chainId !== base.id
+              token1.chainId !== DEFAULT_CHAINID ||
+              token2.chainId !== DEFAULT_CHAINID
             }
           >
             <Text>Trade</Text>
@@ -120,8 +119,8 @@ export function ExploreTradeButton({
             logo={logo}
             disabled={
               (!token1 && !token2) ||
-              token1.chainId !== base.id ||
-              token2.chainId !== base.id
+              token1.chainId !== DEFAULT_CHAINID ||
+              token2.chainId !== DEFAULT_CHAINID
             }
             {...props}
           />
@@ -164,8 +163,8 @@ export function TradeChannelTokenButton({
             logo={logo}
             disabled={
               (!token1 && !token2) ||
-              token1.chainId !== base.id ||
-              token2.chainId !== base.id
+              token1.chainId !== DEFAULT_CHAINID ||
+              token2.chainId !== DEFAULT_CHAINID
             }
             {...props}
           />

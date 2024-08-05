@@ -461,13 +461,20 @@ const MintNFT = forwardRef<
         !!nftPrice &&
         !!amount &&
         (supportAtomicBatch(token?.chainId) ? (
-          <MintButtonAA
-            nft={nft}
-            paymentToken={token}
-            amount={amount}
-            nftPrice={nftPrice}
-            onSuccess={onSuccess}
-            onError={onError}
+          <OnChainActionButtonWarper
+            variant="secondary"
+            className="w-full"
+            targetChainId={ATT_CONTRACT_CHAIN.id}
+            warpedButton={
+              <MintButtonAA
+                nft={nft}
+                paymentToken={token}
+                amount={amount}
+                nftPrice={nftPrice}
+                onSuccess={onSuccess}
+                onError={onError}
+              />
+            }
           />
         ) : (
           <OnChainActionButtonWarper

@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
-import {
-  BUY_TOKEN_PERCENTAGE_FEE,
-  getPrice,
-  getQuote,
-} from "~/services/trade/api/0x";
+import { ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE } from "~/constants";
+import { getPrice, getQuote } from "~/services/trade/api/0x";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
 const DEFAULT_DECIMALS = 18;
@@ -131,17 +128,17 @@ export default function useSwapToken(takerAddress?: `0x${string}`) {
           buyToken.decimals || DEFAULT_DECIMALS,
         ) || "0",
       );
-      if (quote.fees?.zeroExFee?.feeAmount){
+      if (quote.fees?.zeroExFee?.feeAmount) {
         const zeroExFee = Number(
           formatUnits(
             quote.fees?.zeroExFee?.feeAmount,
             buyToken.decimals || DEFAULT_DECIMALS,
           ) || "0",
         );
-        setFee(grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE + zeroExFee);  
+        setFee(grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE + zeroExFee);
         // console.log(
         //   "swap fee",
-        //   grossBuyAmount * BUY_TOKEN_PERCENTAGE_FEE,
+        //   grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
         //   zeroExFee,
         // );
       }
