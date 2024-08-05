@@ -69,7 +69,8 @@ export function ProposeProposalWriteButton({
           value: price,
         }
       : undefined;
-
+  const { supportAtomicBatch } = useWalletAccount();
+  const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
   return (
     <OnChainActionButtonWarper
       variant="secondary"
@@ -86,7 +87,15 @@ export function ProposeProposalWriteButton({
               connectWallet();
               return;
             }
-            propose();
+            propose({
+              paymentPrice: price!,
+              ...(isSupportAtomicBatch
+                ? {
+                    enableApprovePaymentStep: true,
+                    paymentTokenAddress: paymentTokenInfo?.address,
+                  }
+                : {}),
+            });
           }}
           {...props}
         >
@@ -176,12 +185,14 @@ export function DisputeProposalWriteButton({
         }
       : undefined;
 
+  const { supportAtomicBatch } = useWalletAccount();
+  const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
   return (
     <OnChainActionButtonWarper
       variant="secondary"
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
-      allowanceParams={allowanceParams}
+      allowanceParams={isSupportAtomicBatch ? undefined : allowanceParams}
       warpedButton={
         <Button
           variant={"secondary"}
@@ -192,7 +203,15 @@ export function DisputeProposalWriteButton({
               connectWallet();
               return;
             }
-            dispute();
+            dispute({
+              paymentPrice: price!,
+              ...(isSupportAtomicBatch
+                ? {
+                    enableApprovePaymentStep: true,
+                    paymentTokenAddress: paymentTokenInfo?.address,
+                  }
+                : {}),
+            });
           }}
           {...props}
         >

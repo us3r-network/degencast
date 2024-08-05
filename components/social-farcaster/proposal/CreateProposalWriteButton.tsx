@@ -60,12 +60,15 @@ export default function CreateProposalWriteButton({
         }
       : undefined;
 
+  const { supportAtomicBatch } = useWalletAccount();
+  const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
+
   return (
     <OnChainActionButtonWarper
       variant="secondary"
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
-      allowanceParams={allowanceParams}
+      allowanceParams={isSupportAtomicBatch ? undefined : allowanceParams}
       warpedButton={
         <Button
           variant={"secondary"}
@@ -83,7 +86,15 @@ export default function CreateProposalWriteButton({
                   cast.author.verified_addresses.eth_addresses[0],
                 ) as `0x${string}`,
               },
-              price!,
+              {
+                paymentPrice: price!,
+                ...(isSupportAtomicBatch
+                  ? {
+                      enableApprovePaymentStep: true,
+                      paymentTokenAddress: paymentTokenInfo?.address,
+                    }
+                  : {}),
+              },
             );
           }}
           {...props}

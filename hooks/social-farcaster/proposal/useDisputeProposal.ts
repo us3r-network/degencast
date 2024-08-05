@@ -3,6 +3,7 @@ import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { disputeProposal, getProposals } from "./proposal-helper";
 import useCacheCastProposal from "./useCacheCastProposal";
+import { walletActionsEip5792 } from "viem/experimental";
 
 export default function useDisputeProposal({
   contractAddress,
@@ -16,7 +17,10 @@ export default function useDisputeProposal({
   onDisputeError?: (error: any) => void;
 }) {
   const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClientBase } = useWalletClient();
+  const walletClient = walletClientBase
+    ? walletClientBase.extend(walletActionsEip5792())
+    : undefined;
   const [transactionReceipt, setTransactionReceipt] =
     useState<TransactionReceipt>();
   const [error, setError] = useState<any>();
@@ -26,42 +30,50 @@ export default function useDisputeProposal({
   const isLoading = status === "pending";
 
   const { upsertOneToProposals } = useCacheCastProposal();
-  const dispute = useCallback(async () => {
-    try {
-      setStatus("pending");
-      const { receipt } = await disputeProposal({
-        publicClient: publicClient!,
-        walletClient: walletClient!,
-        contractAddress,
-        castHash,
-      });
-      setTransactionReceipt(receipt);
-      setStatus("success");
-      onDisputeSuccess?.(receipt);
+  const dispute = useCallback(
+    async (paymentConfig: {
+      paymentPrice: bigint;
+      enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
+      paymentTokenAddress?: `0x${string}`;
+    }) => {
+      try {
+        setStatus("pending");
+        const { receipt } = await disputeProposal({
+          publicClient: publicClient!,
+          walletClient: walletClient!,
+          contractAddress,
+          castHash,
+          paymentConfig,
+        });
+        setTransactionReceipt(receipt);
+        setStatus("success");
+        onDisputeSuccess?.(receipt);
 
-      const proposals = await getProposals({
-        publicClient: publicClient!,
-        contractAddress,
-        castHash,
-      });
-      upsertOneToProposals(castHash as any, {
-        status: proposals.state,
-        finalizeTime: Number(proposals.deadline),
-        roundIndex: Number(proposals.roundIndex),
-      });
-    } catch (error) {
-      setError(error);
-      setStatus("error");
-      onDisputeError?.(error);
-      console.error("disputeProposal error", error);
-    }
-  }, [
-    contractAddress,
-    publicClient,
-    walletClient,
-    onDisputeSuccess,
-    onDisputeError,
-  ]);
+        const proposals = await getProposals({
+          publicClient: publicClient!,
+          contractAddress,
+          castHash,
+        });
+        upsertOneToProposals(castHash as any, {
+          status: proposals.state,
+          finalizeTime: Number(proposals.deadline),
+          roundIndex: Number(proposals.roundIndex),
+        });
+      } catch (error) {
+        setError(error);
+        setStatus("error");
+        onDisputeError?.(error);
+        console.error("disputeProposal error", error);
+      }
+    },
+    [
+      contractAddress,
+      publicClient,
+      walletClient,
+      onDisputeSuccess,
+      onDisputeError,
+    ],
+  );
   return {
     dispute,
     error,

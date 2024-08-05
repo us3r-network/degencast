@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient } from "viem";
+import { erc20Abi, PublicClient, TransactionReceipt, WalletClient } from "viem";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import DanAbi from "~/services/proposal/abi/DanAbi.json";
 
@@ -191,17 +191,22 @@ export const createProposal = async ({
   walletClient,
   contractAddress,
   proposalConfig,
-  paymentPrice,
+  paymentConfig,
 }: {
   publicClient: PublicClient;
-  walletClient: WalletClient;
+  // walletClient: WalletClient;
+  walletClient: any;
   contractAddress: `0x${string}`;
   proposalConfig: {
     castHash: string;
     castCreator: `0x${string}`;
     contentURI: string;
   };
-  paymentPrice: bigint;
+  paymentConfig: {
+    paymentPrice: bigint;
+    enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
+    paymentTokenAddress?: `0x${string}`;
+  };
 }) => {
   if (!contractAddress) {
     throw new Error("Contract address is required");
@@ -231,24 +236,73 @@ export const createProposal = async ({
     throw new Error("Wallet is not connected");
   }
 
+  const { paymentPrice, enableApprovePaymentStep, paymentTokenAddress } =
+    paymentConfig;
+
   const config = {
     contentHash: proposalConfig.castHash,
     contentCreator: proposalConfig.castCreator,
     contentURI: proposalConfig.contentURI,
   };
 
-  const { request: simulateRequest } = await publicClient.simulateContract({
+  const challengeProposalStepConfig = {
     abi: DanAbi,
     address: contractAddress,
     chain: ATT_CONTRACT_CHAIN,
     account,
     functionName: "createProposal",
     args: [config, paymentPrice],
-  });
+  };
 
-  const hash = await walletClient.writeContract(simulateRequest);
+  let receipt: TransactionReceipt;
+  if (enableApprovePaymentStep) {
+    if (!walletClient.writeContracts) {
+      throw new Error("walletClient does not have writeContracts method");
+    }
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+    if (!paymentTokenAddress) {
+      throw new Error(
+        "Payment token address is required when enable approve payment step",
+      );
+    }
+    const approvePaymentStepConfig = {
+      address: paymentTokenAddress,
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [contractAddress, paymentPrice],
+    };
+
+    const contracts = [
+      approvePaymentStepConfig,
+      challengeProposalStepConfig,
+    ] as any[];
+
+    const id = await walletClient.writeContracts({
+      chain,
+      account,
+      contracts,
+    });
+    const res = await walletClient.getCallsStatus({
+      id: id,
+      query: {
+        enabled: !!id,
+        // Poll every second until the calls are confirmed
+        refetchInterval: (data: any) =>
+          data.state.data?.status === "CONFIRMED" ? false : 1000,
+      },
+    });
+
+    const { status, receipts } = res;
+    receipt = (receipts?.[receipts?.length - 1] ||
+      undefined) as TransactionReceipt;
+  } else {
+    const { request: simulateRequest } = await publicClient.simulateContract(
+      challengeProposalStepConfig,
+    );
+    const hash = await walletClient.writeContract(simulateRequest);
+    receipt = await publicClient.waitForTransactionReceipt({ hash });
+  }
+
   return {
     receipt,
     tokenInfo: {
@@ -261,17 +315,22 @@ export const createProposal = async ({
 
 type HandleProposalCommonOpts = {
   publicClient: PublicClient;
-  walletClient: WalletClient;
+  // walletClient: WalletClient;
+  walletClient: any;
   contractAddress: `0x${string}`;
   castHash: string;
-  paymentPrice?: bigint;
+  paymentConfig: {
+    paymentPrice: bigint;
+    enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
+    paymentTokenAddress?: `0x${string}`;
+  };
 };
 const challengeProposal = async ({
   publicClient,
   walletClient,
   contractAddress,
   castHash,
-  paymentPrice,
+  paymentConfig,
   functionName,
 }: HandleProposalCommonOpts & {
   functionName: string;
@@ -294,35 +353,86 @@ const challengeProposal = async ({
   if (!account) {
     throw new Error("Wallet is not connected");
   }
-  let payment = paymentPrice;
-  if (!paymentPrice) {
+
+  const {
+    paymentPrice: inputPrice,
+    enableApprovePaymentStep,
+    paymentTokenAddress,
+  } = paymentConfig;
+  let paymentPrice = inputPrice;
+  if (!inputPrice) {
     if (functionName === "proposeProposal") {
-      payment = await getProposePrice({
+      paymentPrice = await getProposePrice({
         publicClient,
         contractAddress,
         castHash: castHash,
       });
     }
     if (functionName === "disputeProposal") {
-      payment = await getDisputePrice({
+      paymentPrice = await getDisputePrice({
         publicClient,
         contractAddress,
         castHash: castHash,
       });
     }
   }
-  const { request: simulateRequest } = await publicClient.simulateContract({
+
+  const challengeProposalStepConfig = {
     abi: DanAbi,
     address: contractAddress,
     chain: ATT_CONTRACT_CHAIN,
     account,
     functionName,
-    args: [castHash, payment],
-  });
+    args: [castHash, paymentPrice],
+  };
+  let receipt: TransactionReceipt;
+  if (enableApprovePaymentStep) {
+    if (!walletClient.writeContracts) {
+      throw new Error("walletClient does not have writeContracts method");
+    }
 
-  const hash = await walletClient.writeContract(simulateRequest);
+    if (!paymentTokenAddress) {
+      throw new Error(
+        "Payment token address is required when enable approve payment step",
+      );
+    }
+    const approvePaymentStepConfig = {
+      address: paymentTokenAddress,
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [contractAddress, paymentPrice],
+    };
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+    const contracts = [
+      approvePaymentStepConfig,
+      challengeProposalStepConfig,
+    ] as any[];
+
+    const id = await walletClient.writeContracts({
+      chain,
+      account,
+      contracts,
+    });
+    const res = await walletClient.getCallsStatus({
+      id: id,
+      query: {
+        enabled: !!id,
+        // Poll every second until the calls are confirmed
+        refetchInterval: (data: any) =>
+          data.state.data?.status === "CONFIRMED" ? false : 1000,
+      },
+    });
+
+    const { status, receipts } = res;
+    receipt = (receipts?.[receipts?.length - 1] ||
+      undefined) as TransactionReceipt;
+  } else {
+    const { request: simulateRequest } = await publicClient.simulateContract(
+      challengeProposalStepConfig,
+    );
+    const hash = await walletClient.writeContract(simulateRequest);
+    receipt = await publicClient.waitForTransactionReceipt({ hash });
+  }
   return {
     receipt,
     tokenInfo: {
