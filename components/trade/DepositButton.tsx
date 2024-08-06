@@ -159,7 +159,7 @@ function TransferFromExternalWallet({
       });
       Toast.show({
         type: "success",
-        text1: "Transfer Completeed!",
+        text1: "Transfer Completed!",
         // text2: `Transaction Hash: ${hash}`,
       });
     } catch (e: any) {

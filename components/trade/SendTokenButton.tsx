@@ -186,7 +186,7 @@ const SendToken = forwardRef<
         <View className="flex gap-2">
           <View className="flex-row items-center justify-between">
             <Text>Wallet address</Text>
-            <Text className="text-sm">Only sending on Base</Text>
+            <Text className="text-sm">Only sending on {DEFAULT_CHAIN.name}</Text>
           </View>
           <Input
             className="border-secondary text-secondary"

@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   ZERO_X_API_ENDPOINT,
   ZERO_X_API_KEY,
+  ZERO_X_CHAIN,
   ZERO_X_INTEGRATOR_WALLET_ADDRESS,
   ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
 } from "~/constants";
@@ -12,7 +13,7 @@ type SwapParams = {
   buyToken?: string;
   sellAmount?: string;
   buyAmount?: string;
-  takerAddress?: string;
+  taker?: string;
   skipValidation?: boolean;
 };
 
@@ -20,24 +21,29 @@ export async function getQuote({
   sellToken,
   buyToken,
   sellAmount,
-  takerAddress,
-  skipValidation,
+  taker,
 }: SwapParams) {
   if (!Number(sellAmount)) {
     return;
   }
+  console.log("getQuote", {
+    sellToken,
+    buyToken,
+    sellAmount,
+    taker,
+  });
   try {
     const resp = await axios({
       url: `${ZERO_X_API_ENDPOINT}/quote`,
       method: "get",
       params: {
+        chainId: ZERO_X_CHAIN.id,
         sellToken: sellToken || "ETH",
         buyToken: buyToken || "ETH",
         sellAmount,
-        takerAddress,
+        taker,
         feeRecipient: ZERO_X_INTEGRATOR_WALLET_ADDRESS,
         buyTokenPercentageFee: ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
-        skipValidation,
       },
       headers: {
         "0x-api-key": ZERO_X_API_KEY,
@@ -64,6 +70,7 @@ export async function getPrice({
       url: `${ZERO_X_API_ENDPOINT}/price`,
       method: "get",
       params: {
+        chainId: ZERO_X_CHAIN.id,
         sellToken: sellToken || "ETH",
         buyToken: buyToken || "ETH",
         sellAmount,
