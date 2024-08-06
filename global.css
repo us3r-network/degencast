@@ -23,6 +23,28 @@
     --border: 240 5.9% 90%; /* color for borders */
     --input: 240 5.9% 90%;
     --ring: 262 99% 71%;
+
+    /* proposal */
+    --proposal-not-proposed: 40, 87%, 62%;
+    --proposal-not-proposed-foreground: 0, 0%, 100%;
+
+    --proposal-proposed: 168, 100%, 41%;
+    --proposal-proposed-foreground: 0, 0%, 100%;
+
+    --proposal-accepted: 168, 100%, 41%;
+    --proposal-accepted-foreground: 0, 0%, 100%;
+
+    --proposal-disputed: 347, 91%, 54%;
+    --proposal-disputed-foreground: 0, 0%, 100%;
+
+    --proposal-ready-to-mint: 274, 49%, 54%;
+    --proposal-ready-to-mint-foreground: 0, 0%, 100%;
+
+    --proposal-mint-expired: 274, 49%, 54%;
+    --proposal-mint-expired-foreground: 0, 0%, 100%;
+
+    --proposal-abandoned: 347, 91%, 54%;
+    --proposal-abandoned-foreground: 0, 0%, 100%;
   }
 
   /* .dark:root {

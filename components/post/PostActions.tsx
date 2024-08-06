@@ -46,7 +46,7 @@ export const ActionButton = forwardRef<
   return (
     <Button
       className={cn(
-        " h-[42px] w-[42px] flex-col rounded-full bg-[#9151C3] p-0 active:bg-[#9151C3] active:opacity-100 web:hover:opacity-100",
+        " h-[32px] w-[32px] flex-col rounded-full bg-[#9151C3] p-0 active:bg-[#9151C3] active:opacity-100 web:hover:opacity-100",
         className,
       )}
       ref={ref}
@@ -62,7 +62,7 @@ export function ActionText({ className, ...props }: TextProps) {
 function ActionMenuItem({
   index,
   children,
-  size = 36,
+  size = 32,
 }: {
   children: React.ReactNode;
   index: number;
@@ -118,8 +118,8 @@ function ActionMenuItem({
     }
   }, [translateYAnimatedValue, direction]);
   const actionStyle = {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     position: "absolute" as "absolute",
     zIndex: index,
 
@@ -147,7 +147,7 @@ const ActionMenuItemButton = forwardRef<
   return (
     <ActionButton
       ref={ref}
-      className={cn(" h-[36px] w-[36px]", className)}
+      className={cn(" h-[32px] w-[32px]", className)}
       {...props}
     />
   );

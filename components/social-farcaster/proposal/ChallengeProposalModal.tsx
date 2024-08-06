@@ -33,19 +33,7 @@ import {
 } from "~/components/activity/Activities";
 import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-
-const getAboutInfo = () => {
-  return [
-    "Propose: Turn a cast into a Channel NFT.",
-    "Challenge: Disagree? Challenge extends countdown by 1 hour. One challenge per account per phase.",
-    "Approve: Approved proposal = Channel NFT.",
-    "Weight: Challenge weight = √spent.",
-    "Win: Stance must have 2x the weight to win.",
-    "Result: Final stance after countdown.",
-    "Funds: Winner gets principal back, loser’s funds go to the winner based on weight.",
-    "Cost: Minimum challenge cost = NFT price.",
-  ];
-};
+import { AboutProposalChallenge } from "./AboutProposal";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -81,11 +69,13 @@ export default function ChallengeProposalModal({
   const [routes] = useState([
     { key: "challenge", title: "Challenge" },
     { key: "details", title: "Details" },
+    { key: "about", title: "About" },
   ]);
 
   const renderScene = SceneMap({
     challenge: ChallengeProposalContentBodyScene,
     details: CastActivitiesListScene,
+    about: AboutProposalChallenge,
   });
 
   return (
@@ -166,70 +156,75 @@ function ChallengeProposalContentBody({
 
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
 
-      {proposal.status === ProposalState.Accepted ? (
-        <DisputeProposalWrite
-          cast={cast}
-          channel={channel}
-          proposal={proposal}
-          tokenInfo={tokenInfo}
-          onDisputeSuccess={() => {
-            onClose();
-            Toast.show({
-              type: "success",
-              text1: "Submitted",
-            });
-          }}
-          onDisputeError={(error) => {
-            onClose();
-            Toast.show({
-              type: "error",
-              // text1: "Challenges cannot be repeated this round",
-              text1: error.message,
-            });
-          }}
-        />
-      ) : (
-        <ProposeProposalWrite
-          cast={cast}
-          channel={channel}
-          proposal={proposal}
-          tokenInfo={tokenInfo}
-          onProposeSuccess={() => {
-            onClose();
-            Toast.show({
-              type: "success",
-              text1: "Submitted",
-            });
-          }}
-          onProposeError={(error) => {
-            onClose();
-            Toast.show({
-              type: "error",
-              // text1: "Challenges cannot be repeated this round",
-              text1: error.message,
-            });
-          }}
-        />
-      )}
-
-      <DialogFooter>
-        <About title="About Proposal & channel NFT" info={getAboutInfo()} />
-      </DialogFooter>
+      <ChallengeProposalWriteForm
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+        onDisputeSuccess={() => {
+          onClose();
+          Toast.show({
+            type: "success",
+            text1: "Submitted",
+          });
+        }}
+        onDisputeError={(error) => {
+          onClose();
+          Toast.show({
+            type: "error",
+            // text1: "Challenges cannot be repeated this round",
+            text1: error.message,
+          });
+        }}
+        onProposeSuccess={() => {
+          onClose();
+          Toast.show({
+            type: "success",
+            text1: "Submitted",
+          });
+        }}
+        onProposeError={(error) => {
+          onClose();
+          Toast.show({
+            type: "error",
+            // text1: "Challenges cannot be repeated this round",
+            text1: error.message,
+          });
+        }}
+      />
     </View>
   );
 }
 
-function DisputeProposalWrite({
+export type DisputeProposalWrite = CastProposeStatusProps & {
+  onDisputeSuccess?: (proposal: TransactionReceipt) => void;
+  onDisputeError?: (error: any) => void;
+  onProposeSuccess?: (proposal: TransactionReceipt) => void;
+  onProposeError?: (error: any) => void;
+};
+export function ChallengeProposalWriteForm(
+  props: CastProposeStatusProps & {
+    onDisputeSuccess?: (proposal: TransactionReceipt) => void;
+    onDisputeError?: (error: any) => void;
+    onProposeSuccess?: (proposal: TransactionReceipt) => void;
+    onProposeError?: (error: any) => void;
+  },
+) {
+  return props.proposal.status === ProposalState.Accepted ? (
+    <DisputeProposalWrite {...props} />
+  ) : (
+    <ProposeProposalWrite {...props} />
+  );
+}
+
+export function DisputeProposalWrite({
   cast,
   channel,
   proposal,
   tokenInfo,
   onDisputeSuccess,
   onDisputeError,
-}: CastProposeStatusProps & {
-  onDisputeSuccess?: (proposal: TransactionReceipt) => void;
-  onDisputeError?: (error: any) => void;
-}) {
+}: DisputeProposalWrite) {
   const {
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
@@ -246,12 +241,6 @@ function DisputeProposalWrite({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
-  if (paymentTokenInfoError) {
-    console.error("paymentTokenInfoError", paymentTokenInfoError);
-  }
-  if (priceError) {
-    console.error("priceError", priceError);
-  }
 
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
   useEffect(() => {
@@ -314,17 +303,14 @@ function DisputeProposalWrite({
   );
 }
 
-function ProposeProposalWrite({
+export function ProposeProposalWrite({
   cast,
   channel,
   proposal,
   tokenInfo,
   onProposeSuccess,
   onProposeError,
-}: CastProposeStatusProps & {
-  onProposeSuccess?: (proposal: TransactionReceipt) => void;
-  onProposeError?: (error: any) => void;
-}) {
+}: DisputeProposalWrite) {
   const {
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
@@ -341,12 +327,6 @@ function ProposeProposalWrite({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
-  if (paymentTokenInfoError) {
-    console.error("paymentTokenInfoError", paymentTokenInfoError);
-  }
-  if (priceError) {
-    console.error("priceError", priceError);
-  }
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
   useEffect(() => {
     if (!isLoading && price) {

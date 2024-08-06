@@ -123,6 +123,7 @@ export function UpvoteProposalModalContentBody({
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       <PriceRow
+        title="Upvote Coast"
         paymentTokenInfo={paymentTokenInfo}
         price={price}
         isLoading={isLoading || paymentTokenInfoLoading}
@@ -135,9 +136,6 @@ export function UpvoteProposalModalContentBody({
         onProposeSuccess={onProposeSuccess}
         onProposeError={onProposeError}
       />
-      <DialogFooter>
-        <About title="About Proposal & channel NFT" info={getAboutInfo()} />
-      </DialogFooter>
     </>
   );
 }

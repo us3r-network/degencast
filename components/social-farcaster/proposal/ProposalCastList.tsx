@@ -9,6 +9,7 @@ import { ProposalEntity } from "~/services/feeds/types/proposal";
 import FCast from "./FCast";
 import CastStatusActions from "./CastStatusActions";
 import { CardWrapper } from "./ProposalStyled";
+import { FCastExploreActions } from "../FCastActions";
 
 export default function ProposalCastList({
   channel,
@@ -43,12 +44,20 @@ export default function ProposalCastList({
         return (
           <CardWrapper className="w-full flex-col gap-4 px-4">
             <FCast cast={cast} channel={channel} />
-            <CastStatusActions
-              cast={cast}
-              channel={channel}
-              tokenInfo={tokenInfo}
-              proposal={proposal}
-            />
+            <View className="flex flex-row items-center justify-between">
+              <CastStatusActions
+                cast={cast}
+                channel={channel}
+                tokenInfo={tokenInfo}
+                proposal={proposal}
+              />
+              <View className="ml-auto">
+                <FCastExploreActions
+                  cast={cast}
+                  communityInfo={channel as any}
+                />
+              </View>
+            </View>
           </CardWrapper>
         );
       }}

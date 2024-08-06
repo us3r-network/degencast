@@ -1,12 +1,11 @@
 import { useAccount } from "wagmi";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
-import CreateProposalModal, {
-  CastProposeStatusProps,
-} from "./CreateProposalModal";
+import { CastProposeStatusProps } from "./ChallengeProposalModal";
 import { ProposalButton, ProposalButtonProps } from "./ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
+import ProposedProposalModal from "./ProposedProposalModal";
 
-export default function CreateProposalButton({
+export default function ProposedProposalButton({
   cast,
   channel,
   proposal,
@@ -26,20 +25,20 @@ export default function CreateProposalButton({
   );
   if (!isConnected) {
     return (
-      <ProposalButton variant={"not-proposed"} onPress={() => connectWallet()}>
+      <ProposalButton variant={"proposed"} onPress={() => connectWallet()}>
         {buttonBody}
       </ProposalButton>
     );
   }
 
   return (
-    <CreateProposalModal
+    <ProposedProposalModal
       cast={cast}
       channel={channel}
       proposal={proposal}
       tokenInfo={tokenInfo}
       triggerButton={
-        <ProposalButton variant={"not-proposed"} {...props}>
+        <ProposalButton variant={"proposed"} {...props}>
           {buttonBody}
         </ProposalButton>
       }

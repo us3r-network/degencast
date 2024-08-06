@@ -83,6 +83,7 @@ import {
   SquarePen,
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
+  Triangle,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -181,6 +182,7 @@ interopIcon(DollarSign);
 interopIcon(SquarePen);
 interopIcon(ArrowDownNarrowWide);
 interopIcon(ArrowUpNarrowWide);
+interopIcon(Triangle);
 export {
   Activity,
   Airplay,
@@ -265,4 +267,5 @@ export {
   SquarePen,
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
+  Triangle,
 };

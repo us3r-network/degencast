@@ -14,6 +14,7 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import CastStatusActions, {
   CastStatusActionsHeight,
 } from "~/components/social-farcaster/proposal/CastStatusActions";
+import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 
 const itemHeight = FCastHeight + CastStatusActionsHeight + 15;
 const ChannelCardCasts = forwardRef(function (
@@ -106,12 +107,20 @@ const ChannelCardCasts = forwardRef(function (
                     cast={cast}
                     channel={channel}
                   />
-                  <CastStatusActions
-                    cast={cast}
-                    channel={channel!}
-                    tokenInfo={tokenInfo}
-                    proposal={proposal}
-                  />
+                  <View className="flex flex-row items-center justify-between">
+                    <CastStatusActions
+                      cast={cast}
+                      channel={channel!}
+                      tokenInfo={tokenInfo}
+                      proposal={proposal}
+                    />
+                    <View className="ml-auto">
+                      <FCastExploreActions
+                        cast={cast}
+                        communityInfo={channel as any}
+                      />
+                    </View>
+                  </View>
                 </View>
               );
             }}
