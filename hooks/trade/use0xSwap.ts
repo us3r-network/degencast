@@ -21,7 +21,7 @@ type SwapParams = {
   buyAmount?: string;
 };
 
-export function useFetchPrice(takerAddress?: `0x${string}`) {
+export function useFetchPrice(taker?: `0x${string}`) {
   const [fetchingPrice, setFetchingPrice] = useState(false);
 
   const fetchPrice = async ({
@@ -54,7 +54,7 @@ export function useFetchPrice(takerAddress?: `0x${string}`) {
       buyAmount:
         buyAmount &&
         String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
-      takerAddress,
+      taker,
     });
     // console.log("price", price);
     setFetchingPrice(false);
@@ -65,7 +65,7 @@ export function useFetchPrice(takerAddress?: `0x${string}`) {
         buyToken.decimals || DEFAULT_DECIMALS,
       ),
       price,
-      allowanceTarget: price?.allowanceTarget,
+      allowanceTarget: price?.issues?.allowance?.spender,
     };
   };
 
@@ -75,7 +75,7 @@ export function useFetchPrice(takerAddress?: `0x${string}`) {
   };
 }
 
-export function useSwapToken(takerAddress?: `0x${string}`) {
+export function useSwapToken(taker?: `0x${string}`) {
   const {
     swaping: swapingEOA,
     fetchingQuote: fetchingQuoteEOA,
@@ -87,7 +87,7 @@ export function useSwapToken(takerAddress?: `0x${string}`) {
     error: errorEOA,
     fee: feeEOA,
     reset: resetEOA,
-  } = useSwapTokenEOA(takerAddress);
+  } = useSwapTokenEOA(taker);
 
   const {
     swaping: swapingAA,
@@ -100,7 +100,7 @@ export function useSwapToken(takerAddress?: `0x${string}`) {
     error: errorAA,
     fee: feeAA,
     reset: resetAA,
-  } = useSwapTokenAA(takerAddress);
+  } = useSwapTokenAA(taker);
 
   const { supportAtomicBatch } = useWalletAccount();
   const isAA = supportAtomicBatch(ZERO_X_CHAIN.id);
@@ -119,7 +119,7 @@ export function useSwapToken(takerAddress?: `0x${string}`) {
   };
 }
 
-export function useSwapTokenEOA(takerAddress?: `0x${string}`) {
+export function useSwapTokenEOA(taker?: `0x${string}`) {
   const [swaping, setSwaping] = useState(false);
   const [fetchingQuote, setFetchingQuote] = useState(false);
   const [waitingUserSign, setWaitingUserSign] = useState(false);
@@ -163,7 +163,7 @@ export function useSwapTokenEOA(takerAddress?: `0x${string}`) {
     ) {
       return;
     }
-    console.log("start fetch quote from 0x", takerAddress);
+    console.log("start fetch quote from 0x", taker);
     setSwaping(true);
     try {
       setFetchingQuote(true);
@@ -178,37 +178,32 @@ export function useSwapTokenEOA(takerAddress?: `0x${string}`) {
         buyAmount:
           buyAmount &&
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
-        takerAddress,
+        taker,
       });
       console.log("get quote from 0x", quote);
       const grossBuyAmount = Number(
         formatUnits(
-          quote.grossBuyAmount,
+          quote.buyAmount,
           buyToken.decimals || DEFAULT_DECIMALS,
         ) || "0",
       );
-      if (quote.fees?.zeroExFee?.feeAmount) {
+      if (quote.fees?.zeroExFee?.amount) {
         const zeroExFee = Number(
           formatUnits(
-            quote.fees?.zeroExFee?.feeAmount,
+            quote.fees?.zeroExFee?.amount,
             buyToken.decimals || DEFAULT_DECIMALS,
           ) || "0",
         );
         setFee(grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE + zeroExFee);
-        // console.log(
-        //   "swap fee",
-        //   grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
-        //   zeroExFee,
-        // );
+        console.log(
+          "swap fee",
+          grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
+          zeroExFee,
+        );
       }
       setFetchingQuote(false);
       setWaitingUserSign(true);
-      await sendTransactionAsync({
-        to: quote.to,
-        data: quote.data,
-        value: quote.value,
-        gas: quote.gas,
-      });
+      await sendTransactionAsync(quote.transaction);
       setWaitingUserSign(false);
     } catch (e) {
       console.error("swapToken error", e);
@@ -240,7 +235,7 @@ export function useSwapTokenEOA(takerAddress?: `0x${string}`) {
   };
 }
 
-export function useSwapTokenAA(takerAddress?: `0x${string}`) {
+export function useSwapTokenAA(taker?: `0x${string}`) {
   const [swaping, setSwaping] = useState(false);
   const [fetchingQuote, setFetchingQuote] = useState(false);
   const [waitingUserSign, setWaitingUserSign] = useState(false);
@@ -298,7 +293,7 @@ export function useSwapTokenAA(takerAddress?: `0x${string}`) {
     ) {
       return;
     }
-    console.log("AA: start fetch quote from 0x", takerAddress);
+    console.log("AA: start fetch quote from 0x", taker);
     setSwaping(true);
     try {
       setFetchingQuote(true);
@@ -313,52 +308,52 @@ export function useSwapTokenAA(takerAddress?: `0x${string}`) {
         buyAmount:
           buyAmount &&
           String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
-        takerAddress,
+        taker,
         skipValidation: true,
       });
       console.log("get quote from 0x", quote);
       const grossBuyAmount = Number(
         formatUnits(
-          quote.grossBuyAmount,
+          quote.buyAmount,
           buyToken.decimals || DEFAULT_DECIMALS,
         ) || "0",
       );
-      if (quote.fees?.zeroExFee?.feeAmount) {
+      if (quote.fees?.zeroExFee?.amount) {
         const zeroExFee = Number(
           formatUnits(
-            quote.fees?.zeroExFee?.feeAmount,
+            quote.fees?.zeroExFee?.amount,
             buyToken.decimals || DEFAULT_DECIMALS,
           ) || "0",
         );
         setFee(grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE + zeroExFee);
-        // console.log(
-        //   "swap fee",
-        //   grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
-        //   zeroExFee,
-        // );
+        console.log(
+          "swap fee",
+          grossBuyAmount * ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
+          zeroExFee,
+        );
       }
       setFetchingQuote(false);
       setWaitingUserSign(true);
-
+      const allowanceIssue = quote?.issues?.allowance;
       const calls = [];
-      console.log("buytoken", sellToken);
-      if (sellToken.address !== NATIVE_TOKEN_ADDRESS) {
+      console.log("calls", sellToken, allowanceIssue, quote.sellAmount);
+      if (
+        sellToken.address !== NATIVE_TOKEN_ADDRESS &&
+        allowanceIssue &&
+        BigInt(allowanceIssue.actual) < BigInt(quote.sellAmount) &&
+        allowanceIssue.spender
+      ) {
         const approveData = encodeFunctionData({
           abi: erc20Abi,
           functionName: "approve",
-          args: [quote.allowanceTarget, quote.value],
+          args: [allowanceIssue.spender, quote.sellAmount],
         });
         calls.push({
           to: sellToken.address,
           data: approveData,
         });
       }
-      calls.push({
-        to: quote.to,
-        data: quote.data,
-        value: quote.value,
-        gas: quote.gas,
-      });
+      calls.push(quote.transaction);
       console.log("calls", calls);
       await sendCallsAsync({ calls });
       console.log("sendCallsAsync done");

@@ -57,7 +57,7 @@ export function TokenWithValue({ token, value }: TokenWithValueProps) {
     value = formatUnits(value, token.decimals || 18);
   }
   const displayValue = new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 6,
+    maximumFractionDigits: 10,
     notation: "compact",
   }).format(Number(value));
 
