@@ -1,7 +1,5 @@
-import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId, useChains, useSwitchChain } from "wagmi";
-import { useCapabilities } from "wagmi/experimental";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_ADDRESS } from "~/constants";

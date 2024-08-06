@@ -26,6 +26,13 @@ export async function getQuote({
   if (!Number(sellAmount)) {
     return;
   }
+  console.log("getQuote", {
+    sellToken,
+    buyToken,
+    sellAmount,
+    takerAddress,
+    skipValidation,
+  });
   try {
     const resp = await axios({
       url: `${ZERO_X_API_ENDPOINT}/quote`,

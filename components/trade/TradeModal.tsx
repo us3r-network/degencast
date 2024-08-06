@@ -147,7 +147,6 @@ function SwapToken({
     waitingUserSign,
     swapToken,
     transactionReceipt,
-    transationStatus,
     transationLoading,
     isSuccess,
     error,
