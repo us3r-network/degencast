@@ -1,6 +1,7 @@
 import { Animated, Pressable, View } from "react-native";
 import { NavigationState, SceneRendererProps } from "react-native-tab-view";
 import { Text } from "~/components/ui/text";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "~/constants";
 
 export default function DefaultTabBar({
   navigationState,
@@ -40,7 +41,7 @@ export default function DefaultTabBar({
               position: "absolute",
               width: itemIndicatorWidth,
               height: itemIndicatorHeight,
-              backgroundColor: "#4C2896",
+              backgroundColor: PRIMARY_COLOR,
               borderRadius: 5,
               transform: [{ translateX: itemIndicatorTranslateX }],
               bottom: 2,
@@ -117,7 +118,7 @@ export function OutlineTabBar({
   });
   return (
     <View
-      className="relative w-full flex-row rounded-xl bg-white mb-4"
+      className="relative mb-4 w-full flex-row rounded-xl border border-secondary bg-secondary/10"
       style={{
         padding: wrapperPadding,
         gap: itemGap,
@@ -130,7 +131,7 @@ export function OutlineTabBar({
               position: "absolute",
               width: itemIndicatorWidth,
               height: itemIndicatorHeight,
-              backgroundColor: "#4C2896",
+              backgroundColor: SECONDARY_COLOR,
               borderRadius: 10,
               transform: [{ translateX: itemIndicatorTranslateX }],
               bottom: wrapperPadding,
@@ -149,7 +150,7 @@ export function OutlineTabBar({
             const textColor = position.interpolate({
               inputRange,
               outputRange: inputRange.map((i) =>
-                i === index ? "#fff" : "#4C2896",
+                i === index ? "white" : SECONDARY_COLOR,
               ),
             });
             return (

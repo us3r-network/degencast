@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import TipAllocationModal from "./TipAllocationModal";
+import { SECONDARY_COLOR } from "~/constants";
 
 const POINTS_INFINITE_VALUE = 999999999;
 export function PointsRules() {
@@ -48,7 +49,7 @@ export function PointsRules() {
           }
           content={
             loading ? (
-              <ActivityIndicator size={20} color={"#A36EFE"} />
+              <ActivityIndicator size={20} color={SECONDARY_COLOR} />
             ) : !!showInviteCode ? (
               <InviteCodeCopy inviteCode={showInviteCode.code} />
             ) : null

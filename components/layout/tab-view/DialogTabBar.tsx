@@ -3,6 +3,7 @@ import { NavigationState, SceneRendererProps } from "react-native-tab-view";
 import { Separator } from "~/components/ui/separator";
 import { DialogHeader } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
+import { SECONDARY_COLOR } from "~/constants";
 
 export default function DialogTabBar(
   props: SceneRendererProps & {
@@ -28,7 +29,7 @@ export default function DialogTabBar(
           const textColor = position.interpolate({
             inputRange,
             outputRange: inputRange.map((i) =>
-              i === index ? "#fff" : "#A36EFE",
+              i === index ? "white" : SECONDARY_COLOR,
             ),
           });
           return (

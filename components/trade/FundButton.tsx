@@ -6,6 +6,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { SlottableViewProps } from "../primitives/types";
 import { cn } from "~/lib/utils";
 import useWalletAccount, { MoonpayConfig } from "~/hooks/user/useWalletAccount";
+import { PRIMARY_COLOR } from "~/constants";
 
 const fundButtonVariants = cva(
   "",
@@ -53,7 +54,7 @@ export default function FundButton({
     quoteCurrencyAmount: 0.05, // Purchase 0.05 ETH
     paymentMethod: "credit_debit_card", // Purchase with credit or debit card
     uiConfig: {
-      accentColor: "#696FFD",
+      accentColor: PRIMARY_COLOR,
       theme: "light",
     }, // Styling preferences for MoonPay's UIs
   };
