@@ -37,7 +37,9 @@ export function useATTFactoryContractInfo(token: ERC42069Token) {
       args: [token.contractAddress, BigInt(amount)],
     });
     // console.log("getMintNFTPriceFromUniV3", data, status);
-    const nftPrice = data ? (data as bigint) : undefined;
+    const nftPrice = data
+      ? (data as bigint) + (data as bigint) / 5n //todo: should get a more accurate price from contract
+      : undefined;
     // return { nftPrice:1000000000000000000000n, status };
     return { nftPrice, status };
   };
