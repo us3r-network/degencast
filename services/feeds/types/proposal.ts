@@ -7,6 +7,8 @@ export type ProposalEntity = {
   finalizeTime?: number;
   // 提案通过的cast,被mint过的数量
   mintedCount?: number;
+  // mint 过期时间
+  nftDeadline?: number;
   // tokenId
   tokenId?: number;
   // metadata URI

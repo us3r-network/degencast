@@ -41,7 +41,7 @@
     --proposal-ready-to-mint-foreground: 0, 0%, 100%;
 
     --proposal-mint-expired: 274, 49%, 54%;
-    --proposal-mint-expired-foreground: 0, 0%, 100%;
+    --proposal-mint-expired-foreground: 274, 49%, 54%;
 
     --proposal-abandoned: 347, 91%, 54%;
     --proposal-abandoned-foreground: 0, 0%, 100%;
