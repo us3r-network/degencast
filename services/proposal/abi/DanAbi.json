@@ -23,7 +23,32 @@
   },
   {
     "inputs": [],
+    "name": "ContentHashExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ContentHashIsEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EitherContentHashOrUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "FailedInnerCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "HasStaked",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InsufficientStake",
     "type": "error"
   },
   {
@@ -33,7 +58,72 @@
   },
   {
     "inputs": [],
+    "name": "InvalidState",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoCurators",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyContentCreatorAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyOneContentHashOrUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalHasReadyToMint",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalIsNotDisputed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalIsNotProposed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalNotExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalPeriodEnded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalPeriodNotEnded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ProposalURIExists",
     "type": "error"
   },
   {
@@ -45,6 +135,11 @@
       }
     ],
     "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UUIDIsEmpty",
     "type": "error"
   },
   {

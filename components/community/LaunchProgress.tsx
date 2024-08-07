@@ -15,12 +15,12 @@ export default function LaunchProgress({
   const progressNumber = isNaN(progress) ? 0 : progress;
   return (
     <View className="flex flex-row items-center gap-1">
-      <Progress
+      {/* <Progress
         value={progressNumber}
         className="h-4 w-[100px] bg-[#D6A5EC]"
         indicatorClassName=" rounded-4 bg-[#9151C3]"
-      />
-      <Text className={cn("text-foreground", textClassName)}>
+      /> */}
+      <Text className={cn("font-bold text-foreground", textClassName)}>
         {progressNumber}%
       </Text>
     </View>

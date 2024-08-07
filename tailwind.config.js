@@ -45,6 +45,34 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        proposalNotProposed: {
+          DEFAULT: "hsl(var(--proposal-not-proposed))",
+          foreground: "hsl(var(--proposal-not-proposed-foreground))",
+        },
+        proposalProposed: {
+          DEFAULT: "hsl(var(--proposal-proposed))",
+          foreground: "hsl(var(--proposal-proposed-foreground))",
+        },
+        proposalAccepted: {
+          DEFAULT: "hsl(var(--proposal-accepted))",
+          foreground: "hsl(var(--proposal-accepted-foreground))",
+        },
+        proposalDisputed: {
+          DEFAULT: "hsl(var(--proposal-disputed))",
+          foreground: "hsl(var(--proposal-disputed-foreground))",
+        },
+        proposalReadyToMint: {
+          DEFAULT: "hsl(var(--proposal-ready-to-mint))",
+          foreground: "hsl(var(--proposal-ready-to-mint-foreground))",
+        },
+        proposalMintExpired: {
+          DEFAULT: "hsl(var(--proposal-mint-expired))",
+          foreground: "hsl(var(--proposal-mint-expired-foreground))",
+        },
+        proposalAbandoned: {
+          DEFAULT: "hsl(var(--proposal-abandoned))",
+          foreground: "hsl(var(--proposal-abandoned-foreground))",
+        },
       },
       borderWidth: {
         hairline: hairlineWidth(),

@@ -40,12 +40,9 @@ export default function ChannelMetaInfo({
 
   const [tokenLaunched, setTokenLaunched] = useState(false);
   return (
-    <View className={cn("w-full flex-col gap-4", className)} {...props}>
+    <View className={cn("w-full ", className)} {...props}>
       <Pressable
-        className={cn(
-          "w-full flex-col gap-4",
-          readOnly && "pointer-events-none",
-        )}
+        className={cn("w-full", readOnly && "pointer-events-none")}
         onPress={(e) => {
           e.stopPropagation();
           if (!channelId || readOnly) return;
@@ -56,28 +53,28 @@ export default function ChannelMetaInfo({
           <View className=" relative">
             <Avatar
               alt={name || ""}
-              className="size-[50px] border border-secondary"
+              className="size-[24px] border border-secondary"
             >
               <AvatarImage source={{ uri: logo || "" }} />
               <AvatarFallback className="border-primary bg-secondary">
                 <Text className="text-sm font-bold">{name}</Text>
               </AvatarFallback>
             </Avatar>
-            {channelId && !readOnly && (
+            {/* {channelId && !readOnly && (
               <CommunityAvatarJoinIconButton
                 channelId={channelId}
                 className=" absolute -bottom-1 -right-1"
               />
-            )}
+            )} */}
           </View>
 
           <View className="flex-1 flex-col justify-center">
             <Text className="line-clamp-1 font-bold leading-6 text-foreground">
               {name}
             </Text>
-            <Text className="text-sm font-normal leading-6 text-[#9BA1AD]">
+            {/* <Text className="text-sm font-normal leading-6 text-[#9BA1AD]">
               {channelId && `/${channelId}`}
-            </Text>
+            </Text> */}
           </View>
           {tokenInfo ? (
             <LaunchProgress tokenInfo={tokenInfo} />
@@ -100,8 +97,8 @@ export default function ChannelMetaInfo({
 export function HomeChannelMetaInfo() {
   return (
     <View className={"flex w-full flex-row items-center gap-3"}>
-      <View className="flex h-[50px] w-[50px] flex-row items-center justify-center rounded-full bg-secondary/20">
-        <Home className="size-[24px] stroke-primary" />
+      <View className="flex h-[24px] w-[24px] flex-row items-center justify-center rounded-full bg-secondary/20">
+        <Home className="size-[14px] stroke-primary" />
       </View>
       <Text className="line-clamp-1 font-bold leading-6 text-foreground">
         Home
