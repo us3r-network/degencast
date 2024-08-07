@@ -50,9 +50,11 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         ) : (
           <View className="w-full flex-row items-center gap-2">
             <ActivityItemOperation operation={data.operation} />
-            <Text className=" inline-block  align-baseline">
-              {data.tokenAmount}
-            </Text>
+            {data.tokenAmount>0 && (
+              <Text className=" inline-block  align-baseline">
+                {data.tokenAmount}
+              </Text>
+            )}
             {data.channel && <ActivityItemChannel channel={data.channel} />}
             {data.paymentTokenAmount && data.paymentTokenInfo && (
               <Text>
