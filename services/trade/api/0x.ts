@@ -1,8 +1,8 @@
 import axios from "axios";
 import {
+  DEFAULT_CHAINID,
   ZERO_X_API_ENDPOINT,
   ZERO_X_API_KEY,
-  ZERO_X_CHAIN,
   ZERO_X_INTEGRATOR_WALLET_ADDRESS,
   ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
 } from "~/constants";
@@ -37,7 +37,7 @@ export async function getQuote({
       url: `${ZERO_X_API_ENDPOINT}/quote`,
       method: "get",
       params: {
-        chainId: ZERO_X_CHAIN.id,
+        chainId: DEFAULT_CHAINID,
         sellToken: sellToken || "ETH",
         buyToken: buyToken || "ETH",
         sellAmount,
@@ -70,7 +70,7 @@ export async function getPrice({
       url: `${ZERO_X_API_ENDPOINT}/price`,
       method: "get",
       params: {
-        chainId: ZERO_X_CHAIN.id,
+        chainId: DEFAULT_CHAINID,
         sellToken: sellToken || "ETH",
         buyToken: buyToken || "ETH",
         sellAmount,
