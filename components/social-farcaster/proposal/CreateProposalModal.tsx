@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { View } from "react-native";
 import About from "~/components/common/About";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
@@ -23,25 +23,29 @@ import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTok
 import Toast from "react-native-toast-message";
 import PriceRow from "./PriceRow";
 import { getProposalMinPrice } from "./utils";
-
-export const getAboutInfo = () => {
-  return [
-    "Propose: Turn a cast into a Channel NFT.",
-    "Approve: Approved proposal = Channel NFT.",
-    "Curators: After proposal is approved, top 10 upvoters(include proposer) = curators. The earlier the more revenue.",
-    "NFT transaction fee: Degencast 1%, Channel host 2%, Creator 3%, ,Curators 4%.",
-    "Channel NFT = Channel share.",
-    "All Channel NFTs share a same channel bonding curve.",
-    "When channel bounding curve reaches a market cap of 4,206,900 DEGEN, all the liquidity will be deposited into Uniswap v3.",
-    "After token launch, Channel NFT = 1000 Channel Token.",
-  ];
-};
+import { SceneMap, TabView } from "react-native-tab-view";
+import { AboutProposalChallenge } from "./AboutProposal";
+import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
   proposal?: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
+};
+
+const CreateProposalCtx = createContext<
+  | (CastProposeStatusProps & {
+      setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    })
+  | undefined
+>(undefined);
+const useCreateProposalCtx = () => {
+  const ctx = useContext(CreateProposalCtx);
+  if (!ctx) {
+    throw new Error("useCreateProposalCtx must be used within a provider");
+  }
+  return ctx;
 };
 
 export default function CreateProposalModal({
@@ -54,7 +58,16 @@ export default function CreateProposalModal({
   triggerButton: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "propose", title: "Propose" },
+    { key: "about", title: "About" },
+  ]);
 
+  const renderScene = SceneMap({
+    propose: CreateProposalModalContentBodyScene,
+    about: AboutProposalChallenge,
+  });
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -64,28 +77,53 @@ export default function CreateProposalModal({
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="w-screen">
-        <CreateProposalModalContentBody
-          cast={cast}
-          channel={channel}
-          proposal={proposal}
-          tokenInfo={tokenInfo}
-          onCreateProposalSuccess={() => {
-            Toast.show({
-              type: "success",
-              text1: "Proposal created",
-            });
-            setOpen(false);
+        <CreateProposalCtx.Provider
+          value={{
+            cast,
+            channel,
+            proposal,
+            tokenInfo,
+            setOpen,
           }}
-          onCreateProposalError={(error) => {
-            Toast.show({
-              type: "error",
-              // text1: "Proposal creation failed",
-              text1: error.message,
-            });
-          }}
-        />
+        >
+          <TabView
+            swipeEnabled={false}
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            renderTabBar={DialogTabBar}
+          />
+        </CreateProposalCtx.Provider>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function CreateProposalModalContentBodyScene() {
+  const { cast, channel, proposal, tokenInfo, setOpen } =
+    useCreateProposalCtx();
+  return (
+    <View className="flex w-full flex-col gap-4">
+      <CreateProposalModalContentBody
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+        onCreateProposalSuccess={() => {
+          Toast.show({
+            type: "success",
+            text1: "Proposal created",
+          });
+          setOpen(false);
+        }}
+        onCreateProposalError={(error) => {
+          Toast.show({
+            type: "error",
+            text1: error.message,
+          });
+        }}
+      />
+    </View>
   );
 }
 
@@ -107,11 +145,6 @@ function CreateProposalModalContentBody({
     });
   return (
     <>
-      <DialogHeader
-        className={cn("mr-4 flex-row items-center justify-between gap-2")}
-      >
-        <DialogTitle>Propose</DialogTitle>
-      </DialogHeader>
       <View className="flex-row items-center justify-between gap-2">
         <Text>Active Wallet</Text>
         <UserWalletSelect />
@@ -130,13 +163,6 @@ function CreateProposalModalContentBody({
         onCreateProposalSuccess={onCreateProposalSuccess}
         onCreateProposalError={onCreateProposalError}
       />
-
-      <DialogFooter>
-        <About
-          title="About Proposal, upvote & channel NFT"
-          info={getAboutInfo()}
-        />
-      </DialogFooter>
     </>
   );
 }

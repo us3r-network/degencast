@@ -222,7 +222,8 @@ export function DialogCastActivitiesList({ castHash }: { castHash: string }) {
       scrollEventThrottle={16}
     >
       <FlatList
-        className="gap-4"
+        className="h-full flex-1 gap-4"
+        contentContainerClassName="flex gap-4"
         showsHorizontalScrollIndicator={false}
         data={items}
         renderItem={({ item }) => {

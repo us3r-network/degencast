@@ -1,13 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
-import About from "~/components/common/About";
+import { View } from "react-native";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
@@ -25,12 +19,8 @@ import PriceRow from "./PriceRow";
 import Toast from "react-native-toast-message";
 import { formatUnits, TransactionReceipt } from "viem";
 import { Slider } from "~/components/ui/slider";
-import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
-import {
-  CastActivitiesList,
-  DialogCastActivitiesList,
-} from "~/components/activity/Activities";
+import { DialogCastActivitiesList } from "~/components/activity/Activities";
 import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { AboutProposalChallenge } from "./AboutProposal";
