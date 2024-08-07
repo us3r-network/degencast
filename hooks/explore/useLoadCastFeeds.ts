@@ -21,13 +21,14 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
   const pageInfoRef = useRef({
     hasNextPage: true,
     nextCursor: "",
+    nextPageNumber: 1,
   });
 
   const loading = status === AsyncRequestStatus.PENDING;
 
   const loadItems = async () => {
     const type = typeRef.current;
-    const { hasNextPage, nextCursor } = pageInfoRef.current;
+    const { hasNextPage, nextCursor, nextPageNumber } = pageInfoRef.current;
 
     if (hasNextPage === false) {
       return;
@@ -37,6 +38,7 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
       const params = {
         limit: PAGE_SIZE,
         cursor: nextCursor,
+        pageNumber: nextPageNumber,
         ...(type && { type }),
       };
       const resp = await getExploreCastFeeds(params);
@@ -52,6 +54,7 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
       pageInfoRef.current = {
         hasNextPage: casts.length >= PAGE_SIZE,
         nextCursor: next.cursor,
+        nextPageNumber: nextPageNumber + 1,
       };
       setStatus(AsyncRequestStatus.FULFILLED);
     } catch (err) {
