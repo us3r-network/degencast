@@ -3,8 +3,8 @@ import { erc20Abi, formatUnits, parseUnits } from "viem";
 import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { useCallsStatus, useSendCalls } from "wagmi/experimental";
 import {
+  DEFAULT_CHAINID,
   NATIVE_TOKEN_ADDRESS,
-  ZERO_X_CHAIN,
   ZERO_X_SWAP_TOKEN_PERCENTAGE_FEE,
 } from "~/constants";
 import { getPrice, getQuote } from "~/services/trade/api/0x";
@@ -103,7 +103,7 @@ export function useSwapToken(taker?: `0x${string}`) {
   } = useSwapTokenAA(taker);
 
   const { supportAtomicBatch } = useWalletAccount();
-  const isAA = supportAtomicBatch(ZERO_X_CHAIN.id);
+  const isAA = supportAtomicBatch(DEFAULT_CHAINID);
   // const isAA = false;
   return {
     swaping: isAA ? swapingAA : swapingEOA,
