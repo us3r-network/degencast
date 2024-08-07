@@ -14,7 +14,9 @@ const buttonVariants = cva(
         accepted: "bg-proposalAccepted",
         disputed: "bg-proposalDisputed",
         "ready-to-mint": "bg-proposalReadyToMint",
-        "mint-expired": "bg-proposalMintExpired",
+        // TODO bg-proposalMintExpired/20 失效 用bg-[#9151C333]代替
+        "mint-expired":
+          "border border-proposalMintExpired bg-[#9151C333] pointer-events-none",
         // TODO bg-proposalAbandoned/20 失效 用bg-[#F41F4C33]代替
         abandoned:
           "border border-proposalAbandoned bg-[#F41F4C33] pointer-events-none",
