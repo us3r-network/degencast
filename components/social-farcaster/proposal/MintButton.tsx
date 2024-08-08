@@ -14,10 +14,7 @@ export function ReadyToMint({
   tokenInfo,
 }: CastStatusActionsProps) {
   const { mintedCount, nftDeadline } = proposal;
-  // nftDeadline 是微秒时间戳，转换为秒
-  const nftDeadlineTime = nftDeadline
-    ? Math.ceil(Number(nftDeadline) / 1000000)
-    : 0;
+  const nftDeadlineTime = Number(nftDeadline);
   const now = dayjs().unix();
   const isExpired = nftDeadlineTime < now;
   const mintButtonBody = (
