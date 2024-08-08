@@ -1,6 +1,7 @@
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { Animated, View, Pressable, FlatList } from "react-native";
 import { Text } from "~/components/ui/text";
+import { PRIMARY_COLOR } from "~/constants";
 
 export const getRouteItemRenderConfig = (
   tabBarProps: MaterialTopTabBarProps,
@@ -77,7 +78,7 @@ export default function DefaultTabBar(props: MaterialTopTabBarProps) {
               position: "absolute",
               width: itemIndicatorWidth,
               height: itemIndicatorHeight,
-              backgroundColor: "#4C2896",
+              backgroundColor: PRIMARY_COLOR,
               borderRadius: 5,
               transform: [{ translateX: itemIndicatorTranslateX }],
               bottom: 2,
@@ -161,7 +162,7 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
               position: "absolute",
               width: itemIndicatorWidth,
               height: itemIndicatorHeight,
-              backgroundColor: "#4C2896",
+              backgroundColor: PRIMARY_COLOR,
               borderRadius: 10,
               transform: [{ translateX: itemIndicatorTranslateX }],
               bottom: wrapperPadding,
@@ -180,7 +181,7 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
             const textColor = position.interpolate({
               inputRange,
               outputRange: inputRange.map((i) =>
-                i === index ? "#fff" : "#4C2896",
+                i === index ? "white" : PRIMARY_COLOR,
               ),
             });
 
@@ -244,13 +245,13 @@ export function ScrollTabBar(props: MaterialTopTabBarProps) {
           const textColor = position.interpolate({
             inputRange,
             outputRange: inputRange.map((i) =>
-              i === index ? "#4C2896" : "#FFF",
+              i === index ? PRIMARY_COLOR : "white",
             ),
           });
           const bgColor = position.interpolate({
             inputRange,
             outputRange: inputRange.map((i) =>
-              i === index ? "#FFF" : "rgba(255, 255, 255, 0.40)",
+              i === index ? "white" : "rgba(255, 255, 255, 0.40)",
             ),
           });
           return (

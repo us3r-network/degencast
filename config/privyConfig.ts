@@ -1,9 +1,10 @@
 import type { PrivyClientConfig } from "@privy-io/react-auth";
+import { PRIMARY_COLOR } from "~/constants";
 
 export const privyConfig: PrivyClientConfig = {
   // Customize Privy's appearance in your app
   appearance: {
-    accentColor: "#4C2896",
+    accentColor: PRIMARY_COLOR,
     logo: "/logo192.png",
     showWalletLoginFirst: false,
     walletList: [

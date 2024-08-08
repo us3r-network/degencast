@@ -15,6 +15,7 @@ import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
 import GoBackButton from "~/components/common/GoBackButton";
 import NotFoundChannel from "~/components/community/NotFoundChannel";
+import { PRIMARY_COLOR } from "~/constants";
 
 type Community = {
   name: string;
@@ -330,14 +331,14 @@ function CrossIcon() {
     >
       <path
         d="M15 5L5 15"
-        stroke="#4C2896"
+        stroke={PRIMARY_COLOR}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M5 5L15 15"
-        stroke="#4C2896"
+        stroke={PRIMARY_COLOR}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

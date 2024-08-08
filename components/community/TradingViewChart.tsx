@@ -78,7 +78,7 @@ function WebChart({ prices }: { prices: Array<AreaData<Time>> }) {
     const chart = createChart(container, {
       layout: {
         background: { type: ColorType.Solid, color: "white" },
-        textColor: "#black",
+        textColor: "black",
       },
       grid: {
         vertLines: {
@@ -176,7 +176,7 @@ function WebViewChart({ prices }: { prices: Array<AreaData<Time>> }) {
             const chart = createChart(container, {
               layout: {
                 background: { type: "solid", color: 'white' },
-                textColor: "#black",
+                textColor: "black",
               },
               grid: {
                 vertLines: {

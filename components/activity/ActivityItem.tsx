@@ -18,8 +18,14 @@ import { Text } from "../ui/text";
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
   if (!data) return;
+  // mint and burn payment token amount is token price
+  const totalPayment =
+    data.operation === ActivityOperation.MINT ||
+    data.operation === ActivityOperation.BURN
+      ? BigInt(data.paymentTokenAmount) * BigInt(data.tokenAmount)
+      : BigInt(data.paymentTokenAmount);
   const paymentAmount = formatUnits(
-    BigInt(data.paymentTokenAmount),
+    totalPayment,
     data.paymentTokenInfo?.decimals,
   );
   const paymentText = new Intl.NumberFormat("en-US", {
@@ -50,9 +56,11 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         ) : (
           <View className="w-full flex-row items-center gap-2">
             <ActivityItemOperation operation={data.operation} />
-            <Text className=" inline-block  align-baseline">
-              {data.tokenAmount}
-            </Text>
+            {data.tokenAmount > 0 && (
+              <Text className=" inline-block  align-baseline">
+                {data.tokenAmount}
+              </Text>
+            )}
             {data.channel && <ActivityItemChannel channel={data.channel} />}
             {data.paymentTokenAmount && data.paymentTokenInfo && (
               <Text>

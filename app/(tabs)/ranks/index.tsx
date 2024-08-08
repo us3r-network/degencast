@@ -7,6 +7,7 @@ import {
 } from "~/components/common/Icons";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
+import { cn } from "~/lib/utils";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
 
 export default function RanksScreen() {
@@ -40,7 +41,7 @@ export function OrderSelect({
   return (
     <View className="flex-row items-center gap-2">
       <RadioGroup value={order} onValueChange={(v: any) => setOrder(v)}>
-        <View className="flex-row items-center gap-2 rounded-lg border border-primary bg-primary/10 px-2 py-1">
+        <View className="flex-row items-center gap-2 rounded-lg border border-secondary bg-secondary/10 px-2 py-1">
           {RankOrderList.map((item) => (
             <RadioGroupItemButton
               key={item.value}
@@ -49,7 +50,9 @@ export function OrderSelect({
               className="border-none p-1"
             >
               <Text
-                className={item.value === order ? "text-white" : "text-primary"}
+                className={
+                  item.value === order ? "text-white" : "text-secondary"
+                }
               >
                 {item.icon}
               </Text>
@@ -71,7 +74,7 @@ export function OrderSelect({
             >
               <Text
                 className={
-                  item.value === orderBy ? "text-white" : "text-primary"
+                  item.value === orderBy ? "text-white" : "text-secondary"
                 }
               >
                 {item.label}

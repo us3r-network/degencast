@@ -1,7 +1,7 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Platform, Pressable, View } from "react-native";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_TABBAR_HEIGHT } from "~/constants";
+import { DEFAULT_TABBAR_HEIGHT, SECONDARY_COLOR } from "~/constants";
 import { cn } from "~/lib/utils";
 
 function MobileTabBar(props: BottomTabBarProps) {
@@ -65,7 +65,7 @@ function MobileTabBar(props: BottomTabBarProps) {
               {options.tabBarIcon &&
                 options.tabBarIcon({
                   focused: isFocused,
-                  color: isFocused ? "#FFF" : "#A36EFE",
+                  color: isFocused ? "white" : SECONDARY_COLOR,
                   size: 0,
                 })}
               <Text

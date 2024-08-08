@@ -12,6 +12,7 @@ import {
 } from "../header/Header";
 import { SearchLink } from "../header/HeaderLinks";
 import { getRouteItemRenderConfig } from "./TabBar";
+import { SECONDARY_COLOR } from "~/constants";
 
 export default function PageTabBar(
   props: MaterialTopTabBarProps & { level?: number },
@@ -42,7 +43,7 @@ export default function PageTabBar(
           const textColor = position.interpolate({
             inputRange,
             outputRange: inputRange.map((i) =>
-              i === index ? "#fff" : "#A36EFE",
+              i === index ? "white" : SECONDARY_COLOR,
             ),
           });
 

@@ -4,6 +4,7 @@ import useJoinCommunityAction from "~/hooks/community/useJoinCommunityAction";
 import { cn } from "~/lib/utils";
 import { ActivityIndicator, TextProps, View } from "react-native";
 import { MinusCircle, Plus, PlusCircle } from "../common/Icons";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "~/constants";
 
 export default function CommunityJoinButton({
   channelId,
@@ -76,7 +77,7 @@ export function CommunityJoinIconButton({
       {...props}
     >
       {isPending ? (
-        <ActivityIndicator size={40} color={"#A36EFE"} />
+        <ActivityIndicator size={40} color={SECONDARY_COLOR} />
       ) : joined ? (
         <MinusCircle strokeWidth={1} className="size-10 stroke-secondary" />
       ) : (
@@ -118,7 +119,7 @@ export function CommunityAvatarJoinIconButton({
       {...props}
     >
       {isPending ? (
-        <ActivityIndicator size={25} color={"#4C2896"} />
+        <ActivityIndicator size={25} color={PRIMARY_COLOR} />
       ) : joined ? (
         <MinusCircle
           strokeWidth={1}

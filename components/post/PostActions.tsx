@@ -206,7 +206,7 @@ export const RepostButton = ({
       {reposting ? (
         <ActivityIndicator
           size={iconSize}
-          color={reposted ? "#00D1A7" : "#fff"}
+          color={reposted ? "#00D1A7" : "white"}
         />
       ) : (
         <Repeat

@@ -1,4 +1,5 @@
 import Svg, { SvgProps, Path, Rect } from "react-native-svg";
+import { SECONDARY_COLOR } from "~/constants";
 export const ExploreIcon = (props: SvgProps) => (
   <Svg width={24} height={24} fill={props.fill || "#000"} {...props}>
     <Path d="m21.47 4.35-1.34-.56v9.03l2.43-5.86c.41-1.02-.06-2.19-1.09-2.61Zm-19.5 3.7L6.93 20a2.01 2.01 0 0 0 1.81 1.26c.26 0 .53-.05.79-.16l7.37-3.05c.75-.31 1.21-1.05 1.23-1.79.01-.26-.04-.55-.13-.81L13 3.5a1.954 1.954 0 0 0-1.81-1.25c-.26 0-.52.06-.77.15L3.06 5.45a1.994 1.994 0 0 0-1.09 2.6Zm16.15-3.8a2 2 0 0 0-2-2h-1.45l3.45 8.34" />
@@ -17,7 +18,7 @@ export const ActivityIcon = ({ fill, stroke, ...props }: SvgProps) => (
   <Svg width={24} height={24} fill={fill || "none"} {...props}>
     <Path
       d="M22.6667 12H20.1867C19.7497 11.9991 19.3244 12.1413 18.9759 12.405C18.6273 12.6686 18.3747 13.0392 18.2567 13.46L15.9067 21.82C15.8916 21.8719 15.86 21.9175 15.8167 21.95C15.7735 21.9825 15.7208 22 15.6667 22C15.6127 22 15.56 21.9825 15.5167 21.95C15.4735 21.9175 15.4419 21.8719 15.4267 21.82L9.90675 2.18C9.8916 2.12807 9.86002 2.08246 9.81675 2.05C9.77347 2.01754 9.72084 2 9.66675 2C9.61266 2 9.56002 2.01754 9.51675 2.05C9.47347 2.08246 9.44189 2.12807 9.42675 2.18L7.07675 10.54C6.95921 10.9592 6.70813 11.3285 6.36161 11.592C6.01509 11.8555 5.59207 11.9988 5.15675 12H2.66675"
-      stroke={stroke || "#A36EFE"}
+      stroke={stroke || SECONDARY_COLOR}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -36,7 +37,7 @@ export const CommentIcon = (props: SvgProps) => (
     width={16}
     height={16}
     fill={props.fill || "none"}
-    stroke={props.stroke || "#A36EFE"}
+    stroke={props.stroke || SECONDARY_COLOR}
     {...props}
   >
     <Path
@@ -104,7 +105,7 @@ export const HasSignerIcon = (props: SvgProps) => (
     />
     <Path
       d="M12.2499 1.75C12.5151 1.48478 12.8748 1.33578 13.2499 1.33578C13.625 1.33578 13.9847 1.48478 14.2499 1.75C14.5151 2.01521 14.6641 2.37493 14.6641 2.75C14.6641 3.12507 14.5151 3.48478 14.2499 3.75L7.99992 10L5.33325 10.6667L5.99992 8L12.2499 1.75Z"
-      fill="#A36EFE"
+      fill={SECONDARY_COLOR}
       stroke="#1E293B"
       strokeLinecap="round"
       strokeLinejoin="round"

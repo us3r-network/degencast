@@ -39,13 +39,13 @@ export default function ChannelsScreen() {
 
   return (
     <PageContent>
-      <CardWarper>
-        <View className="flex h-full gap-4">
-          <OrderSelect
-            setOrderParams={setOrderParams}
-            rankOrderByList={RankOrderByList}
-            defaultOrder={DEFAULT_ORDER_PARAMS}
-          />
+      <View className="flex h-full gap-4">
+        <OrderSelect
+          setOrderParams={setOrderParams}
+          rankOrderByList={RankOrderByList}
+          defaultOrder={DEFAULT_ORDER_PARAMS}
+        />
+        <CardWarper>
           {loading && items.length === 0 ? (
             <Loading />
           ) : (
@@ -82,8 +82,8 @@ export default function ChannelsScreen() {
               />
             </View>
           )}
-        </View>
-      </CardWarper>
+        </CardWarper>
+      </View>
     </PageContent>
   );
 }
