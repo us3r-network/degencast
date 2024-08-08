@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import ChannelListWithCasts from "./ChannelListWithCasts";
+// import ChannelListWithCasts from "./ChannelListWithCasts";
 import useLoadProposalFeeds from "~/hooks/explore/useLoadProposalFeeds";
+import ChannelListWithCollectCasts from "./ChannelListWithCollectCasts";
 
 export default function ProposalFeeds() {
   const { loadItems, loading, items } = useLoadProposalFeeds();
@@ -8,7 +9,7 @@ export default function ProposalFeeds() {
     loadItems();
   }, []);
   return (
-    <ChannelListWithCasts
+    <ChannelListWithCollectCasts
       items={items}
       loading={loading}
       onEndReached={() => {

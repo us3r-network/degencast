@@ -33,9 +33,9 @@ function CastPage() {
 export default function ExploreLayout() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
+    { key: "cast", title: "Cast" },
     { key: "selection", title: "Selection" },
     { key: "proposal", title: "Proposal" },
-    { key: "cast", title: "Cast" },
   ]);
 
   const renderScene = SceneMap({
