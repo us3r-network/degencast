@@ -74,8 +74,12 @@ export default function AttentionTokenScreen() {
                   loadCommunityDetail();
                 }}
                 className="h-14 w-full"
-                renderBottonContent={() => {
-                  return (
+                renderBottonContent={({ loading }) => {
+                  return loading ? (
+                    <Text className="text-lg font-bold">
+                      Launching Token...
+                    </Text>
+                  ) : (
                     <Text className="text-lg font-bold">Launch Token</Text>
                   );
                 }}

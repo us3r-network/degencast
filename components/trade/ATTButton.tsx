@@ -651,7 +651,7 @@ export const CreateTokenButton = forwardRef(function (
     channelId: string;
     onComplete?: (tokenAddress: Address) => void;
     text?: string;
-    renderBottonContent?: () => React.ReactNode;
+    renderBottonContent?: (props: { loading?: boolean }) => React.ReactNode;
   },
   ref: LegacyRef<typeof Button>,
 ) {
@@ -687,7 +687,7 @@ export const CreateTokenButton = forwardRef(function (
       {...props}
     >
       {renderBottonContent ? (
-        renderBottonContent()
+        renderBottonContent({ loading })
       ) : (
         <Text>{text || `Create`}</Text>
       )}
