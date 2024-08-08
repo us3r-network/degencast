@@ -36,7 +36,7 @@ export default function WebVideoRender({ src }: { src: string }) {
         playerRef.current = videojs(videoRef.current, {
           controls: true,
           autoplay: false,
-          preload: "auto",
+          preload: "none",
           fluid: true,
           fill: true,
           responsive: true,

@@ -11,16 +11,23 @@ export default function useUserHostChannels(fid?: number) {
   const dispatch = useDispatch();
   const { channels, status, error, done } = useSelector(selectUserHostChannels);
 
-  useEffect(() => {
-    if (status === AsyncRequestStatus.IDLE && fid) {
+  // useEffect(() => {
+  //   if (status !== AsyncRequestStatus.IDLE && fid) {
+  //     dispatch(getHostChannels(fid) as unknown as UnknownAction);
+  //   }
+  // }, [status, dispatch, fid]);
+
+  const loadUserHostChannels = (fid: number) => {
+    if (status !== AsyncRequestStatus.IDLE && fid) {
       dispatch(getHostChannels(fid) as unknown as UnknownAction);
     }
-  }, [status, dispatch, fid]);
+  };
 
   return {
     channels,
     loading: status === AsyncRequestStatus.PENDING,
     error,
     done,
+    loadUserHostChannels,
   };
 }
