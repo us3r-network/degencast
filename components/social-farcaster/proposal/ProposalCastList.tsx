@@ -6,10 +6,10 @@ import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import FCast from "./FCast";
 import CastStatusActions from "./CastStatusActions";
 import { CardWrapper } from "./ProposalStyled";
 import { FCastExploreActions } from "../FCastActions";
+import FCastWithEmbed from "./FCastWithEmbed";
 
 export default function ProposalCastList({
   channel,
@@ -43,7 +43,7 @@ export default function ProposalCastList({
         const { cast, proposal } = item;
         return (
           <CardWrapper className="w-full flex-col gap-4 px-4">
-            <FCast cast={cast} channel={channel} />
+            <FCastWithEmbed cast={cast} channel={channel} />
             <View className="flex flex-row items-center justify-between">
               <CastStatusActions
                 cast={cast}

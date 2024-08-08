@@ -32,7 +32,7 @@ export default function CastStatusActions({
     ? { ...proposal, ...cachedProposal }
     : proposal;
 
-  const { status } = updatedProposal;
+  const { status, roundIndex } = updatedProposal;
 
   const display = displayProposalActions({
     channel,
@@ -61,6 +61,24 @@ export default function CastStatusActions({
         />
       );
     case ProposalState.Accepted:
+      if (Number(roundIndex) <= 1) {
+        return (
+          <ProposedProposalButton
+            cast={cast}
+            channel={channel}
+            proposal={updatedProposal}
+            tokenInfo={tokenInfo}
+          />
+        );
+      }
+      return (
+        <ChallengeProposalButton
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+        />
+      );
     case ProposalState.Disputed:
       return (
         <ChallengeProposalButton

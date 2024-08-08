@@ -19,7 +19,9 @@ export function ReadyToMint({
   const isExpired = nftDeadlineTime < now;
   const mintButtonBody = (
     <View className="flex flex-row items-center gap-1">
-      <ProposalText>Mint {mintedCount || "first"}</ProposalText>
+      <ProposalText>
+        {mintedCount ? `Minted ${mintedCount}` : "Mint"}
+      </ProposalText>
       {nftDeadlineTime && (
         <>
           <Separator
@@ -32,7 +34,9 @@ export function ReadyToMint({
             )}
           />
           <ProposalText>
-            {dayjs(nftDeadlineTime * 1000).format("MM/DD HH:mm:ss")}
+            {isExpired
+              ? "Expired"
+              : dayjs(nftDeadlineTime * 1000).format("MM/DD HH:mm:ss")}
           </ProposalText>
         </>
       )}

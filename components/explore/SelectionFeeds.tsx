@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import useLoadSelectionFeeds from "~/hooks/explore/useLoadSelectionFeeds";
-import ChannelListWithCasts from "./ChannelListWithCasts";
+import ChannelListWithCollectCasts from "./ChannelListWithCollectCasts";
 
 export default function SelectionFeeds() {
   const { loadItems, loading, items } = useLoadSelectionFeeds();
@@ -8,7 +8,7 @@ export default function SelectionFeeds() {
     loadItems();
   }, []);
   return (
-    <ChannelListWithCasts
+    <ChannelListWithCollectCasts
       items={items}
       loading={loading}
       onEndReached={() => {
