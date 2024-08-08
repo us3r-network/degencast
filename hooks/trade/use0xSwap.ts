@@ -56,9 +56,9 @@ export function useFetchPrice(taker?: `0x${string}`) {
         String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
       taker,
     });
-    // console.log("price", price);
+    console.log("price", price);
     setFetchingPrice(false);
-    if (!price) return;
+    if (!price || !price.liquidityAvaiable) return;
     return {
       buyAmount: formatUnits(
         price?.buyAmount,
