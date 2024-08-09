@@ -36,9 +36,9 @@ export type TradeInfo = {
 export type TokenWithTradeInfo = {
   chainId: number;
   address: `0x${string}`;
-  name: string | undefined;
-  decimals: number | undefined;
-  symbol: string | undefined;
+  name?: string | undefined;
+  decimals?: number | undefined;
+  symbol?: string | undefined;
   logoURI?: string;
   tradeInfo?: TradeInfo;
   rawBalance?: bigint | string;

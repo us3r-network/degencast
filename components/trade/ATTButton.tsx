@@ -42,6 +42,9 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import useATTNftPrice, {
+  getATTNFTPriceFrom0x,
+} from "~/hooks/trade/useATTNftPrice";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -190,23 +193,10 @@ const BurnNFT = forwardRef<
   const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: balance } = nftBalanceOf(account?.address);
 
-  const { getBurnNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(nft);
-
-  const { paymentToken } = getPaymentToken();
-  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
-  useEffect(() => {
-    if (paymentToken && account?.address)
-      getTokenInfo({
-        address: paymentToken,
-        chainId: ATT_CONTRACT_CHAIN.id,
-        account: account?.address,
-      }).then((tokenInfo) => {
-        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
-        setToken(tokenInfo);
-      });
-  }, [paymentToken, account?.address]);
-  const { nftPrice } = getBurnNFTPriceAfterFee(amount);
+  const { nftPrice, token } = useATTNftPrice({
+    tokenContract: nft.contractAddress,
+    nftAmount: amount,
+  });
   return (
     <View className="flex gap-4">
       <NFTImage nft={nft} />
@@ -399,26 +389,19 @@ const MintNFT = forwardRef<
   const { supportAtomicBatch } = useWalletAccount();
   const [amount, setAmount] = useState(1);
 
-  const { getMintNFTPrice, getPaymentToken } = useATTFactoryContractInfo(nft);
-
-  const { paymentToken } = getPaymentToken();
-  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
-  useEffect(() => {
-    if (paymentToken && account?.address)
-      getTokenInfo({
-        address: paymentToken,
-        chainId: ATT_CONTRACT_CHAIN.id,
-        account: account?.address,
-      }).then((tokenInfo) => {
-        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
-        setToken(tokenInfo);
-      });
-  }, [paymentToken, account?.address]);
-  const { nftPrice } = getMintNFTPrice(amount);
-  const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
-  const perNFTPrice = fetchedPrice
-    ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-    : "";
+  const { nftPrice:nftPriceBeforeGraduated, fetchedPrice, token, graduated } = useATTNftPrice({
+    tokenContract: nft.contractAddress,
+    nftAmount: amount,
+  });
+  const { nftPrice: nftPriceAfterGraduated } = getATTNFTPriceFrom0x({
+    tokenContract: nft.contractAddress,
+    nftAmount: amount,
+  });
+  const nftPrice = graduated ? nftPriceAfterGraduated : nftPriceBeforeGraduated;
+  const perNFTPrice =
+    fetchedPrice && nftPrice && amount && token?.decimals
+      ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
+      : "";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
 
   const allowanceParams =
@@ -449,7 +432,7 @@ const MintNFT = forwardRef<
       </View>
       <View className="flex-row items-center justify-between">
         <Text className="text-lg font-medium">Total Cost</Text>
-        {fetchedPrice && nftPrice ? (
+        {fetchedPrice && nftPrice && token ? (
           <Text>
             {formatUnits(nftPrice, token.decimals!)} {token.symbol}
           </Text>

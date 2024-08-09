@@ -101,23 +101,10 @@ export function useATTFactoryContractInfo(token: ERC42069Token) {
     return { graduated, status };
   };
 
-  const { graduated } = getGraduated();
-  const getMintNFTPrice = useCallback(
-    (amount: number) => {
-      // console.log("getMintNFTPrice", amount, graduated);
-      if (!graduated) {
-        return getMintNFTPriceAfterFee(amount);
-      } else {
-        return getMintNFTPriceFromUniV3(amount);
-      }
-    },
-    [graduated],
-  );
   return {
     getMintNFTPriceAfterFee,
     getMintNFTPriceAndFee,
     getMintNFTPriceFromUniV3,
-    getMintNFTPrice,
     getBurnNFTPriceAfterFee,
     getBurnNFTPriceAndFee,
     getPaymentToken,

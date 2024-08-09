@@ -2,13 +2,12 @@ import { Address } from "viem";
 import { useReadContract, useReadContracts } from "wagmi";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import ATT_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionToken.json";
-import { ReadContractReturnType } from "./types";
 import { ERC42069Token } from "~/services/trade/types";
 
 const chainId = ATT_CONTRACT_CHAIN.id;
 const abi = ATT_CONTRACT_ABI_JSON.abi;
 
-export function useATTContractInfo(token:ERC42069Token) {
+export function useATTContractInfo(token: ERC42069Token) {
   const contract = {
     abi,
     address: token.contractAddress,
@@ -50,6 +49,25 @@ export function useATTContractInfo(token:ERC42069Token) {
     return { data: data as bigint, status };
   };
 
+  const getTokenUnit = () => {
+    const { data, status } = useReadContracts({
+      contracts: [
+        {
+          ...contract,
+          functionName: "tokenUnit",
+        },
+        {
+          ...contract,
+          functionName: "decimals",
+        },
+      ],
+    });
+    if (!data || data.length < 2) return { data: undefined, status: "error" };
+    const tokenUnit =
+      (data[0].result as bigint) * (10n ** BigInt(data[1].result as bigint));
+    return { data: tokenUnit, status };
+  };
+
   const UNIT = () => {
     const { data, status } = useReadContract({
       ...contract,
@@ -83,6 +101,7 @@ export function useATTContractInfo(token:ERC42069Token) {
     // balanceOf,
     uri,
     nftBalanceOf,
+    getTokenUnit,
     // totalSupply,
     // MAX_SUPPLY,
     // UNIT,
