@@ -275,14 +275,14 @@ function CastDetailWithData({
             {cast && community && (
               <FCastExploreActions cast={cast} communityInfo={community} />
             )}
-            {community?.attentionTokenInfo?.tokenContract && (
+            {/* {community?.attentionTokenInfo?.tokenContract && (
               <BuyChannelBadgeWithIconButton
                 tokenContract={
                   community.attentionTokenInfo.tokenContract as any
                 }
                 className="mt-3"
               />
-            )}
+            )} */}
           </View>
           <FlatList
             style={{

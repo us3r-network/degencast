@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
@@ -37,26 +37,36 @@ export default function UpvoteProposalModal({
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
-        <UpvoteProposalModalContentBody
-          cast={cast}
-          channel={channel}
-          tokenInfo={tokenInfo}
-          onProposeSuccess={() => {
-            Toast.show({
-              type: "success",
-              text1: "Voting speeds up success",
-            });
-            setOpen(false);
-          }}
-          onProposeError={(error) => {
-            Toast.show({
-              type: "error",
-              text1: error.message,
-            });
-            setOpen(false);
-          }}
-        />
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <ScrollView
+          className="w-full max-sm:max-h-[80vh]"
+          showsHorizontalScrollIndicator={false}
+        >
+          <UpvoteProposalModalContentBody
+            cast={cast}
+            channel={channel}
+            tokenInfo={tokenInfo}
+            onProposeSuccess={() => {
+              Toast.show({
+                type: "success",
+                text1: "Voting speeds up success",
+              });
+              setOpen(false);
+            }}
+            onProposeError={(error) => {
+              Toast.show({
+                type: "error",
+                text1: error.message,
+              });
+              setOpen(false);
+            }}
+          />
+        </ScrollView>
       </DialogContent>
     </Dialog>
   );

@@ -8,7 +8,7 @@ import Toast from "react-native-toast-message";
 import { UpvoteProposalModalContentBody } from "./UpvoteProposalModal";
 import { ChallengeProposalWriteForm } from "./ChallengeProposalModal";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { AboutProposalChallenge } from "./AboutProposal";
@@ -62,7 +62,12 @@ export default function ProposedProposalModal({
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <ProposedProposalCtx.Provider
           value={{
             cast,
@@ -89,66 +94,71 @@ function ProposedProposalModalContentBodyScene() {
   const { cast, channel, proposal, tokenInfo, setOpen } =
     useProposedProposalCtx();
   return (
-    <View className="flex w-full flex-col gap-4">
-      {" "}
-      <UpvoteProposalModalContentBody
-        cast={cast}
-        channel={channel}
-        tokenInfo={tokenInfo}
-        onProposeSuccess={() => {
-          Toast.show({
-            type: "success",
-            text1: "Voting speeds up success",
-          });
-          setOpen(false);
-        }}
-        onProposeError={(error) => {
-          Toast.show({
-            type: "error",
-            text1: error.message,
-          });
-          setOpen(false);
-        }}
-      />
-      <View className="flex flex-row justify-center">
-        <Text>or</Text>
+    <ScrollView
+      className="w-full max-sm:max-h-[80vh]"
+      showsHorizontalScrollIndicator={false}
+    >
+      <View className="flex w-full flex-col gap-4">
+        {" "}
+        <UpvoteProposalModalContentBody
+          cast={cast}
+          channel={channel}
+          tokenInfo={tokenInfo}
+          onProposeSuccess={() => {
+            Toast.show({
+              type: "success",
+              text1: "Voting speeds up success",
+            });
+            setOpen(false);
+          }}
+          onProposeError={(error) => {
+            Toast.show({
+              type: "error",
+              text1: error.message,
+            });
+            setOpen(false);
+          }}
+        />
+        <View className="flex flex-row justify-center">
+          <Text>or</Text>
+        </View>
+        <ChallengeProposalWriteForm
+          cast={cast}
+          channel={channel}
+          proposal={{ ...proposal, status: ProposalState.Accepted }}
+          tokenInfo={tokenInfo}
+          onDisputeSuccess={() => {
+            setOpen(false);
+            Toast.show({
+              type: "success",
+              text1: "Submitted",
+            });
+          }}
+          onDisputeError={(error) => {
+            setOpen(false);
+            Toast.show({
+              type: "error",
+              // text1: "Challenges cannot be repeated this round",
+              text1: error.message,
+            });
+          }}
+          onProposeSuccess={() => {
+            setOpen(false);
+            Toast.show({
+              type: "success",
+              text1: "Submitted",
+            });
+          }}
+          onProposeError={(error) => {
+            setOpen(false);
+            Toast.show({
+              type: "error",
+              // text1: "Challenges cannot be repeated this round",
+              text1: error.message,
+            });
+          }}
+        />
       </View>
-      <ChallengeProposalWriteForm
-        cast={cast}
-        channel={channel}
-        proposal={{ ...proposal, status: ProposalState.Accepted }}
-        tokenInfo={tokenInfo}
-        onDisputeSuccess={() => {
-          setOpen(false);
-          Toast.show({
-            type: "success",
-            text1: "Submitted",
-          });
-        }}
-        onDisputeError={(error) => {
-          setOpen(false);
-          Toast.show({
-            type: "error",
-            // text1: "Challenges cannot be repeated this round",
-            text1: error.message,
-          });
-        }}
-        onProposeSuccess={() => {
-          setOpen(false);
-          Toast.show({
-            type: "success",
-            text1: "Submitted",
-          });
-        }}
-        onProposeError={(error) => {
-          setOpen(false);
-          Toast.show({
-            type: "error",
-            // text1: "Challenges cannot be repeated this round",
-            text1: error.message,
-          });
-        }}
-      />
-    </View>
+    </ScrollView>
   );
 }
