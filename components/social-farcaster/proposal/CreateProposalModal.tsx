@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import About from "~/components/common/About";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import {
@@ -76,7 +76,12 @@ export default function CreateProposalModal({
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <CreateProposalCtx.Provider
           value={{
             cast,
@@ -103,27 +108,32 @@ function CreateProposalModalContentBodyScene() {
   const { cast, channel, proposal, tokenInfo, setOpen } =
     useCreateProposalCtx();
   return (
-    <View className="flex w-full flex-col gap-4">
-      <CreateProposalModalContentBody
-        cast={cast}
-        channel={channel}
-        proposal={proposal}
-        tokenInfo={tokenInfo}
-        onCreateProposalSuccess={() => {
-          Toast.show({
-            type: "success",
-            text1: "Proposal created",
-          });
-          setOpen(false);
-        }}
-        onCreateProposalError={(error) => {
-          Toast.show({
-            type: "error",
-            text1: error.message,
-          });
-        }}
-      />
-    </View>
+    <ScrollView
+      className="w-full max-sm:max-h-[80vh]"
+      showsHorizontalScrollIndicator={false}
+    >
+      <View className="flex w-full flex-col gap-4">
+        <CreateProposalModalContentBody
+          cast={cast}
+          channel={channel}
+          proposal={proposal}
+          tokenInfo={tokenInfo}
+          onCreateProposalSuccess={() => {
+            Toast.show({
+              type: "success",
+              text1: "Proposal created",
+            });
+            setOpen(false);
+          }}
+          onCreateProposalError={(error) => {
+            Toast.show({
+              type: "error",
+              text1: error.message,
+            });
+          }}
+        />
+      </View>
+    </ScrollView>
   );
 }
 

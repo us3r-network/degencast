@@ -7,7 +7,7 @@ import { Separator } from "~/components/ui/separator";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import FCast from "./FCast";
+import FCast, { FCastWithNftImage } from "./FCast";
 import ChannelMetaInfo, {
   HomeChannelMetaInfo,
 } from "./channel-card/ChannelMetaInfo";
@@ -26,7 +26,7 @@ const ProposalCastCard = React.forwardRef<
   return (
     <ExploreCard
       className={cn(
-        "pointer-events-none z-20 flex h-[216px] flex-col gap-4 bg-white px-4",
+        "pointer-events-none z-20 flex flex-col gap-4 bg-white px-4",
         className,
       )}
       ref={ref}
@@ -38,7 +38,7 @@ const ProposalCastCard = React.forwardRef<
       )}
       <Separator className="bg-primary/20" />
 
-      <FCast className="flex-1 overflow-hidden" cast={cast} />
+      <FCastWithNftImage className="flex-1 overflow-hidden" cast={cast} />
     </ExploreCard>
   );
 });
