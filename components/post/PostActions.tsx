@@ -108,6 +108,13 @@ function ActionMenuItem({
             outputRange: [0, -(offset * index)],
           }),
         };
+      case "right":
+        return {
+          translateX: translateYAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, offset * index],
+          }),
+        };
       default:
         return {
           translateY: translateYAnimatedValue.interpolate({
@@ -284,7 +291,7 @@ export const MintButton = ({
 };
 
 type ExplorePostActionsProps = {
-  direction?: "top" | "left";
+  direction?: "top" | "left" | "right";
   channelId?: string;
   liked: boolean;
   likeCount?: number;
@@ -300,13 +307,13 @@ type ExplorePostActionsProps = {
 };
 const ActionMenuCtx = React.createContext<{
   showMenu?: boolean;
-  direction?: "top" | "left";
+  direction?: "top" | "left" | "right";
   scaleAnimatedValue: Animated.Value;
   translateYAnimatedValue: Animated.Value;
   translateXAnimatedValue: Animated.Value;
 }>({
   showMenu: false,
-  direction: "left",
+  direction: "right",
   scaleAnimatedValue: new Animated.Value(0),
   translateYAnimatedValue: new Animated.Value(0),
   translateXAnimatedValue: new Animated.Value(0),
@@ -320,7 +327,7 @@ function useActionMenuCtx() {
 }
 export const ExplorePostActions = forwardRef(function (
   {
-    direction = "left",
+    direction = "right",
     channelId,
     liked,
     likeCount,
@@ -361,12 +368,14 @@ export const ExplorePostActions = forwardRef(function (
   const translateXAnimatedValue = useState(new Animated.Value(0))[0];
   const openIconDeg = useMemo(() => {
     switch (direction) {
+      case "right":
+        return "-90deg";
       case "left":
         return "90deg";
       case "top":
         return "180deg";
       default:
-        return "90deg";
+        return "-90deg";
     }
   }, [direction]);
   return (

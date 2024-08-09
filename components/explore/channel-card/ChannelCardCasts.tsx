@@ -11,12 +11,12 @@ import FCast, { FCastHeight } from "../../social-farcaster/proposal/FCast";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import CastStatusActions, {
-  CastStatusActionsHeight,
-} from "~/components/social-farcaster/proposal/CastStatusActions";
+import ProposalStatusActions, {
+  ProposalStatusActionsHeight,
+} from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 
-const itemHeight = FCastHeight + CastStatusActionsHeight + 15;
+const itemHeight = FCastHeight + ProposalStatusActionsHeight + 15;
 const ChannelCardCasts = forwardRef(function (
   {
     channel,
@@ -108,16 +108,16 @@ const ChannelCardCasts = forwardRef(function (
                     channel={channel}
                   />
                   <View className="flex flex-row items-center justify-between">
-                    <CastStatusActions
+                    <FCastExploreActions
                       cast={cast}
-                      channel={channel!}
-                      tokenInfo={tokenInfo}
-                      proposal={proposal}
+                      communityInfo={channel as any}
                     />
                     <View className="ml-auto">
-                      <FCastExploreActions
+                      <ProposalStatusActions
                         cast={cast}
-                        communityInfo={channel as any}
+                        channel={channel!}
+                        tokenInfo={tokenInfo}
+                        proposal={proposal}
                       />
                     </View>
                   </View>

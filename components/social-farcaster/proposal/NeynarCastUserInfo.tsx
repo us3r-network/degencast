@@ -33,7 +33,7 @@ export default function NeynarCastUserInfo({
             <Text>{userData?.display_name?.slice(0, 1)}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className=" text-sx text-[#9BA1AD] hover:underline">
+        <Text className=" text-xs text-[#9BA1AD] hover:underline">
           @{userData?.username}
         </Text>
         {timestamp && (
@@ -42,7 +42,7 @@ export default function NeynarCastUserInfo({
               className="h-[12px] bg-[#9BA1AD]"
               orientation="vertical"
             />
-            <Text className="text-sx text-nowrap text-[#9BA1AD]">
+            <Text className=" text-nowrap text-xs text-[#9BA1AD]">
               | {dayjs(timestamp).fromNow(true)}
             </Text>
           </>

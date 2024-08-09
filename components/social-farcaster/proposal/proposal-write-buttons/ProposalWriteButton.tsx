@@ -1,5 +1,5 @@
 import { Text } from "~/components/ui/text";
-import { CastProposeStatusProps } from "./CreateProposalModal";
+import { CastProposeStatusProps } from "../proposal-modals/CreateProposalModal";
 import { Button, ButtonProps } from "~/components/ui/button";
 import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
