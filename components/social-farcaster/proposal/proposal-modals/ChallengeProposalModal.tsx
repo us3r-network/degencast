@@ -7,13 +7,13 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import ProposalCastCard from "./ProposalCastCard";
+import ProposalCastCard from "../ProposalCastCard";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import {
   ProposeProposalWriteButton,
   DisputeProposalWriteButton,
-} from "./ProposalWriteButton";
+} from "../proposal-write-buttons/ProposalWriteButton";
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 import PriceRow from "./PriceRow";
 import Toast from "react-native-toast-message";

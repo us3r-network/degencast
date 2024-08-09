@@ -84,6 +84,7 @@ import {
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
   Triangle,
+  DiamondPlus,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -183,6 +184,8 @@ interopIcon(SquarePen);
 interopIcon(ArrowDownNarrowWide);
 interopIcon(ArrowUpNarrowWide);
 interopIcon(Triangle);
+interopIcon(DiamondPlus);
+
 export {
   Activity,
   Airplay,
@@ -268,4 +271,5 @@ export {
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
   Triangle,
+  DiamondPlus,
 };

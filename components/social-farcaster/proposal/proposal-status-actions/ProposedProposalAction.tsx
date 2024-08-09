@@ -1,11 +1,13 @@
 import { useAccount } from "wagmi";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
-import { CastProposeStatusProps } from "./ChallengeProposalModal";
-import { ProposalButton, ProposalButtonProps } from "./ui/proposal-button";
+import { CastProposeStatusProps } from "../proposal-modals/ChallengeProposalModal";
+import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
-import ProposedProposalModal from "./ProposedProposalModal";
+import ProposedProposalModal from "../proposal-modals/ProposedProposalModal";
+import { View } from "react-native";
+import { Deadline } from "../ProposalStyled";
 
-export default function ProposedProposalButton({
+export function ProposedProposalButton({
   cast,
   channel,
   proposal,
@@ -43,5 +45,27 @@ export default function ProposedProposalButton({
         </ProposalButton>
       }
     />
+  );
+}
+
+export function ProposedProposalActionLayout({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastProposeStatusProps) {
+  return (
+    <View className="flex flex-row items-center gap-4">
+      {proposal?.finalizeTime && (
+        <Deadline timestamp={proposal?.finalizeTime} />
+      )}
+
+      <ProposedProposalButton
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
+    </View>
   );
 }

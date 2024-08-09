@@ -1,31 +1,30 @@
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import CreateProposalButton from "../../social-farcaster/proposal/CreateProposalButton";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
-import ChallengeProposalButton from "../../social-farcaster/proposal/ChallengeProposalButton";
-import { BuyButton } from "~/components/trade/ATTButton";
-import { displayProposalActions } from "./utils";
+import { displayProposalActions } from "../utils";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
-import ProposedProposalButton from "./ProposedProposalButton";
-import { ProposalButton } from "./ui/proposal-button";
+import { ProposedProposalActionLayout } from "./ProposedProposalAction";
+import { ChallengeProposalActionLayout } from "./ChallengeProposalAction";
+import { ProposalButton } from "../ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
-import { ReadyToMint } from "./MintButton";
+import { ReadyToMintActionLayout } from "./MintAction";
+import { CreateProposalButton } from "./CreateProposalAction";
 
-export type CastStatusActionsProps = {
+export type ProposalStatusActionsProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
   proposal: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 };
-export const CastStatusActionsHeight = 32;
-export default function CastStatusActions({
+export const ProposalStatusActionsHeight = 32;
+export default function ProposalStatusActions({
   cast,
   channel,
   tokenInfo,
   proposal,
-}: CastStatusActionsProps) {
+}: ProposalStatusActionsProps) {
   const { proposals } = useCacheCastProposal();
   const cachedProposal = proposals?.[cast.hash] || null;
   const updatedProposal = cachedProposal
@@ -53,7 +52,7 @@ export default function CastStatusActions({
       );
     case ProposalState.Proposed:
       return (
-        <ProposedProposalButton
+        <ProposedProposalActionLayout
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
@@ -63,7 +62,7 @@ export default function CastStatusActions({
     case ProposalState.Accepted:
       if (Number(roundIndex) <= 1) {
         return (
-          <ProposedProposalButton
+          <ProposedProposalActionLayout
             cast={cast}
             channel={channel}
             proposal={updatedProposal}
@@ -72,7 +71,7 @@ export default function CastStatusActions({
         );
       }
       return (
-        <ChallengeProposalButton
+        <ChallengeProposalActionLayout
           cast={cast}
           channel={channel}
           proposal={proposal}
@@ -81,7 +80,7 @@ export default function CastStatusActions({
       );
     case ProposalState.Disputed:
       return (
-        <ChallengeProposalButton
+        <ChallengeProposalActionLayout
           cast={cast}
           channel={channel}
           proposal={proposal}
@@ -90,7 +89,7 @@ export default function CastStatusActions({
       );
     case ProposalState.ReadyToMint:
       return (
-        <ReadyToMint
+        <ReadyToMintActionLayout
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
@@ -116,7 +115,7 @@ function Abandoned({
   channel,
   proposal,
   tokenInfo,
-}: CastStatusActionsProps) {
+}: ProposalStatusActionsProps) {
   return (
     <ProposalButton variant={"abandoned"}>
       <ProposalButtonBody

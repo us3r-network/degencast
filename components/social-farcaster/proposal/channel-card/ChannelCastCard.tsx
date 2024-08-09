@@ -7,7 +7,7 @@ import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import CastStatusActions from "../CastStatusActions";
+import ProposalStatusActions from "../proposal-status-actions/ProposalStatusActions";
 import { CardWrapper } from "../ProposalStyled";
 import { FCastExploreActions } from "../../FCastActions";
 import FCastWithEmbed from "../FCastWithEmbed";
@@ -34,14 +34,14 @@ const ChannelCastCard = React.forwardRef<
 
       <FCastWithEmbed cast={cast} channel={channel} isVisible={isVisible} />
       <View className="flex flex-row items-center justify-between">
-        <CastStatusActions
-          cast={cast}
-          channel={channel}
-          tokenInfo={tokenInfo}
-          proposal={proposal}
-        />
+        <FCastExploreActions cast={cast} communityInfo={channel as any} />
         <View className="ml-auto">
-          <FCastExploreActions cast={cast} communityInfo={channel as any} />
+          <ProposalStatusActions
+            cast={cast}
+            channel={channel}
+            tokenInfo={tokenInfo}
+            proposal={proposal}
+          />
         </View>
       </View>
     </CardWrapper>

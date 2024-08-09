@@ -1,5 +1,5 @@
 import { Text } from "~/components/ui/text";
-import { CastProposeStatusProps } from "./CreateProposalModal";
+import { CastProposeStatusProps } from "../proposal-modals/CreateProposalModal";
 import { Button, ButtonProps } from "~/components/ui/button";
 import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
@@ -7,7 +7,7 @@ import useCreateProposal from "~/hooks/social-farcaster/proposal/useCreatePropos
 import { useAccount } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import { TransactionReceipt } from "viem";
-import { getProposalMinPrice } from "./utils";
+import { getProposalMinPrice } from "../utils";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { Loading } from "~/components/common/Loading";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
@@ -16,11 +16,13 @@ export default function CreateProposalWriteButton({
   cast,
   channel,
   tokenInfo,
+  price,
   onCreateProposalSuccess,
   onCreateProposalError,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
+    price: bigint;
     onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
     onCreateProposalError?: (error: any) => void;
   }) {
@@ -40,7 +42,7 @@ export default function CreateProposalWriteButton({
       contractAddress: tokenInfo?.danContract!,
       castHash: cast.hash,
     });
-  const price = getProposalMinPrice(tokenInfo, paymentTokenInfo);
+  // const price = getProposalMinPrice(tokenInfo, paymentTokenInfo);
   const isCreated = Number(proposals?.roundIndex) > 0;
   const isLoading =
     createLoading || proposalsLoading || paymentTokenInfoLoading;
