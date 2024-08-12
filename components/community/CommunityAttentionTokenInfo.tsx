@@ -17,6 +17,9 @@ import { Progress } from "../ui/progress";
 import { formatUnits } from "viem";
 import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
+import { CopyTextContainer } from "../common/CopyText";
+import { getChain } from "~/utils/chain/getChain";
+import { ATT_CONTRACT_CHAIN } from "~/constants";
 
 export default function CommunityAttentionTokenInfo({
   channelId,
@@ -158,6 +161,9 @@ const numberToMillion = (num: number) => {
   return n.toFixed(2);
 };
 function TokenInfo({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
+  // const chain = getChain(chainId)
+  const exploreBase = ATT_CONTRACT_CHAIN?.blockExplorers?.default;
+  const contractExploreUrl = `${exploreBase?.url}/address/${tokenInfo.tokenContract}`;
   const data = [
     // {
     //   label: "Market Cap",
@@ -182,12 +188,14 @@ function TokenInfo({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
     {
       label: "Token Contract",
       value: shortAddress(tokenInfo.tokenContract),
+      copyText: contractExploreUrl,
     },
     {
       label: "Chain",
       value: tokenInfo.chain,
     },
   ];
+
   return (
     <View className="flex-col">
       {data.map((item, index) => (
@@ -196,7 +204,13 @@ function TokenInfo({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
           key={index}
         >
           <Text className="text-base">{item.label}</Text>
-          <Text className="text-base">{item.value}</Text>
+          {!!item?.copyText ? (
+            <CopyTextContainer copyText={item?.copyText}>
+              <Text className="text-base">{item.value}</Text>
+            </CopyTextContainer>
+          ) : (
+            <Text className="text-base">{item.value}</Text>
+          )}
         </View>
       ))}
     </View>

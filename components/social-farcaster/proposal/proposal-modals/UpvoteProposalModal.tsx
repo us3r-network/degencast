@@ -1,18 +1,20 @@
-import { useState } from "react";
-import { View } from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, View } from "react-native";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import ProposalCastCard from "./ProposalCastCard";
+import ProposalCastCard from "../ProposalCastCard";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
-import { ProposeProposalWriteButton } from "./ProposalWriteButton";
 import PriceRow from "./PriceRow";
-import { TransactionReceipt } from "viem";
+import { formatUnits, TransactionReceipt } from "viem";
 import Toast from "react-native-toast-message";
+import { ProposeProposalWriteButton } from "../proposal-write-buttons/ProposalWriteButton";
+import { Slider } from "~/components/ui/slider";
+import { PriceRangeRow } from "./ChallengeProposalModal";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -37,26 +39,36 @@ export default function UpvoteProposalModal({
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
-        <UpvoteProposalModalContentBody
-          cast={cast}
-          channel={channel}
-          tokenInfo={tokenInfo}
-          onProposeSuccess={() => {
-            Toast.show({
-              type: "success",
-              text1: "Voting speeds up success",
-            });
-            setOpen(false);
-          }}
-          onProposeError={(error) => {
-            Toast.show({
-              type: "error",
-              text1: error.message,
-            });
-            setOpen(false);
-          }}
-        />
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <ScrollView
+          className="w-full max-sm:max-h-[80vh]"
+          showsHorizontalScrollIndicator={false}
+        >
+          <UpvoteProposalModalContentBody
+            cast={cast}
+            channel={channel}
+            tokenInfo={tokenInfo}
+            onProposeSuccess={() => {
+              Toast.show({
+                type: "success",
+                text1: "Voting speeds up success",
+              });
+              setOpen(false);
+            }}
+            onProposeError={(error) => {
+              Toast.show({
+                type: "error",
+                text1: error.message,
+              });
+              setOpen(false);
+            }}
+          />
+        </ScrollView>
       </DialogContent>
     </Dialog>
   );
@@ -88,6 +100,31 @@ export function UpvoteProposalModalContentBody({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+
+  const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
+  useEffect(() => {
+    if (!isLoading && price) {
+      console.log("price", price);
+      setSelectPrice(price);
+    }
+  }, [price, isLoading]);
+
+  const priceNumber =
+    price && paymentTokenInfo?.decimals
+      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
+      : 0;
+  const selectPriceNumber =
+    selectPrice && paymentTokenInfo?.decimals
+      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
+      : 0;
+  const priceSliderConfig = {
+    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
+    max: Number(paymentTokenInfo?.balance || 0),
+    min: paymentTokenInfo?.balance
+      ? tokenInfo?.bondingCurve?.basePrice || 0
+      : 0,
+    step: priceNumber / 100,
+  };
   return (
     <>
       {/* <DialogHeader
@@ -105,7 +142,23 @@ export function UpvoteProposalModalContentBody({
         paymentTokenInfo={paymentTokenInfo}
         price={price}
         isLoading={isLoading || paymentTokenInfoLoading}
+        onClickPriceValue={() => {
+          if (price) {
+            setSelectPrice(price);
+          }
+        }}
       />
+      <Slider
+        {...priceSliderConfig}
+        onValueChange={(v) => {
+          if (!isNaN(Number(v))) {
+            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
+            const vInt = Math.ceil(Number(v));
+            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
+          }
+        }}
+      />
+      <PriceRangeRow {...priceSliderConfig} />
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}

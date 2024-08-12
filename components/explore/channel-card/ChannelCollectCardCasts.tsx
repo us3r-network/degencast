@@ -7,7 +7,10 @@ import {
 } from "react-native";
 import { CommunityEntity } from "~/services/community/types/community";
 import Animated from "react-native-reanimated";
-import FCast, { FCastHeight } from "../../social-farcaster/proposal/FCast";
+import {
+  FCastHeightWithNftImage,
+  FCastWithNftImage,
+} from "../../social-farcaster/proposal/FCast";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
@@ -16,8 +19,9 @@ import ProposalStatusActions, {
 } from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
 import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
 
-const itemHeight = FCastHeight + ProposalStatusActionsHeight + 15;
-const ChannelCardCasts = forwardRef(function (
+const itemHeight = FCastHeightWithNftImage + ProposalStatusActionsHeight + 15;
+
+const ChannelCollectCardCasts = forwardRef(function (
   {
     channel,
     tokenInfo,
@@ -102,7 +106,7 @@ const ChannelCardCasts = forwardRef(function (
                   }}
                   className="flex flex-col gap-4 px-4"
                 >
-                  <FCast
+                  <FCastWithNftImage
                     className="overflow-hidden"
                     cast={cast}
                     channel={channel}
@@ -137,7 +141,7 @@ const ChannelCardCasts = forwardRef(function (
     </View>
   );
 });
-export default ChannelCardCasts;
+export default ChannelCollectCardCasts;
 
 function Pagination({
   data,

@@ -2,11 +2,11 @@ import { useAccount } from "wagmi";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import CreateProposalModal, {
   CastProposeStatusProps,
-} from "./CreateProposalModal";
-import { ProposalButton, ProposalButtonProps } from "./ui/proposal-button";
+} from "../proposal-modals/CreateProposalModal";
+import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
 
-export default function CreateProposalButton({
+export function CreateProposalButton({
   cast,
   channel,
   proposal,

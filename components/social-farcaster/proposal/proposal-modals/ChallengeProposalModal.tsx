@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
@@ -7,13 +7,13 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import ProposalCastCard from "./ProposalCastCard";
+import ProposalCastCard from "../ProposalCastCard";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import {
   ProposeProposalWriteButton,
   DisputeProposalWriteButton,
-} from "./ProposalWriteButton";
+} from "../proposal-write-buttons/ProposalWriteButton";
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 import PriceRow from "./PriceRow";
 import Toast from "react-native-toast-message";
@@ -76,7 +76,12 @@ export default function ChallengeProposalModal({
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <ChallengeProposalCtx.Provider
           value={{
             cast,
@@ -103,15 +108,20 @@ function ChallengeProposalContentBodyScene() {
   const { cast, channel, proposal, tokenInfo, setOpen } =
     useChallengeProposalCtx();
   return (
-    <ChallengeProposalContentBody
-      cast={cast}
-      channel={channel}
-      proposal={proposal}
-      tokenInfo={tokenInfo}
-      onClose={() => {
-        setOpen(false);
-      }}
-    />
+    <ScrollView
+      className="w-full max-sm:max-h-[80vh]"
+      showsHorizontalScrollIndicator={false}
+    >
+      <ChallengeProposalContentBody
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+        onClose={() => {
+          setOpen(false);
+        }}
+      />
+    </ScrollView>
   );
 }
 function CastActivitiesListScene() {

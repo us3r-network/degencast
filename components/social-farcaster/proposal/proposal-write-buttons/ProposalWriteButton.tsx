@@ -1,5 +1,5 @@
 import { Text } from "~/components/ui/text";
-import { CastProposeStatusProps } from "./CreateProposalModal";
+import { CastProposeStatusProps } from "../proposal-modals/CreateProposalModal";
 import { Button, ButtonProps } from "~/components/ui/button";
 import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
@@ -54,7 +54,8 @@ export function ProposeProposalWriteButton({
   const disabled =
     participated ||
     proposals?.state === ProposalState.Abandoned ||
-    proposals?.state === ProposalState.Accepted ||
+    (proposals?.state === ProposalState.Accepted &&
+      Number(proposals.roundIndex) > 1) ||
     proposals?.state === ProposalState.ReadyToMint ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
@@ -112,7 +113,11 @@ export function ProposeProposalWriteButton({
           ) : proposals?.state === ProposalState.Abandoned ? (
             <Text>The proposal has been abandoned</Text>
           ) : proposals?.state === ProposalState.Accepted ? (
-            <Text>The proposal has been accepted</Text>
+            Number(proposals?.roundIndex) <= 1 ? (
+              <Text>Upvote & Accelerate Countdown</Text>
+            ) : (
+              <Text>The proposal has been accepted</Text>
+            )
           ) : !isConnected ? (
             <Text>Connect your wallet first</Text>
           ) : (

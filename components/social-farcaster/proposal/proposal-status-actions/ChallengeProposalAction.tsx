@@ -4,12 +4,14 @@ import { Text } from "~/components/ui/text";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import ChallengeProposalModal, {
   CastProposeStatusProps,
-} from "./ChallengeProposalModal";
+} from "../proposal-modals/ChallengeProposalModal";
 import { ProposalButtonBody } from "./ProposalButtonBody";
-import { ProposalButton, ProposalButtonProps } from "./ui/proposal-button";
+import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
+import { View } from "react-native";
+import { Deadline } from "../ProposalStyled";
 
-export default function ChallengeProposalButton({
+export function ChallengeProposalButton({
   cast,
   channel,
   proposal,
@@ -50,5 +52,27 @@ export default function ChallengeProposalButton({
         </ProposalButton>
       }
     />
+  );
+}
+
+export function ChallengeProposalActionLayout({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastProposeStatusProps) {
+  return (
+    <View className="flex flex-row items-center gap-4">
+      {proposal?.finalizeTime && (
+        <Deadline timestamp={proposal?.finalizeTime} />
+      )}
+
+      <ChallengeProposalButton
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
+    </View>
   );
 }

@@ -1,3 +1,4 @@
+import { ScrollView } from "react-native";
 import { UnorderedList } from "~/components/common/UnorderedList";
 
 export const getChallengeAboutInfo = () => {
@@ -20,5 +21,12 @@ export const getChallengeAboutInfo = () => {
 };
 
 export function AboutProposalChallenge() {
-  return <UnorderedList texts={getChallengeAboutInfo()} />;
+  return (
+    <ScrollView
+      className="w-full max-sm:max-h-[80vh]"
+      showsHorizontalScrollIndicator={false}
+    >
+      <UnorderedList texts={getChallengeAboutInfo()} />
+    </ScrollView>
+  );
 }

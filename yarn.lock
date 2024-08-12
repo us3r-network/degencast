@@ -3422,6 +3422,24 @@
     "@radix-ui/react-primitive" "2.0.0"
     "@radix-ui/react-use-controllable-state" "1.1.0"
 
+"@radix-ui/react-tooltip@^1.0.7":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-tooltip/-/react-tooltip-1.1.2.tgz#c42db2ffd7dcc6ff3d65407c8cb70490288f518d"
+  integrity sha512-9XRsLwe6Yb9B/tlnYCPVUd/TFS4J7HuOZW345DCeC6vKIxQGMZdx21RK4VoZauPD5frgkXTYVS5y90L+3YBn4w==
+  dependencies:
+    "@radix-ui/primitive" "1.1.0"
+    "@radix-ui/react-compose-refs" "1.1.0"
+    "@radix-ui/react-context" "1.1.0"
+    "@radix-ui/react-dismissable-layer" "1.1.0"
+    "@radix-ui/react-id" "1.1.0"
+    "@radix-ui/react-popper" "1.2.0"
+    "@radix-ui/react-portal" "1.1.1"
+    "@radix-ui/react-presence" "1.1.0"
+    "@radix-ui/react-primitive" "2.0.0"
+    "@radix-ui/react-slot" "1.1.0"
+    "@radix-ui/react-use-controllable-state" "1.1.0"
+    "@radix-ui/react-visually-hidden" "1.1.0"
+
 "@radix-ui/react-use-callback-ref@1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@radix-ui/react-use-callback-ref/-/react-use-callback-ref-1.1.0.tgz#bce938ca413675bc937944b0d01ef6f4a6dc5bf1"
@@ -3941,6 +3959,13 @@
   resolved "https://registry.npmjs.org/@resvg/resvg-wasm/-/resvg-wasm-2.4.0.tgz#e01164b9a267c822e1ff797daa2fb91b663ea6f0"
   integrity sha512-C7c51Nn4yTxXFKvgh2txJFNweaVcfUPQxwEUFw4aWsCmfiBDJsTSwviIF8EcwjQ6k8bPyMWCl1vw4BdxE569Cg==
 
+"@rn-primitives/hooks@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@rn-primitives/hooks/-/hooks-1.0.3.tgz#f66d32ae294860e1dfdf8f262c642665183f11de"
+  integrity sha512-3aI1upO2OteR+tDSqNx9kDxBmJ1xVOs+ziuFjQZxHEWB05AyB7JrGh7uUTJVcfgHmu8yBItYydBIiYgg95rz+Q==
+  dependencies:
+    "@rn-primitives/types" "1.0.3"
+
 "@rn-primitives/slot@1.0.3", "@rn-primitives/slot@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@rn-primitives/slot/-/slot-1.0.3.tgz#878b488dd7844703eb0b4dbc51c239e1bdb0ca11"
@@ -3951,6 +3976,16 @@
   resolved "https://registry.yarnpkg.com/@rn-primitives/table/-/table-1.0.3.tgz#45692ddcd23605d58104f83dcdd6b967be436561"
   integrity sha512-T9i6Fpk9kP9h+gft5Q+oR+xkMv98u1fSH5q0cl/nVweJWNV6lBWOSVrP2rx9ORlrZAsvyjXtX6zH8TVAUj2wpQ==
   dependencies:
+    "@rn-primitives/slot" "1.0.3"
+    "@rn-primitives/types" "1.0.3"
+
+"@rn-primitives/tooltip@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@rn-primitives/tooltip/-/tooltip-1.0.3.tgz#6bc763e25b5c5d5ff8616d969605377a5b0b7817"
+  integrity sha512-MhcHwviaD40GnOrdgqqs2Q48R5p+J9kZfCaQ4h4wk97dHKNc7PB8HpKAvzuiW5sFFzW6ejxq5EONQUrK8AjP8A==
+  dependencies:
+    "@radix-ui/react-tooltip" "^1.0.7"
+    "@rn-primitives/hooks" "1.0.3"
     "@rn-primitives/slot" "1.0.3"
     "@rn-primitives/types" "1.0.3"
 
