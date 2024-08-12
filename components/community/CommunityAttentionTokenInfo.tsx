@@ -16,6 +16,7 @@ import { Progress } from "../ui/progress";
 // import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { formatUnits } from "viem";
 import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
+import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { CopyTextContainer } from "../common/CopyText";
 import { getChain } from "~/utils/chain/getChain";
 import { ATT_CONTRACT_CHAIN } from "~/constants";
@@ -120,8 +121,8 @@ function TokenLaunchProgress({
 
 function TokenPrice({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
   // const priceTrend = Number(tokenInfo.priceTrend.replace("%", ""));
-
-  const { fetchedPrice, nftPrice, token } = useATTNftPrice({
+  const { token } = useATTNftInfo({ tokenContract: tokenInfo.tokenContract });
+  const { nftPrice } = useATTNftPrice({
     tokenContract: tokenInfo.tokenContract,
     nftAmount: 1,
   });
@@ -129,7 +130,7 @@ function TokenPrice({ tokenInfo }: { tokenInfo: AttentionTokenEntity }) {
     <View className="flex-row items-center justify-between">
       <View className=" flex-1 flex-row items-center justify-between gap-1">
         <Text className=" leading-none text-secondary">Price</Text>
-        {fetchedPrice && nftPrice && token ? (
+        {nftPrice && token ? (
           <Text className=" text-2xl font-bold">
             {formatUnits(nftPrice, token.decimals!)} {token.symbol}
           </Text>

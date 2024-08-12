@@ -56,9 +56,8 @@ export function useFetchPrice(taker?: `0x${string}`) {
         String(parseUnits(buyAmount, buyToken.decimals || DEFAULT_DECIMALS)),
       taker,
     });
-    console.log("price", price);
     setFetchingPrice(false);
-    if (!price || !price.liquidityAvaiable) return;
+    if (!price || !price.liquidityAvailable) return;
     return {
       buyAmount: formatUnits(
         price?.buyAmount,
@@ -182,10 +181,8 @@ export function useSwapTokenEOA(taker?: `0x${string}`) {
       });
       console.log("get quote from 0x", quote);
       const grossBuyAmount = Number(
-        formatUnits(
-          quote.buyAmount,
-          buyToken.decimals || DEFAULT_DECIMALS,
-        ) || "0",
+        formatUnits(quote.buyAmount, buyToken.decimals || DEFAULT_DECIMALS) ||
+          "0",
       );
       if (quote.fees?.zeroExFee?.amount) {
         const zeroExFee = Number(
@@ -313,10 +310,8 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
       });
       console.log("get quote from 0x", quote);
       const grossBuyAmount = Number(
-        formatUnits(
-          quote.buyAmount,
-          buyToken.decimals || DEFAULT_DECIMALS,
-        ) || "0",
+        formatUnits(quote.buyAmount, buyToken.decimals || DEFAULT_DECIMALS) ||
+          "0",
       );
       if (quote.fees?.zeroExFee?.amount) {
         const zeroExFee = Number(

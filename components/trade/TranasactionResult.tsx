@@ -8,7 +8,6 @@ import { Check, ReceiptText, X } from "../common/Icons";
 import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
-const EXPLORE_URL = "https://www.onceupon.xyz";
 export type TransationData = {
   chain: Chain;
   transactionReceipt?:
@@ -61,7 +60,7 @@ export function TransactionInfo({
             <ExternalLink
               className="flex-1/2 text-primary-foreground/80"
               // href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
-              href={`${EXPLORE_URL}/${transactionHash}`}
+              href={`${data.chain.blockExplorers.default}/${transactionHash}`}
               target="_blank"
             >
               <Button variant="secondary">
@@ -81,7 +80,7 @@ export function TransactionInfo({
           </Button>
           <TransactionResultSharingButton
             type={ONCHAIN_ACTION_TYPE.SWAP}
-            transactionDetailURL={`${EXPLORE_URL}/${transactionHash}`}
+            transactionDetailURL={`${data?.chain?.blockExplorers?.default || ""}/${transactionHash}`}
             navigateToCreatePageAfter={navigateToCreatePageAfter}
           />
         </View>

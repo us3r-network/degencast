@@ -42,6 +42,8 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
+import { useQuote } from "~/hooks/trade/useUniSwapV3";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -170,7 +172,7 @@ const BurnNFT = forwardRef<
         transactionReceipt,
         description: (
           <View className="flex-row items-center gap-2">
-            <Text className="text-white">Sell {amount} badges and receive</Text>
+            <Text className="text-white">Sell {amount} NFTs and receive</Text>
             <TokenWithValue token={token} value={nftPrice} />
           </View>
         ),
@@ -189,23 +191,13 @@ const BurnNFT = forwardRef<
 
   const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: balance } = nftBalanceOf(account?.address);
-
-  const { getBurnNFTPriceAfterFee, getPaymentToken } =
-    useATTFactoryContractInfo(nft);
-
-  const { paymentToken } = getPaymentToken();
-  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
-  useEffect(() => {
-    if (paymentToken && account?.address)
-      getTokenInfo({
-        address: paymentToken,
-        chainId: ATT_CONTRACT_CHAIN.id,
-        account: account?.address,
-      }).then((tokenInfo) => {
-        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
-        setToken(tokenInfo);
-      });
-  }, [paymentToken, account?.address]);
+  const { token, graduated } = useATTNftInfo({
+    tokenContract: nft.contractAddress,
+  });
+  const { getBurnNFTPriceAfterFee } = useATTFactoryContractInfo({
+    contractAddress: nft.contractAddress,
+    tokenId: 0,
+  });
   const { nftPrice } = getBurnNFTPriceAfterFee(amount);
   return (
     <View className="flex gap-4">
@@ -216,7 +208,7 @@ const BurnNFT = forwardRef<
           {nftPrice && amount && token && token.decimals ? (
             <Text className="text-xs">
               {formatUnits(nftPrice / BigInt(amount), token.decimals)}
-              {token?.symbol} per badge
+              {token?.symbol} per NFT
             </Text>
           ) : (
             <Text className="text-xs">calculating price...</Text>
@@ -398,27 +390,15 @@ const MintNFT = forwardRef<
   const account = useAccount();
   const { supportAtomicBatch } = useWalletAccount();
   const [amount, setAmount] = useState(1);
+  const { graduated, token } = useATTNftInfo({
+    tokenContract: nft.contractAddress,
+  });
 
-  const { getMintNFTPrice, getPaymentToken } = useATTFactoryContractInfo(nft);
-
-  const { paymentToken } = getPaymentToken();
-  const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
-  useEffect(() => {
-    if (paymentToken && account?.address)
-      getTokenInfo({
-        address: paymentToken,
-        chainId: ATT_CONTRACT_CHAIN.id,
-        account: account?.address,
-      }).then((tokenInfo) => {
-        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
-        setToken(tokenInfo);
-      });
-  }, [paymentToken, account?.address]);
-  const { nftPrice } = getMintNFTPrice(amount);
-  const fetchedPrice = !!(nftPrice && amount && token && token.decimals);
-  const perNFTPrice = fetchedPrice
-    ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-    : "";
+  const [nftPrice, setNftPrice] = useState<bigint>();
+  const perNFTPrice =
+    nftPrice && amount && token?.decimals
+      ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
+      : "";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
 
   const allowanceParams =
@@ -436,10 +416,10 @@ const MintNFT = forwardRef<
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
-          {fetchedPrice ? (
+          {perNFTPrice ? (
             <Text className="text-xs">
               {perNFTPrice}
-              {token?.symbol} per badge
+              {token?.symbol} per NFT
             </Text>
           ) : (
             <Text className="text-xs text-secondary">calculating price...</Text>
@@ -447,16 +427,22 @@ const MintNFT = forwardRef<
         </View>
         <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
       </View>
-      <View className="flex-row items-center justify-between">
-        <Text className="text-lg font-medium">Total Cost</Text>
-        {fetchedPrice && nftPrice ? (
-          <Text>
-            {formatUnits(nftPrice, token.decimals!)} {token.symbol}
-          </Text>
+      {token &&
+        (graduated ? (
+          <PriceAfterGraduated
+            tokenContract={nft.contractAddress}
+            paymentToken={token}
+            nftAmount={amount}
+            setNftPrice={setNftPrice}
+          />
         ) : (
-          <Text>fetching price...</Text>
-        )}
-      </View>
+          <PriceBeforeGraduated
+            tokenContract={nft.contractAddress}
+            paymentToken={token}
+            nftAmount={amount}
+            setNftPrice={setNftPrice}
+          />
+        ))}
       {token &&
         !!nftPrice &&
         !!amount &&
@@ -498,6 +484,77 @@ const MintNFT = forwardRef<
   );
 });
 
+function PriceBeforeGraduated({
+  tokenContract,
+  nftAmount,
+  setNftPrice,
+  paymentToken,
+}: {
+  tokenContract: `0x${string}`;
+  nftAmount: number;
+  setNftPrice: (price: bigint) => void;
+  paymentToken: TokenWithTradeInfo;
+}) {
+  const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo({
+    contractAddress: tokenContract,
+    tokenId: 0,
+  });
+  const { nftPrice } = getMintNFTPriceAfterFee(nftAmount);
+  useEffect(() => {
+    if (nftPrice) setNftPrice(nftPrice);
+  }, [nftPrice]);
+  return (
+    <View className="flex-row items-center justify-between">
+      <Text className="text-lg font-medium">Total Cost</Text>
+      {nftPrice && paymentToken ? (
+        <Text>
+          {formatUnits(nftPrice, paymentToken.decimals!)} {paymentToken.symbol}
+        </Text>
+      ) : (
+        <Text>fetching price...</Text>
+      )}
+    </View>
+  );
+}
+
+function PriceAfterGraduated({
+  tokenContract,
+  nftAmount,
+  setNftPrice,
+  paymentToken,
+}: {
+  tokenContract: `0x${string}`;
+  nftAmount: number;
+  setNftPrice: (price: bigint) => void;
+  paymentToken: TokenWithTradeInfo;
+}) {
+  const { tokenUnit } = useATTNftInfo({
+    tokenContract,
+  });
+  const { fetchSellAmount } = useQuote({
+    sellToken: paymentToken,
+    buyToken: { address: tokenContract, chainId: ATT_CONTRACT_CHAIN.id },
+  });
+  const { sellAmount } = fetchSellAmount(
+    BigInt(nftAmount) * BigInt(tokenUnit || 0n),
+  );
+  const nftPrice = sellAmount ? sellAmount + sellAmount / 10n : undefined;
+  useEffect(() => {
+    if (nftPrice) setNftPrice(nftPrice);
+  }, [nftPrice]);
+  return (
+    <View className="flex-row items-center justify-between">
+      <Text className="text-lg font-medium">Total Cost</Text>
+      {nftPrice && paymentToken ? (
+        <Text>
+          {formatUnits(nftPrice, paymentToken.decimals!)} {paymentToken.symbol}
+        </Text>
+      ) : (
+        <Text>fetching price...</Text>
+      )}
+    </View>
+  );
+}
 function MintButton({
   nft,
   paymentToken,

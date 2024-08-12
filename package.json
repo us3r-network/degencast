@@ -46,6 +46,7 @@
     "@standard-crypto/farcaster-js": "^7.4.0",
     "@standard-crypto/farcaster-js-hub-rest": "^1.5.0",
     "@tanstack/react-query": "^5.28.9",
+    "@uniswap/v3-sdk": "^3.13.1",
     "@zoralabs/protocol-sdk": "^0.5.14",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",

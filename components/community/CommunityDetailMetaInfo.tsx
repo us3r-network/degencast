@@ -22,6 +22,7 @@ import useLoadAttentionTokenInfo from "~/hooks/community/useLoadAttentionTokenIn
 import { Separator } from "../ui/separator";
 import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
 import { formatUnits } from "viem";
+import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -111,8 +112,11 @@ export function CommunityDetailMetaInfo2({
   // }, [tokenInfo, loading, rejected, loadTokenInfo]);
   const tokenInfo = communityInfo?.attentionTokenInfo;
 
-  const { fetchedPrice, nftPrice, token } = useATTNftPrice({
-    tokenContract: tokenInfo?.tokenContract!,
+  const { token } = useATTNftInfo({
+    tokenContract: tokenInfo?.tokenContract || "0x",
+  });
+  const { nftPrice } = useATTNftPrice({
+    tokenContract: tokenInfo?.tokenContract || "0x",
     nftAmount: 1,
   });
   return (
@@ -189,7 +193,7 @@ export function CommunityDetailMetaInfo2({
             Channel NFT Prices
           </Text>
           <Text className={cn("text-sm text-primary-foreground")}>
-            {fetchedPrice && !!nftPrice && !!token
+            {!!nftPrice && !!token
               ? `${formatUnits(nftPrice, token.decimals!)} ${token.symbol}`
               : "-- --"}
           </Text>
