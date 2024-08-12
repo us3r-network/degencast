@@ -153,7 +153,15 @@ export function ActivityItemOperation({
       )}
     >
       {capitalize(
-        operation === ActivityOperation.REWARD ? "recieved" : operation,
+        operation === ActivityOperation.PROPOSE
+          ? "upvote"
+          : operation === ActivityOperation.DISPUTE
+            ? "downvote"
+            : operation === ActivityOperation.MINT
+              ? "minted"
+              : operation === ActivityOperation.REWARD
+                ? "recieved"
+                : operation,
       )}
     </Text>
   );

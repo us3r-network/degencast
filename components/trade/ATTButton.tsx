@@ -398,7 +398,7 @@ const MintNFT = forwardRef<
   const perNFTPrice =
     nftPrice && amount && token?.decimals
       ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-      : "";
+      : "0";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
 
   const allowanceParams =
@@ -418,7 +418,9 @@ const MintNFT = forwardRef<
           <Text className="text-lg font-medium">Quantity</Text>
           {perNFTPrice ? (
             <Text className="text-xs">
-              {perNFTPrice}
+              {new Intl.NumberFormat("en-US", {
+                maximumFractionDigits: 2
+              }).format(Number(perNFTPrice))}{" "}
               {token?.symbol} per NFT
             </Text>
           ) : (
@@ -508,7 +510,10 @@ function PriceBeforeGraduated({
       <Text className="text-lg font-medium">Total Cost</Text>
       {nftPrice && paymentToken ? (
         <Text>
-          {formatUnits(nftPrice, paymentToken.decimals!)} {paymentToken.symbol}
+          {new Intl.NumberFormat("en-US", {
+            maximumFractionDigits: 2
+          }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
+          {paymentToken.symbol}
         </Text>
       ) : (
         <Text>fetching price...</Text>
@@ -547,7 +552,10 @@ function PriceAfterGraduated({
       <Text className="text-lg font-medium">Total Cost</Text>
       {nftPrice && paymentToken ? (
         <Text>
-          {formatUnits(nftPrice, paymentToken.decimals!)} {paymentToken.symbol}
+          {new Intl.NumberFormat("en-US", {
+            maximumFractionDigits: 2
+          }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
+          {paymentToken.symbol}
         </Text>
       ) : (
         <Text>fetching price...</Text>

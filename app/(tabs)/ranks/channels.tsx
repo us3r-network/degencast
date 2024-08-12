@@ -103,9 +103,13 @@ function Item({
         return item.progress || "-";
       case RankOrderBy.NFT_PRICE: //todo use payment token from api
         return item.price
-          ? `${formatUnits(BigInt(item.price), DEGEN_TOKEN_METADATA.decimals!)} ${
-              DEGEN_TOKEN_METADATA.symbol
-            }`
+          ? `${new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 2,
+            }).format(
+              Number(
+                formatUnits(BigInt(item.price), DEGEN_TOKEN_METADATA.decimals!),
+              ),
+            )} ${DEGEN_TOKEN_METADATA.symbol}`
           : "-";
       case RankOrderBy.NEW_CASTS:
         return item.newCastCount || "-";
@@ -123,35 +127,35 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.CREATED_DATE: // remove this later
-        if (item.attentionTokenAddress) {
-          return (
-            <>
-              <BuyButton
-                token={{
-                  contractAddress: item.attentionTokenAddress,
-                  tokenId: 0,
-                }}
-              />
-              <SellButton
-                token={{
-                  contractAddress: item.attentionTokenAddress,
-                  tokenId: 0,
-                }}
-              />
-            </>
-          );
-        } else {
-          return (
-            <CreateTokenButton
-              channelId={item.id}
-              onComplete={(tokenAddress) => {
-                console.log("tokenAddress", tokenAddress);
-                item.attentionTokenAddress = tokenAddress;
-              }}
-            />
-          );
-        }
+      // case RankOrderBy.CREATED_DATE: // remove this later
+      //   if (item.attentionTokenAddress) {
+      //     return (
+      //       <>
+      //         <BuyButton
+      //           token={{
+      //             contractAddress: item.attentionTokenAddress,
+      //             tokenId: 0,
+      //           }}
+      //         />
+      //         <SellButton
+      //           token={{
+      //             contractAddress: item.attentionTokenAddress,
+      //             tokenId: 0,
+      //           }}
+      //         />
+      //       </>
+      //     );
+      //   } else {
+      //     return (
+      //       <CreateTokenButton
+      //         channelId={item.id}
+      //         onComplete={(tokenAddress) => {
+      //           console.log("tokenAddress", tokenAddress);
+      //           item.attentionTokenAddress = tokenAddress;
+      //         }}
+      //       />
+      //     );
+      //   }
       default:
         return <CommunityJoinButton channelId={item.id} />;
     }
