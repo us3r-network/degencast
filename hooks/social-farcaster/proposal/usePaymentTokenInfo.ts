@@ -34,14 +34,13 @@ export default function usePaymentTokenInfo({
         });
         console.log("paymentTokenAddress", paymentTokenAddress);
         console.log("account address", accountAddress);
-        const paymentTokenInfo = await getTokenInfo({
+        const tokenInfo = await getTokenInfo({
           address: paymentTokenAddress,
           chainId: ATT_CONTRACT_CHAIN.id,
           account: accountAddress,
         });
-        console.log("paymentTokenInfo", paymentTokenInfo);
-
-        setPaymentTokenInfo(paymentTokenInfo);
+        console.log("paymentTokenInfo", tokenInfo);
+        setPaymentTokenInfo(tokenInfo);
         setStatus("success");
       } catch (error) {
         setError(error);
@@ -53,9 +52,15 @@ export default function usePaymentTokenInfo({
       fetchToken();
     }
   }, [publicClient, contractAddress, castHash, status, accountAddress]);
+  const reset = () => {
+    setPaymentTokenInfo(undefined);
+    setError(undefined);
+    setStatus("idle");
+  };
   return {
     paymentTokenInfo,
     error,
     isLoading,
+    reset,
   };
 }

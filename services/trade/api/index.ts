@@ -1,9 +1,9 @@
 import { ApiResp } from "~/services/shared/types";
 import request, { RequestPromise } from "../../shared/api/request";
 import {
-  CreateTokenResp,
   TokenWithTradeInfo
 } from "../types";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 export function communityTokens(): RequestPromise<
   ApiResp<TokenWithTradeInfo[]>
@@ -17,7 +17,7 @@ export function communityTokens(): RequestPromise<
   });
 }
 export function createToken(channelId:string): RequestPromise<
-  ApiResp<CreateTokenResp>
+  ApiResp<AttentionTokenEntity>
 > {
   return request({
     url: `/topics/channels/${channelId}/attention-tokens`,

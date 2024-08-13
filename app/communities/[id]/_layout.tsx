@@ -185,7 +185,7 @@ export default function CommunityDetail() {
                     }}
                     className="h-8"
                     variant={"secondary"}
-                    renderBottonContent={({ loading }) => {
+                    renderButtonContent={({ loading }) => {
                       return loading ? (
                         <Text className="text-lg font-bold">
                           Launching Token...

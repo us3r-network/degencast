@@ -44,6 +44,7 @@ import {
 } from "./TranasactionResult";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useQuote } from "~/hooks/trade/useUniSwapV3";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -710,13 +711,13 @@ export const CreateTokenButton = forwardRef(function (
     channelId,
     onComplete,
     text,
-    renderBottonContent,
+    renderButtonContent,
     ...props
   }: ButtonProps & {
     channelId: string;
-    onComplete?: (tokenAddress: Address) => void;
+    onComplete?: (data: AttentionTokenEntity) => void;
     text?: string;
-    renderBottonContent?: (props: { loading?: boolean }) => React.ReactNode;
+    renderButtonContent?: (props: { loading?: boolean }) => React.ReactNode;
   },
   ref: LegacyRef<typeof Button>,
 ) {
@@ -730,29 +731,28 @@ export const CreateTokenButton = forwardRef(function (
       onPress={async () => {
         setLoading(true);
         const resp = await createToken(channelId);
-        console.log(resp);
-        const attentionTokenAddr = resp.data?.data?.dn42069TokenAddress;
+        setLoading(false);
+        const attentionTokenAddr = resp.data?.data?.tokenContract;
         if (attentionTokenAddr) {
           Toast.show({
             type: "success",
             text1: "Token Created",
             text2: "You can now trade your token",
           });
-          onComplete?.(resp.data.data.dn42069TokenAddress);
+          onComplete?.(resp.data.data);
         } else {
           Toast.show({
             type: "error",
             text1: "Token Creation Failed",
             text2: "Please try again later",
           });
-          setLoading(false);
           return;
         }
       }}
       {...props}
     >
-      {renderBottonContent ? (
-        renderBottonContent({ loading })
+      {renderButtonContent ? (
+        renderButtonContent({ loading })
       ) : (
         <Text>{text || `Create`}</Text>
       )}
