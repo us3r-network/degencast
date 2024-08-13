@@ -16,7 +16,7 @@ export function PageContent({ className, ...props }: ViewProps) {
 
 export function CardWarper({ className, children, ...props }: ViewProps) {
   return (
-    <Card className={cn("h-full w-full rounded-2xl p-2", className)} {...props}>
+    <Card className={cn("flex-1 w-full rounded-2xl p-2", className)} {...props}>
       <CardContent className="h-full w-full p-0 sm:p-2">{children}</CardContent>
     </Card>
   );
