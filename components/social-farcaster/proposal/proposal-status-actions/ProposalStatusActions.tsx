@@ -39,7 +39,8 @@ export default function ProposalStatusActions({
     proposal,
     cast,
   });
-  if (!display) return null;
+  // if (!display) return null;
+  if (!channel?.channelId) return null;
   switch (status) {
     case ProposalState.NotProposed:
       return (

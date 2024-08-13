@@ -45,11 +45,6 @@ export type TokenWithTradeInfo = {
   balance?: number | string | undefined;
 };
 
-export type CreateTokenResp = {
-  dn42069TokenAddress: Address;
-  danAddress: Address;
-};
-
 export type ERC42069Token = {
   contractAddress: Address;
   tokenId: number;

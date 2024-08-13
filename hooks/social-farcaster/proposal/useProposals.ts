@@ -27,12 +27,12 @@ export default function useProposals({
           contractAddress,
           castHash,
         });
-        const proposals = await getProposals({
+        const newProposals = await getProposals({
           publicClient: publicClient!,
           contractAddress,
           castHash,
         });
-        setProposals(proposals);
+        setProposals(newProposals);
         setStatus("success");
       } catch (error) {
         setError(error);
@@ -44,6 +44,7 @@ export default function useProposals({
       fetchProposals();
     }
   }, [publicClient, contractAddress, castHash, status]);
+
   return {
     proposals,
     error,
