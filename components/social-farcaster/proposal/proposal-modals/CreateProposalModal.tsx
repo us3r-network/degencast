@@ -134,7 +134,7 @@ function CreateProposalModalContentBodyScene() {
 function CreateProposalModalContentBody({
   cast,
   channel,
-  proposal,
+  // proposal,
   tokenInfo,
   onCreateProposalSuccess,
   onCreateProposalError,
@@ -187,12 +187,12 @@ function CreateProposalModalContentBody({
   }, [price, paymentTokenInfo, selectPrice]);
 
   useEffect(() => {
-    if (channel?.channelId && channel?.attentionTokenAddress && newTokenInfo) {
+    if (channel?.channelId && newTokenInfo) {
       setActivated(true);
     } else {
       setActivated(false);
     }
-  }, [channel.channelId, channel.attentionTokenAddress, newTokenInfo]);
+  }, [channel.channelId, newTokenInfo]);
 
   if (!activated) {
     return (
@@ -214,7 +214,6 @@ function CreateProposalModalContentBody({
           channelId={channel?.channelId!}
           onComplete={(data) => {
             resetPaymentTokenInfo();
-            channel.attentionTokenAddress = data.tokenContract;
             setNewTokenInfo(data);
           }}
           className="h-8"
@@ -265,7 +264,7 @@ function CreateProposalModalContentBody({
       <ProposeWriteButton
         cast={cast}
         channel={channel}
-        proposal={proposal}
+        // proposal={proposal}
         tokenInfo={newTokenInfo}
         price={selectPrice!}
         onCreateProposalSuccess={onCreateProposalSuccess}
