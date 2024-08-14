@@ -45,6 +45,7 @@ import {
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useQuote } from "~/hooks/trade/useUniSwapV3";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -420,7 +421,7 @@ const MintNFT = forwardRef<
           {perNFTPrice ? (
             <Text className="text-xs">
               {new Intl.NumberFormat("en-US", {
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
               }).format(Number(perNFTPrice))}{" "}
               {token?.symbol} per NFT
             </Text>
@@ -512,7 +513,7 @@ function PriceBeforeGraduated({
       {nftPrice && paymentToken ? (
         <Text>
           {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
           }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
           {paymentToken.symbol}
         </Text>
@@ -554,7 +555,7 @@ function PriceAfterGraduated({
       {nftPrice && paymentToken ? (
         <Text>
           {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
           }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
           {paymentToken.symbol}
         </Text>
@@ -721,16 +722,18 @@ export const CreateTokenButton = forwardRef(function (
   },
   ref: LegacyRef<typeof Button>,
 ) {
+  const { currFid } = useFarcasterAccount();
   const [loading, setLoading] = useState(false);
   return (
     <Button
       size="sm"
       className="w-14"
       variant="secondary"
-      disabled={loading}
+      disabled={loading || !currFid}
       onPress={async () => {
+        if (!channelId || !currFid) return;
         setLoading(true);
-        const resp = await createToken(channelId);
+        const resp = await createToken(channelId, currFid);
         setLoading(false);
         const attentionTokenAddr = resp.data?.data?.tokenContract;
         if (attentionTokenAddr) {
