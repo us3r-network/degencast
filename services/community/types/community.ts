@@ -39,6 +39,7 @@ export type CommunityEntity = {
   channelId?: string;
   attentionTokenAddress: Address;
   hostUserData?: Author;
+  tokenInitiatorUserData?: Author;
   memberInfo?: {
     totalNumber?: number;
     newPostNumber?: number;
