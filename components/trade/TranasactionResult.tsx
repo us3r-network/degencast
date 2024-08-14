@@ -56,11 +56,11 @@ export function TransactionInfo({
       {data.description}
       {transactionHash ? (
         <View className="w-full flex-row justify-items-stretch gap-2">
-          {data.chain?.blockExplorers && (
+          {data.chain?.blockExplorers?.default && (
             <ExternalLink
               className="flex-1/2 text-primary-foreground/80"
               // href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
-              href={`${data.chain.blockExplorers.default}/${transactionHash}`}
+              href={`${data.chain.blockExplorers.default.url}/tx/${transactionHash}`}
               target="_blank"
             >
               <Button variant="secondary">
@@ -80,7 +80,7 @@ export function TransactionInfo({
           </Button>
           <TransactionResultSharingButton
             type={ONCHAIN_ACTION_TYPE.SWAP}
-            transactionDetailURL={`${data?.chain?.blockExplorers?.default || ""}/${transactionHash}`}
+            transactionDetailURL={`${data?.chain?.blockExplorers?.default?.url || ""}/tx/${transactionHash}`}
             navigateToCreatePageAfter={navigateToCreatePageAfter}
           />
         </View>
