@@ -37,7 +37,14 @@ export default function CommunityDetailMetaInfo({
 }: ViewProps & {
   communityInfo: CommunityData;
 }) {
-  const { name, logo, description, memberInfo, hostUserData } = communityInfo;
+  const {
+    name,
+    logo,
+    description,
+    memberInfo,
+    hostUserData,
+    tokenInitiatorUserData,
+  } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
 
   return (
@@ -80,7 +87,19 @@ export default function CommunityDetailMetaInfo({
             </Text>
           </Link>
         )}
-
+        {!!tokenInitiatorUserData && (
+          <Link
+            href={`/u/${tokenInitiatorUserData.fid}`}
+            className="flex flex-row gap-1"
+          >
+            <Text className="text-sm font-medium leading-none text-secondary">
+              Curation Token Initiator
+            </Text>
+            <Text className="text-sm font-medium leading-none text-primary-foreground hover:underline">
+              @{tokenInitiatorUserData?.username}
+            </Text>
+          </Link>
+        )}
         <Text className="line-clamp-1 text-sm font-medium leading-6 text-secondary">
           {description}
         </Text>
@@ -101,8 +120,15 @@ export function CommunityDetailMetaInfo2({
   communityInfo: CommunityData;
   navigateBefore?: () => void;
 }) {
-  const { name, logo, description, memberInfo, hostUserData, channelId } =
-    communityInfo;
+  const {
+    name,
+    logo,
+    description,
+    memberInfo,
+    hostUserData,
+    tokenInitiatorUserData,
+    channelId,
+  } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
   // const { tokenInfo, loading, rejected, loadTokenInfo } =
   //   useLoadAttentionTokenInfo({ channelId: channelId! });
@@ -174,6 +200,25 @@ export function CommunityDetailMetaInfo2({
           </Text>
           <Text className="text-sm font-normal leading-6 text-secondary">
             @{hostUserData?.username}
+          </Text>
+        </Link>
+      )}
+      {!!tokenInitiatorUserData && (
+        <Link
+          href={`/u/${tokenInitiatorUserData.fid}`}
+          className="flex flex-row gap-1"
+          onPress={(e) => {
+            e.stopPropagation();
+            if (navigateBefore) {
+              navigateBefore();
+            }
+          }}
+        >
+          <Text className="text-sm font-normal leading-6 text-primary-foreground ">
+            Curation Token Initiator
+          </Text>
+          <Text className="text-sm font-normal leading-6 text-secondary">
+            @{tokenInitiatorUserData?.username}
           </Text>
         </Link>
       )}
