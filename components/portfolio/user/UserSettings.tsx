@@ -63,7 +63,7 @@ export default function UserSettings({
     <TextClassContext.Provider value="text-sm font-medium">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger>
-          <Button size={"icon"} className="size-6 rounded-full bg-secondary">
+          <Button size={"icon"} className="size-6 rounded-full bg-secondary border-2 border-white">
             <Text>
               <Settings size={16} />
             </Text>

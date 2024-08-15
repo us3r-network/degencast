@@ -17,12 +17,18 @@ export default function useATTNftInfo({
     contractAddress: tokenContract,
     tokenId: 0,
   });
-  const { getTokenUnit } = useATTContractInfo({
+  const {
+    tokenUnit: getTokenUnit,
+    maxTokensPerIdPerUser: getMaxTokensPerIdPerUser,
+    totalNFTSupply: getTotalNFTSupply,
+  } = useATTContractInfo({
     contractAddress: tokenContract,
     tokenId: 0,
   });
   const { graduated } = getGraduated();
   const { data: tokenUnit } = getTokenUnit();
+  const { data: maxTokensPerIdPerUser } = getMaxTokensPerIdPerUser();
+  const { data: totalNFTSupply } = getTotalNFTSupply();
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
   useEffect(() => {
@@ -41,5 +47,7 @@ export default function useATTNftInfo({
     graduated,
     token,
     tokenUnit,
+    maxTokensPerIdPerUser,
+    totalNFTSupply,
   };
 }

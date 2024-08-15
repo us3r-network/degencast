@@ -37,7 +37,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         <View className="w-full flex-row justify-between">
           <ActivityItemUser userAddr={data.userAddr} userData={data.user} />
           {data.timestamp && (
-            <Text className="whitespace-nowrap">
+            <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
               {dayjs(data.timestamp).fromNow(true)}
             </Text>
           )}
@@ -46,11 +46,11 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         {data.operation === ActivityOperation.REWARD ? (
           <View className="w-full flex-row items-center gap-2">
             <ActivityItemOperation operation={data.operation} />
-            {data.channel && <ActivityItemChannel channel={data.channel} />}
-            {data.paymentTokenAmount && data.paymentTokenInfo && (
-              <Text>
-                {`cast ${data.rewardDescription} with ${paymentText} ${data.paymentTokenInfo.symbol}`}
-              </Text>
+            {data.channel && (
+              <>
+                <ActivityItemChannel channel={data.channel} />
+                <Text>{`cast ${data.rewardDescription}`}</Text>
+              </>
             )}
           </View>
         ) : (
@@ -61,13 +61,16 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
                 {data.tokenAmount}
               </Text>
             )}
-            {data.channel && <ActivityItemChannel channel={data.channel} />}
-            {data.paymentTokenAmount && data.paymentTokenInfo && (
-              <Text>
-                {`cast with ${paymentText} ${data.paymentTokenInfo.symbol}`}
-              </Text>
+            {data.channel && (
+              <>
+                <ActivityItemChannel channel={data.channel} />
+                <Text>cast</Text>{" "}
+              </>
             )}
           </View>
+        )}
+        {data.paymentTokenAmount && data.paymentTokenInfo && (
+          <Text>{`with ${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
         )}
       </CardContent>
     </Card>
@@ -108,7 +111,7 @@ function ActivityItemUser({
                 <Text>{userData?.display_name?.slice(0, 1)}</Text>
               </AvatarFallback>
             </Avatar>
-            <Text className="line-clamp-1 hover:underline">
+            <Text className="line-clamp-1 text-sm hover:underline">
               {userData?.display_name}
             </Text>
             {/* {userData.power_badge && (
@@ -117,12 +120,12 @@ function ActivityItemUser({
                 style={{ width: 12, height: 12 }}
               />
             )} */}
-            <Text className=" text-base font-medium text-secondary hover:underline">
+            <Text className="text-xs text-[#9BA1AD] hover:underline">
               @{userData?.username}
             </Text>
           </>
         ) : (
-          <Text className="line-clamp-1 hover:underline">
+          <Text className="line-clamp-1 text-xs text-[#9BA1AD] hover:underline">
             {userAddr ? shortAddress(userAddr) : "undefined"}
           </Text>
         )}
@@ -142,12 +145,12 @@ export function ActivityItemOperation({
         " inline-block align-baseline text-base font-medium",
         operation === ActivityOperation.MINT ||
           operation === ActivityOperation.BUY ||
-          operation === ActivityOperation.PROPOSE ||
-          operation === ActivityOperation.REWARD
+          operation === ActivityOperation.REWARD ||
+          operation === ActivityOperation.DISPUTE
           ? "text-[#F41F4C]"
           : operation === ActivityOperation.BURN ||
               operation === ActivityOperation.SELL ||
-              operation === ActivityOperation.DISPUTE
+              operation === ActivityOperation.PROPOSE
             ? "text-[#00D1A7]"
             : "",
       )}

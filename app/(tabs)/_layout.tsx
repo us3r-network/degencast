@@ -19,9 +19,9 @@ import { logGA } from "~/utils/firebase/analytics.web";
 const AUTH_PROTECTED_ROUTES = ["portfolio"];
 export default function TabLayout() {
   useCommunityTokens();
-  useChannelRank();
-  useCuratorRank();
-  useTokenRank();
+  // useChannelRank();
+  // useCuratorRank();
+  // useTokenRank();
   useEffect(() => {
     if (Platform.OS === "web") logGA("app_open", {});
   }, []);
@@ -82,7 +82,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name={`portfolio${Platform.OS === "web" ? "" : "/index"}`}
           options={{
-            title: "Portfolio",
+            title: authenticated ? "Portfolio" : "Login",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
           }}

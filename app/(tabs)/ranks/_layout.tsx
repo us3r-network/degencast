@@ -5,13 +5,13 @@ import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import { PRIMARY_COLOR } from "~/constants";
 import ChannelsScreen from "./channels";
 import CuratorsScreen from "./curators";
-import TokensScreen from "./tokens";
+// import TokensScreen from "./tokens";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Channels", value: "channels", component: ChannelsScreen },
-  { label: "Curators", value: "curators", component: CuratorsScreen },
-  { label: "Tokens", value: "tokens", component: TokensScreen },
+  { label: "Curation", value: "channels", component: ChannelsScreen },
+  { label: "Curator", value: "curators", component: CuratorsScreen },
+  // { label: "Tokens", value: "tokens", component: TokensScreen },
 ];
 
 export default function PortfolioScreen() {

@@ -27,7 +27,7 @@ export default function CommunityNFTs({ address }: { address: Address }) {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-sm font-medium text-secondary">
-            NFTs {loading ? "" : `(${items.length})`}
+            Curation NFTs {loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&

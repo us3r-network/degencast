@@ -25,12 +25,12 @@ export function useATTContractInfo(token: ERC42069Token) {
     return { data: data as bigint, status };
   };
 
-  const getTotalNFTSupply = () => {
+  const totalNFTSupply = () => {
     const { data, status } = useReadContract({
       ...contract,
-      functionName: "getTotalNFTSupply",
+      functionName: "totalNFTSupply",
     });
-    return { data: data as bigint, status };
+    return { data: data as number, status };
   };
 
   const totalSupply = () => {
@@ -49,7 +49,7 @@ export function useATTContractInfo(token: ERC42069Token) {
     return { data: data as bigint, status };
   };
 
-  const getTokenUnit = () => {
+  const tokenUnit = () => {
     const { data, status } = useReadContracts({
       contracts: [
         {
@@ -87,24 +87,33 @@ export function useATTContractInfo(token: ERC42069Token) {
 
   const nftBalanceOf = (owner: Address | undefined) => {
     if (!owner) {
-      return { data: 0n, status: "error" };
+      return { data: 0, status: "error" };
     }
     const { data, status } = useReadContract({
       ...contract,
       functionName: "nftBalanceOf",
       args: [owner, BigInt(token.tokenId)],
     });
-    return { data: data ? (data as bigint) : undefined, status };
+    return { data: data ? (data as number) : undefined, status };
+  };
+
+  const maxTokensPerIdPerUser = () => {
+    const { data, status } = useReadContract({
+      ...contract,
+      functionName: "maxTokensPerIdPerUser",
+    });
+    return { data: data as number, status };
   };
 
   return {
     // balanceOf,
     uri,
     nftBalanceOf,
-    getTokenUnit,
+    tokenUnit,
     // totalSupply,
     // MAX_SUPPLY,
     // UNIT,
-    // getTotalNFTSupply,
+    totalNFTSupply,
+    maxTokensPerIdPerUser,
   };
 }
