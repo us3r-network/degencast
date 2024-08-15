@@ -62,8 +62,8 @@ function FollowingActivitiesPage() {
 export default function ActivitiesLayout() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "all", title: "Global activities" },
-    { key: "mine", title: "My activities" },
+    { key: "all", title: "Global" },
+    { key: "mine", title: "Mine" },
     // { key: "powerusers", title: "Powerusers" },
     // { key: "following", title: "Following" },
   ]);
