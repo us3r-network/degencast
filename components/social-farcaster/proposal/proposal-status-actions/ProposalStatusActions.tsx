@@ -47,7 +47,7 @@ export default function ProposalStatusActions({
         <CreateProposalButton
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
@@ -75,7 +75,7 @@ export default function ProposalStatusActions({
         <ChallengeProposalActionLayout
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
@@ -84,7 +84,7 @@ export default function ProposalStatusActions({
         <ChallengeProposalActionLayout
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
