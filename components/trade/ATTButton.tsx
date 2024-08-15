@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -91,7 +91,7 @@ export function SellButton({ token }: { token: ERC42069Token }) {
                 onPress={() => setShowDetails(false)}
               >
                 <Text className={showDetails ? "text-secondary" : "text-white"}>
-                  Burn Channel NFT
+                  NFT
                 </Text>
               </Pressable>
               <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
@@ -106,21 +106,26 @@ export function SellButton({ token }: { token: ERC42069Token }) {
                 </Text>
               </Pressable>
             </DialogHeader>
-            {showDetails ? (
-              <TokenActivitieList token={token} />
-            ) : (
-              <>
-                <View className="flex-row items-center justify-between gap-2">
-                  <Text>Active Wallet</Text>
-                  <UserWalletSelect />
-                </View>
-                <BurnNFT
-                  nft={token}
-                  onSuccess={setTransationData}
-                  onError={setError}
-                />
-              </>
-            )}
+            <ScrollView
+              className="max-h-[80vh] w-full"
+              showsHorizontalScrollIndicator={false}
+            >
+              {showDetails ? (
+                <TokenActivitieList token={token} />
+              ) : (
+                <>
+                  <View className="flex-row items-center justify-between gap-2">
+                    <Text>Active Wallet</Text>
+                    <UserWalletSelect />
+                  </View>
+                  <BurnNFT
+                    nft={token}
+                    onSuccess={setTransationData}
+                    onError={setError}
+                  />
+                </>
+              )}
+            </ScrollView>
           </DialogContent>
         )}
         {transationData && (
@@ -335,7 +340,7 @@ export function BuyDialog({
               onPress={() => setShowDetails(false)}
             >
               <Text className={showDetails ? "text-secondary" : "text-white"}>
-                Mint Channel NFT
+                NFT
               </Text>
             </Pressable>
             <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
@@ -348,27 +353,32 @@ export function BuyDialog({
               </Text>
             </Pressable>
           </DialogHeader>
-          {showDetails ? (
-            <TokenActivitieList token={token} />
-          ) : (
-            <>
-              <View className="flex-row items-center justify-between gap-2">
-                <Text>Active Wallet</Text>
-                <UserWalletSelect />
-              </View>
-              <MintNFT
-                nft={token}
-                onSuccess={(data) => {
-                  setTransationData(data);
-                  onSuccess?.(data.amount || 0);
-                }}
-                onError={setError}
-              />
-              <DialogFooter>
-                <About title={ATT_TITLE} info={ATT_INFO} />
-              </DialogFooter>
-            </>
-          )}
+          <ScrollView
+            className="max-h-[80vh] w-full"
+            showsHorizontalScrollIndicator={false}
+          >
+            {showDetails ? (
+              <TokenActivitieList token={token} />
+            ) : (
+              <>
+                <View className="flex-row items-center justify-between gap-2">
+                  <Text>Active Wallet</Text>
+                  <UserWalletSelect />
+                </View>
+                <MintNFT
+                  nft={token}
+                  onSuccess={(data) => {
+                    setTransationData(data);
+                    onSuccess?.(data.amount || 0);
+                  }}
+                  onError={setError}
+                />
+                <DialogFooter>
+                  <About title={ATT_TITLE} info={ATT_INFO} />
+                </DialogFooter>
+              </>
+            )}
+          </ScrollView>
         </DialogContent>
       )}
       {transationData && (
