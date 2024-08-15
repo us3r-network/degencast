@@ -47,7 +47,7 @@ export default function ProposalStatusActions({
         <CreateProposalButton
           cast={cast}
           channel={channel}
-          proposal={proposal}
+          proposal={updatedProposal}
           tokenInfo={tokenInfo}
         />
       );
