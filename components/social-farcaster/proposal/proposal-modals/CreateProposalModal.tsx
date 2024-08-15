@@ -20,6 +20,8 @@ import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { Slider } from "~/components/ui/slider";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import { CreateTokenButton } from "~/components/trade/ATTButton";
+import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
+import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -101,33 +103,95 @@ export default function CreateProposalModal({
 function CreateProposalModalContentBodyScene() {
   const { cast, channel, proposal, tokenInfo, setOpen } =
     useCreateProposalCtx();
+  const [newTokenInfo, setNewTokenInfo] = useState<
+    AttentionTokenEntity | undefined
+  >(tokenInfo);
+  const { upsertOneToAttTokens, getCachedAttToken } = useCacheCastAttToken();
+  useEffect(() => {
+    if (channel?.channelId) {
+      const tokenInfoInCache = getCachedAttToken(
+        channel?.channelId as `0x${string}`,
+      );
+      // console.log("tokenInfoInCache", tokenInfoInCache);
+      if (tokenInfoInCache) {
+        setNewTokenInfo(tokenInfoInCache);
+      }
+    }
+  }, [channel.channelId]);
   return (
     <ScrollView
       className="w-full max-sm:max-h-[80vh]"
       showsHorizontalScrollIndicator={false}
     >
       <View className="flex w-full flex-col gap-4">
-        <CreateProposalModalContentBody
-          cast={cast}
-          channel={channel}
-          proposal={proposal}
-          tokenInfo={tokenInfo}
-          onCreateProposalSuccess={() => {
-            Toast.show({
-              type: "success",
-              text1: "Upvote successful !",
-            });
-            setOpen(false);
-          }}
-          onCreateProposalError={(error) => {
-            Toast.show({
-              type: "error",
-              text1: error.message,
-            });
-          }}
-        />
+        {!!newTokenInfo ? (
+          <CreateProposalModalContentBody
+            cast={cast}
+            channel={channel}
+            proposal={proposal}
+            tokenInfo={newTokenInfo}
+            onCreateProposalSuccess={() => {
+              Toast.show({
+                type: "success",
+                text1: "Upvote successful !",
+              });
+              setOpen(false);
+            }}
+            onCreateProposalError={(error) => {
+              Toast.show({
+                type: "error",
+                text1: error.message,
+              });
+            }}
+          />
+        ) : (
+          <CreateTokenModalContentBody
+            cast={cast}
+            channel={channel}
+            onCreateTokenSuccess={(tokenInfo) => {
+              setNewTokenInfo(tokenInfo);
+              upsertOneToAttTokens(channel?.channelId!, tokenInfo);
+            }}
+          />
+        )}
       </View>
     </ScrollView>
+  );
+}
+
+function CreateTokenModalContentBody({
+  cast,
+  channel,
+  onCreateTokenSuccess,
+}: CastProposeStatusProps & {
+  onCreateTokenSuccess?: (tokenInfo: AttentionTokenEntity) => void;
+}) {
+  return (
+    <>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Active Wallet</Text>
+        <UserWalletSelect />
+      </View>
+      <ProposalCastCard channel={channel} cast={cast} />
+      <Text className="text-sm text-secondary">
+        This channel hasn't activated Curation Token yet. Please activate first.
+      </Text>
+      <CreateTokenButton
+        channelId={channel?.channelId!}
+        onComplete={(data) => {
+          onCreateTokenSuccess?.(data);
+        }}
+        className="h-8"
+        variant={"secondary"}
+        renderButtonContent={({ loading }) => {
+          return loading ? (
+            <Text className="text-lg font-bold">Activating ...</Text>
+          ) : (
+            <Text className="text-lg font-bold">Activate</Text>
+          );
+        }}
+      />
+    </>
   );
 }
 
@@ -142,22 +206,15 @@ function CreateProposalModalContentBody({
   onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
   onCreateProposalError?: (error: any) => void;
 }) {
-  const [newTokenInfo, setNewTokenInfo] = useState<
-    AttentionTokenEntity | undefined
-  >(tokenInfo);
-  const {
-    paymentTokenInfo,
-    isLoading: paymentTokenInfoLoading,
-    reset: resetPaymentTokenInfo,
-  } = usePaymentTokenInfo({
-    contractAddress: newTokenInfo?.danContract!,
-    castHash: cast.hash,
-  });
+  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
+    usePaymentTokenInfo({
+      contractAddress: tokenInfo?.danContract!,
+      castHash: cast.hash,
+    });
 
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>();
-  const [activated, setActivated] = useState(false);
   const price = useMemo(
-    () => getProposalMinPrice(newTokenInfo, paymentTokenInfo),
+    () => getProposalMinPrice(tokenInfo, paymentTokenInfo),
     [paymentTokenInfo],
   );
   useEffect(() => {
@@ -180,66 +237,19 @@ function CreateProposalModalContentBody({
       value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
       max: Number(paymentTokenInfo?.balance || 0),
       min: paymentTokenInfo?.balance
-        ? newTokenInfo?.bondingCurve?.basePrice || 0
+        ? tokenInfo?.bondingCurve?.basePrice || 0
         : 0,
       step: priceNumber / 100,
     };
   }, [price, paymentTokenInfo, selectPrice]);
 
-  useEffect(() => {
-    if (channel?.channelId && newTokenInfo) {
-      setActivated(true);
-    } else {
-      setActivated(false);
-    }
-  }, [channel.channelId, newTokenInfo]);
-
-  if (!activated) {
-    return (
-      <>
-        <View className="flex-row items-center justify-between gap-2">
-          <Text>Active Wallet</Text>
-          <UserWalletSelect />
-        </View>
-        <ProposalCastCard
-          channel={channel}
-          cast={cast}
-          tokenInfo={newTokenInfo}
-        />
-        <Text className="text-sm text-secondary">
-          This channel hasn't activated Curation Token yet. Please activate
-          first.
-        </Text>
-        <CreateTokenButton
-          channelId={channel?.channelId!}
-          onComplete={(data) => {
-            resetPaymentTokenInfo();
-            setNewTokenInfo(data);
-          }}
-          className="h-8"
-          variant={"secondary"}
-          renderButtonContent={({ loading }) => {
-            return loading ? (
-              <Text className="text-lg font-bold">Activating ...</Text>
-            ) : (
-              <Text className="text-lg font-bold">Activate</Text>
-            );
-          }}
-        />
-      </>
-    );
-  }
   return (
     <>
       <View className="flex-row items-center justify-between gap-2">
         <Text>Active Wallet</Text>
         <UserWalletSelect />
       </View>
-      <ProposalCastCard
-        channel={channel}
-        cast={cast}
-        tokenInfo={newTokenInfo}
-      />
+      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       <PriceRow
         paymentTokenInfo={paymentTokenInfo}
         price={price}
@@ -265,7 +275,7 @@ function CreateProposalModalContentBody({
         cast={cast}
         channel={channel}
         // proposal={proposal}
-        tokenInfo={newTokenInfo}
+        tokenInfo={tokenInfo}
         price={selectPrice!}
         onCreateProposalSuccess={onCreateProposalSuccess}
         onCreateProposalError={onCreateProposalError}

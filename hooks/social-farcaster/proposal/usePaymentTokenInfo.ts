@@ -26,12 +26,13 @@ export default function usePaymentTokenInfo({
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        if (!accountAddress) return;
+        if (!accountAddress || !contractAddress) return;
         setStatus("pending");
         const paymentTokenAddress = await getPaymentToken({
           publicClient: publicClient!,
           contractAddress,
         });
+        if (!paymentTokenAddress) return;
         console.log("paymentTokenAddress", paymentTokenAddress);
         console.log("account address", accountAddress);
         const tokenInfo = await getTokenInfo({
