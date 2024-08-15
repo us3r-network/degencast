@@ -10,10 +10,12 @@ type OnChainActionButtonWarperProps = React.ComponentPropsWithoutRef<
   typeof Button
 > & {
   warpedButton?: React.ReactElement;
+  approveText?: string;
 };
 
 export default function OnChainActionButtonWarper({
   warpedButton,
+  approveText,
   targetChainId,
   allowanceParams,
   ...props
@@ -36,6 +38,7 @@ export default function OnChainActionButtonWarper({
   return (
     <ApproveButtonWarper
       allowanceParams={allowanceParams}
+      text={approveText}
       warpedButton={
         <SwitchChainButtonWarper
           targetChainId={targetChainId}
@@ -50,6 +53,7 @@ export default function OnChainActionButtonWarper({
 
 type ApproveButtonProps = {
   allowanceParams: AllowanceProps;
+  text?: string;
 };
 
 type AllowanceProps = {
@@ -62,6 +66,7 @@ type AllowanceProps = {
 function ApproveButtonWarper({
   warpedButton,
   allowanceParams,
+  text,
   ...props
 }: OnChainActionButtonWarperProps & ApproveButtonProps) {
   const { owner, tokenAddress, spender, value } = allowanceParams;
@@ -80,7 +85,7 @@ function ApproveButtonWarper({
         }}
         {...props}
       >
-        <Text>Approve</Text>
+        <Text>{text || "Approve"}</Text>
       </Button>
     );
   else return warpedButton;

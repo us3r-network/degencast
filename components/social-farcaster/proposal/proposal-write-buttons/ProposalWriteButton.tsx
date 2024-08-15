@@ -17,14 +17,16 @@ export function ProposeProposalWriteButton({
   cast,
   tokenInfo,
   price,
-  text,
+  approveText,
+  upvoteText,
   onProposeSuccess,
   onProposeError,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
     price: bigint;
-    text?: string;
+    approveText?: string;
+    upvoteText?: string;
     onProposeSuccess?: (proposal: TransactionReceipt) => void;
     onProposeError?: (error: any) => void;
   }) {
@@ -78,6 +80,7 @@ export function ProposeProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
+      approveText={approveText}
       warpedButton={
         <Button
           variant={"secondary"}
@@ -114,14 +117,14 @@ export function ProposeProposalWriteButton({
             <Text>The proposal has been abandoned</Text>
           ) : proposals?.state === ProposalState.Accepted ? (
             Number(proposals?.roundIndex) <= 1 ? (
-              <Text>Upvote & Accelerate Countdown</Text>
+              <Text>{upvoteText || "Upvote & Accelerate Countdown"}</Text>
             ) : (
               <Text>The proposal has been accepted</Text>
             )
           ) : !isConnected ? (
             <Text>Connect your wallet first</Text>
           ) : (
-            <Text>Upvote & Accelerate Countdown</Text>
+            <Text>{upvoteText || "Upvote & Accelerate Countdown"}</Text>
           )}
         </Button>
       }
@@ -133,14 +136,16 @@ export function DisputeProposalWriteButton({
   cast,
   tokenInfo,
   price,
-  text,
+  approveText,
+  downvoteText,
   onDisputeSuccess,
   onDisputeError,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
     price: bigint;
-    text?: string;
+    approveText?: string;
+    downvoteText?: string;
     onDisputeSuccess?: (proposal: TransactionReceipt) => void;
     onDisputeError?: (error: any) => void;
   }) {
@@ -196,6 +201,7 @@ export function DisputeProposalWriteButton({
     <OnChainActionButtonWarper
       variant="secondary"
       className="w-full"
+      approveText={approveText}
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={isSupportAtomicBatch ? undefined : allowanceParams}
       warpedButton={
@@ -237,7 +243,7 @@ export function DisputeProposalWriteButton({
           ) : !isConnected ? (
             <Text>Connect Wallet</Text>
           ) : (
-            <Text>Challenge</Text>
+            <Text>{downvoteText || "Challenge"}</Text>
           )}
         </Button>
       }

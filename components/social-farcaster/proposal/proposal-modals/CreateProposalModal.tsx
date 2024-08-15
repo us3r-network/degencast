@@ -103,7 +103,7 @@ function CreateProposalModalContentBodyScene() {
     useCreateProposalCtx();
   return (
     <ScrollView
-      className="w-full max-sm:max-h-[80vh]"
+      className="max-h-[80vh] w-full"
       showsHorizontalScrollIndicator={false}
     >
       <View className="flex w-full flex-col gap-4">
