@@ -23,7 +23,12 @@ export const castProposalSlice = createSlice({
         proposal: ProposalEntity;
       }>,
     ) => {
-      state.proposals[action.payload.castHash] = action.payload.proposal;
+      const oldVal = state.proposals[action.payload.castHash] || {};
+      const upsertVal = action.payload.proposal || {};
+      state.proposals[action.payload.castHash] = {
+        ...oldVal,
+        ...upsertVal,
+      };
     },
   },
 });
