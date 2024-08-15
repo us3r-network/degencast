@@ -82,7 +82,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name={`portfolio${Platform.OS === "web" ? "" : "/index"}`}
           options={{
-            title: "Portfolio",
+            title: authenticated ? "Portfolio" : "Login",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
           }}

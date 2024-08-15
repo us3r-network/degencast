@@ -387,7 +387,7 @@ export function BuyDialog({
   );
 }
 
-const GRADUATION_NFT_NUM = 10;
+const GRADUATION_NFT_NUM = 10; // todo:  get from contract or backend
 const MintNFT = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {

@@ -10,6 +10,7 @@ import {
 } from "../header/Header";
 import { SearchLink } from "../header/HeaderLinks";
 import { SECONDARY_COLOR } from "~/constants";
+import HelpButton from "~/components/help/HelpButton";
 
 export default function PageTabBar(
   props: SceneRendererProps & {
@@ -67,6 +68,7 @@ export default function PageTabBar(
         })}
       </HeaderCenter>
       <HeaderRight>
+        <HelpButton />
         <SearchLink />
       </HeaderRight>
     </Header>
