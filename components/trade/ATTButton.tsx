@@ -261,9 +261,11 @@ const BurnNFT = forwardRef<
 export function BuyButton({
   token,
   renderButton,
+  onSuccess,
 }: {
   token: ERC42069Token;
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
+  onSuccess?: (mintNum: number) => void;
 }) {
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
@@ -291,7 +293,12 @@ export function BuyButton({
       )}
 
       {account.address && (
-        <BuyDialog token={token} open={open} onOpenChange={setOpen} />
+        <BuyDialog
+          token={token}
+          open={open}
+          onOpenChange={setOpen}
+          onSuccess={onSuccess}
+        />
       )}
     </Pressable>
   );
@@ -301,10 +308,12 @@ export function BuyDialog({
   token,
   open,
   onOpenChange,
+  onSuccess,
 }: {
   token: ERC42069Token;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (mintNum: number) => void;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -349,7 +358,10 @@ export function BuyDialog({
               </View>
               <MintNFT
                 nft={token}
-                onSuccess={setTransationData}
+                onSuccess={(data) => {
+                  setTransationData(data);
+                  onSuccess?.(data.amount || 0);
+                }}
                 onError={setError}
               />
               <DialogFooter>
@@ -632,6 +644,7 @@ function MintButton({
             <TokenWithValue token={paymentToken} value={nftPrice} />
           </View>
         ),
+        amount,
       };
       onSuccess?.(transationData);
     }
@@ -697,6 +710,7 @@ function MintButtonAA({
             <TokenWithValue token={paymentToken} value={nftPrice} />
           </View>
         ),
+        amount,
       };
       onSuccess?.(transationData);
     }
