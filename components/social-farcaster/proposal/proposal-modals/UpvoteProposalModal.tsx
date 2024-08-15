@@ -46,7 +46,7 @@ export default function UpvoteProposalModal({
         }}
       >
         <ScrollView
-          className="w-full max-sm:max-h-[80vh]"
+          className="max-h-[80vh] w-full"
           showsHorizontalScrollIndicator={false}
         >
           <UpvoteProposalModalContentBody

@@ -109,7 +109,7 @@ function ChallengeProposalContentBodyScene() {
     useChallengeProposalCtx();
   return (
     <ScrollView
-      className="w-full max-sm:max-h-[80vh]"
+      className="max-h-[80vh] w-full"
       showsHorizontalScrollIndicator={false}
     >
       <ChallengeProposalContentBody
@@ -399,7 +399,7 @@ export function PriceRangeRow({
 }) {
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="text-xs font-normal">{displayValue(min)}</Text>
+      <Text className="text-xs font-normal">{displayValue(min)}(minimum)</Text>
       <Text className="text-xs font-normal">{displayValue(value)}</Text>
       <Text className="text-xs font-normal">{displayValue(max)}</Text>
     </View>

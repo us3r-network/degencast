@@ -17,6 +17,17 @@ export const getProposalMinPrice = (
   );
 };
 
+export const getProposalPriceWithAmount = (
+  price: number,
+  paymentTokenInfo: TokenWithTradeInfo,
+) => {
+  if (!paymentTokenInfo?.decimals) {
+    return undefined;
+  }
+  const priceBigInt = BigInt(price * 10 ** paymentTokenInfo?.decimals);
+  return priceBigInt;
+};
+
 export const displayProposalActions = ({
   cast,
   channel,
