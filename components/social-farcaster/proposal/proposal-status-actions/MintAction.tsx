@@ -1,14 +1,15 @@
+import dayjs from "dayjs";
+import { View } from "react-native";
+import { DiamondPlus } from "~/components/common/Icons";
 import { BuyButton } from "~/components/trade/ATTButton";
+import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
+import { Deadline, MintCount } from "../ProposalStyled";
 import { ProposalButton } from "../ui/proposal-button";
 import { ProposalText } from "../ui/proposal-text";
 import type { ProposalStatusActionsProps } from "./ProposalStatusActions";
-import dayjs from "dayjs";
-import { View, ViewProps } from "react-native";
-import { cn } from "~/lib/utils";
-import { AlarmClockIcon, DiamondPlus } from "~/components/common/Icons";
-import { Deadline, MintCount } from "../ProposalStyled";
 
 export function ReadyToMintButton({
+  cast,
   proposal,
   tokenInfo,
 }: ProposalStatusActionsProps) {
@@ -16,7 +17,7 @@ export function ReadyToMintButton({
   const nftDeadlineTime = Number(nftDeadline);
   const now = dayjs().unix();
   const isExpired = nftDeadlineTime < now;
-
+  const { upsertOneToProposals } = useCacheCastProposal();
   if (isExpired) {
     return (
       <ProposalButton variant={"mint-expired"}>
@@ -41,6 +42,13 @@ export function ReadyToMintButton({
             </ProposalButton>
           );
         }}
+        onSuccess={(newMintNFTAmount) => {
+          // console.log("newMintNFTAmount", newMintNFTAmount, proposal);
+          upsertOneToProposals(cast.hash as `0x${string}`, {
+            ...proposal,
+            mintedCount: Number(proposal.mintedCount || 0) + newMintNFTAmount,
+          });
+        }}
       />
     )
   );
@@ -54,7 +62,7 @@ export function ReadyToMintActionLayout({
 }: ProposalStatusActionsProps) {
   const mintedCount = isNaN(Number(proposal?.mintedCount))
     ? 0
-    : Number(proposal?.upvoteCount);
+    : Number(proposal?.mintedCount);
   return (
     <View className="flex flex-row items-center gap-4">
       <MintCount count={mintedCount} />

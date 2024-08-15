@@ -14,6 +14,7 @@ export type TransationData = {
     | TransactionReceipt
     | WalletCallReceipt<bigint, "success" | "reverted">;
   description: ReactNode;
+  amount?: number;
 };
 
 type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
