@@ -8,10 +8,8 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function usePaymentTokenInfo({
   contractAddress,
-  castHash,
 }: {
   contractAddress: Address;
-  castHash: string;
 }) {
   const account = useAccount();
   const accountAddress = account?.address;
@@ -26,12 +24,13 @@ export default function usePaymentTokenInfo({
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        if (!accountAddress) return;
+        if (!accountAddress || !contractAddress) return;
         setStatus("pending");
         const paymentTokenAddress = await getPaymentToken({
           publicClient: publicClient!,
           contractAddress,
         });
+        if (!paymentTokenAddress) return;
         console.log("paymentTokenAddress", paymentTokenAddress);
         console.log("account address", accountAddress);
         const tokenInfo = await getTokenInfo({
@@ -51,7 +50,7 @@ export default function usePaymentTokenInfo({
     if (status === "idle") {
       fetchToken();
     }
-  }, [publicClient, contractAddress, castHash, status, accountAddress]);
+  }, [publicClient, contractAddress, status, accountAddress]);
   const reset = () => {
     setPaymentTokenInfo(undefined);
     setError(undefined);

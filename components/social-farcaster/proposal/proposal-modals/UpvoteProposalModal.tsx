@@ -90,7 +90,6 @@ export function UpvoteProposalModalContentBody({
     error: paymentTokenInfoError,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
   });
   const {
     price,

@@ -1,6 +1,5 @@
-import { Image } from "expo-image";
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { View,Image } from "react-native";
 import Toast from "react-native-toast-message";
 import { ExternalLink } from "~/components/common/ExternalLink";
 import { Minus, Plus, User } from "~/components/common/Icons";
@@ -136,7 +135,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
           {fid && (
             <View className="flex-row items-center gap-1">
               <Image
-                source={require("~/assets/images/degen-icon.png")}
+                source={require("~/assets/images/degen-icon-2.png")}
                 style={{ width: 20, height: 20 }}
               />
               <DegenTipsStats fid={fid} />
