@@ -36,6 +36,7 @@ export function ReadyToMintButton({
         renderButton={(props) => {
           return (
             <ProposalButton variant={"ready-to-mint"} {...props}>
+              <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" />
               <ProposalText>Mint</ProposalText>
             </ProposalButton>
           );

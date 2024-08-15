@@ -14,7 +14,7 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import ProposalStatusActions, {
   ProposalStatusActionsHeight,
 } from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
-import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
+import { FCastMenuButton } from "~/components/social-farcaster/FCastActions";
 
 const itemHeight = FCastHeight + ProposalStatusActionsHeight + 15;
 const ChannelCardCasts = forwardRef(function (
@@ -108,7 +108,7 @@ const ChannelCardCasts = forwardRef(function (
                     channel={channel}
                   />
                   <View className="flex flex-row items-center justify-between">
-                    <FCastExploreActions
+                    <FCastMenuButton
                       cast={cast}
                       communityInfo={channel as any}
                     />

@@ -46,7 +46,7 @@ const ChannelCastCollectCard = React.forwardRef<
           {channelId && (
             <Link href={`/communities/${channelId}/casts`} asChild>
               <ActionButton className="w-auto px-3">
-                <Text>Propose</Text>
+                <Text>Curate</Text>
               </ActionButton>
             </Link>
           )}

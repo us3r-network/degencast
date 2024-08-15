@@ -8,7 +8,7 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalStatusActions from "./proposal-status-actions/ProposalStatusActions";
 import { CardWrapper } from "./ProposalStyled";
-import { FCastExploreActions } from "../FCastActions";
+import { FCastMenuButton } from "../FCastActions";
 import FCastWithEmbed from "./FCastWithEmbed";
 
 export default function ProposalCastList({
@@ -45,7 +45,7 @@ export default function ProposalCastList({
           <CardWrapper className="w-full flex-col gap-4 px-4">
             <FCastWithEmbed cast={cast} channel={channel} />
             <View className="flex flex-row items-center justify-between">
-              <FCastExploreActions cast={cast} communityInfo={channel as any} />
+              <FCastMenuButton cast={cast} communityInfo={channel as any} />
               <View className="ml-auto">
                 <ProposalStatusActions
                   cast={cast}

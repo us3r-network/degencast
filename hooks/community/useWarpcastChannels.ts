@@ -9,7 +9,7 @@ import {
 } from "~/features/community/warpcastChannelsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useAllJoinedCommunities() {
+export default function useWarpcastChannels() {
   const dispatch = useAppDispatch();
   const { warpcastChannels, warpcastChannelsRequestStatus } = useAppSelector(
     selectWarpcastChannels,

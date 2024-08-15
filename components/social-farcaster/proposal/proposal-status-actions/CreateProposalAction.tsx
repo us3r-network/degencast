@@ -18,6 +18,7 @@ export function CreateProposalButton({
   if (!proposal) return null;
   const buttonBody = (
     <ProposalButtonBody
+      hideDownvote
       cast={cast}
       channel={channel}
       proposal={proposal!}

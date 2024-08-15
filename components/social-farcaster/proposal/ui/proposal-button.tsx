@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 import { ProposalTextClassContext } from "./proposal-text";
 
 const buttonVariants = cva(
-  "group w-fit flex items-center justify-center rounded-md web:hover:opacity-90 active:opacity-90",
+  "group w-fit flex flex-row gap-1 items-center justify-center rounded-md web:hover:opacity-90 active:opacity-90",
   {
     variants: {
       variant: {
