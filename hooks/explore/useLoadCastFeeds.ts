@@ -52,7 +52,9 @@ export default function useLoadCastFeeds(props?: { type?: string }) {
       setItems([...items, ...casts]);
 
       pageInfoRef.current = {
-        hasNextPage: casts.length >= PAGE_SIZE,
+        hasNextPage:
+          casts.length >= PAGE_SIZE ||
+          (casts.length > 0 && next.cursor !== nextCursor),
         nextCursor: next.cursor,
         nextPageNumber: nextPageNumber + 1,
       };

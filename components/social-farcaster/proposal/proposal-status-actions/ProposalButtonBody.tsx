@@ -11,11 +11,13 @@ export function ProposalButtonBody({
   proposal,
   tokenInfo,
   showDeadline = true,
+  hideDownvote = false,
   className,
   ...props
 }: ViewProps &
   CastProposeStatusProps & {
     showDeadline?: boolean;
+    hideDownvote?: boolean;
   }) {
   const upvoteCount = isNaN(Number(proposal?.upvoteCount))
     ? 0
@@ -30,15 +32,19 @@ export function ProposalButtonBody({
     >
       <Triangle size={16} className="  fill-white stroke-white" />
       <ProposalText>{upvoteCount}</ProposalText>
-      <Separator
-        orientation="vertical"
-        className="mx-1 h-[12px] w-[1.5px] bg-white"
-      />
-      <View className=" rotate-180 transform">
-        <Triangle size={16} className=" fill-white stroke-white" />
-      </View>
-
-      <ProposalText>{downvoteCount}</ProposalText>
+      {!hideDownvote && (
+        <>
+          {" "}
+          <Separator
+            orientation="vertical"
+            className="mx-1 h-[12px] w-[1.5px] bg-white"
+          />
+          <View className=" rotate-180 transform">
+            <Triangle size={16} className=" fill-white stroke-white" />
+          </View>
+          <ProposalText>{downvoteCount}</ProposalText>
+        </>
+      )}
     </View>
   );
 }

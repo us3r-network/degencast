@@ -6,7 +6,7 @@ import SelectionFeeds from "~/components/explore/SelectionFeeds";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/tab-view/PageTabBar";
 
-function SelectionPage() {
+function CollectPage() {
   return (
     <PageContent>
       <SelectionFeeds />
@@ -14,7 +14,7 @@ function SelectionPage() {
   );
 }
 
-function ProposalPage() {
+function VotePage() {
   return (
     <PageContent>
       <ProposalFeeds />
@@ -34,13 +34,13 @@ export default function ExploreLayout() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "cast", title: "Cast" },
-    { key: "selection", title: "Selection" },
-    { key: "proposal", title: "Proposal" },
+    { key: "collect", title: "Collect" },
+    { key: "vote", title: "Vote" },
   ]);
 
   const renderScene = SceneMap({
-    selection: SelectionPage,
-    proposal: ProposalPage,
+    collect: CollectPage,
+    vote: VotePage,
     cast: CastPage,
   });
 

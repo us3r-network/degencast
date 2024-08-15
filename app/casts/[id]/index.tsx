@@ -6,10 +6,7 @@ import GoHomeButton from "~/components/common/GoHomeButton";
 import { Loading } from "~/components/common/Loading";
 import { BuyChannelBadgeWithIconButton } from "~/components/community/CommunityBuyShareButton";
 import FCast from "~/components/social-farcaster/FCast";
-import {
-  FCastDetailActions,
-  FCastExploreActions,
-} from "~/components/social-farcaster/FCastActions";
+import { FCastMenuButton } from "~/components/social-farcaster/FCastActions";
 import FCastComment from "~/components/social-farcaster/FCastComment";
 import FCastCommunity, {
   FCastCommunityDefault,
@@ -256,15 +253,6 @@ function CastDetailWithData({
                 )}
                 <Text className=" text-base font-bold sm:text-xl">Cast</Text>
               </View>
-              {/* <View>
-                {cast && (
-                  <FCastDetailActions
-                    cast={cast!}
-                    farcasterUserDataObj={farcasterUserDataObj}
-                    communityInfo={community}
-                  />
-                )}
-              </View> */}
             </View>
           ),
         }}
@@ -273,7 +261,11 @@ function CastDetailWithData({
         <View className="relative w-full flex-1 px-4">
           <View className=" absolute bottom-4 right-4 z-20 flex-col items-center">
             {cast && community && (
-              <FCastExploreActions cast={cast} communityInfo={community} />
+              <FCastMenuButton
+                direction="left"
+                cast={cast}
+                communityInfo={community}
+              />
             )}
             {/* {community?.attentionTokenInfo?.tokenContract && (
               <BuyChannelBadgeWithIconButton

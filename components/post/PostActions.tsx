@@ -56,7 +56,12 @@ export const ActionButton = forwardRef<
 });
 
 export function ActionText({ className, ...props }: TextProps) {
-  return <Text className={cn("text-xs text-white", className)} {...props} />;
+  return (
+    <Text
+      className={cn("text-xs leading-none text-white", className)}
+      {...props}
+    />
+  );
 }
 
 function ActionMenuItem({
@@ -165,7 +170,7 @@ export const LikeButton = ({
   liking,
   likeCount,
   className,
-  iconSize = 16,
+  iconSize = 12,
   ...props
 }: ButtonProps & {
   liked: boolean;
@@ -290,7 +295,7 @@ export const MintButton = ({
   );
 };
 
-type ExplorePostActionsProps = {
+type PostMenuButtonProps = {
   direction?: "top" | "left" | "right";
   channelId?: string;
   liked: boolean;
@@ -325,7 +330,7 @@ function useActionMenuCtx() {
   }
   return context;
 }
-export const ExplorePostActions = forwardRef(function (
+export const PostMenuButton = forwardRef(function (
   {
     direction = "right",
     channelId,
@@ -343,7 +348,7 @@ export const ExplorePostActions = forwardRef(function (
 
     className,
     ...props
-  }: ViewProps & ExplorePostActionsProps,
+  }: ViewProps & PostMenuButtonProps,
   ref: LegacyRef<View>,
 ) {
   // const {
@@ -382,7 +387,7 @@ export const ExplorePostActions = forwardRef(function (
     <View
       ref={ref}
       className={cn(
-        " relative z-0 flex w-fit flex-col items-center",
+        " relative flex w-fit flex-col items-center",
         direction === "left" ? " h-fit flex-row" : "",
         className,
       )}

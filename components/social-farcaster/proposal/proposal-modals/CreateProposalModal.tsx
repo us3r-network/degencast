@@ -115,7 +115,7 @@ function CreateProposalModalContentBodyScene() {
           onCreateProposalSuccess={() => {
             Toast.show({
               type: "success",
-              text1: "Proposal created",
+              text1: "Upvote successful !",
             });
             setOpen(false);
           }}

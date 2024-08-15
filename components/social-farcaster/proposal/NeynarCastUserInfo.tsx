@@ -43,7 +43,7 @@ export default function NeynarCastUserInfo({
               orientation="vertical"
             />
             <Text className=" text-nowrap text-xs text-[#9BA1AD]">
-              | {dayjs(timestamp).fromNow(true)}
+              {dayjs(timestamp).fromNow(true)}
             </Text>
           </>
         )}
