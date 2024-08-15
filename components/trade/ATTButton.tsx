@@ -1,4 +1,10 @@
-import React, { forwardRef, LegacyRef, useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  LegacyRef,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
@@ -381,6 +387,7 @@ export function BuyDialog({
   );
 }
 
+const GRADUATION_NFT_NUM = 10;
 const MintNFT = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
@@ -392,17 +399,37 @@ const MintNFT = forwardRef<
   const account = useAccount();
   const { supportAtomicBatch } = useWalletAccount();
   const [amount, setAmount] = useState(1);
-  const { graduated, token } = useATTNftInfo({
-    tokenContract: nft.contractAddress,
-  });
-
+  const { graduated, token, maxTokensPerIdPerUser, totalNFTSupply } =
+    useATTNftInfo({
+      tokenContract: nft.contractAddress,
+    });
+  const { nftBalanceOf } = useATTContractInfo(nft);
+  const { data: nftBalance } = nftBalanceOf(account?.address);
+  // console.log(
+  //   "nft info",
+  //   graduated,
+  //   token,
+  //   maxTokensPerIdPerUser,
+  //   totalNFTSupply,
+  // );
   const [nftPrice, setNftPrice] = useState<bigint>();
   const perNFTPrice =
     nftPrice && amount && token?.decimals
       ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
       : "0";
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
+  const availableAmount = useMemo(() => {
+    if (!account || !maxTokensPerIdPerUser) return 0;
+    const nftLeftBeforeGraduation: number =
+      GRADUATION_NFT_NUM - Number(totalNFTSupply || 0);
+    const nftLeftForPerson: number =
+      Number(maxTokensPerIdPerUser) - Number(nftBalance || 0);
 
+    return nftLeftBeforeGraduation > 0
+      ? Math.min(nftLeftBeforeGraduation, nftLeftForPerson)
+      : nftLeftForPerson;
+  }, [totalNFTSupply, nftBalance, maxTokensPerIdPerUser]);
+  // console.log("availableAmount", availableAmount);
   const allowanceParams =
     account?.address && token?.address && nftPrice
       ? {
@@ -429,7 +456,12 @@ const MintNFT = forwardRef<
             <Text className="text-xs text-secondary">calculating price...</Text>
           )}
         </View>
-        <NumberField defaultValue={1} minValue={1} onChange={setAmount} />
+        <NumberField
+          defaultValue={1}
+          minValue={1}
+          maxValue={availableAmount}
+          onChange={setAmount}
+        />
       </View>
       {token &&
         (graduated ? (
