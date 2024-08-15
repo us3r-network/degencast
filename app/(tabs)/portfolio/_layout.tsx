@@ -10,16 +10,18 @@ import useAuth from "~/hooks/user/useAuth";
 import CastsScreen from "./casts";
 import ChannelsScreen from "./channels";
 import WalletsScreen from "./wallets";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Wallets", value: "wallets", component: WalletsScreen },
-  { label: "Channels", value: "channels", component: ChannelsScreen },
-  { label: "Casts", value: "casts", component: CastsScreen },
+  { label: "Wallet", value: "wallets", component: WalletsScreen },
+  { label: "Channel", value: "channels", component: ChannelsScreen },
+  { label: "Feed ", value: "casts", component: CastsScreen },
 ];
 
 export default function PortfolioScreen() {
   const { ready, authenticated } = useAuth();
+  const { currFid } = useFarcasterAccount();
   const segments = useSegments();
   return (
     <View className="flex-1">
@@ -42,7 +44,7 @@ export default function PortfolioScreen() {
             <Tab.Navigator
               initialRouteName={segments?.[0]}
               tabBar={(props) => (
-                <View className="flex gap-4 mb-4">
+                <View className="mb-4 flex gap-4">
                   <PageTabBar {...props} />
                   <PageContent className="h-24 flex-none">
                     <UserInfo />
@@ -59,7 +61,7 @@ export default function PortfolioScreen() {
                   <Tab.Screen
                     key={tab.value}
                     name={tab.value}
-                    component={tab.component}
+                    component={() => tab.component({ fid: currFid || 0 })}
                     options={{
                       title: tab.label,
                     }}
