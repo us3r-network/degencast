@@ -159,6 +159,9 @@ export function UpvoteProposalModalContentBody({
         }}
       />
       <PriceRangeRow {...priceSliderConfig} />
+      <Text className="text-center text-xs text-secondary">
+        Upvote and earn minting fee rewards upon success!
+      </Text>
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}

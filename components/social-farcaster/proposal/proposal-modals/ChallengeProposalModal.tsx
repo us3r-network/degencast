@@ -290,6 +290,10 @@ export function DisputeProposalWrite({
         }}
       />
       <PriceRangeRow {...priceSliderConfig} />
+      <Text className="text-center text-xs text-secondary">
+        Downvote spam casts, if you win, you can share the staked funds from
+        upvoters.
+      </Text>
       <DisputeProposalWriteButton
         cast={cast}
         channel={channel}
@@ -374,6 +378,9 @@ export function ProposeProposalWrite({
         }}
       />
       <PriceRangeRow {...priceSliderConfig} />
+      <Text className="text-center text-xs text-secondary">
+        Upvote and earn minting fee rewards upon success!
+      </Text>
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
