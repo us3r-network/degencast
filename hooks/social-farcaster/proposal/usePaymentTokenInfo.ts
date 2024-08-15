@@ -8,10 +8,8 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function usePaymentTokenInfo({
   contractAddress,
-  castHash,
 }: {
   contractAddress: Address;
-  castHash: string;
 }) {
   const account = useAccount();
   const accountAddress = account?.address;
@@ -52,7 +50,7 @@ export default function usePaymentTokenInfo({
     if (status === "idle") {
       fetchToken();
     }
-  }, [publicClient, contractAddress, castHash, status, accountAddress]);
+  }, [publicClient, contractAddress, status, accountAddress]);
   const reset = () => {
     setPaymentTokenInfo(undefined);
     setError(undefined);

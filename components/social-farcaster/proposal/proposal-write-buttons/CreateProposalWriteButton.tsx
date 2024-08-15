@@ -40,7 +40,6 @@ export default function CreateProposalWriteButton({
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
-      castHash: cast.hash,
     });
   // const price = getProposalMinPrice(tokenInfo, paymentTokenInfo);
   const isCreated = Number(proposals?.roundIndex) > 0;

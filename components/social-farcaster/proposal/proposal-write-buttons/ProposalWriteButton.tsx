@@ -47,7 +47,6 @@ export function ProposeProposalWriteButton({
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
-      castHash: cast.hash,
     });
   const isLoading =
     proposeLoading || proposalsLoading || paymentTokenInfoLoading;
@@ -167,7 +166,6 @@ export function DisputeProposalWriteButton({
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
-      castHash: cast.hash,
     });
   const isLoading =
     disputeLoading || proposalsLoading || paymentTokenInfoLoading;

@@ -209,7 +209,6 @@ function CreateProposalModalContentBody({
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
-      castHash: cast.hash,
     });
 
   const [selectPrice, setSelectPrice] = useState<bigint | undefined>();

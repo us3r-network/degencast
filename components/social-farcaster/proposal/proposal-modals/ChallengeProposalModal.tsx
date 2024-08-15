@@ -231,7 +231,6 @@ export function DisputeProposalWrite({
     error: paymentTokenInfoError,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
   });
   const {
     price,
@@ -317,7 +316,6 @@ export function ProposeProposalWrite({
     error: paymentTokenInfoError,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
   });
   const {
     price,
