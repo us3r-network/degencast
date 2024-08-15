@@ -16,6 +16,7 @@ import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper
 export function ProposeProposalWriteButton({
   cast,
   tokenInfo,
+  proposal,
   price,
   approveText,
   upvoteText,
@@ -41,6 +42,7 @@ export function ProposeProposalWriteButton({
   const { isLoading: proposeLoading, propose } = useProposeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
+    proposal,
     onProposeSuccess,
     onProposeError,
   });
@@ -135,6 +137,7 @@ export function ProposeProposalWriteButton({
 export function DisputeProposalWriteButton({
   cast,
   tokenInfo,
+  proposal,
   price,
   approveText,
   downvoteText,
@@ -164,6 +167,7 @@ export function DisputeProposalWriteButton({
   const { isLoading: disputeLoading, dispute } = useDisputeProposal({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
+    proposal,
     onDisputeSuccess,
     onDisputeError,
   });

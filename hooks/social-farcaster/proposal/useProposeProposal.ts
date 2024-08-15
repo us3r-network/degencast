@@ -1,22 +1,21 @@
 import { useCallback, useState } from "react";
 import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import {
-  getProposals,
-  ProposalState,
-  proposeProposal,
-} from "./proposal-helper";
+import { getProposals, proposeProposal } from "./proposal-helper";
 import useCacheCastProposal from "./useCacheCastProposal";
 import { walletActionsEip5792 } from "viem/experimental";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 
 export default function useProposeProposal({
   contractAddress,
   castHash,
+  proposal,
   onProposeSuccess,
   onProposeError,
 }: {
   contractAddress: Address;
   castHash: string;
+  proposal?: ProposalEntity;
   onProposeSuccess?: (proposal: TransactionReceipt) => void;
   onProposeError?: (error: any) => void;
 }) {
@@ -62,6 +61,7 @@ export default function useProposeProposal({
           status: proposals.state,
           finalizeTime: Number(proposals.deadline),
           roundIndex: Number(proposals.roundIndex),
+          upvoteCount: Number(proposal?.upvoteCount) + 1,
         });
       } catch (error) {
         setError(error);
@@ -73,6 +73,7 @@ export default function useProposeProposal({
     [
       contractAddress,
       castHash,
+      proposal,
       publicClient,
       walletClient,
       onProposeSuccess,

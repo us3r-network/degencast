@@ -4,15 +4,18 @@ import { usePublicClient, useWalletClient } from "wagmi";
 import { disputeProposal, getProposals } from "./proposal-helper";
 import useCacheCastProposal from "./useCacheCastProposal";
 import { walletActionsEip5792 } from "viem/experimental";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 
 export default function useDisputeProposal({
   contractAddress,
   castHash,
+  proposal,
   onDisputeSuccess,
   onDisputeError,
 }: {
   contractAddress: Address;
   castHash: string;
+  proposal?: ProposalEntity;
   onDisputeSuccess?: (proposal: TransactionReceipt) => void;
   onDisputeError?: (error: any) => void;
 }) {
@@ -58,6 +61,7 @@ export default function useDisputeProposal({
           status: proposals.state,
           finalizeTime: Number(proposals.deadline),
           roundIndex: Number(proposals.roundIndex),
+          downvoteCount: Number(proposal?.downvoteCount) + 1,
         });
       } catch (error) {
         setError(error);
@@ -68,6 +72,7 @@ export default function useDisputeProposal({
     },
     [
       contractAddress,
+      proposal,
       publicClient,
       walletClient,
       onDisputeSuccess,
