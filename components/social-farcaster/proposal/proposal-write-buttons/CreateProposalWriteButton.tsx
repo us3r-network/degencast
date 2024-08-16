@@ -104,11 +104,11 @@ export default function CreateProposalWriteButton({
           {isLoading ? (
             <Loading />
           ) : isCreated ? (
-            <Text>Proposed</Text>
+            <Text>Upvoted</Text>
           ) : !isConnected ? (
             <Text>Connect your wallet first</Text>
           ) : (
-            <Text>Propose</Text>
+            <Text>Upvote</Text>
           )}
         </Button>
       }
