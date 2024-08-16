@@ -39,7 +39,7 @@ function HoldingChannelsScene() {
   );
 }
 
-export default function UserChannelsScreen({ fid }: { fid?: number }) {
+export default function UserChannelScreen({ fid }: { fid?: number }) {
   const { currFid } = useFarcasterAccount();
   const [index, setIndex] = useState(0);
   const [routes] = useState([

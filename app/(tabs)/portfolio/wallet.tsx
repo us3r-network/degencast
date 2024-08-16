@@ -6,7 +6,7 @@ import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import UserWallet from "~/components/portfolio/tokens/UserWallet";
 
-export default function WalletsScreen() {
+export default function MyWalletScreen() {
   const account = useAccount();
   return (
     <PageContent>
