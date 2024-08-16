@@ -71,8 +71,8 @@ export default function CommunityDetail() {
     loadCommunityDetail,
   } = useLoadCommunityDetail(channelId);
   const [routes, setRoutes] = useState<any[]>([
-    { key: "selection", title: "Selections", component: SelectionFeeds },
-    { key: "proposal", title: "Proposal", component: ProposalFeeds },
+    { key: "collect", title: "Collect", component: SelectionFeeds },
+    { key: "vote", title: "Vote", component: ProposalFeeds },
     { key: "casts", title: "Cast", component: CastFeeds },
     { key: "activities", title: "Activities", component: ActivitiesScreen },
     ...(isDesktop
