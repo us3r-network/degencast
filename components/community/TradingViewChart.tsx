@@ -26,7 +26,7 @@ export default function TradingViewChart({
       <View className="flex-row items-center gap-3">
         <Avatar alt={name || ""} className=" size-9">
           <AvatarImage source={{ uri: img || "" }} />
-          <AvatarFallback className="border-primary bg-secondary">
+          <AvatarFallback>
             <Text className="text-sm font-bold leading-none">
               {name.slice(0, 2)}
             </Text>

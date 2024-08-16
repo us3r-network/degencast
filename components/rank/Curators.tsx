@@ -93,10 +93,7 @@ function Item({ item, index }: { item: CuratorEntity; index: number }) {
 function UserInfo({ userInfo }: { userInfo: Author }) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
-      <Avatar
-        alt={userInfo.username}
-        className="size-10 border-2 border-secondary bg-secondary/10"
-      >
+      <Avatar alt={userInfo.username} className="size-10 border-2">
         <AvatarImage source={{ uri: userInfo.pfp_url }} />
         <AvatarFallback className="bg-white">
           <User className="text- size-16 fill-primary/80 font-medium " />
