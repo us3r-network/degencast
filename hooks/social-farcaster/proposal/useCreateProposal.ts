@@ -76,6 +76,8 @@ export default function useCreateProposal({
             contractAddress,
             castHash: proposalConfig.castHash,
           });
+          console.log("proposals", proposals);
+
           upsertOneToProposals(proposalConfig.castHash as any, {
             status: proposals.state,
             finalizeTime: Number(proposals.deadline),

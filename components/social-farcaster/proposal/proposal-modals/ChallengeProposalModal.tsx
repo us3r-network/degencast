@@ -379,7 +379,7 @@ export function ProposeProposalWrite({
       />
       <PriceRangeRow {...priceSliderConfig} />
       <Text className="text-center text-xs text-secondary">
-        Upvote and earn minting fee rewards upon success!
+        Stake DEGEN, get funds back and earn minting fee rewards upon success!
       </Text>
       <ProposeProposalWriteButton
         cast={cast}

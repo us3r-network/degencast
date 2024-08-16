@@ -138,7 +138,7 @@ export function UpvoteProposalModalContentBody({
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       <PriceRow
-        title="Upvote Coast"
+        title="Upvote Cost"
         paymentTokenInfo={paymentTokenInfo}
         price={price}
         isLoading={isLoading || paymentTokenInfoLoading}
@@ -160,7 +160,7 @@ export function UpvoteProposalModalContentBody({
       />
       <PriceRangeRow {...priceSliderConfig} />
       <Text className="text-center text-xs text-secondary">
-        Upvote and earn minting fee rewards upon success!
+        Stake DEGEN, get funds back and earn minting fee rewards upon success!
       </Text>
       <ProposeProposalWriteButton
         cast={cast}

@@ -19,7 +19,7 @@ export default function PriceRow({
 }) {
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text>{title || "Total Coast"}</Text>
+      <Text>{title || "Total Cost"}</Text>
       <View className="flex flex-row items-center gap-1">
         <Image
           source={require("~/assets/images/degen-icon-2.png")}
