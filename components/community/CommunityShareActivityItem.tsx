@@ -17,7 +17,7 @@ export default function CommunityShareActivityItem({
     <View className={cn("flex-row items-center gap-3", className)} {...props}>
       <Avatar alt={name || ""} className=" size-10">
         <AvatarImage source={{ uri: avatar || "" }} />
-        <AvatarFallback className="border-primary bg-secondary">
+        <AvatarFallback>
           <Text className="text-sm font-bold">{name}</Text>
         </AvatarFallback>
       </Avatar>

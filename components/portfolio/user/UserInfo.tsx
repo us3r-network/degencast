@@ -22,9 +22,10 @@ import UserSettings from "./UserSettings";
 import { UserChannelsType } from "~/features/user/userChannelsSlice";
 
 export default function UserInfo({ fid }: { fid?: number }) {
-  const {currFid} = useFarcasterAccount();
-  const {linkedWallets} = useWalletAccount();
-  const walletAccount = linkedWallets?.length>0 ? linkedWallets[0]: undefined;
+  const { currFid } = useFarcasterAccount();
+  const { linkedWallets } = useWalletAccount();
+  const walletAccount =
+    linkedWallets?.length > 0 ? linkedWallets[0] : undefined;
   fid = fid || currFid || undefined;
   useUserChannels(fid, UserChannelsType.FOLLOWING); //preload channels
   useUserChannels(fid, UserChannelsType.HOLDING); //preload channels
@@ -56,10 +57,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
-          <Avatar
-            alt={username}
-            className="size-24 border-2 border-secondary bg-secondary/10"
-          >
+          <Avatar alt={username} className="size-24 border-2 ">
             <AvatarImage source={{ uri: userAvatar }} />
             <AvatarFallback className="bg-white">
               <User className="size-16 fill-primary/80 font-medium text-primary" />
@@ -144,10 +142,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
-          <Avatar
-            alt={username}
-            className="size-24 border-2 border-secondary bg-secondary/10"
-          >
+          <Avatar alt={username} className="size-24 border-2">
             <AvatarFallback className="bg-white">
               <User className="size-16 fill-primary/80 font-medium text-primary" />
             </AvatarFallback>

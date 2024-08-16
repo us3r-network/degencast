@@ -51,12 +51,9 @@ export default function ChannelMetaInfo({
       >
         <View className={cn("flex w-full flex-row gap-3")}>
           <View className=" relative">
-            <Avatar
-              alt={name || ""}
-              className="size-[24px] border border-secondary"
-            >
+            <Avatar alt={name || ""} className="size-[24px]">
               <AvatarImage source={{ uri: logo || "" }} />
-              <AvatarFallback className="border-primary bg-secondary">
+              <AvatarFallback>
                 <Text className="text-sm font-bold">{name}</Text>
               </AvatarFallback>
             </Avatar>
