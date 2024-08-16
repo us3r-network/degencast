@@ -113,7 +113,7 @@ export function SellButton({ token }: { token: ERC42069Token }) {
               {showDetails ? (
                 <TokenActivitieList token={token} />
               ) : (
-                <>
+                <View className="gap-4">
                   <View className="flex-row items-center justify-between gap-2">
                     <Text>Active Wallet</Text>
                     <UserWalletSelect />
@@ -123,7 +123,7 @@ export function SellButton({ token }: { token: ERC42069Token }) {
                     onSuccess={setTransationData}
                     onError={setError}
                   />
-                </>
+                </View>
               )}
             </ScrollView>
           </DialogContent>
@@ -360,7 +360,7 @@ export function BuyDialog({
             {showDetails ? (
               <TokenActivitieList token={token} />
             ) : (
-              <>
+              <View className="gap-4">
                 <View className="flex-row items-center justify-between gap-2">
                   <Text>Active Wallet</Text>
                   <UserWalletSelect />
@@ -376,7 +376,7 @@ export function BuyDialog({
                 <DialogFooter>
                   <About title={ATT_TITLE} info={ATT_INFO} />
                 </DialogFooter>
-              </>
+              </View>
             )}
           </ScrollView>
         </DialogContent>
