@@ -106,6 +106,7 @@ export type ChannelCastFeedsParams = {
   channelId: string;
   limit?: number;
   cursor?: string;
+  pageNumber?: number;
 };
 export type ChannelCastFeedsData = {
   casts: Array<ProposalCast>;
