@@ -5,6 +5,7 @@ import {
   waitForTransactionReceipt,
 } from "@wagmi/core";
 import { Frame } from "frames.js";
+import { Buffer } from "buffer";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Linking, Platform, Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -59,8 +60,6 @@ export default function EmbedFrame({
   const [txData, setTxData] = useState<any>();
   const [txBtnIdx, setTxBtnIdx] = useState(0);
   const [txSimulate, setTxSimulate] = useState<any>([]);
-
-  
 
   const genFrameActionData = useCallback(
     async (btnIdx: number, txId?: string) => {

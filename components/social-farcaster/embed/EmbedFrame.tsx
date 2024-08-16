@@ -4,6 +4,7 @@ import {
   switchChain,
   waitForTransactionReceipt,
 } from "@wagmi/core";
+import { Buffer } from "buffer";
 import { Frame } from "frames.js";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Linking, Platform, Pressable, View } from "react-native";
@@ -60,7 +61,6 @@ export default function EmbedFrame({
   const [txBtnIdx, setTxBtnIdx] = useState(0);
   const [txSimulate, setTxSimulate] = useState<any>([]);
 
-  
   const genFrameActionData = useCallback(
     async (btnIdx: number, txId?: string) => {
       if (!currFid) {

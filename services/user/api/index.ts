@@ -9,6 +9,7 @@ import {
   UserActionPointConfig,
 } from "../types";
 import { mockMyNFTs } from "../mocks/mynfts";
+import { Buffer } from "buffer";
 
 export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
   return request({
