@@ -8,19 +8,21 @@ import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import { Text } from "~/components/ui/text";
 import useUserBulk from "~/hooks/user/useUserBulk";
 
-export default function WalletsScreen({ fid }: { fid: number }) {
+export default function UserWalletScreen({ fid }: { fid: number }) {
   const { userInfo, load } = useUserBulk();
 
   useEffect(() => {
     if (Number(fid)) load(Number(fid));
+    console.log("WalletsScreen", fid);
   }, [fid]);
 
   const address = useMemo(() => {
+    console.log("WalletsScreen", userInfo);
     if (!userInfo) return undefined;
     if (userInfo?.verified_addresses?.eth_addresses?.length > 0)
       return userInfo.verified_addresses.eth_addresses[0];
   }, [userInfo]);
-
+  console.log("WalletsScreen", address);
   return (
     <PageContent>
       <CardWarper>

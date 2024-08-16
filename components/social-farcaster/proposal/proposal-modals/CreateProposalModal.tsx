@@ -1,27 +1,27 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
+import { SceneMap, TabView } from "react-native-tab-view";
+import Toast from "react-native-toast-message";
+import { formatUnits, TransactionReceipt } from "viem";
+import { PercentPrograssText } from "~/components/common/PercentPrograssText";
+import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
+import { CreateTokenButton } from "~/components/trade/ATTButton";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Slider } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
+import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
+import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import ProposalCastCard from "../ProposalCastCard";
-import { formatUnits, TransactionReceipt } from "viem";
 import ProposeWriteButton from "../proposal-write-buttons/CreateProposalWriteButton";
-import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
-import Toast from "react-native-toast-message";
-import PriceRow from "./PriceRow";
+import ProposalCastCard from "../ProposalCastCard";
 import { getProposalMinPrice } from "../utils";
-import { SceneMap, TabView } from "react-native-tab-view";
 import { AboutProposalChallenge } from "./AboutProposal";
-import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { Slider } from "~/components/ui/slider";
 import { PriceRangeRow } from "./ChallengeProposalModal";
-import { CreateTokenButton } from "~/components/trade/ATTButton";
-import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
-import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
+import PriceRow from "./PriceRow";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -185,9 +185,9 @@ function CreateTokenModalContentBody({
         variant={"secondary"}
         renderButtonContent={({ loading }) => {
           return loading ? (
-            <Text className="text-lg font-bold">Activating ...</Text>
+            <PercentPrograssText duration={8000} divisor={100} />
           ) : (
-            <Text className="text-lg font-bold">Activate</Text>
+            <Text>Activate</Text>
           );
         }}
       />

@@ -1,22 +1,47 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
+import { createContext, useContext } from "react";
 import { View } from "react-native";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import UserInfo from "~/components/portfolio/user/UserInfo";
 import UserSignin from "~/components/portfolio/user/UserSignin";
 import { PRIMARY_COLOR } from "~/constants";
-import useAuth from "~/hooks/user/useAuth";
-import CastsScreen from "./casts";
-import ChannelsScreen from "./channels";
-import WalletsScreen from "./wallets";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useAuth from "~/hooks/user/useAuth";
+import UserChannelScreen from "./channel";
+import UserFeedScreen from "./feed";
+import MyWalletScreen from "./wallet";
+
+export type UserPortfolioProps = {
+  fid: number;
+};
+export const UserPortfolioCtx = createContext<UserPortfolioProps | undefined>(
+  undefined,
+);
+export const useUserPortfolioCtx = () => {
+  const ctx = useContext(UserPortfolioCtx);
+  if (!ctx) {
+    throw new Error("useUserPortfolioCtx must be used within a provider");
+  }
+  return ctx;
+};
+
+function ChannelScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserChannelScreen fid={fid} />;
+}
+
+function FeedScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserFeedScreen fid={fid} />;
+}
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Wallet", value: "wallets", component: WalletsScreen },
-  { label: "Channel", value: "channels", component: ChannelsScreen },
-  { label: "Feed ", value: "casts", component: CastsScreen },
+  { label: "Wallet", value: "wallet", component: MyWalletScreen },
+  { label: "Channel", value: "channel", component: ChannelScreen },
+  { label: "Feed", value: "feed", component: FeedScreen },
 ];
 
 export default function PortfolioScreen() {
@@ -41,34 +66,36 @@ export default function PortfolioScreen() {
           </View>
         ) : (
           <View className="h-full w-full pb-4">
-            <Tab.Navigator
-              initialRouteName={segments?.[0]}
-              tabBar={(props) => (
-                <View className="mb-4 flex gap-4">
-                  <PageTabBar {...props} />
-                  <PageContent className="h-24 flex-none">
-                    <UserInfo />
-                  </PageContent>
-                </View>
-              )}
-              style={{ width: "100%" }}
-              sceneContainerStyle={{
-                backgroundColor: PRIMARY_COLOR,
-              }}
-            >
-              {TABS.map((tab) => {
-                return (
-                  <Tab.Screen
-                    key={tab.value}
-                    name={tab.value}
-                    component={() => tab.component({ fid: currFid || 0 })}
-                    options={{
-                      title: tab.label,
-                    }}
-                  />
-                );
-              })}
-            </Tab.Navigator>
+            <UserPortfolioCtx.Provider value={{ fid: currFid || 0 }}>
+              <Tab.Navigator
+                initialRouteName={segments?.[0]}
+                tabBar={(props) => (
+                  <View className="mb-4 flex gap-4">
+                    <PageTabBar {...props} />
+                    <PageContent className="h-24 flex-none">
+                      <UserInfo />
+                    </PageContent>
+                  </View>
+                )}
+                style={{ width: "100%" }}
+                sceneContainerStyle={{
+                  backgroundColor: PRIMARY_COLOR,
+                }}
+              >
+                {TABS.map((tab) => {
+                  return (
+                    <Tab.Screen
+                      key={tab.value}
+                      name={tab.value}
+                      component={tab.component}
+                      options={{
+                        title: tab.label,
+                      }}
+                    />
+                  );
+                })}
+              </Tab.Navigator>
+            </UserPortfolioCtx.Provider>
           </View>
         ))}
     </View>

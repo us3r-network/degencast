@@ -25,8 +25,8 @@ export default function UserInfo({ fid }: { fid?: number }) {
   const walletAccount =
     linkedWallets?.length > 0 ? linkedWallets[0] : undefined;
   fid = fid || currFid || undefined;
-  useUserChannels(fid, UserChannelsType.FOLLOWING); //preload channels
-  useUserChannels(fid, UserChannelsType.HOLDING); //preload channels
+  // useUserChannels(fid, UserChannelsType.FOLLOWING); //preload channels
+  // useUserChannels(fid, UserChannelsType.HOLDING); //preload channels
   // useUserCasts(fid, currFid || undefined); //preload casts
   const { userInfo, load } = useUserBulk(currFid || undefined);
   useEffect(() => {

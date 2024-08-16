@@ -2,29 +2,47 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { Stack, useLocalSearchParams, useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { UserPortfolioCtx, useUserPortfolioCtx } from "~/app/(tabs)/portfolio/_layout";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import UserInfo from "~/components/portfolio/user/UserInfo";
 import { PRIMARY_COLOR } from "~/constants";
-import CastsScreen from "./casts";
-import ChannelsScreen from "./channels";
-import WalletsScreen from "./wallets";
+import UserChannelScreen from "./channel";
+import UserFeedScreen from "./feed";
+import UserWalletScreen from "./wallet";
+
+function WalletScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserWalletScreen fid={fid} />;
+}
+
+function ChannelScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserChannelScreen fid={fid} />;
+}
+
+function FeedScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserFeedScreen fid={fid} />;
+}
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Wallets", value: "wallets", component: WalletsScreen },
-  { label: "Channels", value: "channels", component: ChannelsScreen },
-  { label: "Casts", value: "casts", component: CastsScreen },
+  { label: "Wallet", value: "wallet", component: WalletScreen },
+  { label: "Channel", value: "channel", component: ChannelScreen },
+  { label: "Feed", value: "feed", component: FeedScreen },
 ];
 
 export default function UserPortfolioScreen() {
   const segments = useSegments();
   const { fid } = useLocalSearchParams<{ fid: string }>();
 
+  console.log("UserPortfolioScreen", fid);
   if (Number(fid))
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Stack.Screen options={{ headerShown: false }} />
+        <UserPortfolioCtx.Provider value={{ fid: Number(fid) || 0 }}>
           <Tab.Navigator
             initialRouteName={segments?.[0]}
             tabBar={(props) => (
@@ -41,12 +59,11 @@ export default function UserPortfolioScreen() {
             }}
           >
             {TABS.map((tab) => {
-              const Component = tab.component;
               return (
                 <Tab.Screen
                   key={tab.value}
                   name={tab.value}
-                  component={() => <Component fid={Number(fid)!} />}
+                  component={tab.component}
                   options={{
                     title: tab.label,
                   }}
@@ -54,6 +71,7 @@ export default function UserPortfolioScreen() {
               );
             })}
           </Tab.Navigator>
+        </UserPortfolioCtx.Provider>
       </SafeAreaView>
     );
 }

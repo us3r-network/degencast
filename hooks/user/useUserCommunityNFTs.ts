@@ -7,7 +7,7 @@ import {
 } from "~/features/user/communityNFTsSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
 
-export default function useUserCommunityTokens(address?: `0x${string}`) {
+export default function useUserCommunityNFTs(address?: `0x${string}`) {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector(selectUserCommunityNFTs);
 

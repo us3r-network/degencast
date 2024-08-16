@@ -32,7 +32,7 @@ function MyCastsFeedsScene() {
   return <UserCastList fid={fid} />;
 }
 
-export default function MyCastsScreen({ fid }: MyCastsProps) {
+export default function UserFeedScreen({ fid }: MyCastsProps) {
   const { currFid } = useFarcasterAccount();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
