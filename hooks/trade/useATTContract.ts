@@ -62,9 +62,10 @@ export function useATTContractInfo(token: ERC42069Token) {
         },
       ],
     });
-    if (!data || data.length < 2) return { data: undefined, status: "error" };
+    if (!data || data.length < 2 || !data[0].result || !data[1].result)
+      return { data: undefined, status: "error" };
     const tokenUnit =
-      (data[0].result as bigint) * (10n ** BigInt(data[1].result as bigint));
+      (data[0].result as bigint) * 10n ** BigInt(data[1].result as bigint);
     return { data: tokenUnit, status };
   };
 

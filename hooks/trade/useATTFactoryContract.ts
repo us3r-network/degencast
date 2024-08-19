@@ -132,7 +132,7 @@ export function useATTFactoryContractMint(token: ERC42069Token) {
   const { graduated } = getGraduated();
   const mint = useCallback(
     async (amount: number, maxPayment: bigint) => {
-      console.log("mint", token, amount, maxPayment);
+      console.log("mint", token, amount, maxPayment, graduated);
       writeContract({
         ...contract,
         functionName: graduated ? "mintNFTFromUniV3" : "mintNFT",

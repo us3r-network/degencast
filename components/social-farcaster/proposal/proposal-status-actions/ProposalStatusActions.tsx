@@ -11,6 +11,7 @@ import { ProposalButton } from "../ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
 import { ReadyToMintActionLayout } from "./MintAction";
 import { CreateProposalButton } from "./CreateProposalAction";
+import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
 
 export type ProposalStatusActionsProps = {
   cast: NeynarCast;
@@ -33,6 +34,12 @@ export default function ProposalStatusActions({
 
   const { status, roundIndex } = updatedProposal;
 
+  const { getCachedAttToken } = useCacheCastAttToken();
+  const cachedTokenInfo = getCachedAttToken(channel?.channelId!);
+  const updatedTokenInfo = cachedTokenInfo
+  ? { ...tokenInfo, ...cachedTokenInfo }
+  : tokenInfo;
+
   const display = displayProposalActions({
     channel,
     tokenInfo,
@@ -48,7 +55,7 @@ export default function ProposalStatusActions({
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
-          tokenInfo={tokenInfo}
+          tokenInfo={updatedTokenInfo}
         />
       );
     case ProposalState.Proposed:
@@ -57,7 +64,7 @@ export default function ProposalStatusActions({
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
-          tokenInfo={tokenInfo}
+          tokenInfo={updatedTokenInfo}
         />
       );
     case ProposalState.Accepted:
@@ -67,7 +74,7 @@ export default function ProposalStatusActions({
             cast={cast}
             channel={channel}
             proposal={updatedProposal}
-            tokenInfo={tokenInfo}
+            tokenInfo={updatedTokenInfo}
           />
         );
       }
@@ -76,7 +83,7 @@ export default function ProposalStatusActions({
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
-          tokenInfo={tokenInfo}
+          tokenInfo={updatedTokenInfo}
         />
       );
     case ProposalState.Disputed:
@@ -85,7 +92,7 @@ export default function ProposalStatusActions({
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
-          tokenInfo={tokenInfo}
+          tokenInfo={updatedTokenInfo}
         />
       );
     case ProposalState.ReadyToMint:
@@ -94,7 +101,7 @@ export default function ProposalStatusActions({
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
-          tokenInfo={tokenInfo}
+          tokenInfo={updatedTokenInfo}
         />
       );
     case ProposalState.Abandoned:
@@ -103,7 +110,7 @@ export default function ProposalStatusActions({
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
-          tokenInfo={tokenInfo}
+          tokenInfo={updatedTokenInfo}
         />
       );
     default:
