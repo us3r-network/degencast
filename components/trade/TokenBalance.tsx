@@ -66,7 +66,7 @@ function NativeTokenBalance({
       ? eventBus.subscribe((event) => {
           console.log("event", event);
           if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
-            refetch();
+            refetch?.();
           }
         })
       : null;
@@ -121,12 +121,17 @@ function ERC20TokenBalance({
   const Component = asChild ? Slot.View : TokenBalance;
 
   useEffect(() => {
-    eventBus.subscribe((event) => {
-      console.log("event", event);
-      if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
-        refetch?.();
-      }
-    });
+    const subscription = refetch
+      ? eventBus.subscribe((event) => {
+          console.log("event", event);
+          if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
+            refetch?.();
+          }
+        })
+      : null;
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, [refetch]);
 
   return (

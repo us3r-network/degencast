@@ -7,6 +7,7 @@ import {
   createPublicClient,
   createWalletClient,
   custom,
+  erc20Abi,
   formatUnits,
   http,
   parseEther,
@@ -21,7 +22,11 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
+import {
+  DEFAULT_CHAIN,
+  NATIVE_TOKEN_ADDRESS,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
 import useWalletAccount, {
   ConnectedWallet,
 } from "~/hooks/user/useWalletAccount";
@@ -31,13 +36,13 @@ import UserTokens from "../portfolio/tokens/UserTokens";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import FundButton from "./FundButton";
+import { eventBus, EventTypes } from "~/utils/eventBus";
+import UserTokenSelect from "./UserTokenSelect";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function DepositButton() {
-  const {
-    connectWallet,
-    activeWallet,
-    connectedExternalWallet,
-  } = useWalletAccount();
+  const { connectWallet, activeWallet, connectedExternalWallet } =
+    useWalletAccount();
 
   if (!activeWallet)
     return (
@@ -121,29 +126,49 @@ function TransferFromExternalWallet({
   fromWallet: ConnectedWallet;
   toWallet: ConnectedWallet;
 }) {
+  const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
   const [amount, setAmount] = useState("0");
   const [balance, setBalance] = useState(0);
+  const [transfering, setTransfering] = useState(false);
+
   useEffect(() => {
+    if (!fromWallet || !token || transfering) return;
     const publicClient = createPublicClient({
       chain: DEFAULT_CHAIN,
       transport: http(),
     });
-    publicClient
-      .getBalance({
-        address: fromWallet.address as Address,
-      })
-      .then((rawBalance) => {
-        const b = parseFloat(
-          formatUnits(rawBalance, NATIVE_TOKEN_METADATA.decimals!),
-        );
-        setBalance(b);
-        setAmount(String(b / 10));
-      });
-  }, [fromWallet]);
+    if (token.address === NATIVE_TOKEN_ADDRESS)
+      publicClient
+        .getBalance({
+          address: fromWallet.address as Address,
+        })
+        .then((rawBalance) => {
+          const b = parseFloat(
+            formatUnits(rawBalance, NATIVE_TOKEN_METADATA.decimals!),
+          );
+          setBalance(b);
+          setAmount(String(b / 10));
+        });
+    else
+      publicClient
+        .readContract({
+          address: token.address as Address,
+          abi: erc20Abi,
+          functionName: "balanceOf",
+          args: [fromWallet.address as Address],
+        })
+        .then((rawBalance) => {
+          const b = parseFloat(formatUnits(rawBalance, token.decimals!));
+          setBalance(b);
+          setAmount(String(b / 10));
+        });
+  }, [fromWallet, transfering, token]);
 
   const transfer = async () => {
+    if (!fromWallet || !toWallet || !token || transfering) return;
     const value = parseEther(amount);
     try {
+      setTransfering(true);
       const provider = await fromWallet.getEthereumProvider();
       const client = createWalletClient({
         chain: DEFAULT_CHAIN,
@@ -152,51 +177,85 @@ function TransferFromExternalWallet({
       // console.log("client", client, fromWallet, toWallet, value)
       if (client.chain.id !== DEFAULT_CHAIN.id)
         await client.switchChain(DEFAULT_CHAIN);
-      const hash = await client.sendTransaction({
-        account: fromWallet.address as Address,
-        to: toWallet.address as Address,
-        value,
+      let hash;
+      if (token.address === NATIVE_TOKEN_ADDRESS) {
+        hash = await client.sendTransaction({
+          account: fromWallet.address as Address,
+          to: toWallet.address as Address,
+          value,
+        });
+      } else {
+        hash = await client.writeContract({
+          address: token.address,
+          abi: erc20Abi,
+          functionName: "transfer",
+          args: [toWallet.address as Address, value],
+          account: fromWallet.address as Address,
+        });
+      }
+      const publicClient = createPublicClient({
+        chain: DEFAULT_CHAIN,
+        transport: http(),
+      });
+      const transaction = await publicClient.waitForTransactionReceipt({
+        hash,
+        // confirmations: 5,
       });
       Toast.show({
         type: "success",
         text1: "Transfer Completed!",
         // text2: `Transaction Hash: ${hash}`,
       });
+      if (token.address === NATIVE_TOKEN_ADDRESS)
+        eventBus.next({ type: EventTypes.NATIVE_TOKEN_BALANCE_CHANGE });
+      else eventBus.next({ type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE });
+      setTransfering(false);
     } catch (e: any) {
       console.log("error", e);
       Toast.show({
         type: "error",
         text1: "Failed to transfer",
       });
+      setTransfering(false);
     }
   };
+
   return (
     <View className="flex gap-4">
       <Text className="text-sm">
         Transfer from connected wallet: {shortPubKey(fromWallet.address)}
       </Text>
+      <UserTokenSelect selectToken={setToken} chain={DEFAULT_CHAIN} />
       <Input
         className="border-secondary text-secondary"
         placeholder="Enter amount"
         value={amount}
         onChangeText={(newText) => setAmount(newText)}
+        editable={!transfering}
       />
       <Slider
         value={Number(amount)}
         max={balance}
         step={balance / 100}
         onValueChange={(v) => setAmount(String(v))}
+        disabled={transfering}
       />
-      <Button variant="secondary" onPress={() => transfer()}>
-        <Text>
-          Transfer{" "}
-          {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 4,
-            notation: "compact",
-          }).format(Number(amount))}{" "}
-          {NATIVE_TOKEN_METADATA.symbol}
-        </Text>
-      </Button>
+      {token && (
+        <Button
+          variant="secondary"
+          disabled={transfering}
+          onPress={() => transfer()}
+        >
+          <Text>
+            Transfer{" "}
+            {new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 4,
+              notation: "compact",
+            }).format(Number(amount))}{" "}
+            {token.symbol}
+          </Text>
+        </Button>
+      )}
     </View>
   );
 }
