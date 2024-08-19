@@ -82,7 +82,7 @@ export default function ChannelMetaInfo({
                 setTokenLaunched(true);
               }}
               className="h-8"
-              renderBottonContent={({ loading }) => {
+              renderButtonContent={({ loading }) => {
                 return loading ? (
                   <Text className="text-lg font-bold">Launching Token...</Text>
                 ) : (
@@ -90,7 +90,9 @@ export default function ChannelMetaInfo({
                 );
               }}
             />
-          ) : null}
+          ) : (
+            <LaunchProgress />
+          )}
         </View>
       </Pressable>
     </View>

@@ -71,20 +71,20 @@ export default function CommunityDetail() {
     loadCommunityDetail,
   } = useLoadCommunityDetail(channelId);
   const [routes, setRoutes] = useState<any[]>([
-    { key: "collect", title: "Collect", component: SelectionFeeds },
-    { key: "vote", title: "Vote", component: ProposalFeeds },
     { key: "casts", title: "Cast", component: CastFeeds },
-    { key: "activities", title: "Activities", component: ActivitiesScreen },
+    { key: "vote", title: "Vote", component: ProposalFeeds },
+    { key: "collect", title: "Collect", component: SelectionFeeds },
+    { key: "activities", title: "Activity", component: ActivitiesScreen },
     ...(isDesktop
       ? [
           {
             key: "attention-token",
-            title: "Attention Token",
+            title: "Curation Token",
             component: AttentionTokenScreen,
           },
         ]
       : []),
-    { key: "curators", title: "Curators", component: CuratorsScreen },
+    { key: "curators", title: "Curator", component: CuratorsScreen },
   ]);
 
   const community = communityDetail || communityBasic;

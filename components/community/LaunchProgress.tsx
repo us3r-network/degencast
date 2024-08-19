@@ -1,8 +1,9 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Progress } from "../ui/progress";
 import { Text } from "../ui/text";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { cn } from "~/lib/utils";
+import Toast from "react-native-toast-message";
 
 export default function LaunchProgress({
   tokenInfo,
@@ -20,9 +21,18 @@ export default function LaunchProgress({
         className="h-4 w-[100px] bg-[#D6A5EC]"
         indicatorClassName=" rounded-4 bg-[#9151C3]"
       /> */}
-      <Text className={cn("font-bold text-foreground", textClassName)}>
-        {progressNumber}%
-      </Text>
+      <Pressable
+        onPress={() => {
+          Toast.show({
+            type: "info",
+            text1: `Curation Token Launch Progress: ${progressNumber}%`,
+          });
+        }}
+      >
+        <Text className={cn("font-bold text-foreground", textClassName)}>
+          {progressNumber}%
+        </Text>
+      </Pressable>
     </View>
   );
 }
