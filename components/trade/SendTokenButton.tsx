@@ -36,7 +36,7 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import ToeknSelect from "./UserTokenSelect";
+import UserTokenSelect from "./UserTokenSelect";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -197,7 +197,7 @@ const SendToken = forwardRef<
         </View>
         <View className="flex gap-2">
           <Text>Token</Text>
-          <ToeknSelect selectToken={setToken} chain={chain} />
+          <UserTokenSelect selectToken={setToken} chain={chain} />
         </View>
         <View className="flex gap-2">
           <Text>Amount</Text>

@@ -1,44 +1,45 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Chain } from "viem";
 import { useAccount } from "wagmi";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, NATIVE_TOKEN_METADATA } from "~/constants";
-import useUserTokens, { TOKENS } from "~/hooks/user/useUserTokens";
+import { DEFAULT_CHAIN, DEGEN_TOKEN_ADDRESS, NATIVE_TOKEN_METADATA } from "~/constants";
+import {
+  useUserNativeToken,
+  useUserToken,
+} from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 
-export default function MyToeknSelect({
+export default function UserTokenSelect({
   defaultToken,
   chain = DEFAULT_CHAIN,
-  supportTokenKeys,
   selectToken,
   hidden = false,
   showBalance = true,
 }: {
   defaultToken?: TokenWithTradeInfo;
   chain?: Chain;
-  supportTokenKeys?: TOKENS[];
   selectToken?: (token: TokenWithTradeInfo) => void;
   hidden?: boolean;
   showBalance?: boolean;
 }) {
   const account = useAccount();
-  const { userTokens } = useUserTokens(account.address, chain.id);
+  const { token: nativeTokenInfo } = useUserNativeToken(
+    account.address,
+    chain.id,
+  );
+  const { token: erc20TokenInfo } = useUserToken(
+    account.address,
+    DEGEN_TOKEN_ADDRESS,
+    chain.id,
+  );
 
-  const tokens: TokenWithTradeInfo[] = useMemo(() => {
-    const items: TokenWithTradeInfo[] = [];
-    userTokens.forEach((value, key) => {
-      if (!supportTokenKeys || supportTokenKeys.includes(key as TOKENS)) {
-        items.push(value);
-      }
-    });
-    return items;
-  }, [userTokens, supportTokenKeys]);
+  const tokens: TokenWithTradeInfo[] = [nativeTokenInfo!, erc20TokenInfo!];
 
   const [value, setValue] = useState<string>();
 
@@ -57,7 +58,7 @@ export default function MyToeknSelect({
     if (tokens && tokens.length > 0) {
       valueChangeHandler(DEFAULT_VALUE);
     }
-  }, [userTokens, tokens, supportTokenKeys]);
+  }, [tokens]);
 
   const selectedToken =
     tokens?.find((token) => token?.address === value) || tokens[0];

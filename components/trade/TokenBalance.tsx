@@ -51,7 +51,7 @@ function NativeTokenBalance({
   asChild,
   ...props
 }: NativeToeknBalanceProps) {
-  const nativeTokenInfo = useUserNativeToken(address, chainId);
+  const { token: nativeTokenInfo } = useUserNativeToken(address, chainId);
   const balance = nativeTokenInfo?.balance || "0";
   const chains = useChains();
   const chain = chains.find((chain) => chain.id === chainId);
@@ -60,7 +60,7 @@ function NativeTokenBalance({
   useEffect(() => {
     if (balance) setBalance?.(Number(balance));
   }, [balance, setBalance]);
-  
+
   const Component = asChild ? Slot.View : TokenBalance;
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>
@@ -90,8 +90,12 @@ function ERC20TokenBalance({
   asChild,
   ...props
 }: ERC20ToeknBalanceProps) {
-  const tokenInfo = useUserToken(address, token.address, token.chainId);
-  const balance = tokenInfo?.balance || "0";
+  const { token: erc20TokenInfo } = useUserToken(
+    address,
+    token.address,
+    token.chainId,
+  );
+  const balance = erc20TokenInfo?.balance || "0";
   const symbol = token.symbol || "";
   useEffect(() => {
     if (balance) setBalance?.(Number(balance));
