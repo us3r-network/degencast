@@ -23,7 +23,7 @@ import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
 import "../global.css";
 import { Buffer } from "buffer";
-
+// TODO 运行app模式可能会报错，注意处理兼容性问题
 global.Buffer = Buffer;
 
 if (Platform.OS !== "web") {
