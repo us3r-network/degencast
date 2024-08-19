@@ -8,16 +8,17 @@ import {
   HeaderLogo,
   HeaderRight,
 } from "../header/Header";
-import { SearchLink } from "../header/HeaderLinks";
+import { PostLink, SearchLink } from "../header/HeaderLinks";
 import { SECONDARY_COLOR } from "~/constants";
 import HelpButton from "~/components/help/HelpButton";
 
 export default function PageTabBar(
   props: SceneRendererProps & {
+    showCreatePost?: boolean;
     navigationState: NavigationState<{ key: string; title: string }>;
   },
 ) {
-  const { navigationState, position, layout, jumpTo } = props;
+  const { navigationState, position, layout, jumpTo, showCreatePost } = props;
   const routes = navigationState.routes || [];
 
   return (
@@ -25,7 +26,7 @@ export default function PageTabBar(
       <HeaderLeft>
         <HeaderLogo />
       </HeaderLeft>
-      <HeaderCenter className="relative flex w-full flex-1 flex-row items-center">
+      <HeaderCenter className="relative flex flex-row items-center ">
         {routes.map((route, index) => {
           const label = route.title;
           const isFocused = index === navigationState.index;
@@ -68,6 +69,8 @@ export default function PageTabBar(
         })}
       </HeaderCenter>
       <HeaderRight>
+        {showCreatePost && <PostLink />}
+
         <HelpButton />
         <SearchLink />
       </HeaderRight>

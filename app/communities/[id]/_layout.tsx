@@ -176,7 +176,7 @@ export default function CommunityDetail() {
                     tokenInfo={tokenInfo}
                   />
                 </View>
-              ) : isChannelHost ? (
+              ) : (
                 <View className="sm:hidden">
                   <CreateTokenButton
                     channelId={channelId}
@@ -187,16 +187,18 @@ export default function CommunityDetail() {
                     variant={"secondary"}
                     renderButtonContent={({ loading }) => {
                       return loading ? (
-                        <Text className="text-lg font-bold">
-                          Launching Token...
+                        <Text className="text-lg text-secondary-foreground">
+                          {isChannelHost ? "Launching..." : "Activating..."}
                         </Text>
                       ) : (
-                        <Text className="text-lg font-bold">Launch Token</Text>
+                        <Text className="text-lg text-secondary-foreground">
+                          {isChannelHost ? "Launch" : "Activate"}
+                        </Text>
                       );
                     }}
                   />
                 </View>
-              ) : null}
+              )}
             </View>
           ),
         }}
