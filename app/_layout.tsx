@@ -22,6 +22,9 @@ import { store } from "~/store/store";
 import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
 import "../global.css";
+import { Buffer } from "buffer";
+
+global.Buffer = Buffer;
 
 if (Platform.OS !== "web") {
   Object.assign(window, {
