@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils";
 import { TextClassContext } from "~/components/ui/text";
 import { useChains } from "wagmi";
 import { Text } from "~/components/ui/text";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 const balanceVariants = cva("", {
   variants: {
@@ -51,11 +52,28 @@ function NativeTokenBalance({
   asChild,
   ...props
 }: NativeToeknBalanceProps) {
-  const { token: nativeTokenInfo } = useUserNativeToken(address, chainId);
+  const { token: nativeTokenInfo, refetch } = useUserNativeToken(
+    address,
+    chainId,
+  );
   const balance = nativeTokenInfo?.balance || "0";
   const chains = useChains();
   const chain = chains.find((chain) => chain.id === chainId);
   const symbol = chain?.nativeCurrency.symbol || "";
+
+  useEffect(() => {
+    const subscription = refetch
+      ? eventBus.subscribe((event) => {
+          console.log("event", event);
+          if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
+            refetch();
+          }
+        })
+      : null;
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [refetch]);
 
   useEffect(() => {
     if (balance) setBalance?.(Number(balance));
@@ -90,7 +108,7 @@ function ERC20TokenBalance({
   asChild,
   ...props
 }: ERC20ToeknBalanceProps) {
-  const { token: erc20TokenInfo } = useUserToken(
+  const { token: erc20TokenInfo, refetch } = useUserToken(
     address,
     token.address,
     token.chainId,
@@ -101,6 +119,16 @@ function ERC20TokenBalance({
     if (balance) setBalance?.(Number(balance));
   }, [balance, setBalance]);
   const Component = asChild ? Slot.View : TokenBalance;
+
+  useEffect(() => {
+    eventBus.subscribe((event) => {
+      console.log("event", event);
+      if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
+        refetch?.();
+      }
+    });
+  }, [refetch]);
+
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>
       <Component
