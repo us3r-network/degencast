@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Chain } from "viem";
 import { useAccount } from "wagmi";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAIN, DEGEN_TOKEN_ADDRESS, NATIVE_TOKEN_METADATA } from "~/constants";
 import {
-  useUserNativeToken,
-  useUserToken,
-} from "~/hooks/user/useUserTokens";
+  DEFAULT_CHAIN,
+  DEGEN_TOKEN_ADDRESS,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
+import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
@@ -38,8 +39,11 @@ export default function UserTokenSelect({
     DEGEN_TOKEN_ADDRESS,
     chain.id,
   );
-
-  const tokens: TokenWithTradeInfo[] = [nativeTokenInfo!, erc20TokenInfo!];
+  
+  const tokens: TokenWithTradeInfo[] = useMemo(() => {
+    if (!nativeTokenInfo || !erc20TokenInfo) return [];
+    return [nativeTokenInfo!, erc20TokenInfo!];
+  }, [nativeTokenInfo, erc20TokenInfo, defaultToken]);
 
   const [value, setValue] = useState<string>();
 
