@@ -106,18 +106,7 @@ function CreateProposalModalContentBodyScene() {
   const [newTokenInfo, setNewTokenInfo] = useState<
     AttentionTokenEntity | undefined
   >(tokenInfo);
-  const { upsertOneToAttTokens, getCachedAttToken } = useCacheCastAttToken();
-  useEffect(() => {
-    if (channel?.channelId) {
-      const tokenInfoInCache = getCachedAttToken(
-        channel?.channelId as `0x${string}`,
-      );
-      // console.log("tokenInfoInCache", tokenInfoInCache);
-      if (tokenInfoInCache) {
-        setNewTokenInfo(tokenInfoInCache);
-      }
-    }
-  }, [channel.channelId]);
+  const { upsertOneToAttTokens } = useCacheCastAttToken();
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
