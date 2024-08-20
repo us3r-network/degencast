@@ -64,10 +64,9 @@ function NativeTokenBalance({
   useEffect(() => {
     const subscription = refetch
       ? eventBus.subscribe((event) => {
-          console.log("event", event);
-          if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
+          // console.log("event", event);
+          if ((event as any).type === EventTypes.NATIVE_TOKEN_BALANCE_CHANGE)
             refetch?.();
-          }
         })
       : null;
     return () => {
@@ -123,7 +122,7 @@ function ERC20TokenBalance({
   useEffect(() => {
     const subscription = refetch
       ? eventBus.subscribe((event) => {
-          console.log("event", event);
+          // console.log("event", event);
           if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
             refetch?.();
           }

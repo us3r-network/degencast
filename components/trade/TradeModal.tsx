@@ -16,6 +16,7 @@ import { Text } from "~/components/ui/text";
 import {
   DEFAULT_CHAIN,
   DEFAULT_CHAINID,
+  DEGEN_TOKEN_METADATA,
   NATIVE_TOKEN_METADATA,
 } from "~/constants";
 import { useFetchPrice, useSwapToken } from "~/hooks/trade/use0xSwap";
@@ -39,6 +40,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
@@ -247,6 +249,18 @@ function SwapToken({
         action: UserActionName.SwapToken,
         data: { hash: transactionReceipt?.transactionHash },
       });
+    if (isSuccess) {
+      if (
+        fromToken?.address === NATIVE_TOKEN_METADATA.address ||
+        toToken?.address === NATIVE_TOKEN_METADATA.address
+      )
+        eventBus.next({ type: EventTypes.NATIVE_TOKEN_BALANCE_CHANGE });
+      if (
+        fromToken?.address !== DEGEN_TOKEN_METADATA.address ||
+        toToken?.address !== DEGEN_TOKEN_METADATA.address
+      )
+        eventBus.next({ type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE });
+    }
   }, [isSuccess]);
 
   useEffect(() => {

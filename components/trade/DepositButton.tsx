@@ -147,7 +147,7 @@ function TransferFromExternalWallet({
             formatUnits(rawBalance, NATIVE_TOKEN_METADATA.decimals!),
           );
           setBalance(b);
-          setAmount(String(b / 10));
+          setAmount(String(b / 5));
         });
     else
       publicClient
