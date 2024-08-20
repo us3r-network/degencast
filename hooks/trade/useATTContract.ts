@@ -1,5 +1,10 @@
 import { Address } from "viem";
-import { useReadContract, useReadContracts } from "wagmi";
+import {
+  useReadContract,
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import ATT_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionToken.json";
 import { ERC42069Token } from "~/services/trade/types";
@@ -116,5 +121,47 @@ export function useATTContractInfo(token: ERC42069Token) {
     // UNIT,
     totalNFTSupply,
     maxTokensPerIdPerUser,
+  };
+}
+
+export function useATTContractBurn(token: ERC42069Token) {
+  const contract = {
+    abi,
+    address: token.contractAddress,
+    chainId,
+  };
+  const {
+    writeContract,
+    data: hash,
+    isPending: writing,
+    error: writeError,
+  } = useWriteContract();
+  const burn = async (amount: number) => {
+    console.log("burnToBlank", token, amount);
+    writeContract({
+      ...contract,
+      functionName: "burnToBlank",
+      args: [BigInt(token.tokenId), BigInt(amount)],
+    });
+  };
+
+  const {
+    data: transactionReceipt,
+    error: transationError,
+    isLoading: waiting,
+    isSuccess,
+    status,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+  return {
+    burn,
+    transactionReceipt,
+    status,
+    writeError,
+    transationError,
+    waiting,
+    writing,
+    isSuccess,
   };
 }

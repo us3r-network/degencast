@@ -12,6 +12,8 @@ import {
 } from "~/constants/att";
 import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
 import { ERC42069Token } from "~/services/trade/types";
+import { useATTContractBurn } from "./useATTContract";
+import useATTNftInfo from "./useATTNftInfo";
 
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
@@ -277,5 +279,48 @@ export function useATTFactoryContractBurn(token: ERC42069Token) {
     waiting,
     writing,
     isSuccess,
+  };
+}
+
+export function useATTBurnNFT(token: ERC42069Token) {
+  const { graduated } = useATTNftInfo({
+    tokenContract: token.contractAddress,
+  });
+  const {
+    burn: burnBeforeGraduated,
+    transactionReceipt: transactionReceiptBeforeGraduated,
+    status: statusBeforeGraduated,
+    writeError: writeErrorBeforeGraduated,
+    transationError: transationErrorBeforeGraduated,
+    waiting: waitingBeforeGraduated,
+    writing: writingBeforeGraduated,
+    isSuccess: isSuccessBeforeGraduated,
+  } = useATTFactoryContractBurn(token);
+
+  const {
+    burn: burnAfterGraduated,
+    transactionReceipt: transactionReceiptAfterGraduated,
+    status: statusAfterGraduated,
+    writeError: writeErrorAfterGraduated,
+    transationError: transationErrorAfterGraduated,
+    waiting: waitingAfterGraduated,
+    writing: writingAfterGraduated,
+    isSuccess: isSuccessAfterGraduated,
+  } = useATTContractBurn(token);
+  return {
+    burn: graduated ? burnAfterGraduated : burnBeforeGraduated,
+    transactionReceipt: graduated
+      ? transactionReceiptAfterGraduated
+      : transactionReceiptBeforeGraduated,
+    status: graduated ? statusAfterGraduated : statusBeforeGraduated,
+    writeError: graduated
+      ? writeErrorAfterGraduated
+      : writeErrorBeforeGraduated,
+    transationError: graduated
+      ? transationErrorAfterGraduated
+      : transationErrorBeforeGraduated,
+    waiting: graduated ? waitingAfterGraduated : waitingBeforeGraduated,
+    writing: graduated ? writingAfterGraduated : writingBeforeGraduated,
+    isSuccess: graduated ? isSuccessAfterGraduated : isSuccessBeforeGraduated,
   };
 }

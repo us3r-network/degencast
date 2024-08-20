@@ -8,7 +8,7 @@ import React, {
 import { Pressable, ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import About from "~/components/common/About";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
@@ -31,6 +31,7 @@ import {
 } from "~/constants/att";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import {
+  useATTBurnNFT,
   useATTFactoryContractBurn,
   useATTFactoryContractInfo,
   useATTFactoryContractMint,
@@ -176,7 +177,7 @@ const BurnNFT = forwardRef<
     waiting,
     writing,
     isSuccess,
-  } = useATTFactoryContractBurn(nft);
+  } = useATTBurnNFT(nft);
 
   useEffect(() => {
     if (isSuccess && transactionReceipt && token && nftPrice) {
@@ -186,7 +187,14 @@ const BurnNFT = forwardRef<
         description: (
           <View className="flex-row items-center gap-2">
             <Text className="text-white">Sell {amount} NFTs and receive</Text>
-            <TokenWithValue token={token} value={nftPrice} />
+            {graduated ? (
+              <TokenWithValue
+                token={nftTokenInfo!}
+                value={tokenUnit! * BigInt(amount)}
+              />
+            ) : (
+              <TokenWithValue token={token} value={nftPrice} />
+            )}
           </View>
         ),
       };
@@ -204,7 +212,7 @@ const BurnNFT = forwardRef<
 
   const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: balance } = nftBalanceOf(account?.address);
-  const { token, graduated } = useATTNftInfo({
+  const { token, graduated, tokenUnit, nftTokenInfo } = useATTNftInfo({
     tokenContract: nft.contractAddress,
   });
   const { getBurnNFTPriceAfterFee } = useATTFactoryContractInfo({
@@ -212,13 +220,23 @@ const BurnNFT = forwardRef<
     tokenId: 0,
   });
   const { nftPrice } = getBurnNFTPriceAfterFee(amount);
+
   return (
     <View className="flex gap-4">
       <NFTImage nft={nft} />
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
-          {nftPrice && amount && token && token.decimals ? (
+          {graduated ? (
+            tokenUnit && !!nftTokenInfo ? (
+              <Text className="text-xs">
+                {formatUnits(tokenUnit, nftTokenInfo.decimals || 18)}{" "}
+                {nftTokenInfo.symbol} per NFT
+              </Text>
+            ) : (
+              <Text className="text-xs">calculating price...</Text>
+            )
+          ) : nftPrice && amount && token && token.decimals ? (
             <Text className="text-xs">
               {formatUnits(nftPrice / BigInt(amount), token.decimals)}
               {token?.symbol} per NFT
@@ -236,7 +254,19 @@ const BurnNFT = forwardRef<
       </View>
       <View className="flex-row items-center justify-between">
         <Text className="text-lg font-medium">Receive:</Text>
-        {nftPrice && amount && token && token.decimals ? (
+        {graduated ? (
+          tokenUnit && !!nftTokenInfo ? (
+            <Text className="text-xs">
+              {formatUnits(
+                tokenUnit * BigInt(amount),
+                nftTokenInfo.decimals || 18,
+              )}{" "}
+              {nftTokenInfo.symbol}
+            </Text>
+          ) : (
+            <Text className="text-xs">calculating price...</Text>
+          )
+        ) : nftPrice && amount && token && token.decimals ? (
           <Text className="text-md">
             {formatUnits(nftPrice, token.decimals)} {token.symbol}
           </Text>
@@ -487,14 +517,14 @@ const MintNFT = forwardRef<
       </View>
       {token &&
         (graduated ? (
-          <PriceAfterGraduated
+          <MintPriceAfterGraduated
             tokenContract={nft.contractAddress}
             paymentToken={token}
             nftAmount={amount}
             setNftPrice={setNftPrice}
           />
         ) : (
-          <PriceBeforeGraduated
+          <MintPriceBeforeGraduated
             tokenContract={nft.contractAddress}
             paymentToken={token}
             nftAmount={amount}
@@ -542,7 +572,7 @@ const MintNFT = forwardRef<
   );
 });
 
-function PriceBeforeGraduated({
+function MintPriceBeforeGraduated({
   tokenContract,
   nftAmount,
   setNftPrice,
@@ -578,7 +608,7 @@ function PriceBeforeGraduated({
   );
 }
 
-function PriceAfterGraduated({
+function MintPriceAfterGraduated({
   tokenContract,
   nftAmount,
   setNftPrice,
