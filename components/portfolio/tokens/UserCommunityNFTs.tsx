@@ -63,6 +63,11 @@ function NFTItem({ nft }: { nft: ERC42069Token }) {
   return (
     <View className="relative w-full">
       <NFTImage nft={nft} />
+      {Number(nft?.nftBalance) > 1 && (
+        <View className="absolute bottom-2 left-2">
+          <Text>{nft.nftBalance}</Text>
+        </View>
+      )}
       <View className="absolute bottom-2 right-2">
         <SellButton token={nft} />
       </View>

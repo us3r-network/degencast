@@ -31,6 +31,9 @@ export default function useATTNftInfo({
   const { data: totalNFTSupply } = getTotalNFTSupply();
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
+  
+  const [nftTokenInfo, setNftTokenInfo] = useState<TokenWithTradeInfo | undefined>(undefined);
+
   useEffect(() => {
     if (paymentToken && account?.address)
       getTokenInfo({
@@ -43,11 +46,24 @@ export default function useATTNftInfo({
       });
   }, [paymentToken, account?.address]);
 
+  useEffect(() => {
+    if (account?.address)
+      getTokenInfo({
+        address: tokenContract,
+        chainId: ATT_CONTRACT_CHAIN.id,
+        account: account?.address,
+      }).then((tokenInfo) => {
+        // console.log("paymentToken tokenInfo", paymentToken, tokenInfo);
+        setNftTokenInfo(tokenInfo);
+      });
+  }, [account?.address]);
+
   return {
     graduated,
     token,
     tokenUnit,
     maxTokensPerIdPerUser,
     totalNFTSupply,
+    nftTokenInfo,
   };
 }

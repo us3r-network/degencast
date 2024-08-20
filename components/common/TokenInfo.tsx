@@ -23,7 +23,7 @@ export function TokenInfo({
   textClassName,
 }: TokenInfoProps) {
   return (
-    <View className="flex-1 flex-row items-center gap-2">
+    <View className="flex-row items-center gap-2">
       <Avatar alt={name || ""} className={cn("size-8 border-2")}>
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback>
