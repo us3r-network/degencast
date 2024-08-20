@@ -11,6 +11,7 @@ import { TextClassContext } from "~/components/ui/text";
 import { useChains } from "wagmi";
 import { Text } from "~/components/ui/text";
 import { eventBus, EventTypes } from "~/utils/eventBus";
+import { useFocusEffect } from "expo-router";
 
 const balanceVariants = cva("", {
   variants: {
@@ -74,6 +75,10 @@ function NativeTokenBalance({
     };
   }, [refetch]);
 
+  useFocusEffect(() => {
+    refetch?.();
+  });
+
   useEffect(() => {
     if (balance) setBalance?.(Number(balance));
   }, [balance, setBalance]);
@@ -132,7 +137,9 @@ function ERC20TokenBalance({
       subscription?.unsubscribe();
     };
   }, [refetch]);
-
+  useFocusEffect(() => {
+    refetch?.();
+  });
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>
       <Component
