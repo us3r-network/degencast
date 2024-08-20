@@ -33,7 +33,7 @@ import LaunchProgress from "~/components/community/LaunchProgress";
 import { isDesktop } from "react-device-detect";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
-import { CreateTokenButton } from "~/components/trade/ATTButton";
+import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
 
 const initialRouteName = "selection";
 

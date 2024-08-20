@@ -9,7 +9,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import CommunityAttentionTokenInfo from "~/components/community/CommunityAttentionTokenInfo";
 import { Card } from "~/components/ui/card";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
-import { CreateTokenButton } from "~/components/trade/ATTButton";
+import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
 
 export default function AttentionTokenScreen() {
   const { community } = useCommunityCtx();

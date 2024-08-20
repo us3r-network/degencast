@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Address } from "viem";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import NFTImage from "~/components/common/NFTImage";
-import { SellButton } from "~/components/trade/ATTButton";
+import { SellButton } from "~/components/trade/ATTSellButton";
 import {
   Collapsible,
   CollapsibleContent,
