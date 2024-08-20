@@ -448,7 +448,6 @@ function TokenWithAmount({
           <UserTokenSelect
             defaultToken={tokenSet.defaultToken}
             selectToken={setToken}
-            showBalance={false}
             variant={"dropdown"}
           />
         ) : tokenSet.type === TokenType.COMMUNITY_TOKENS ? (
