@@ -56,12 +56,12 @@ export default function CreateProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "propose", title: "Propose" },
+    { key: "vote", title: "Vote" },
     { key: "about", title: "About" },
   ]);
 
   const renderScene = SceneMap({
-    propose: CreateProposalModalContentBodyScene,
+    vote: CreateProposalModalContentBodyScene,
     about: AboutProposalChallenge,
   });
   return (

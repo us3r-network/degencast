@@ -52,8 +52,7 @@ export type ReplyCastRes = Promise<
 >;
 
 export default function useFarcasterWrite() {
-
-  const { farcasterAccount} =  useFarcasterAccount();
+  const { farcasterAccount } = useFarcasterAccount();
   const { requesting, getPrivySigner } = useFarcasterSigner();
 
   const [writing, setWriting] = useState(false);
@@ -70,7 +69,8 @@ export default function useFarcasterWrite() {
             embeds: data.embeds?.map((embed) => ({
               url: embed.url,
             })),
-            parentUrl: data.parentUrl,
+            // parentUrl: data.parentUrl,
+            ...(data.parentUrl ? { parentUrl: data.parentUrl } : {}),
             parentCastId: data.parentCastId,
           },
           farcasterAccount.fid!,

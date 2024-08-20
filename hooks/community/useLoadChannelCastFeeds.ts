@@ -17,13 +17,14 @@ export default function useLoadChannelCastFeeds(props: { channelId: string }) {
   const pageInfoRef = useRef({
     hasNextPage: true,
     nextCursor: "",
+    nextPageNumber: 1,
   });
 
   const loading = status === AsyncRequestStatus.PENDING;
 
   const loadItems = async () => {
     const channelId = channelIdRef.current;
-    const { hasNextPage, nextCursor } = pageInfoRef.current;
+    const { hasNextPage, nextCursor, nextPageNumber } = pageInfoRef.current;
 
     if (!channelId || hasNextPage === false) {
       return;
@@ -33,6 +34,7 @@ export default function useLoadChannelCastFeeds(props: { channelId: string }) {
       const params = {
         limit: PAGE_SIZE,
         cursor: nextCursor,
+        pageNumber: nextPageNumber,
         channelId,
       };
       const resp = await getChannelCastFeeds(params);
@@ -46,8 +48,12 @@ export default function useLoadChannelCastFeeds(props: { channelId: string }) {
       setItems([...items, ...casts]);
 
       pageInfoRef.current = {
-        hasNextPage: casts.length >= PAGE_SIZE,
+        hasNextPage:
+          !!next.cursor &&
+          (casts.length >= PAGE_SIZE ||
+            (casts.length > 0 && next.cursor !== nextCursor)),
         nextCursor: next.cursor,
+        nextPageNumber: nextPageNumber + 1,
       };
       setStatus(AsyncRequestStatus.FULFILLED);
     } catch (err) {

@@ -6,7 +6,6 @@ import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
 import { Loading } from "~/components/common/Loading";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import ApplyLaunchButton from "~/components/common/ApplyLaunchButton";
 import CommunityAttentionTokenInfo from "~/components/community/CommunityAttentionTokenInfo";
 import { Card } from "~/components/ui/card";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
@@ -66,26 +65,26 @@ export default function AttentionTokenScreen() {
               Governance, Moderation and Monetisation
             </Text>
           </ScrollView>
-          {isChannelHost && (
-            <View className=" py-5">
-              <CreateTokenButton
-                channelId={id}
-                onComplete={() => {
-                  loadCommunityDetail();
-                }}
-                className="h-14 w-full"
-                renderBottonContent={({ loading }) => {
-                  return loading ? (
-                    <Text className="text-lg font-bold">
-                      Launching Token...
-                    </Text>
-                  ) : (
-                    <Text className="text-lg font-bold">Launch Token</Text>
-                  );
-                }}
-              />
-            </View>
-          )}
+          <View className=" py-5">
+            <CreateTokenButton
+              channelId={id}
+              onComplete={() => {
+                loadCommunityDetail();
+              }}
+              className="h-14 w-full"
+              renderButtonContent={({ loading }) => {
+                return loading ? (
+                  <Text className="text-lg font-bold">
+                    {isChannelHost ? "Launching..." : "Activating..."}
+                  </Text>
+                ) : (
+                  <Text className="text-lg font-bold">
+                    {isChannelHost ? "Launch" : "Activate"}
+                  </Text>
+                );
+              }}
+            />
+          </View>
         </>
       )}
     </Card>

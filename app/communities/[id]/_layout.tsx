@@ -71,20 +71,20 @@ export default function CommunityDetail() {
     loadCommunityDetail,
   } = useLoadCommunityDetail(channelId);
   const [routes, setRoutes] = useState<any[]>([
-    { key: "selection", title: "Selections", component: SelectionFeeds },
-    { key: "proposal", title: "Proposal", component: ProposalFeeds },
     { key: "casts", title: "Cast", component: CastFeeds },
-    { key: "activities", title: "Activities", component: ActivitiesScreen },
+    { key: "vote", title: "Vote", component: ProposalFeeds },
+    { key: "collect", title: "Collect", component: SelectionFeeds },
+    { key: "activities", title: "Activity", component: ActivitiesScreen },
     ...(isDesktop
       ? [
           {
             key: "attention-token",
-            title: "Attention Token",
+            title: "Curation Token",
             component: AttentionTokenScreen,
           },
         ]
       : []),
-    { key: "curators", title: "Curators", component: CuratorsScreen },
+    { key: "curators", title: "Curator", component: CuratorsScreen },
   ]);
 
   const community = communityDetail || communityBasic;
@@ -176,7 +176,7 @@ export default function CommunityDetail() {
                     tokenInfo={tokenInfo}
                   />
                 </View>
-              ) : isChannelHost ? (
+              ) : (
                 <View className="sm:hidden">
                   <CreateTokenButton
                     channelId={channelId}
@@ -187,16 +187,18 @@ export default function CommunityDetail() {
                     variant={"secondary"}
                     renderButtonContent={({ loading }) => {
                       return loading ? (
-                        <Text className="text-lg font-bold">
-                          Launching Token...
+                        <Text className="text-lg text-secondary-foreground">
+                          {isChannelHost ? "Launching..." : "Activating..."}
                         </Text>
                       ) : (
-                        <Text className="text-lg font-bold">Launch Token</Text>
+                        <Text className="text-lg text-secondary-foreground">
+                          {isChannelHost ? "Launch" : "Activate"}
+                        </Text>
                       );
                     }}
                   />
                 </View>
-              ) : null}
+              )}
             </View>
           ),
         }}

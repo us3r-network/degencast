@@ -194,8 +194,18 @@ export const createProposal = async ({
   paymentConfig,
 }: {
   publicClient: PublicClient;
-  // walletClient: WalletClient;
-  walletClient: any;
+  walletClient: WalletClient & {
+    writeContracts?: ({
+      chain,
+      account,
+      contracts,
+    }: {
+      chain: any;
+      account: any;
+      contracts: any[];
+    }) => Promise<any>;
+    getCallsStatus?: (opts: any) => Promise<any>;
+  };
   contractAddress: `0x${string}`;
   proposalConfig: {
     castHash: string;
@@ -259,6 +269,9 @@ export const createProposal = async ({
     if (!walletClient.writeContracts) {
       throw new Error("walletClient does not have writeContracts method");
     }
+    if (!walletClient.getCallsStatus) {
+      throw new Error("walletClient does not have getCallsStatus method");
+    }
 
     if (!paymentTokenAddress) {
       throw new Error(
@@ -282,14 +295,23 @@ export const createProposal = async ({
       account,
       contracts,
     });
-    const res = await walletClient.getCallsStatus({
-      id: id,
-      query: {
-        enabled: !!id,
-        // Poll every second until the calls are confirmed
-        refetchInterval: (data: any) =>
-          data.state.data?.status === "CONFIRMED" ? false : 1000,
-      },
+    const res: any = await new Promise((resolve, reject) => {
+      const interval = setInterval(async () => {
+        if (!walletClient.getCallsStatus) {
+          clearInterval(interval);
+          reject("walletClient does not have getCallsStatus method");
+          return;
+        }
+        try {
+          const res = await walletClient.getCallsStatus({
+            id: id,
+          });
+          if (res.status === "CONFIRMED") {
+            clearInterval(interval);
+            resolve(res);
+          }
+        } catch (error) {}
+      }, 1000);
     });
 
     const { status, receipts } = res;
@@ -315,8 +337,18 @@ export const createProposal = async ({
 
 type HandleProposalCommonOpts = {
   publicClient: PublicClient;
-  // walletClient: WalletClient;
-  walletClient: any;
+  walletClient: WalletClient & {
+    writeContracts?: ({
+      chain,
+      account,
+      contracts,
+    }: {
+      chain: any;
+      account: any;
+      contracts: any[];
+    }) => Promise<any>;
+    getCallsStatus?: (opts: any) => Promise<any>;
+  };
   contractAddress: `0x${string}`;
   castHash: string;
   paymentConfig: {
@@ -413,14 +445,23 @@ const challengeProposal = async ({
       account,
       contracts,
     });
-    const res = await walletClient.getCallsStatus({
-      id: id,
-      query: {
-        enabled: !!id,
-        // Poll every second until the calls are confirmed
-        refetchInterval: (data: any) =>
-          data.state.data?.status === "CONFIRMED" ? false : 1000,
-      },
+    const res: any = await new Promise((resolve, reject) => {
+      const interval = setInterval(async () => {
+        if (!walletClient.getCallsStatus) {
+          clearInterval(interval);
+          reject("walletClient does not have getCallsStatus method");
+          return;
+        }
+        try {
+          const res = await walletClient.getCallsStatus({
+            id: id,
+          });
+          if (res.status === "CONFIRMED") {
+            clearInterval(interval);
+            resolve(res);
+          }
+        } catch (error) {}
+      }, 1000);
     });
 
     const { status, receipts } = res;

@@ -4,7 +4,11 @@ import { View } from "react-native";
 import { useAccount } from "wagmi";
 import { Button, ButtonProps } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { DEFAULT_CHAINID, DEGEN_TOKEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
+import {
+  DEFAULT_CHAINID,
+  DEGEN_TOKEN_METADATA,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -198,7 +202,7 @@ const ExploreTradeStyledButton = forwardRef(function (
       {logo && (
         <Avatar alt={name || ""} className={cn(" size-6")}>
           <AvatarImage source={{ uri: logo || "" }} />
-          <AvatarFallback className="bg-secondary">
+          <AvatarFallback>
             <Text className="text-sm font-medium">
               {upperFirst(name?.slice(0, 2))}
             </Text>
@@ -237,7 +241,7 @@ const TradeChannelTokenStyledButton = forwardRef(function (
       {logo && (
         <Avatar alt={name || ""} className={cn(" size-5")}>
           <AvatarImage source={{ uri: logo || "" }} />
-          <AvatarFallback className="bg-secondary">
+          <AvatarFallback>
             <Text className="text-sm font-medium">
               {upperFirst(name?.slice(0, 2))}
             </Text>

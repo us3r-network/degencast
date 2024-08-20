@@ -49,9 +49,9 @@ export default function CommunityDetailMetaInfo({
 
   return (
     <View className={cn("w-full flex-row gap-3", className)} {...props}>
-      <Avatar alt={name || ""} className="size-20 border border-secondary">
+      <Avatar alt={name || ""} className="size-20">
         <AvatarImage source={{ uri: logo || "" }} />
-        <AvatarFallback className="border-primary bg-secondary">
+        <AvatarFallback>
           <Text className="text-sm font-bold">{name}</Text>
         </AvatarFallback>
       </Avatar>
@@ -148,9 +148,9 @@ export function CommunityDetailMetaInfo2({
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
       <View className="w-full flex-row gap-3">
-        <Avatar alt={name || ""} className="size-12 border border-secondary">
+        <Avatar alt={name || ""} className="size-12">
           <AvatarImage source={{ uri: logo || "" }} />
-          <AvatarFallback className="border-primary bg-secondary">
+          <AvatarFallback className="border-primary">
             <Text className="text-sm font-bold">{name}</Text>
           </AvatarFallback>
         </Avatar>
@@ -283,9 +283,9 @@ export function CommunityDetailMetaInfoDropdown({
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <View className="flex-row items-center gap-1">
-          <Avatar alt={name || ""} className=" size-6 border border-secondary">
+          <Avatar alt={name || ""} className=" size-6">
             <AvatarImage source={{ uri: logo || "" }} />
-            <AvatarFallback className="border-primary bg-secondary">
+            <AvatarFallback>
               <Text className="text-sm font-bold">{name}</Text>
             </AvatarFallback>
           </Avatar>

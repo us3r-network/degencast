@@ -51,12 +51,9 @@ export default function ChannelMetaInfo({
       >
         <View className={cn("flex w-full flex-row gap-3")}>
           <View className=" relative">
-            <Avatar
-              alt={name || ""}
-              className="size-[24px] border border-secondary"
-            >
+            <Avatar alt={name || ""} className="size-[24px]">
               <AvatarImage source={{ uri: logo || "" }} />
-              <AvatarFallback className="border-primary bg-secondary">
+              <AvatarFallback>
                 <Text className="text-sm font-bold">{name}</Text>
               </AvatarFallback>
             </Avatar>
@@ -85,7 +82,7 @@ export default function ChannelMetaInfo({
                 setTokenLaunched(true);
               }}
               className="h-8"
-              renderBottonContent={({ loading }) => {
+              renderButtonContent={({ loading }) => {
                 return loading ? (
                   <Text className="text-lg font-bold">Launching Token...</Text>
                 ) : (
@@ -93,7 +90,9 @@ export default function ChannelMetaInfo({
                 );
               }}
             />
-          ) : null}
+          ) : (
+            <LaunchProgress />
+          )}
         </View>
       </Pressable>
     </View>

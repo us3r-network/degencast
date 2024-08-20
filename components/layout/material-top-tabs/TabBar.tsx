@@ -1,7 +1,7 @@
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { Animated, View, Pressable, FlatList } from "react-native";
 import { Text } from "~/components/ui/text";
-import { PRIMARY_COLOR } from "~/constants";
+import { PRIMARY_COLOR, SECONDARY_COLOR } from "~/constants";
 
 export const getRouteItemRenderConfig = (
   tabBarProps: MaterialTopTabBarProps,
@@ -245,13 +245,19 @@ export function ScrollTabBar(props: MaterialTopTabBarProps) {
           const textColor = position.interpolate({
             inputRange,
             outputRange: inputRange.map((i) =>
-              i === index ? PRIMARY_COLOR : "white",
+              i === index ? "white" : SECONDARY_COLOR,
             ),
           });
           const bgColor = position.interpolate({
             inputRange,
             outputRange: inputRange.map((i) =>
-              i === index ? "white" : "rgba(255, 255, 255, 0.40)",
+              i === index ? SECONDARY_COLOR : "rgba(145, 81, 195, 0.20)",
+            ),
+          });
+          const borderColor = position.interpolate({
+            inputRange,
+            outputRange: inputRange.map((i) =>
+              i === index ? "transparent" : SECONDARY_COLOR,
             ),
           });
           return (
@@ -268,7 +274,9 @@ export function ScrollTabBar(props: MaterialTopTabBarProps) {
                 style={{
                   padding: 8,
                   backgroundColor: bgColor,
-                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: borderColor,
+                  borderRadius: 8,
                 }}
               >
                 <Animated.Text
