@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
 import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
+import DepositButton from "~/components/trade/DepositButton";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 const OnboardingModal = React.forwardRef<
   React.ElementRef<typeof Dialog>,
@@ -26,18 +28,25 @@ const OnboardingModal = React.forwardRef<
     };
     goOnboarding();
   }, [ready, authenticated]);
-
+  const [showDeposit, setShowDeposit] = useState(false);
+  const { activeWallet } = useWalletAccount();
+  if (showDeposit) return <DepositButton hideButton />;
   return (
     <Dialog open={open} ref={ref}>
       <DialogContent hideCloseButton className="mx-auto max-w-screen-sm p-0">
         <Onboarding
           onComplete={() => {
-            setOpen(false);
             const nowDate = new Date();
             AsyncStorage.setItem(
               SKIP_ONBOARDING_KEY,
               nowDate.setDate(nowDate.getDate() + 7).toString(),
             );
+            if (
+              activeWallet?.connectorType === "embedded" ||
+              activeWallet?.connectorType === "coinbase_wallet"
+            )
+              setShowDeposit(true);
+            else setOpen(false);
           }}
         />
       </DialogContent>

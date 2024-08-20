@@ -21,7 +21,7 @@
     "@ethersproject/shims": "^5.7.0",
     "@farcaster/hub-web": "^0.8.8",
     "@privy-io/expo": "^0.21.1",
-    "@privy-io/react-auth": "^1.74.1",
+    "@privy-io/react-auth": "^1.79.1",
     "@privy-io/wagmi": "^0.2.11",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-collapsible": "^1.0.3",

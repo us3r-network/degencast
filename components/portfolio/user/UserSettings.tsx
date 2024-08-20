@@ -1,3 +1,4 @@
+import { useConnectCoinbaseSmartWallet } from "@privy-io/react-auth";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { get } from "lodash";
@@ -63,7 +64,10 @@ export default function UserSettings({
     <TextClassContext.Provider value="text-sm font-medium">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger>
-          <Button size={"icon"} className="size-6 rounded-full bg-secondary border-2 border-white">
+          <Button
+            size={"icon"}
+            className="size-6 rounded-full border-2 border-white bg-secondary"
+          >
             <Text>
               <Settings size={16} />
             </Text>
@@ -93,6 +97,7 @@ export default function UserSettings({
                 ))}
               </DropdownMenuGroup>
               <LinkWallets />
+              <CreateWallet />
             </Catalog>
             {showFarcasterAccount && (
               <Catalog
@@ -156,6 +161,36 @@ function LinkWallets() {
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
           <Text>Link a wallet</Text>
+        </View>
+      </Pressable>
+    </View>
+  );
+}
+
+function CreateWallet() {
+  const { ready, authenticated } = useAuth();
+  const { hasCoinBaseWallet, linkedWallets, connectedWallets } =
+    useWalletAccount();
+  console.log(
+    "hasCoinBaseWallet",
+    linkedWallets,
+    connectedWallets,
+    hasCoinBaseWallet,
+  );
+  const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
+  if (!ready || !authenticated || hasCoinBaseWallet) return null;
+  return (
+    <View className="flex w-full gap-2">
+      <Pressable
+        className="w-full flex-row items-center justify-between gap-2"
+        onPress={() => {
+          console.log("connectCoinbaseSmartWallet");
+          connectCoinbaseSmartWallet();
+        }}
+      >
+        <View className="flex-row items-center gap-2">
+          <PlusCircle className="size-4" />
+          <Text>Create a wallet</Text>
         </View>
       </Pressable>
     </View>

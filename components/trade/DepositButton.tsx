@@ -40,38 +40,45 @@ import { eventBus, EventTypes } from "~/utils/eventBus";
 import UserTokenSelect from "./UserTokenSelect";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
-export default function DepositButton() {
+export default function DepositButton({
+  hideButton = false,
+}: {
+  hideButton?: boolean;
+}) {
   const { connectWallet, activeWallet, connectedExternalWallet } =
     useWalletAccount();
 
-  if (!activeWallet)
-    return (
-      <Button
-        size={"icon"}
-        className="rounded-full"
-        onPress={() => connectWallet}
-      >
-        <Text>
-          <ArrowDown />
-        </Text>
-      </Button>
-    );
-  else
-    return (
-      <Dialog>
-        <DialogTrigger
-          asChild
-          disabled={
-            activeWallet?.connectorType !== "embedded" &&
-            activeWallet?.connectorType !== "coinbase_wallet"
-          }
+  if (!activeWallet) {
+    if (!hideButton)
+      return (
+        <Button
+          size={"icon"}
+          className="rounded-full"
+          onPress={() => connectWallet}
         >
-          <Button size={"icon"} className="rounded-full">
-            <Text>
-              <ArrowDown />
-            </Text>
-          </Button>
-        </DialogTrigger>
+          <Text>
+            <ArrowDown />
+          </Text>
+        </Button>
+      );
+  } else
+    return (
+      <Dialog open={hideButton ? true : undefined}>
+        {!hideButton && (
+          <DialogTrigger
+            asChild
+            disabled={
+              activeWallet?.connectorType !== "embedded" &&
+              activeWallet?.connectorType !== "coinbase_wallet"
+            }
+          >
+            <Button size={"icon"} className="rounded-full">
+              <Text>
+                <ArrowDown />
+              </Text>
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent className="w-screen">
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Deposit</DialogTitle>
