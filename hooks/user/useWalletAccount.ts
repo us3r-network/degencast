@@ -75,6 +75,10 @@ export default function useWalletAccount() {
     },
     [capabilities],
   );
+  const hasCoinBaseWallet = linkedWallets.find(
+    (wallet) => wallet.connectorType === "coinbase_wallet",
+  );
+
   // console.log("supportAtomicBatch", supportAtomicBatch);
   return {
     connectWallet,
@@ -89,6 +93,7 @@ export default function useWalletAccount() {
     connectedExternalWallet,
     unconnectedLinkedWallets,
     supportAtomicBatch,
+    hasCoinBaseWallet,
   };
 }
 

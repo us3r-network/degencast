@@ -10,6 +10,8 @@ import { cn } from "~/lib/utils";
 import { TextClassContext } from "~/components/ui/text";
 import { useChains } from "wagmi";
 import { Text } from "~/components/ui/text";
+import { eventBus, EventTypes } from "~/utils/eventBus";
+import { useFocusEffect } from "expo-router";
 
 const balanceVariants = cva("", {
   variants: {
@@ -51,16 +53,36 @@ function NativeTokenBalance({
   asChild,
   ...props
 }: NativeToeknBalanceProps) {
-  const nativeTokenInfo = useUserNativeToken(address, chainId);
+  const { token: nativeTokenInfo, refetch } = useUserNativeToken(
+    address,
+    chainId,
+  );
   const balance = nativeTokenInfo?.balance || "0";
   const chains = useChains();
   const chain = chains.find((chain) => chain.id === chainId);
   const symbol = chain?.nativeCurrency.symbol || "";
 
   useEffect(() => {
+    const subscription = refetch
+      ? eventBus.subscribe((event) => {
+          // console.log("event", event);
+          if ((event as any).type === EventTypes.NATIVE_TOKEN_BALANCE_CHANGE)
+            refetch?.();
+        })
+      : null;
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [refetch]);
+
+  useFocusEffect(() => {
+    refetch?.();
+  });
+
+  useEffect(() => {
     if (balance) setBalance?.(Number(balance));
   }, [balance, setBalance]);
-  
+
   const Component = asChild ? Slot.View : TokenBalance;
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>
@@ -90,13 +112,34 @@ function ERC20TokenBalance({
   asChild,
   ...props
 }: ERC20ToeknBalanceProps) {
-  const tokenInfo = useUserToken(address, token.address, token.chainId);
-  const balance = tokenInfo?.balance || "0";
+  const { token: erc20TokenInfo, refetch } = useUserToken(
+    address,
+    token.address,
+    token.chainId,
+  );
+  const balance = erc20TokenInfo?.balance || "0";
   const symbol = token.symbol || "";
   useEffect(() => {
     if (balance) setBalance?.(Number(balance));
   }, [balance, setBalance]);
   const Component = asChild ? Slot.View : TokenBalance;
+
+  useEffect(() => {
+    const subscription = refetch
+      ? eventBus.subscribe((event) => {
+          // console.log("event", event);
+          if ((event as any).type === EventTypes.ERC20_TOKEN_BALANCE_CHANGE) {
+            refetch?.();
+          }
+        })
+      : null;
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [refetch]);
+  useFocusEffect(() => {
+    refetch?.();
+  });
   return (
     <TextClassContext.Provider value={balanceTextVariants({ variant })}>
       <Component

@@ -36,7 +36,8 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import ToeknSelect from "./UserTokenSelect";
+import UserTokenSelect from "./UserTokenSelect";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -186,7 +187,9 @@ const SendToken = forwardRef<
         <View className="flex gap-2">
           <View className="flex-row items-center justify-between">
             <Text>Wallet address</Text>
-            <Text className="text-sm">Only sending on {DEFAULT_CHAIN.name}</Text>
+            <Text className="text-sm">
+              Only sending on {DEFAULT_CHAIN.name}
+            </Text>
           </View>
           <Input
             className="border-secondary text-secondary"
@@ -197,7 +200,7 @@ const SendToken = forwardRef<
         </View>
         <View className="flex gap-2">
           <Text>Token</Text>
-          <ToeknSelect selectToken={setToken} chain={chain} />
+          <UserTokenSelect selectToken={setToken} chain={chain} />
         </View>
         <View className="flex gap-2">
           <Text>Amount</Text>
@@ -300,9 +303,13 @@ const SendNativeTokenButton = forwardRef<
     };
 
     useEffect(() => {
-      if (isPending || (isSuccess && transactionReceipt))
+      if (isSuccess && transactionReceipt) {
+        eventBus.next({
+          type: EventTypes.NATIVE_TOKEN_BALANCE_CHANGE,
+        });
         transationReceiptChange(transactionReceipt);
-    }, [isPending, isSuccess, transactionReceipt, transationLoading]);
+      }
+    }, [isSuccess, transactionReceipt]);
 
     useEffect(() => {
       if (error) {
@@ -358,9 +365,13 @@ const SendERC20TokenButton = forwardRef<
     };
 
     useEffect(() => {
-      if (isPending || (isSuccess && transactionReceipt))
+      if (isSuccess && transactionReceipt) {
+        eventBus.next({
+          type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE,
+        });
         transationReceiptChange(transactionReceipt);
-    }, [isPending, isSuccess, transactionReceipt, transationLoading]);
+      }
+    }, [isSuccess, transactionReceipt]);
 
     useEffect(() => {
       if (error) {

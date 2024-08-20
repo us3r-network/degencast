@@ -8,6 +8,7 @@ import useAuth from "~/hooks/user/useAuth";
 import {
   ConnectedWallet,
   User,
+  useConnectCoinbaseSmartWallet,
   useLinkAccount,
   usePrivy,
 } from "@privy-io/react-auth";
@@ -18,7 +19,11 @@ import UserSignin from "../user/UserSignin";
 //todo: seperate install pwa from onboarding steps
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
 
-export default function OnboardingSteps({ onComplete }: { onComplete: () => void }) {
+export default function OnboardingSteps({
+  onComplete,
+}: {
+  onComplete: () => void;
+}) {
   const [step, setStep] = useState(0);
 
   const { user } = usePrivy();
@@ -45,7 +50,7 @@ export default function OnboardingSteps({ onComplete }: { onComplete: () => void
   };
 
   const toStep = (s: number = 0) => {
-    console.log("to step", s, "from", step)
+    console.log("to step", s, "from", step);
     if (!user?.farcaster?.fid && s <= 1) {
       setStep(1);
     } else if (
@@ -75,7 +80,7 @@ export default function OnboardingSteps({ onComplete }: { onComplete: () => void
     },
   };
   const { linkFarcaster, linkWallet } = useLinkAccount(linkAccountHanler);
-
+  const {connectCoinbaseSmartWallet} = useConnectCoinbaseSmartWallet();
   const injectedWallet = useMemo(
     () =>
       user?.linkedAccounts.find(
@@ -191,13 +196,22 @@ export default function OnboardingSteps({ onComplete }: { onComplete: () => void
             <StepImage step="2" />
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
               <StepIndicator stepNum={5} stepNo={step} />
-              <Button
-                variant="secondary"
-                className="w-1/2 rounded-full"
-                onPress={() => linkWallet()}
-              >
-                <Text>Connect Wallet</Text>
-              </Button>
+              <View>
+                <Button
+                  variant="secondary"
+                  className="w-1/2 rounded-full"
+                  onPress={() => connectCoinbaseSmartWallet()}
+                >
+                  <Text>Create</Text>
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="w-1/2 rounded-full"
+                  onPress={() => linkWallet()}
+                >
+                  <Text>Connect</Text>
+                </Button>
+              </View>
             </View>
             {SkipButton}
           </View>

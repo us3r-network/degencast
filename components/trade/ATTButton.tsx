@@ -599,7 +599,9 @@ function PriceAfterGraduated({
   const { sellAmount } = fetchSellAmount(
     BigInt(nftAmount) * BigInt(tokenUnit || 0n),
   );
-  const nftPrice = sellAmount ? sellAmount + sellAmount / 10n : undefined;
+  const nftPrice = sellAmount
+    ? sellAmount + sellAmount / 10n + sellAmount / 2000n //add 10% fee and 0.05% sliperage
+    : undefined;
   useEffect(() => {
     if (nftPrice) setNftPrice(nftPrice);
   }, [nftPrice]);
