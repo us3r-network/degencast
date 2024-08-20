@@ -7,6 +7,7 @@ import { Text } from "~/components/ui/text";
 import {
   DEFAULT_CHAIN,
   DEGEN_TOKEN_ADDRESS,
+  DEGEN_TOKEN_METADATA,
   NATIVE_TOKEN_METADATA,
 } from "~/constants";
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
@@ -39,10 +40,13 @@ export default function UserTokenSelect({
     DEGEN_TOKEN_ADDRESS,
     chain.id,
   );
-  
+
   const tokens: TokenWithTradeInfo[] = useMemo(() => {
     if (!nativeTokenInfo || !erc20TokenInfo) return [];
-    return [nativeTokenInfo!, erc20TokenInfo!];
+    return [
+      nativeTokenInfo!,
+      { ...erc20TokenInfo, logoURI: DEGEN_TOKEN_METADATA.logoURI }!,
+    ];
   }, [nativeTokenInfo, erc20TokenInfo, defaultToken]);
 
   const [value, setValue] = useState<string>();

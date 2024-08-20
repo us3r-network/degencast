@@ -21,12 +21,12 @@ export function useUserNativeToken(
     () =>
       data && {
         ...data,
-        chainId: DEFAULT_CHAINID,
+        chainId: NATIVE_TOKEN_METADATA.chainId,
         address: NATIVE_TOKEN_METADATA.address,
         name: NATIVE_TOKEN_METADATA.name,
         rawBalance: data.value,
         balance: formatUnits(data.value, data.decimals),
-        logo: NATIVE_TOKEN_METADATA.logoURI,
+        logoURI: NATIVE_TOKEN_METADATA.logoURI,
       },
     [data],
   );
