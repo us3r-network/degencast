@@ -1,23 +1,18 @@
 import { Link } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
+import { formatUnits } from "viem";
 import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import {
-  BuyButton,
-  CreateTokenButton,
-  SellButton,
-} from "~/components/trade/ATTButton";
 import { Text } from "~/components/ui/text";
+import { DEGEN_TOKEN_METADATA } from "~/constants";
 import { DEFAULT_ORDER_PARAMS } from "~/features/rank/channelRankSlice";
 import useChannelRank from "~/hooks/rank/useChannelRank";
 import { Channel } from "~/services/farcaster/types";
-import { RankOrderBy, OrderParams } from "~/services/rank/types";
+import { OrderParams, RankOrderBy } from "~/services/rank/types";
 import { OrderSelect } from ".";
-import { formatUnits } from "viem";
-import { DEGEN_TOKEN_METADATA } from "~/constants";
 
 const RankOrderByList = [
   { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },

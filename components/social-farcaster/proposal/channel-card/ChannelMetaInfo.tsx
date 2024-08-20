@@ -10,7 +10,7 @@ import { Home } from "~/components/common/Icons";
 import LaunchProgress from "~/components/community/LaunchProgress";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
-import { CreateTokenButton } from "~/components/trade/ATTButton";
+import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
 import { useState } from "react";
 
 const displayValue = (value: number) => {

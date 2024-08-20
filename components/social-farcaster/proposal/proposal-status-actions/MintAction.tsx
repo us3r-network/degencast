@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { View } from "react-native";
 import { DiamondPlus } from "~/components/common/Icons";
-import { BuyButton } from "~/components/trade/ATTButton";
+import { BuyButton } from "~/components/trade/ATTBuyButton";
 import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
 import { Deadline, MintCount } from "../ProposalStyled";
 import { ProposalButton } from "../ui/proposal-button";
