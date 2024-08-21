@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { useRouter } from "expo-router";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useCastDetails from "~/hooks/social-farcaster/useCastDetails";
 import { CommunityEntity } from "~/services/community/types/community";
 import { Text } from "~/components/ui/text";
 import { useEffect, useMemo, useState } from "react";
@@ -12,6 +12,8 @@ import EmbedImgs from "../embed/EmbedImgs";
 import NeynarCastUserInfo from "./NeynarCastUserInfo";
 import { getCastImageUrl } from "~/services/farcaster/api";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 const FCastUserHeight = 20;
 const FCastTextMaxHeight = 72;
 const FCastLineHeight = 24;
@@ -20,17 +22,21 @@ export const FCastHeight = FCastUserHeight + FCastTextMaxHeight + FCastGap;
 
 export default function FCast({
   cast,
+  proposal,
   channel,
+  tokenInfo,
   className,
   readOnly,
 }: ViewProps & {
   cast: NeynarCast;
-  channel?: CommunityEntity;
+  proposal?: ProposalEntity;
+  channel?: CommunityEntity | null | undefined;
+  tokenInfo?: AttentionTokenEntity;
   readOnly?: boolean;
 }) {
   const castHex = getCastHex(cast);
   const router = useRouter();
-  const { setCastDetailCacheData } = useCastPage();
+  const { setCastDetailCacheData } = useCastDetails();
   const embeds = useMemo(() => getEmbeds(cast), [cast]);
   const embedImgs = embeds.imgs;
   return (
@@ -46,8 +52,11 @@ export default function FCast({
         onPress={(e) => {
           e.stopPropagation();
           if (readOnly) return;
-          setCastDetailCacheData(castHex, {
-            cast: cast,
+          setCastDetailCacheData({
+            cast,
+            channel,
+            proposal,
+            tokenInfo,
           });
           router.push(`/casts/${castHex}`);
         }}
@@ -93,17 +102,21 @@ export const FCastHeightWithNftImage =
   FCastUserHeight + FCastNftImageHeight + FCastGap;
 export function FCastWithNftImage({
   cast,
+  proposal,
   channel,
+  tokenInfo,
   className,
   readOnly,
 }: ViewProps & {
   cast: NeynarCast;
-  channel?: CommunityEntity;
+  proposal?: ProposalEntity;
+  channel?: CommunityEntity | null | undefined;
+  tokenInfo?: AttentionTokenEntity;
   readOnly?: boolean;
 }) {
   const castHex = getCastHex(cast);
   const router = useRouter();
-  const { setCastDetailCacheData } = useCastPage();
+  const { setCastDetailCacheData } = useCastDetails();
   const imageUrl = getCastImageUrl(`0x${castHex}`);
   const [imgInfo, setImgInfo] = useState<{
     ratio: number;
@@ -127,8 +140,11 @@ export function FCastWithNftImage({
         onPress={(e) => {
           e.stopPropagation();
           if (readOnly) return;
-          setCastDetailCacheData(castHex, {
-            cast: cast,
+          setCastDetailCacheData({
+            cast,
+            channel,
+            proposal,
+            tokenInfo,
           });
           router.push(`/casts/${castHex}`);
         }}
