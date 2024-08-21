@@ -68,7 +68,7 @@ export default function CastDetail() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
+                <Text className=" text-xl font-bold text-primary-foreground">
                   Cast
                 </Text>
               </View>
@@ -76,7 +76,7 @@ export default function CastDetail() {
           ),
         }}
       />
-      <View className=" mx-auto h-full w-full flex-col sm:w-full sm:max-w-screen-sm">
+      <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
         <FlatList
           style={{
             flex: 1,
