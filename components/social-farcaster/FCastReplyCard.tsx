@@ -1,4 +1,4 @@
-import { View, ViewProps } from "react-native";
+import { Pressable, View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
 import React from "react";
 import { ViewRef } from "~/components/primitives/types";
@@ -10,6 +10,9 @@ import { CardWrapper } from "./proposal/ProposalStyled";
 import { FCastMenuButton } from "./FCastActions";
 import ProposalStatusActions from "./proposal/proposal-status-actions/ProposalStatusActions";
 import FCast from "./FCast";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
+import { useRouter } from "expo-router";
+import useCastDetails from "~/hooks/social-farcaster/useCastDetails";
 type FCastReplyCardProps = ViewProps & {
   channel?: CommunityEntity;
   tokenInfo?: AttentionTokenEntity;
@@ -21,9 +24,25 @@ const FCastReplyCard = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof View> & FCastReplyCardProps
 >(({ channel, proposal, cast, tokenInfo, className }, ref) => {
   const { channelId } = channel || {};
+  const castHex = getCastHex(cast);
+  const router = useRouter();
+  const { setCastDetailCacheData } = useCastDetails();
   return (
     <CardWrapper className={cn("flex flex-col gap-4 p-4", className)} ref={ref}>
-      <FCast cast={cast} />
+      <Pressable
+        onPress={(e) => {
+          e.stopPropagation();
+          setCastDetailCacheData({
+            cast,
+            channel,
+            proposal,
+            tokenInfo,
+          });
+          router.push(`/casts/${castHex}`);
+        }}
+      >
+        <FCast cast={cast} />
+      </Pressable>
       <View className="flex flex-row items-center justify-between">
         {cast && channel && (
           <FCastMenuButton cast={cast} communityInfo={channel as any} />
