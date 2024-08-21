@@ -1,41 +1,35 @@
 import { forwardRef, LegacyRef, useState } from "react";
 import { View, ViewProps } from "react-native";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
 import { CommunityInfo } from "~/services/community/types/community";
-import { FarCast } from "~/services/farcaster/types";
-import { UserData } from "~/utils/farcaster/user-data";
 import { PostMenuButton } from "../post/PostActions";
 import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
 import FCastShareModal from "./FCastShareModal";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 import useAuth from "~/hooks/user/useAuth";
+import useCastReply from "~/hooks/social-farcaster/useCastReply";
 
 export const FCastMenuButton = forwardRef(function (
   {
     direction,
     cast,
-    farcasterUserDataObj,
     communityInfo,
     ...props
   }: ViewProps & {
     direction?: "top" | "left" | "right";
-    cast: FarCast | NeynarCast;
-    farcasterUserDataObj?: { [key: string]: UserData };
+    cast: NeynarCast;
     communityInfo: CommunityInfo;
   },
   ref: LegacyRef<View>,
 ) {
-  const castFid = getCastFid(cast);
-  const castUserData = farcasterUserDataObj?.[castFid];
   const channelId = communityInfo?.channelId || "";
-  const { navigateToCastReply } = useCastPage();
+  const { navigateToCastReply } = useCastReply();
   const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
@@ -77,7 +71,6 @@ export const FCastMenuButton = forwardRef(function (
     const castHex = getCastHex(cast);
     navigateToCastReply(castHex, {
       cast,
-      farcasterUserDataObj,
       community: communityInfo,
     });
   };
@@ -134,7 +127,6 @@ export const FCastMenuButton = forwardRef(function (
       />
       <FCastMintNftModal
         cast={cast}
-        castUserData={castUserData}
         channelId={channelId}
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}

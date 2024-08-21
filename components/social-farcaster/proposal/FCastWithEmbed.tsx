@@ -3,13 +3,15 @@ import { cn } from "~/lib/utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { useRouter } from "expo-router";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useCastDetails from "~/hooks/social-farcaster/useCastDetails";
 import { CommunityEntity } from "~/services/community/types/community";
 import { Text } from "~/components/ui/text";
 import { useMemo } from "react";
 import { getEmbeds } from "~/utils/farcaster/getEmbeds";
 import NeynarCastUserInfo from "./NeynarCastUserInfo";
 import FCastEmbeds from "../FCastEmbeds";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 const FCastUserHeight = 20;
 const FCastTextMaxHeight = 72;
 const FCastLineHeight = 24;
@@ -17,19 +19,23 @@ const FCastGap = 8;
 export const FCastHeight = FCastUserHeight + FCastTextMaxHeight + FCastGap;
 export default function FCastWithEmbed({
   cast,
+  proposal,
   channel,
+  tokenInfo,
   className,
   readOnly,
   isVisible,
 }: ViewProps & {
   cast: NeynarCast;
-  channel?: CommunityEntity;
+  proposal?: ProposalEntity;
+  channel?: CommunityEntity | null | undefined;
+  tokenInfo?: AttentionTokenEntity;
   readOnly?: boolean;
   isVisible?: boolean;
 }) {
   const castHex = getCastHex(cast);
   const router = useRouter();
-  const { setCastDetailCacheData } = useCastPage();
+  const { setCastDetailCacheData } = useCastDetails();
   const embeds = useMemo(() => getEmbeds(cast), [cast]);
   const hasEmbeds =
     embeds.imgs.length > 0 ||
@@ -46,8 +52,11 @@ export default function FCastWithEmbed({
         onPress={(e) => {
           e.stopPropagation();
           if (readOnly) return;
-          setCastDetailCacheData(castHex, {
-            cast: cast,
+          setCastDetailCacheData({
+            cast,
+            channel,
+            proposal,
+            tokenInfo,
           });
           router.push(`/casts/${castHex}`);
         }}

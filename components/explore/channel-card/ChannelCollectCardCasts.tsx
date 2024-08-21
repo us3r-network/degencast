@@ -109,7 +109,9 @@ const ChannelCollectCardCasts = forwardRef(function (
                   <FCastWithNftImage
                     className="overflow-hidden"
                     cast={cast}
-                    channel={channel}
+                    channel={channel!}
+                    tokenInfo={tokenInfo}
+                    proposal={proposal}
                   />
                   <View className="flex flex-row items-center justify-between">
                     <FCastMenuButton

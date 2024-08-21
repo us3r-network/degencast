@@ -9,7 +9,6 @@ import useCreateNew1155Token, {
 } from "~/hooks/social-farcaster/cast-nft/useCreateNew1155Token";
 import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
 import { getCastImageUrl } from "~/services/farcaster/api";
-import { FarCast } from "~/services/farcaster/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import {
@@ -33,15 +32,11 @@ export default function FCastMintNftModal({
   channelId,
   open,
   onOpenChange,
-  castUserData,
 }: {
-  cast: FarCast | NeynarCast;
+  cast: NeynarCast;
   channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  castUserData?: {
-    display: string;
-  };
 }) {
   const { connectWallet } = useWalletAccount();
   const { address, isConnected } = useAccount();

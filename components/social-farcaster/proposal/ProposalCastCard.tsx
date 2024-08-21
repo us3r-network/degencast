@@ -11,16 +11,18 @@ import FCast, { FCastWithNftImage } from "./FCast";
 import ChannelMetaInfo, {
   HomeChannelMetaInfo,
 } from "./channel-card/ChannelMetaInfo";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 
 type ChannelCardProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
   tokenInfo?: AttentionTokenEntity;
+  proposal?: ProposalEntity;
 };
 const ProposalCastCard = React.forwardRef<
   ViewRef,
   React.ComponentPropsWithoutRef<typeof View> & ChannelCardProps
->(({ channel, cast, tokenInfo, className }, ref) => {
+>(({ channel, cast, tokenInfo, proposal, className }, ref) => {
   const { channelId } = channel || {};
   const attentionTokenAddress = channel?.attentionTokenAddress;
   return (
@@ -38,7 +40,13 @@ const ProposalCastCard = React.forwardRef<
       )}
       <Separator className="bg-primary/20" />
 
-      <FCastWithNftImage className="flex-1 overflow-hidden" cast={cast} />
+      <FCastWithNftImage
+        className="flex-1 overflow-hidden"
+        cast={cast}
+        channel={channel!}
+        tokenInfo={tokenInfo}
+        proposal={proposal}
+      />
     </ExploreCard>
   );
 });
