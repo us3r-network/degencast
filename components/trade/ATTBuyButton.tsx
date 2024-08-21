@@ -1,13 +1,8 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import About from "~/components/common/About";
+// import About from "~/components/common/About";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
@@ -16,9 +11,9 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
+  // DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
@@ -30,7 +25,7 @@ import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import {
   useATTFactoryContractInfo,
   useATTFactoryContractMint,
-  useATTFactoryContractMintAA
+  useATTFactoryContractMintAA,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useQuote } from "~/hooks/trade/useUniSwapV3";
@@ -44,6 +39,8 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import UserTokenSelect from "./UserTokenSelect";
+import { DEGEN_TOKEN_METADATA } from "~/constants";
 
 export function BuyButton({
   token,
@@ -243,9 +240,18 @@ const MintNFT = forwardRef<
           value: nftPrice,
         }
       : undefined;
+  const [selectedToken, setSelectedToken] =
+    useState<TokenWithTradeInfo>(DEGEN_TOKEN_METADATA);
   return (
     <View className="flex gap-4">
       <NFTImage nft={nft} />
+      {supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
+        <UserTokenSelect
+          selectToken={setSelectedToken}
+          chain={ATT_CONTRACT_CHAIN}
+          defaultToken={DEGEN_TOKEN_METADATA}
+        />
+      )}
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
@@ -272,6 +278,7 @@ const MintNFT = forwardRef<
           <MintPriceAfterGraduated
             tokenContract={nft.contractAddress}
             paymentToken={token}
+            userSelectedToken={selectedToken}
             nftAmount={amount}
             setNftPrice={setNftPrice}
           />
@@ -279,6 +286,7 @@ const MintNFT = forwardRef<
           <MintPriceBeforeGraduated
             tokenContract={nft.contractAddress}
             paymentToken={token}
+            userSelectedToken={selectedToken}
             nftAmount={amount}
             setNftPrice={setNftPrice}
           />
@@ -295,6 +303,7 @@ const MintNFT = forwardRef<
               <MintButtonAA
                 nft={nft}
                 paymentToken={token}
+                userSelectedToken={selectedToken}
                 amount={amount}
                 nftPrice={nftPrice}
                 onSuccess={onSuccess}
@@ -329,11 +338,13 @@ function MintPriceBeforeGraduated({
   nftAmount,
   setNftPrice,
   paymentToken,
+  userSelectedToken,
 }: {
   tokenContract: `0x${string}`;
   nftAmount: number;
   setNftPrice: (price: bigint) => void;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
 }) {
   const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo({
     contractAddress: tokenContract,
@@ -365,11 +376,13 @@ function MintPriceAfterGraduated({
   nftAmount,
   setNftPrice,
   paymentToken,
+  userSelectedToken,
 }: {
   tokenContract: `0x${string}`;
   nftAmount: number;
   setNftPrice: (price: bigint) => void;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
 }) {
   const { tokenUnit } = useATTNftInfo({
     tokenContract,
@@ -473,6 +486,7 @@ function MintButton({
 function MintButtonAA({
   nft,
   paymentToken,
+  userSelectedToken,
   amount,
   nftPrice,
   onSuccess,
@@ -480,6 +494,7 @@ function MintButtonAA({
 }: {
   nft: ERC42069Token;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
   amount: number;
   nftPrice: bigint;
   onSuccess?: (data: TransationData) => void;
