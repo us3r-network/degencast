@@ -32,7 +32,13 @@ const ChannelCastCard = React.forwardRef<
         <ChannelMetaInfo channel={channel} tokenInfo={tokenInfo} />
       )}
 
-      <FCastWithEmbed cast={cast} channel={channel} isVisible={isVisible} />
+      <FCastWithEmbed
+        cast={cast}
+        channel={channel}
+        tokenInfo={tokenInfo}
+        proposal={proposal}
+        isVisible={isVisible}
+      />
       <View className="flex flex-row items-center justify-between">
         <FCastMenuButton cast={cast} communityInfo={channel as any} />
         <View className="ml-auto">

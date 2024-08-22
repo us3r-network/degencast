@@ -86,8 +86,12 @@ export default function useWalletAccount() {
     unlinkWallet,
     setActiveWallet,
     linkAccountNum,
-    connectedWallets,
-    linkedWallets,
+    connectedWallets: connectedWallets.filter(
+      (wallet) => wallet.connectorType !== "embedded",
+    ),
+    linkedWallets: linkedWallets.filter(
+      (wallet) => wallet.connectorType !== "embedded",
+    ),
     activeWallet,
     embededWallet,
     connectedExternalWallet,

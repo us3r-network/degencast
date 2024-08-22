@@ -1,27 +1,17 @@
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
-  CastDetailData,
   CastReplayData,
   selectCastPage,
-  upsertToCastDetailData,
   setCastReplyData,
   addCastReplyRecordData,
 } from "~/features/cast/castPageSlice";
 import { useRouter } from "expo-router";
 
-export default function useCastPage() {
+export default function useCastReply() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { castDetailData, castReplyData, castReplyRecordData } =
-    useAppSelector(selectCastPage);
-
-  const setCastDetailCacheData = useCallback(
-    (id: string, params: CastDetailData) => {
-      dispatch(upsertToCastDetailData({ id, params }));
-    },
-    [],
-  );
+  const { castReplyData, castReplyRecordData } = useAppSelector(selectCastPage);
 
   const setCastReplyCacheData = useCallback(
     (id: string, params: CastReplayData) => {
@@ -46,11 +36,9 @@ export default function useCastPage() {
   );
 
   return {
-    castDetailData,
     castReplyData,
     castReplyRecordData,
     navigateToCastReply,
     addCastReplyRecordDataToStore,
-    setCastDetailCacheData,
   };
 }

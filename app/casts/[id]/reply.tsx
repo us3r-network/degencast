@@ -8,17 +8,15 @@ import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useCastReply from "~/hooks/social-farcaster/useCastReply";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
 import useAuth from "~/hooks/user/useAuth";
 import { WarpcastChannel } from "~/services/community/api/community";
-import { CommunityInfo } from "~/services/community/types/community";
-import { FarCast } from "~/services/farcaster/types";
+import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
-import { UserData } from "~/utils/farcaster/user-data";
 
 const HomeChanel = {
   id: "",
@@ -26,12 +24,12 @@ const HomeChanel = {
   url: "",
   imageUrl: "",
   createdAt: 0,
-};
+} as WarpcastChannel;
 
 export default function ReplyScreen() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { castReplyData } = useCastPage();
+  const { castReplyData } = useCastReply();
   const { cast } = castReplyData || {};
   if (cast && id === getCastHex(cast)) {
     return <CachedCastReply />;
@@ -40,14 +38,13 @@ export default function ReplyScreen() {
 }
 
 function CachedCastReply() {
-  const { castReplyData } = useCastPage();
-  const { cast, community, farcasterUserDataObj } = castReplyData!;
+  const { castReplyData } = useCastReply();
+  const { cast, community } = castReplyData!;
 
   return (
     <CastReplyWithData
       castLoading={false}
       cast={cast!}
-      farcasterUserDataObj={farcasterUserDataObj}
       community={community!}
     />
   );
@@ -82,17 +79,13 @@ function FetchedCastReply() {
 function CastReplyWithData({
   castLoading,
   cast,
-  farcasterUserDataObj,
   community,
 }: {
   castLoading: boolean;
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: {
-    [key: string]: UserData;
-  };
-  community: CommunityInfo;
+  cast: NeynarCast;
+  community: CommunityEntity;
 }) {
-  const { addCastReplyRecordDataToStore } = useCastPage();
+  const { addCastReplyRecordDataToStore } = useCastReply();
   const { warpcastChannels } = useWarpcastChannels();
   const params = useLocalSearchParams();
   const { id } = params;
@@ -211,11 +204,7 @@ function CastReplyWithData({
                     {castLoading ? (
                       <View>Loading...</View>
                     ) : (
-                      <FCast
-                        cast={cast!}
-                        farcasterUserDataObj={farcasterUserDataObj}
-                        hidePoints
-                      />
+                      <FCast cast={cast!} />
                     )}
                   </CardContent>
                 </Card>

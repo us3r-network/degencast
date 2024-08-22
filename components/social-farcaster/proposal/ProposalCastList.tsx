@@ -43,7 +43,12 @@ export default function ProposalCastList({
         const { cast, proposal } = item;
         return (
           <CardWrapper className="w-full flex-col gap-4 px-4">
-            <FCastWithEmbed cast={cast} channel={channel} />
+            <FCastWithEmbed
+              cast={cast}
+              channel={channel}
+              tokenInfo={tokenInfo}
+              proposal={proposal}
+            />
             <View className="flex flex-row items-center justify-between">
               <FCastMenuButton cast={cast} communityInfo={channel as any} />
               <View className="ml-auto">

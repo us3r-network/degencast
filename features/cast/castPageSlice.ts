@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 import { FarCast } from "~/services/farcaster/types";
-import { UserData } from "~/utils/farcaster/user-data";
-import { CommunityInfo } from "~/services/community/types/community";
+import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 export enum CastDetailDataOrigin {
   Explore,
@@ -15,26 +16,20 @@ export enum CastDetailDataOrigin {
 }
 
 export type CastDetailData = {
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: {
-    [key: string]: UserData;
-  };
-  community?: CommunityInfo | null | undefined;
+  cast: NeynarCast;
+  proposal?: ProposalEntity;
+  channel?: CommunityEntity | null | undefined;
+  tokenInfo?: AttentionTokenEntity;
   origin?: CastDetailDataOrigin;
 };
 
 export type CastReplayData = {
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: {
-    [key: string]: UserData;
-  };
-  community?: CommunityInfo;
+  cast: NeynarCast;
+  community?: CommunityEntity;
 };
 
 type castPageState = {
-  castDetailData: {
-    [key: string]: CastDetailData;
-  };
+  castDetailData: CastDetailData | null;
   castReplyData: CastReplayData | null;
   castReplyRecordData: {
     [key: string]: Array<CastReplayData>;
@@ -42,7 +37,7 @@ type castPageState = {
 };
 
 const castPageState: castPageState = {
-  castDetailData: {},
+  castDetailData: null,
   castReplyData: null,
   castReplyRecordData: {},
 };
@@ -51,14 +46,31 @@ export const castPageSlice = createSlice({
   name: "castPage",
   initialState: castPageState,
   reducers: {
-    upsertToCastDetailData: (
+    setCastDetailData: (
       state: castPageState,
-      action: PayloadAction<{
-        id: string;
-        params: CastDetailData;
-      }>,
+      action: PayloadAction<CastDetailData | null>,
     ) => {
-      state.castDetailData[action.payload.id] = action.payload.params;
+      state.castDetailData = action.payload;
+    },
+    updateCastDetailData: (
+      state: castPageState,
+      action: PayloadAction<CastDetailData>,
+    ) => {
+      const oldData = state.castDetailData;
+
+      if (
+        !!oldData?.cast?.hash &&
+        oldData.cast.hash === action.payload.cast?.hash
+      ) {
+        state.castDetailData = {
+          ...oldData,
+          ...action.payload,
+        };
+      } else {
+        state.castDetailData = {
+          ...action.payload,
+        };
+      }
     },
     setCastReplyData: (
       state: castPageState,
@@ -85,7 +97,8 @@ export const castPageSlice = createSlice({
 
 const { actions, reducer } = castPageSlice;
 export const {
-  upsertToCastDetailData,
+  setCastDetailData,
+  updateCastDetailData,
   setCastReplyData,
   addCastReplyRecordData,
 } = actions;

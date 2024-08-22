@@ -18,6 +18,8 @@ export type TransationData = {
 };
 
 type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
+  type: ONCHAIN_ACTION_TYPE;
+  castHash?: string;
   data: TransationData;
   buttonText: string;
   buttonAction?: () => void;
@@ -25,6 +27,8 @@ type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 };
 
 export function TransactionInfo({
+  type,
+  castHash,
   data,
   buttonText,
   buttonAction,
@@ -80,7 +84,8 @@ export function TransactionInfo({
             <Text>{buttonText}</Text>
           </Button>
           <TransactionResultSharingButton
-            type={ONCHAIN_ACTION_TYPE.SWAP}
+            type={type}
+            castHash={castHash}
             transactionDetailURL={`${data?.chain?.blockExplorers?.default?.url || ""}/tx/${transactionHash}`}
             navigateToCreatePageAfter={navigateToCreatePageAfter}
           />

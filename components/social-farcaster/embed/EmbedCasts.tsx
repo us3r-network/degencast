@@ -1,11 +1,11 @@
 import { useEffect, useMemo } from "react";
-import { View, Image, Pressable } from "react-native";
+import { Image, Pressable } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCastsMetadata";
 import { Card } from "~/components/ui/card";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useCastDetails from "~/hooks/social-farcaster/useCastDetails";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { Link, useRouter } from "expo-router";
@@ -24,7 +24,7 @@ export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
 
 function EmbedCast({ cast }: { cast: NeynarCast }) {
   const router = useRouter();
-  const { setCastDetailCacheData } = useCastPage();
+  const { setCastDetailCacheData } = useCastDetails();
   const { author } = cast;
 
   const castImg = useMemo(() => {
@@ -38,10 +38,10 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
       onPress={(e) => {
         e.stopPropagation();
         const castHex = getCastHex(cast);
-        setCastDetailCacheData(castHex, {
+        setCastDetailCacheData({
           cast,
         });
-        router.push(`/casts/${getCastHex(cast)}`);
+        router.push(`/casts/${castHex}`);
       }}
     >
       <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
