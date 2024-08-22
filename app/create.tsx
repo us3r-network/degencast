@@ -22,7 +22,7 @@ const HomeChanel = {
   url: "",
   imageUrl: "",
   createdAt: 0,
-};
+} as WarpcastChannel;
 export default function CreateScreen() {
   const { sharingCastMint, clearSharingCastMint } = useCastCollection();
   const { submitUserAction } = useUserAction();
