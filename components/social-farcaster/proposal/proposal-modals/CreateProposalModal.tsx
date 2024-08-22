@@ -108,7 +108,7 @@ function CreateProposalModalContentBodyScene() {
     AttentionTokenEntity | undefined
   >(tokenInfo);
   const { upsertOneToAttTokens } = useCacheCastAttToken();
-  const { upsetProposalShareModal } = useAppModals();
+  const { upsertProposalShareModal } = useAppModals();
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -127,7 +127,7 @@ function CreateProposalModalContentBodyScene() {
                 text1: "Upvote successful !",
               });
               setOpen(false);
-              upsetProposalShareModal({
+              upsertProposalShareModal({
                 open: true,
                 cast,
                 channel,

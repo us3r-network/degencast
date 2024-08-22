@@ -85,10 +85,10 @@ export const FCastMenuButton = forwardRef(function (
     setOpenGiftModal(true);
   };
 
-  const { upsetProposalShareModal } = useAppModals();
+  const { upsertProposalShareModal } = useAppModals();
   const onShare = () => {
     setOpenShareModal(true);
-    upsetProposalShareModal({ open: true, cast, channel: communityInfo });
+    upsertProposalShareModal({ open: true, cast, channel: communityInfo });
   };
   return (
     <View className="z-20">

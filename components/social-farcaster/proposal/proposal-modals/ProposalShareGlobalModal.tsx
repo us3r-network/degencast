@@ -12,14 +12,14 @@ import {
 } from "~/utils/platform-sharing/text";
 
 export default function ProposalShareGlobalModal() {
-  const { proposalShareModal, upsetProposalShareModal } = useAppModals();
+  const { proposalShareModal, upsertProposalShareModal } = useAppModals();
   const { cast, channel } = proposalShareModal;
   return (
     <PlatformSharingModal
       modalTitle="Share"
       open={proposalShareModal.open}
       onOpenChange={(open) => {
-        upsetProposalShareModal({ open });
+        upsertProposalShareModal({ open });
       }}
       warpcastText={getCastProposalShareTextWithWarpcast()}
       twitterText={getCastProposalShareTextWithTwitter()}
@@ -29,7 +29,7 @@ export default function ProposalShareGlobalModal() {
       hideWarpcastPoints
       hideTwitterPoints
       navigateToCreatePageAfter={() => {
-        upsetProposalShareModal(appModalsStateDefalut.proposalShareModal);
+        upsertProposalShareModal(appModalsStateDefalut.proposalShareModal);
       }}
     />
   );

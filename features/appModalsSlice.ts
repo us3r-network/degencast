@@ -24,7 +24,7 @@ export const appModalsSlice = createSlice({
   name: "appModals",
   initialState: appModalsStateDefalut,
   reducers: {
-    upsetProposalShareModal: (
+    upsertProposalShareModal: (
       state,
       action: PayloadAction<{ open: boolean; castHash?: string }>,
     ) => {
@@ -37,6 +37,6 @@ export const appModalsSlice = createSlice({
 });
 
 const { actions, reducer } = appModalsSlice;
-export const { upsetProposalShareModal } = actions;
+export const { upsertProposalShareModal } = actions;
 export const selectAppModals = (state: RootState) => state.appModals;
 export default reducer;

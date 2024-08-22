@@ -32,7 +32,7 @@ export default function UpvoteProposalModal({
   triggerButton: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const { upsetProposalShareModal } = useAppModals();
+  const { upsertProposalShareModal } = useAppModals();
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -61,7 +61,7 @@ export default function UpvoteProposalModal({
                 text1: "Voting speeds up success",
               });
               setOpen(false);
-              upsetProposalShareModal({ open: true, cast, channel });
+              upsertProposalShareModal({ open: true, cast, channel });
             }}
             onProposeError={(error) => {
               Toast.show({

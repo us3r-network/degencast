@@ -142,7 +142,7 @@ function ChallengeProposalContentBody({
 }: CastProposeStatusProps & {
   onClose: () => void;
 }) {
-  const { upsetProposalShareModal } = useAppModals();
+  const { upsertProposalShareModal } = useAppModals();
   return (
     <View className="flex w-full flex-col gap-4">
       <View className="flex-row items-center justify-between gap-2">
@@ -169,7 +169,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
-          upsetProposalShareModal({ open: true, cast, channel });
+          upsertProposalShareModal({ open: true, cast, channel });
         }}
         onDisputeError={(error) => {
           onClose();
@@ -185,7 +185,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
-          upsetProposalShareModal({ open: true, cast, channel });
+          upsertProposalShareModal({ open: true, cast, channel });
         }}
         onProposeError={(error) => {
           onClose();

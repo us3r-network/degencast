@@ -184,7 +184,7 @@ function ProposedProposalModalContentBodyScene() {
     paymentTokenInfo!,
   );
 
-  const { upsetProposalShareModal } = useAppModals();
+  const { upsertProposalShareModal } = useAppModals();
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -285,7 +285,7 @@ function ProposedProposalModalContentBodyScene() {
                     type: "success",
                     text1: "Submitted",
                   });
-                  upsetProposalShareModal({
+                  upsertProposalShareModal({
                     open: true,
                     cast,
                     channel,
@@ -315,7 +315,7 @@ function ProposedProposalModalContentBodyScene() {
                     text1: "Voting speeds up success",
                   });
                   setOpen(false);
-                  upsetProposalShareModal({
+                  upsertProposalShareModal({
                     open: true,
                     cast,
                     channel,
