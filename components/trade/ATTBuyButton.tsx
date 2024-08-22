@@ -227,11 +227,20 @@ const MintNFT = forwardRef<
   //   maxTokensPerIdPerUser,
   //   totalNFTSupply,
   // );
+  const [selectedToken, setSelectedToken] =
+    useState<TokenWithTradeInfo>(DEGEN_TOKEN_METADATA);
+
   const [nftPrice, setNftPrice] = useState<bigint>();
+  const [nftPriceEth, setNftPriceEth] = useState<bigint>();
   const perNFTPrice =
-    nftPrice && amount && token?.decimals
-      ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-      : "0";
+    selectedToken.address === token?.address
+      ? nftPrice && amount && token?.decimals
+        ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
+        : "0"
+      : nftPriceEth && amount && selectedToken?.decimals
+        ? formatUnits(nftPriceEth / BigInt(amount), selectedToken.decimals!)
+        : "0";
+
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
   const availableAmount = useMemo(() => {
     if (!account || !maxTokensPerIdPerUser) return 0;
@@ -254,8 +263,6 @@ const MintNFT = forwardRef<
           value: nftPrice,
         }
       : undefined;
-  const [selectedToken, setSelectedToken] =
-    useState<TokenWithTradeInfo>(DEGEN_TOKEN_METADATA);
   return (
     <View className="flex gap-4">
       <NFTImage nft={nft} />
@@ -303,6 +310,7 @@ const MintNFT = forwardRef<
             userSelectedToken={selectedToken}
             nftAmount={amount}
             setNftPrice={setNftPrice}
+            setNftPriceEth={setNftPriceEth}
           />
         ))}
       {token &&
@@ -351,12 +359,14 @@ function MintPriceBeforeGraduated({
   tokenContract,
   nftAmount,
   setNftPrice,
+  setNftPriceEth,
   paymentToken,
   userSelectedToken,
 }: {
   tokenContract: `0x${string}`;
   nftAmount: number;
   setNftPrice: (price: bigint) => void;
+  setNftPriceEth: (price: bigint) => void;
   paymentToken: TokenWithTradeInfo;
   userSelectedToken?: TokenWithTradeInfo;
 }) {
@@ -384,9 +394,8 @@ function MintPriceBeforeGraduated({
   // );
   useEffect(() => {
     if (nftPrice) {
-      if (userSelectedToken?.address === paymentToken.address) {
-        setNftPrice(nftPrice);
-      } else {
+      setNftPrice(nftPrice);
+      if (userSelectedToken?.address !== paymentToken.address) {
         if (swapReady) fetchSellAmount(nftPrice);
       }
     }
@@ -394,7 +403,7 @@ function MintPriceBeforeGraduated({
 
   useEffect(() => {
     console.log("nftPriceEth", nftPriceEth);
-    if (nftPriceEth) setNftPrice(nftPriceEth);
+    if (nftPriceEth) setNftPriceEth(nftPriceEth);
   }, [nftPriceEth]);
 
   return (
@@ -608,7 +617,7 @@ function MintButtonAA({
       }
       onPress={() => {
         if (nftPrice && paymentToken)
-          mint(amount, nftPrice, paymentToken.address);
+          mint(amount, nftPrice, paymentToken, userSelectedToken);
       }}
     >
       <Text>{isPending ? "Confirming..." : "Mint"}</Text>

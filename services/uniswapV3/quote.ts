@@ -1,16 +1,15 @@
 import { Currency, CurrencyAmount, Token, TradeType } from "@uniswap/sdk-core";
+import QuoterV2ABI from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
 import { Route, SwapQuoter } from "@uniswap/v3-sdk";
 import {
   Address,
   createPublicClient,
   decodeAbiParameters,
   decodeFunctionData,
-  http,
-  parseAbiParameters,
+  http
 } from "viem";
 import { UNISWAP_V3_QUOTER_CONTRACT_ADDRESS } from "~/constants";
 import { getChain } from "~/utils/chain/getChain";
-import QuoterV2 from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
 
 // Helper Quoting and Pool Functions
 
@@ -33,7 +32,7 @@ export async function getInputQuote(
   );
 
   const callDataDecoded = decodeFunctionData({
-    abi: QuoterV2.abi,
+    abi: QuoterV2ABI.abi,
     data: calldata as `0x${string}`,
   });
   console.log("callDataDecoded", callDataDecoded);
@@ -46,7 +45,7 @@ export async function getInputQuote(
     data: calldata as `0x${string}`,
   });
 
-  const outputAbi = QuoterV2.abi.find((abi) => {
+  const outputAbi = QuoterV2ABI.abi.find((abi) => {
     return abi.name === callDataDecoded.functionName;
   }
   );

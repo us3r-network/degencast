@@ -1,22 +1,14 @@
-import {
-  CurrencyAmount,
-  Percent,
-  Token,
-  TradeType
-} from "@uniswap/sdk-core";
-import {
-  SwapOptions,
-  SwapRouter,
-  Trade
-} from "@uniswap/v3-sdk";
+import { CurrencyAmount, Percent, Token, TradeType } from "@uniswap/sdk-core";
+import { FeeAmount, SwapOptions, SwapRouter, Trade } from "@uniswap/v3-sdk";
 import JSBI from "jsbi";
-import { Address } from "viem";
+import { Address, decodeFunctionData } from "viem";
 import {
-  UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS
+  ATT_CONTRACT_CHAIN,
+  UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS,
 } from "~/constants";
 import { getInputQuote } from "./quote";
 import { getSwapRoute } from "./route";
-
+import SwapRouterABI from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json";
 
 export type TokenTrade = Trade<Token, Token, TradeType>;
 
@@ -26,19 +18,21 @@ export async function createTrade({
   tokenIn,
   tokenOut,
   amountOut,
+  poolFee,
 }: {
   tokenIn: Token;
   tokenOut: Token;
   amountOut: bigint;
+  poolFee?: FeeAmount;
 }): Promise<TokenTrade> {
-
   const swapRoute = await getSwapRoute(
     tokenIn,
     tokenOut,
+    poolFee || FeeAmount.MEDIUM,
   );
 
-  const amountIn = await getInputQuote(swapRoute, tokenOut, amountOut);
-
+  const quoteData = await getInputQuote(swapRoute, tokenOut, amountOut);
+  const amountIn = quoteData[0];
   const uncheckedTrade = Trade.createUncheckedTrade({
     route: swapRoute,
     inputAmount: CurrencyAmount.fromRawAmount(
@@ -55,7 +49,7 @@ export async function createTrade({
   return uncheckedTrade;
 }
 
-export async function executeTrade(
+export async function getTradeCallData(
   trade: TokenTrade,
   walletAddress: Address,
 ): Promise<any> {
@@ -70,11 +64,31 @@ export async function executeTrade(
   };
 
   const methodParameters = SwapRouter.swapCallParameters([trade], options);
+  console.log("methodParameters", methodParameters);
+  const callDataDecoded = decodeFunctionData({
+    abi: SwapRouterABI.abi,
+    data: methodParameters.calldata as `0x${string}`,
+  });
 
   return {
-    data: methodParameters.calldata,
-    to: UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS,
-    value: methodParameters.value,
-    from: walletAddress,
+    calldata: {
+      data: methodParameters.calldata,
+      to: UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS,
+      value: methodParameters.value,
+      from: walletAddress,
+      maxFeePerGas: MAX_FEE_PER_GAS,
+      maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
+    },
+    decoded: {
+      address: UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS,
+      abi: SwapRouterABI.abi,
+      chainId: ATT_CONTRACT_CHAIN.id,
+      value: methodParameters.value,
+      maxFeePerGas: MAX_FEE_PER_GAS,
+      maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
+      ...callDataDecoded,
+    },
   };
 }
+export const MAX_FEE_PER_GAS = 100000000000;
+export const MAX_PRIORITY_FEE_PER_GAS = 100000000000;

@@ -114,7 +114,7 @@ function ActivityItemUser({
 }) {
   return (
     <Link
-      href={`/u/${userData.fid}`}
+      href={`/u/${userData?.fid}`}
       onPress={(e) => {
         e.stopPropagation();
         if (!userData.fid) {
