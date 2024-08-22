@@ -41,6 +41,7 @@ import exploreTrendingChannels from "~/features/community/exploreTrendingChannel
 import exploreFollowingChannels from "~/features/community/exploreFollowingChannelsSlice";
 import exploreHostingChannels from "~/features/community/exploreHostingChannelsSlice";
 import appSettings from "~/features/appSettingsSlice";
+import appModals from "~/features/appModalsSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -78,6 +79,7 @@ export const store = configureStore({
     castReactions,
     embedCasts,
     appSettings,
+    appModals,
     castProposal,
     castAttToken,
     // userTips,

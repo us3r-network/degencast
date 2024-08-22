@@ -24,6 +24,7 @@ import { DialogCastActivitiesList } from "~/components/activity/Activities";
 import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { AboutProposalChallenge } from "./AboutProposal";
+import useAppModals from "~/hooks/useAppModals";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -141,6 +142,7 @@ function ChallengeProposalContentBody({
 }: CastProposeStatusProps & {
   onClose: () => void;
 }) {
+  const { upsetProposalShareModal } = useAppModals();
   return (
     <View className="flex w-full flex-col gap-4">
       <View className="flex-row items-center justify-between gap-2">
@@ -167,6 +169,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
+          upsetProposalShareModal({ open: true, cast, channel });
         }}
         onDisputeError={(error) => {
           onClose();
@@ -182,6 +185,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
+          upsetProposalShareModal({ open: true, cast, channel });
         }}
         onProposeError={(error) => {
           onClose();

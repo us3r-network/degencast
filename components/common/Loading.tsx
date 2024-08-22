@@ -4,7 +4,8 @@ import { cn } from "~/lib/utils";
 export function Loading() {
   return (
     <View className="flex h-full w-full items-center justify-center">
-      <ActivityIndicator color={SECONDARY_COLOR} />
+      {/* <ActivityIndicator color={SECONDARY_COLOR} /> */}
+      <ActivityIndicator />
       {/* <Text className=" text-xl text-secondary">Loading...</Text> */}
     </View>
   );

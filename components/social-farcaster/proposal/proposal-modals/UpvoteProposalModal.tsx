@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import { ProposeProposalWriteButton } from "../proposal-write-buttons/ProposalWriteButton";
 import { Slider } from "~/components/ui/slider";
 import { PriceRangeRow } from "./ChallengeProposalModal";
+import useAppModals from "~/hooks/useAppModals";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -31,6 +32,7 @@ export default function UpvoteProposalModal({
   triggerButton: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const { upsetProposalShareModal } = useAppModals();
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -59,6 +61,7 @@ export default function UpvoteProposalModal({
                 text1: "Voting speeds up success",
               });
               setOpen(false);
+              upsetProposalShareModal({ open: true, cast, channel });
             }}
             onProposeError={(error) => {
               Toast.show({

@@ -22,6 +22,7 @@ import { getProposalMinPrice } from "../utils";
 import { AboutProposalChallenge } from "./AboutProposal";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import PriceRow from "./PriceRow";
+import useAppModals from "~/hooks/useAppModals";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -107,6 +108,7 @@ function CreateProposalModalContentBodyScene() {
     AttentionTokenEntity | undefined
   >(tokenInfo);
   const { upsertOneToAttTokens } = useCacheCastAttToken();
+  const { upsetProposalShareModal } = useAppModals();
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -125,6 +127,11 @@ function CreateProposalModalContentBodyScene() {
                 text1: "Upvote successful !",
               });
               setOpen(false);
+              upsetProposalShareModal({
+                open: true,
+                cast,
+                channel,
+              });
             }}
             onCreateProposalError={(error) => {
               Toast.show({
