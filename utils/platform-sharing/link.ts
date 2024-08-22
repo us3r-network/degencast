@@ -136,7 +136,7 @@ export const getMintNFTFrameLink = (opts?: {
   let link = `${DEGENCAST_FRAME_HOST}/curationnft/frames?castHash=${opts?.castHash}`;
   const { fid } = opts || {};
   if (fid) {
-    link += `?inviteFid=${fid}`;
+    link += `&inviteFid=${fid}`;
   }
   return link;
 };
