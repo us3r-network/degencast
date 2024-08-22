@@ -13,6 +13,7 @@ import useUserAction from "~/hooks/user/useUserAction";
 import Toast from "react-native-toast-message";
 
 export type ShareProps = {
+  modalTitle?: string;
   text?: string;
   twitterText?: string;
   warpcastText?: string;
@@ -23,6 +24,7 @@ export type ShareProps = {
 };
 
 export default function PlatformSharingModal({
+  modalTitle,
   text,
   twitterText,
   warpcastText,
@@ -82,7 +84,7 @@ export default function PlatformSharingModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <DialogHeader>
-          <Text>Share</Text>
+          <Text>{modalTitle || "Share"}</Text>
         </DialogHeader>
         <View className="max-w-s flex flex-row gap-5 ">
           {warpcastText && (

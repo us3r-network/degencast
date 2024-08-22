@@ -157,3 +157,18 @@ export const getMintCastFrameLink = (opts: {
   });
   return link;
 };
+
+export const getVoteProposalFrameLink = (
+  castHex: string,
+  opts?: {
+    fid?: string | number;
+  },
+) => {
+  const castHash = castHex.startsWith("0x") ? castHex : `0x${castHex}`;
+  let link = `${DEGENCAST_FRAME_HOST}/proposal/frames?castHash=${castHash}`;
+  const { fid } = opts || {};
+  if (fid) {
+    link += `?inviteFid=${fid}`;
+  }
+  return link;
+};

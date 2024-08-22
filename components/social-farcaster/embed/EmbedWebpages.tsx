@@ -5,6 +5,7 @@ import { Embeds } from "~/utils/farcaster/getEmbeds";
 import { View } from "react-native";
 import EmbedOG from "./EmbedOG";
 import EmbedFrame from "./EmbedFrame";
+import { Loading } from "~/components/common/Loading";
 
 export default function EmbedWebpages({
   webpages,
@@ -40,12 +41,18 @@ function EmbedWebpage({
   cast?: FarCast;
   imgIsFixedRatio?: boolean;
 }) {
-  const { embedFrameMetadata, embedOgMetadata, loadEmbedWebpagesMetadata } =
-    useLoadEmbedWebpagesMetadata();
+  const {
+    embedFrameMetadata,
+    embedOgMetadata,
+    loadEmbedWebpagesMetadata,
+    loading,
+  } = useLoadEmbedWebpagesMetadata();
   useEffect(() => {
     loadEmbedWebpagesMetadata([url]);
   }, []);
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <>
       {embedFrameMetadata && (
         <EmbedFrame

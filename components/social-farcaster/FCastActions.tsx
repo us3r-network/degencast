@@ -14,6 +14,15 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import useAuth from "~/hooks/user/useAuth";
 import useCastReply from "~/hooks/social-farcaster/useCastReply";
+import PlatformSharingModal from "../platform-sharing/PlatformSharingModal";
+import {
+  getCastProposalShareTextWithTwitter,
+  getCastProposalShareTextWithWarpcast,
+} from "~/utils/platform-sharing/text";
+import {
+  getCastDetailWebsiteLink,
+  getVoteProposalFrameLink,
+} from "~/utils/platform-sharing/link";
 
 export const FCastMenuButton = forwardRef(function (
   {
@@ -120,10 +129,21 @@ export const FCastMenuButton = forwardRef(function (
         open={openGiftModal}
         onOpenChange={setOpenGiftModal}
       />
-      <FCastShareModal
+      {/* <FCastShareModal
         cast={cast}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
+      /> */}
+      <PlatformSharingModal
+        open={openShareModal}
+        onOpenChange={setOpenShareModal}
+        warpcastText={getCastProposalShareTextWithWarpcast()}
+        twitterText={getCastProposalShareTextWithTwitter()}
+        websiteLink={getCastDetailWebsiteLink(getCastHex(cast))}
+        warpcastEmbeds={[getVoteProposalFrameLink(getCastHex(cast))]}
+        warpcastChannelId={channelId}
+        hideWarpcastPoints
+        hideTwitterPoints
       />
       <FCastMintNftModal
         cast={cast}
