@@ -1,3 +1,4 @@
+import { FeeAmount } from "@uniswap/v3-sdk";
 import { useCallback } from "react";
 import { Address, erc20Abi } from "viem";
 import {
@@ -7,19 +8,18 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useCallsStatus, useWriteContracts } from "wagmi/experimental";
+import { NATIVE_TOKEN_ADDRESS, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
 } from "~/constants/att";
 import ATT_FACTORY_CONTRACT_ABI_JSON from "~/services/trade/abi/AttentionTokenFactory.json";
+import WETH_ABI from "~/services/trade/abi/weth.json";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
+import { convertToken } from "~/services/uniswapV3";
+import { getTradeCallData } from "~/services/uniswapV3/trading";
 import { useATTContractBurn } from "./useATTContract";
 import useATTNftInfo from "./useATTNftInfo";
-import { createTrade, getTradeCallData } from "~/services/uniswapV3/trading";
-import { convertToken } from "~/services/uniswapV3";
-import { FeeAmount } from "@uniswap/v3-sdk";
-import { NATIVE_TOKEN_ADDRESS, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
-import WETH_ABI from "~/services/trade/abi/weth.json";
 
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
@@ -196,14 +196,14 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       paymentToken?: TokenWithTradeInfo,
       userSelectedToken?: TokenWithTradeInfo,
     ) => {
-      console.log(
-        "mint with AA wallet",
-        token,
-        amount,
-        maxPayment,
-        paymentToken,
-        userSelectedToken,
-      );
+      // console.log(
+      //   "mint with AA wallet",
+      //   token,
+      //   amount,
+      //   maxPayment,
+      //   paymentToken,
+      //   userSelectedToken,
+      // );
       const contracts: any[] = [];
       if (
         userSelectedToken &&
@@ -211,17 +211,14 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
         userSelectedToken !== paymentToken &&
         account?.address
       ) {
-        const trade = await createTrade({
+        const tradeContractMethodData = await getTradeCallData({
           tokenIn: convertToken(userSelectedToken),
           tokenOut: convertToken(paymentToken),
           amountOut: BigInt(maxPayment),
           poolFee: FeeAmount.HIGH,
+          walletAddress: account.address,
         });
-        const { decoded: tradeContractMethodData } = await getTradeCallData(
-          trade,
-          account?.address,
-        );
-        console.log("tradeCallData", tradeContractMethodData);
+        // console.log("tradeCallData", tradeContractMethodData);
         if (userSelectedToken.address === NATIVE_TOKEN_ADDRESS) {
           contracts.push({
             address: WRAP_NATIVE_TOKEN_ADDRESS,
@@ -241,7 +238,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
         });
         contracts.push(tradeContractMethodData);
       }
-      console.log("mint with AA wallet", contracts);
+      // console.log("mint with AA wallet", contracts);
       if (paymentToken)
         contracts.push({
           address: paymentToken.address,
@@ -272,13 +269,13 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       ? callsStatus?.receipts[callsStatus.receipts.length - 1]
       : undefined;
 
-  console.log(
-    "mintAA status",
-    writePending,
-    isSuccess,
-    callsStatus,
-    transactionReceipt,
-  );
+  // console.log(
+  //   "mintAA status",
+  //   writePending,
+  //   isSuccess,
+  //   callsStatus,
+  //   transactionReceipt,
+  // );
   return {
     mint,
     transactionReceipt,

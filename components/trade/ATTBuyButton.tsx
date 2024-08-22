@@ -343,6 +343,7 @@ const MintNFT = forwardRef<
               <MintButton
                 nft={nft}
                 paymentToken={token}
+                userSelectedToken={selectedToken}
                 amount={amount}
                 nftPrice={nftPrice}
                 onSuccess={onSuccess}
@@ -493,6 +494,7 @@ function MintPriceAfterGraduated({
 function MintButton({
   nft,
   paymentToken,
+  userSelectedToken,
   amount,
   nftPrice,
   onSuccess,
@@ -500,6 +502,7 @@ function MintButton({
 }: {
   nft: ERC42069Token;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
   amount: number;
   nftPrice: bigint;
   onSuccess?: (data: TransationData) => void;
