@@ -200,6 +200,7 @@ export function TransactionResultSharingButton({
       websiteLink = getTradePageWebsiteLink({
         fid: currFid,
       });
+      break;
     default:
       frameLink = getAppFrameLink({
         fid: currFid,
