@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -18,7 +13,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
@@ -30,7 +25,7 @@ import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import {
   useATTFactoryContractInfo,
   useATTFactoryContractMint,
-  useATTFactoryContractMintAA
+  useATTFactoryContractMintAA,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useQuote } from "~/hooks/trade/useUniSwapV3";
@@ -44,13 +39,17 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export function BuyButton({
   token,
+  cast,
   renderButton,
   onSuccess,
 }: {
   token: ERC42069Token;
+  cast: NeynarCast;
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
   onSuccess?: (mintNum: number) => void;
 }) {
@@ -82,9 +81,11 @@ export function BuyButton({
       {account.address && (
         <BuyDialog
           token={token}
+          cast={cast}
           open={open}
           onOpenChange={setOpen}
           onSuccess={onSuccess}
+          setClose={() => setOpen(false)}
         />
       )}
     </Pressable>
@@ -93,14 +94,18 @@ export function BuyButton({
 
 export function BuyDialog({
   token,
+  cast,
   open,
   onOpenChange,
   onSuccess,
+  setClose,
 }: {
   token: ERC42069Token;
+  cast: NeynarCast;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (mintNum: number) => void;
+  setClose?: () => void;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -169,9 +174,12 @@ export function BuyDialog({
             <DialogTitle>Transaction</DialogTitle>
           </DialogHeader>
           <TransactionInfo
+            type={ONCHAIN_ACTION_TYPE.MINT_NFT}
+            castHash={cast.hash}
             data={transationData}
             buttonText="Mint more"
             buttonAction={() => setTransationData(undefined)}
+            navigateToCreatePageAfter={setClose}
           />
         </DialogContent>
       )}

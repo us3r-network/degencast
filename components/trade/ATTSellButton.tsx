@@ -1,8 +1,4 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useState
-} from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -16,17 +12,15 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
-import {
-  ATT_CONTRACT_CHAIN
-} from "~/constants/att";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
 import {
   useATTBurnNFT,
-  useATTFactoryContractInfo
+  useATTFactoryContractInfo,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
@@ -39,6 +33,7 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -121,6 +116,7 @@ export function SellButton({ token }: { token: ERC42069Token }) {
               <DialogTitle>Transaction</DialogTitle>
             </DialogHeader>
             <TransactionInfo
+              type={ONCHAIN_ACTION_TYPE.BURN_NFT}
               data={transationData}
               buttonText="Sell more"
               buttonAction={() => setTransationData(undefined)}

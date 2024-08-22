@@ -41,13 +41,28 @@ export const getMintCastTextWithTwitter = () => {
 export const getTransactionShareTextWithWarpcast = (
   type: ONCHAIN_ACTION_TYPE,
   transactionDetailURL: string,
+  frameLink?: string,
 ) => {
+  let text = "";
   switch (type) {
-    case ONCHAIN_ACTION_TYPE.SWAP:
-      return `Swap tokens in /${WARPCAST_CHANNEL_NAME}\n${transactionDetailURL}\n`;
+    case ONCHAIN_ACTION_TYPE.SWAP_TOKEN:
+      text = `Swap tokens in`;
+      break;
+    case ONCHAIN_ACTION_TYPE.SEND_TOKEN:
+      text = `Send tokens in`;
+      break;
+    case ONCHAIN_ACTION_TYPE.MINT_NFT:
+      text = `Mint NFT in`;
+      break;
+    case ONCHAIN_ACTION_TYPE.BURN_NFT:
+      text = `Burn NFT in`;
+      break;
     default:
-      return `Trade & explore news in /${WARPCAST_CHANNEL_NAME}`;
+      text = `Trade & explore news in /${WARPCAST_CHANNEL_NAME}`;
+      return text;
   }
+  // console.log("transactionDetailURL", text, transactionDetailURL, frameLink);
+  return `${text} /${WARPCAST_CHANNEL_NAME}\n${transactionDetailURL}\n${frameLink}\n`;
 };
 
 export const getTransactionShareTextWithTwitter = (
@@ -55,8 +70,14 @@ export const getTransactionShareTextWithTwitter = (
   transactionDetailURL: string,
 ) => {
   switch (type) {
-    case ONCHAIN_ACTION_TYPE.SWAP:
+    case ONCHAIN_ACTION_TYPE.SWAP_TOKEN:
       return `Swap tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+    case ONCHAIN_ACTION_TYPE.SEND_TOKEN:
+      return `Send tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+    case ONCHAIN_ACTION_TYPE.MINT_NFT:
+      return `Mint NFT in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+    case ONCHAIN_ACTION_TYPE.BURN_NFT:
+      return `Burn NFT in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
     default:
       return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
   }

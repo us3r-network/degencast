@@ -38,6 +38,7 @@ import {
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
 import { eventBus, EventTypes } from "~/utils/eventBus";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -168,6 +169,7 @@ const SendToken = forwardRef<
   if (transationData)
     return (
       <TransactionInfo
+        type={ONCHAIN_ACTION_TYPE.SEND_TOKEN}
         data={transationData}
         buttonText="Trade more"
         buttonAction={tryAgain}

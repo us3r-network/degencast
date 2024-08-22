@@ -41,6 +41,7 @@ import {
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
 import { eventBus, EventTypes } from "~/utils/eventBus";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
@@ -308,6 +309,7 @@ function SwapToken({
   if (transationData)
     return (
       <TransactionInfo
+        type={ONCHAIN_ACTION_TYPE.SWAP_TOKEN}
         data={transationData}
         buttonText="Trade more"
         buttonAction={tryAgain}
