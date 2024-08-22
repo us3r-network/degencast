@@ -130,7 +130,6 @@ function ProposedProposalModalContentBodyScene() {
     error: paymentTokenInfoError,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
   });
   const {
     price,

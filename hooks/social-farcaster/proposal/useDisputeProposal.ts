@@ -61,7 +61,7 @@ export default function useDisputeProposal({
           status: proposals.state,
           finalizeTime: Number(proposals.deadline),
           roundIndex: Number(proposals.roundIndex),
-          downvoteCount: Number(proposal?.downvoteCount) + 1,
+          downvoteCount: Number(proposal?.downvoteCount || 0) + 1,
         });
       } catch (error) {
         setError(error);
