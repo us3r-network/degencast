@@ -17,6 +17,7 @@ import {
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
+import { DEGEN_TOKEN_METADATA } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -28,7 +29,7 @@ import {
   useATTFactoryContractMintAA,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
-import { useQuote } from "~/hooks/trade/useUniSwapV3";
+import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
@@ -40,7 +41,6 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import { DEGEN_TOKEN_METADATA } from "~/constants";
 
 export function BuyButton({
   token,
@@ -258,9 +258,9 @@ const MintNFT = forwardRef<
           {perNFTPrice ? (
             <Text className="text-xs">
               {new Intl.NumberFormat("en-US", {
-                maximumFractionDigits: 2,
+                maximumFractionDigits: 6,
               }).format(Number(perNFTPrice))}{" "}
-              {token?.symbol} per NFT
+              {selectedToken?.symbol} per NFT
             </Text>
           ) : (
             <Text className="text-xs text-secondary">calculating price...</Text>
@@ -346,23 +346,66 @@ function MintPriceBeforeGraduated({
   paymentToken: TokenWithTradeInfo;
   userSelectedToken?: TokenWithTradeInfo;
 }) {
+  // console.log("MintPriceBeforeGraduated", userSelectedToken, nftAmount);
+  const {
+    fetchSellAmount,
+    sellAmount: nftPriceEth,
+    ready: swapReady,
+  } = useSwap({
+    sellToken: userSelectedToken!,
+    buyToken: { address: paymentToken.address, chainId: ATT_CONTRACT_CHAIN.id },
+  });
   const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo({
     contractAddress: tokenContract,
     tokenId: 0,
   });
   const { nftPrice } = getMintNFTPriceAfterFee(nftAmount);
+  // console.log(
+  //   "nftPrice",
+  //   nftPrice,
+  //   nftPriceEth,
+  //   paymentToken,
+  //   userSelectedToken,
+  // );
   useEffect(() => {
-    if (nftPrice) setNftPrice(nftPrice);
-  }, [nftPrice]);
+    if (nftPrice) {
+      if (userSelectedToken?.address === paymentToken.address) {
+        setNftPrice(nftPrice);
+      } else {
+        if (swapReady) fetchSellAmount(nftPrice);
+      }
+    }
+  }, [nftPrice, swapReady, userSelectedToken]);
+
+  useEffect(() => {
+    console.log("nftPriceEth", nftPriceEth);
+    if (nftPriceEth) setNftPrice(nftPriceEth);
+  }, [nftPriceEth]);
+
   return (
     <View className="flex-row items-center justify-between">
       <Text className="text-lg font-medium">Total Cost</Text>
-      {nftPrice && paymentToken ? (
+      {userSelectedToken?.address === paymentToken.address ? (
+        nftPrice && paymentToken ? (
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 6,
+            }).format(
+              Number(formatUnits(nftPrice, paymentToken.decimals!)),
+            )}{" "}
+            {paymentToken.symbol}
+          </Text>
+        ) : (
+          <Text>fetching price...</Text>
+        )
+      ) : nftPriceEth && userSelectedToken ? (
         <Text>
           {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 2,
-          }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
-          {paymentToken.symbol}
+            maximumFractionDigits: 6,
+          }).format(
+            Number(formatUnits(nftPriceEth, userSelectedToken.decimals!)),
+          )}{" "}
+          {userSelectedToken.symbol}
         </Text>
       ) : (
         <Text>fetching price...</Text>
@@ -387,13 +430,19 @@ function MintPriceAfterGraduated({
   const { tokenUnit } = useATTNftInfo({
     tokenContract,
   });
-  const { fetchSellAmount } = useQuote({
+  const {
+    fetchSellAmount,
+    sellAmount,
+    ready: swapReady,
+  } = useSwap({
     sellToken: paymentToken,
     buyToken: { address: tokenContract, chainId: ATT_CONTRACT_CHAIN.id },
   });
-  const { sellAmount } = fetchSellAmount(
-    BigInt(nftAmount) * BigInt(tokenUnit || 0n),
-  );
+  useEffect(() => {
+    console.log("nftAmount", nftAmount, tokenUnit, swapReady);
+    if (nftAmount && tokenUnit && swapReady)
+      fetchSellAmount(BigInt(nftAmount) * BigInt(tokenUnit));
+  }, [nftAmount, tokenUnit, swapReady]);
   const nftPrice = sellAmount
     ? sellAmount + sellAmount / 10n + sellAmount / 2000n //add 10% fee and 0.05% sliperage
     : undefined;
