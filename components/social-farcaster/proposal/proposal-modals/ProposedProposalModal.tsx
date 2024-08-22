@@ -33,6 +33,7 @@ import { Loading } from "~/components/common/Loading";
 import { Button, ButtonProps } from "~/components/ui/button";
 import { useAccount } from "wagmi";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
+import useAppModals from "~/hooks/useAppModals";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -182,6 +183,8 @@ function ProposedProposalModalContentBodyScene() {
     priceSliderConfig.min,
     paymentTokenInfo!,
   );
+
+  const { upsertProposalShareModal } = useAppModals();
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -282,6 +285,11 @@ function ProposedProposalModalContentBodyScene() {
                     type: "success",
                     text1: "Submitted",
                   });
+                  upsertProposalShareModal({
+                    open: true,
+                    cast,
+                    channel,
+                  });
                 }}
                 onDisputeError={(error) => {
                   setOpen(false);
@@ -307,6 +315,11 @@ function ProposedProposalModalContentBodyScene() {
                     text1: "Voting speeds up success",
                   });
                   setOpen(false);
+                  upsertProposalShareModal({
+                    open: true,
+                    cast,
+                    channel,
+                  });
                 }}
                 onProposeError={(error) => {
                   Toast.show({
