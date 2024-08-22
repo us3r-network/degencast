@@ -8,6 +8,7 @@ import {
   getAppWebsiteLink,
   getCommunityFrameLink,
   getCommunityWebsiteLink,
+  getMintNFTFrameLink,
   getPortfolioFrameLink,
   getPortfolioWebsiteLink,
   getTradePageFrameLink,
@@ -158,16 +159,17 @@ export function CommunitySharingButton({
 
 type TransactionResultProps = {
   type: ONCHAIN_ACTION_TYPE;
+  castHash?: string;
   transactionDetailURL: string;
 };
 
 export function TransactionResultSharingButton({
   type,
   transactionDetailURL,
+  castHash,
   text,
   twitterText,
   warpcastText,
-  websiteLink,
   warpcastEmbeds,
   className,
   navigateToCreatePageAfter,
@@ -175,7 +177,37 @@ export function TransactionResultSharingButton({
 }: ButtonProps & ShareProps & TransactionResultProps) {
   const [open, setOpen] = useState(false);
   const { currFid } = useFarcasterAccount();
-
+  let frameLink;
+  let websiteLink;
+  switch (type) {
+    case ONCHAIN_ACTION_TYPE.MINT_NFT:
+    case ONCHAIN_ACTION_TYPE.BURN_NFT:
+      if (!castHash) {
+        throw new Error("castHash is required for mintNFT action");
+      }
+      frameLink = getMintNFTFrameLink({
+        fid: currFid,
+        castHash,
+      });
+      websiteLink = getAppWebsiteLink({
+        fid: currFid,
+      });
+      break;
+    case ONCHAIN_ACTION_TYPE.SWAP_TOKEN:
+      frameLink = getTradePageFrameLink({
+        fid: currFid,
+      });
+      websiteLink = getTradePageWebsiteLink({
+        fid: currFid,
+      });
+    default:
+      frameLink = getAppFrameLink({
+        fid: currFid,
+      });
+      websiteLink = getAppWebsiteLink({
+        fid: currFid,
+      });
+  }
   return (
     <View>
       <Button
@@ -200,9 +232,7 @@ export function TransactionResultSharingButton({
           type,
           transactionDetailURL,
         )}
-        websiteLink={getTradePageWebsiteLink({
-          fid: currFid,
-        })}
+        websiteLink={websiteLink}
         warpcastEmbeds={[
           getTradePageFrameLink({
             fid: currFid,

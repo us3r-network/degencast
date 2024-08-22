@@ -34,6 +34,7 @@ export function ReadyToMintButton({
           contractAddress: tokenInfo.tokenContract,
           tokenId: Number(proposal.tokenId),
         }}
+        cast={cast}
         renderButton={(props) => {
           return (
             <ProposalButton variant={"ready-to-mint"} {...props}>

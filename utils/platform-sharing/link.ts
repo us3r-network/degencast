@@ -83,7 +83,7 @@ export const getAppFrameLink = (opts?: { fid?: string | number }) => {
   if (fid) {
     link += `?inviteFid=${fid}`;
   }
-  return link;
+  return link || "";
 };
 
 export const getPortfolioWebsiteLink = (opts?: {
@@ -122,6 +122,18 @@ export const getTradePageWebsiteLink = (opts?: { fid?: string | number }) => {
 // TODO degencast app frame link ?
 export const getTradePageFrameLink = (opts?: { fid?: string | number }) => {
   let link = `${DEGENCAST_FRAME_HOST}/swaptoken/frames/swap/degen`;
+  const { fid } = opts || {};
+  if (fid) {
+    link += `?inviteFid=${fid}`;
+  }
+  return link;
+};
+
+export const getMintNFTFrameLink = (opts?: {
+  fid?: string | number;
+  castHash: string;
+}) => {
+  let link = `${DEGENCAST_FRAME_HOST}/curationnft/frames?castHash=${opts?.castHash}`;
   const { fid } = opts || {};
   if (fid) {
     link += `?inviteFid=${fid}`;
