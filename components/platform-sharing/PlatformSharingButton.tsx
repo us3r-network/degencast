@@ -231,13 +231,10 @@ export function TransactionResultSharingButton({
         warpcastText={getTransactionShareTextWithWarpcast(
           type,
           transactionDetailURL,
+          frameLink,
         )}
         websiteLink={websiteLink}
-        warpcastEmbeds={[
-          getTradePageFrameLink({
-            fid: currFid,
-          }),
-        ]}
+        warpcastEmbeds={[frameLink]}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>

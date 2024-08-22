@@ -85,6 +85,7 @@ export function BuyButton({
           open={open}
           onOpenChange={setOpen}
           onSuccess={onSuccess}
+          setClose={() => setOpen(false)}
         />
       )}
     </Pressable>
@@ -97,12 +98,14 @@ export function BuyDialog({
   open,
   onOpenChange,
   onSuccess,
+  setClose,
 }: {
   token: ERC42069Token;
   cast: NeynarCast;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (mintNum: number) => void;
+  setClose?: () => void;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
@@ -176,6 +179,7 @@ export function BuyDialog({
             data={transationData}
             buttonText="Mint more"
             buttonAction={() => setTransationData(undefined)}
+            navigateToCreatePageAfter={setClose}
           />
         </DialogContent>
       )}
