@@ -43,7 +43,14 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
         <View className="w-full flex-row justify-between">
-          <ActivityItemUser userAddr={data.userAddr} userData={data.user} />
+          <View className="flex-row items-center gap-2">
+            <ActivityItemUser
+              userAddr={data.userAddr}
+              userData={data.user}
+              hideHandle
+            />
+            <ActivityItemOperation operation={data.operation} />
+          </View>
           {data.timestamp && (
             <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
               {dayjs(data.timestamp).fromNow(true)}
@@ -53,17 +60,18 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
 
         {data.operation === ActivityOperation.REWARD ? (
           <View className="w-full flex-row items-center gap-2">
-            <ActivityItemOperation operation={data.operation} />
             {data.channel && (
               <>
+                <Link href={`/casts/${data.cast.hash}`}>
+                  <Text className="text-primary underline">cast</Text>
+                </Link>
+                <Text>{`${data.rewardDescription}`}</Text>
                 <ActivityItemChannel channel={data.channel} />
-                <Text>{`cast ${data.rewardDescription}`}</Text>
               </>
             )}
           </View>
         ) : (
           <View className="w-full flex-row items-center gap-2">
-            <ActivityItemOperation operation={data.operation} />
             {data.tokenAmount > 0 && (
               <Text className=" inline-block  align-baseline">
                 {data.tokenAmount}
@@ -71,15 +79,22 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             )}
             {data.channel && (
               <>
+                <Link href={`/casts/${data.cast.hash}`}>
+                  <Text className="text-primary underline">cast</Text>
+                </Link>
+                <Text>in</Text>
                 <ActivityItemChannel channel={data.channel} />
-                <Text>cast</Text>{" "}
               </>
             )}
           </View>
         )}
-        {data.paymentTokenAmount && data.paymentTokenInfo && (
-          <Text>{`with ${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
-        )}
+        <View className="flex-row items-center gap-2">
+          <Text>From</Text>
+          <ActivityItemUser userData={data.cast.author} hideHandle />
+          {data.paymentTokenAmount && data.paymentTokenInfo && (
+            <Text>{`for ${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+          )}
+        </View>
         {data.cast && <ActivityCast cast={data.cast} />}
       </CardContent>
     </Card>
@@ -90,10 +105,12 @@ function ActivityItemUser({
   userAddr,
   userData,
   className,
+  hideHandle = false,
   ...props
 }: ViewProps & {
   userAddr?: string;
   userData: Author;
+  hideHandle?: boolean;
 }) {
   return (
     <Link
@@ -129,9 +146,11 @@ function ActivityItemUser({
                 style={{ width: 12, height: 12 }}
               />
             )} */}
-            <Text className="text-xs text-[#9BA1AD] hover:underline">
-              @{userData?.username}
-            </Text>
+            {!hideHandle && (
+              <Text className="text-xs text-[#9BA1AD] hover:underline">
+                @{userData?.username}
+              </Text>
+            )}
           </>
         ) : (
           <Text className="line-clamp-1 text-xs text-[#9BA1AD] hover:underline">
@@ -152,29 +171,29 @@ export function ActivityItemOperation({
     <Text
       className={cn(
         " inline-block align-baseline text-base font-medium",
-        operation === ActivityOperation.MINT ||
+        operation === ActivityOperation.BURN ||
           operation === ActivityOperation.BUY ||
           operation === ActivityOperation.REWARD ||
           operation === ActivityOperation.DISPUTE
           ? "text-[#F41F4C]"
-          : operation === ActivityOperation.BURN ||
+          : operation === ActivityOperation.MINT ||
               operation === ActivityOperation.SELL ||
               operation === ActivityOperation.PROPOSE
             ? "text-[#00D1A7]"
             : "",
       )}
     >
-      {capitalize(
-        operation === ActivityOperation.PROPOSE
-          ? "upvote"
-          : operation === ActivityOperation.DISPUTE
-            ? "downvote"
-            : operation === ActivityOperation.MINT
-              ? "minted"
+      {operation === ActivityOperation.PROPOSE
+        ? "upvoted"
+        : operation === ActivityOperation.DISPUTE
+          ? "downvoted"
+          : operation === ActivityOperation.MINT
+            ? "minted"
+            : operation === ActivityOperation.BURN
+              ? "burned"
               : operation === ActivityOperation.REWARD
-                ? "recieved"
-                : operation,
-      )}
+                ? "rewarded"
+                : operation}
     </Text>
   );
 }
@@ -200,9 +219,9 @@ export function ActivityItemChannel({ channel }: { channel: WarpcastChannel }) {
 function ActivityCast({ cast }: { cast: NeynarCast }) {
   const [open, setOpen] = useState(false);
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="mt-[-20px]" >
+    <Collapsible open={open} onOpenChange={setOpen} className="mt-[-30px]">
       <CollapsibleTrigger>
-        <View className="absolute right-0 top-16">
+        <View className="absolute right-0 top-[72px]">
           {open ? <ChevronUp /> : <ChevronDown />}
         </View>
       </CollapsibleTrigger>
