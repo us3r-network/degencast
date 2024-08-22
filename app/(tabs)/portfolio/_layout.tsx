@@ -1,37 +1,103 @@
-import { usePrivy } from "@privy-io/react-auth";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
+import { createContext, useContext } from "react";
 import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
-import { Button } from "~/components/ui/button";
-import { Card } from "~/components/ui/card";
-import { Text } from "~/components/ui/text";
-import { DEFAULT_HEADER_HEIGHT } from "~/constants";
+import { PageContent } from "~/components/layout/content/Content";
+import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
+import UserInfo from "~/components/portfolio/user/UserInfo";
+import UserSignin from "~/components/portfolio/user/UserSignin";
+import { PRIMARY_COLOR } from "~/constants";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
+import UserChannelScreen from "./channel";
+import UserFeedScreen from "./feed";
+import MyWalletScreen from "./wallet";
+
+export type UserPortfolioProps = {
+  fid: number;
+};
+export const UserPortfolioCtx = createContext<UserPortfolioProps | undefined>(
+  undefined,
+);
+export const useUserPortfolioCtx = () => {
+  const ctx = useContext(UserPortfolioCtx);
+  if (!ctx) {
+    throw new Error("useUserPortfolioCtx must be used within a provider");
+  }
+  return ctx;
+};
+
+function ChannelScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserChannelScreen fid={fid} />;
+}
+
+function FeedScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserFeedScreen fid={fid} />;
+}
+
+const Tab = createMaterialTopTabNavigator();
+const TABS = [
+  { label: "Wallet", value: "wallet", component: MyWalletScreen },
+  { label: "Channel", value: "channel", component: ChannelScreen },
+  { label: "Feed", value: "feed", component: FeedScreen },
+];
 
 export default function PortfolioScreen() {
-  const { ready, authenticated: privyAuthenticated, login } = usePrivy();
-  const { authenticated } = useAuth();
+  const { ready, authenticated } = useAuth();
+  const { currFid } = useFarcasterAccount();
   const segments = useSegments();
   return (
-    <SafeAreaView
-      style={{ flex: 1, paddingTop: DEFAULT_HEADER_HEIGHT }}
-      className="bg-background"
-    >
-      <View className="box-border w-full flex-1 px-4">
-        <View className="relative mx-auto box-border w-full max-w-screen-sm flex-1">
-          {ready &&
-            (!privyAuthenticated ? (
-              <Card className="flex h-full w-full items-center justify-center rounded-2xl">
-                <Button onPress={login}>
-                  <Text>Log in</Text>
-                </Button>
-              </Card>
-            ) : (
-              authenticated && <PortfolioContent defaultTab={segments?.[2]} />
-            ))}
-        </View>
-      </View>
-    </SafeAreaView>
+    <View className="flex-1">
+      {ready &&
+        (!authenticated ? (
+          <View className="flex h-full items-center justify-center">
+            <View>
+              <UserSignin
+                onSuccess={() => {
+                  console.log("login successful!");
+                }}
+                onFail={(error: unknown) => {
+                  console.log("Failed to login", error);
+                }}
+              />
+            </View>
+          </View>
+        ) : (
+          <View className="h-full w-full pb-4">
+            <UserPortfolioCtx.Provider value={{ fid: currFid || 0 }}>
+              <Tab.Navigator
+                initialRouteName={segments?.[0]}
+                tabBar={(props) => (
+                  <View className="mb-4 flex gap-4">
+                    <PageTabBar {...props} />
+                    <PageContent className="h-24 flex-none">
+                      <UserInfo />
+                    </PageContent>
+                  </View>
+                )}
+                style={{ width: "100%" }}
+                sceneContainerStyle={{
+                  backgroundColor: PRIMARY_COLOR,
+                }}
+              >
+                {TABS.map((tab) => {
+                  return (
+                    <Tab.Screen
+                      key={tab.value}
+                      name={tab.value}
+                      component={tab.component}
+                      options={{
+                        title: tab.label,
+                      }}
+                    />
+                  );
+                })}
+              </Tab.Navigator>
+            </UserPortfolioCtx.Provider>
+          </View>
+        ))}
+    </View>
   );
 }

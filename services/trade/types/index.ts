@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 type VolumeStats = {
   volume_usd: string;
   date: number;
@@ -22,33 +24,35 @@ export type TradeInfo = {
       h24: string;
       m5: string;
     };
+    transactions: {
+      h24: {
+        buys: number;
+        sells: number;
+      };
+    };
   };
 };
 
 export type TokenWithTradeInfo = {
   chainId: number;
   address: `0x${string}`;
-  name: string | undefined;
-  decimals: number | undefined;
-  symbol: string | undefined;
+  name?: string | undefined;
+  decimals?: number | undefined;
+  symbol?: string | undefined;
   logoURI?: string;
   tradeInfo?: TradeInfo;
-  rawBalance?: BigInt | string;
+  rawBalance?: bigint | string;
   balance?: number | string | undefined;
 };
 
-export type ShareInfo = {
-  name?: string | undefined;
-  channelId: string;
-  logo?: string;
-  priceETH?: string;
-  sharesSubject: `0x${string}`;
-  trend: number;
-  amount?: number;
-};
-
-export type TipsInfo = {
-  name?: string | undefined;
-  logo?: string;
-  amount: number;
+export type ERC42069Token = {
+  contractAddress: Address;
+  tokenId: number;
+  uri?: string;
+  balance?: string;
+  nftBalance?: string;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  logoUri?: string;
 };

@@ -1,132 +1,93 @@
-import { Tabs } from "expo-router";
+import { Tabs, useNavigation } from "expo-router";
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  ActivityIcon,
   ExploreIcon,
   PortfolioIcon,
   TradeIcon,
 } from "~/components/common/SvgIcons";
-import {
-  Header,
-  HeaderLeft,
-  HeaderRight,
-} from "~/components/layout/header/Header";
-import { PostLink, SearchLink } from "~/components/layout/header/HeaderLinks";
 import TabBar from "~/components/layout/tabBar/TabBar";
-import {
-  ExploreSharingButton,
-  PortfolioSharingButton,
-  TradeSharingButton,
-} from "~/components/platform-sharing/PlatformSharingButton";
-import UserGlobalPoints from "~/components/point/UserGlobalPoints";
-import OnboardingModal from "~/components/portfolio/user/Onboarding";
-import { useClientOnlyValue } from "~/components/useClientOnlyValue";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useCommunityRank from "~/hooks/trade/useCommunityRank";
+import useChannelRank from "~/hooks/rank/useChannelRank";
+import useCuratorRank from "~/hooks/rank/useCuratorRank";
+import useTokenRank from "~/hooks/rank/useTokenRank";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import useAuth from "~/hooks/user/useAuth";
 import { logGA } from "~/utils/firebase/analytics.web";
 
+const AUTH_PROTECTED_ROUTES = ["portfolio"];
 export default function TabLayout() {
-  const { currFid, farcasterAccount } = useFarcasterAccount();
-  // preload trade data
   useCommunityTokens();
-  // useCommunityShares();
-  useCommunityRank();
+  // useChannelRank();
+  // useCuratorRank();
+  // useTokenRank();
   useEffect(() => {
-    logGA("app_open", {});
+    if (Platform.OS === "web") logGA("app_open", {});
   }, []);
+  const { authenticated, login } = useAuth();
+  const navigation = useNavigation();
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-background">
+    <SafeAreaView className="flex-1 bg-background">
       <Tabs
-        screenOptions={{
-          // Disable the static render of the header on web
-          // to prevent a hydration error in React Navigation v6.
-          headerShown: useClientOnlyValue(false, true),
+        screenOptions={{ headerShown: false }}
+        sceneContainerStyle={{ backgroundColor: "transparent" }}
+        screenListeners={{
+          // Monitor tab press and if 'portfolio' tab is pressed
+          tabPress: (e: any) => {
+            AUTH_PROTECTED_ROUTES.forEach((route) => {
+              if ((e.target as string).startsWith(route)) {
+                if (!authenticated) {
+                  e.preventDefault();
+                  login({
+                    onSuccess: () => {
+                      console.log("login successful!");
+                      navigation.navigate(route as never);
+                    },
+                    onFail: () => {
+                      console.log("Failed to login");
+                    },
+                  });
+                }
+              }
+            });
+          },
         }}
-        tabBar={(props) => {
-          return <TabBar {...props} />;
-        }}
+        tabBar={(props) => <TabBar {...props} />}
       >
         <Tabs.Screen
           name="index"
           options={{
-            title: "Explore",
+            title: "Feeds",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
-            headerTransparent: true,
-            header: () => (
-              <Header>
-                <HeaderLeft title="Explore" />
-                <HeaderRight>
-                  <UserGlobalPoints />
-                  <SearchLink />
-                  <PostLink />
-                  <View>
-                    <ExploreSharingButton fid={currFid} />
-                  </View>
-                </HeaderRight>
-              </Header>
-            ),
           }}
         />
         <Tabs.Screen
-          name="channels"
+          name="ranks"
           options={{
-            title: "Channels",
+            title: "Ranks",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
-            headerTransparent: true,
-            headerStyle: {
-              height: 54,
-            },
-            header: () => (
-              <Header>
-                <HeaderLeft title="Channels" />
-                <HeaderRight>
-                  <UserGlobalPoints />
-                  <SearchLink />
-                  <PostLink />
-                  <View>
-                    <TradeSharingButton fid={currFid} />
-                  </View>
-                </HeaderRight>
-              </Header>
-            ),
           }}
         />
         <Tabs.Screen
-          name="portfolio"
+          name="activities"
           options={{
-            title: "Portfolio",
+            title: "Activities",
+            tabBarLabelPosition: "below-icon",
+            tabBarIcon: ({ color }) => <ActivityIcon stroke={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name={`portfolio${Platform.OS === "web" ? "" : "/index"}`}
+          options={{
+            title: authenticated ? "Portfolio" : "Login",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <PortfolioIcon fill={color} />,
-            headerTransparent: true,
-            headerStyle: {
-              height: 54,
-            },
-            header: () => (
-              <Header>
-                <HeaderLeft title="Portfolio" />
-                <HeaderRight>
-                  <UserGlobalPoints />
-                  <SearchLink />
-                  <PostLink />
-                  {currFid && farcasterAccount && (
-                    <View>
-                      <PortfolioSharingButton
-                        fid={Number(currFid)}
-                        fname={farcasterAccount.username || ""}
-                      />
-                    </View>
-                  )}
-                </HeaderRight>
-              </Header>
-            ),
           }}
         />
       </Tabs>
-      <OnboardingModal />
     </SafeAreaView>
   );
 }

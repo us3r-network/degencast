@@ -1,5 +1,4 @@
-import { useConnectWallet, usePrivy, useWallets } from "@privy-io/react-auth";
-import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import {
   Address,
@@ -8,11 +7,10 @@ import {
   isAddress,
   parseEther,
 } from "viem";
-import { base } from "viem/chains";
 import {
   useAccount,
   useSendTransaction,
-  useWaitForTransactionReceipt
+  useWaitForTransactionReceipt,
 } from "wagmi";
 import { ArrowUp } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
@@ -26,9 +24,9 @@ import {
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN_ADDRESS } from "~/constants";
 import { useERC20Transfer } from "~/hooks/trade/useERC20Contract";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { getUserWallets } from "~/utils/privy";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenWithValue } from "../common/TokenInfo";
 import { Input } from "../ui/input";
@@ -38,7 +36,9 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import ToeknSelect from "./UserTokenSelect";
+import UserTokenSelect from "./UserTokenSelect";
+import { eventBus, EventTypes } from "~/utils/eventBus";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -47,24 +47,15 @@ export default function SendTokenButton({
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
+  const { connectWallet, connectedWallets, activeWallet } = useWalletAccount();
 
-  const { connectWallet } = useConnectWallet();
-
-  const { wallets: connectedWallets } = useWallets();
-  const { address: activeWalletAddress } = useAccount();
-
-  const activeWallet = useMemo(() => {
-    // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) => wallet.address === activeWalletAddress,
-    );
-    if (currentWallet) return currentWallet;
-  }, [connectedWallets, activeWalletAddress]);
-
-  if (!activeWalletAddress)
+  if (!activeWallet?.address)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button
+        size={"icon"}
+        className="rounded-full"
+        onPress={() => connectWallet()}
+      >
         <Text>
           <ArrowUp />
         </Text>
@@ -79,7 +70,10 @@ export default function SendTokenButton({
       >
         <DialogTrigger
           asChild
-          disabled={activeWallet?.connectorType !== "embedded" && activeWallet?.connectorType !== "coinbase_wallet"}
+          disabled={
+            activeWallet?.connectorType !== "embedded" &&
+            activeWallet?.connectorType !== "coinbase_wallet"
+          }
         >
           <Button size={"icon"} className="rounded-full">
             <Text>
@@ -105,21 +99,16 @@ const SendToken = forwardRef<
   }
 >(({ className, chain, setSending, ...props }, ref) => {
   const account = useAccount();
-  const { user } = usePrivy();
 
   const [address, setAddress] = useState<`0x${string}`>();
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
 
+  const { embededWallet } = useWalletAccount();
   useEffect(() => {
-    if (user) {
-      const linkedWallets = getUserWallets(user);
-      const defaultWallet = linkedWallets.find(
-        (wallet) => wallet.connectorType !== "embedded",
-      );
-      if (defaultWallet) setAddress(defaultWallet.address as `0x${string}`);
-    }
-  }, [user]);
+    if (embededWallet) setAddress(embededWallet.address as `0x${string}`);
+  }, [embededWallet]);
+
   useEffect(() => {
     if (token) {
       setAmount(String(token.balance) || "0");
@@ -133,7 +122,7 @@ const SendToken = forwardRef<
     (transactionReceipt: TransactionReceipt | undefined) => {
       if (token && address && isAddress(address) && Number(amount) > 0) {
         const transationData = {
-          chain: base,
+          chain,
           transactionReceipt,
           description: (
             <View className="flex w-full items-center gap-2">
@@ -180,6 +169,7 @@ const SendToken = forwardRef<
   if (transationData)
     return (
       <TransactionInfo
+        type={ONCHAIN_ACTION_TYPE.SEND_TOKEN}
         data={transationData}
         buttonText="Trade more"
         buttonAction={tryAgain}
@@ -199,7 +189,9 @@ const SendToken = forwardRef<
         <View className="flex gap-2">
           <View className="flex-row items-center justify-between">
             <Text>Wallet address</Text>
-            <Text className="text-sm">Only sending on Base</Text>
+            <Text className="text-sm">
+              Only sending on {DEFAULT_CHAIN.name}
+            </Text>
           </View>
           <Input
             className="border-secondary text-secondary"
@@ -210,7 +202,7 @@ const SendToken = forwardRef<
         </View>
         <View className="flex gap-2">
           <Text>Token</Text>
-          <ToeknSelect selectToken={setToken} chain={chain} />
+          <UserTokenSelect selectToken={setToken} chain={chain} />
         </View>
         <View className="flex gap-2">
           <Text>Amount</Text>
@@ -313,9 +305,13 @@ const SendNativeTokenButton = forwardRef<
     };
 
     useEffect(() => {
-      if (isPending || (isSuccess && transactionReceipt))
+      if (isSuccess && transactionReceipt) {
+        eventBus.next({
+          type: EventTypes.NATIVE_TOKEN_BALANCE_CHANGE,
+        });
         transationReceiptChange(transactionReceipt);
-    }, [isPending, isSuccess, transactionReceipt, transationLoading]);
+      }
+    }, [isSuccess, transactionReceipt]);
 
     useEffect(() => {
       if (error) {
@@ -371,9 +367,13 @@ const SendERC20TokenButton = forwardRef<
     };
 
     useEffect(() => {
-      if (isPending || (isSuccess && transactionReceipt))
+      if (isSuccess && transactionReceipt) {
+        eventBus.next({
+          type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE,
+        });
         transationReceiptChange(transactionReceipt);
-    }, [isPending, isSuccess, transactionReceipt, transationLoading]);
+      }
+    }, [isSuccess, transactionReceipt]);
 
     useEffect(() => {
       if (error) {

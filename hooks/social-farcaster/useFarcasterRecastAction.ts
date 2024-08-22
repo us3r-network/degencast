@@ -1,8 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { FarCast } from "~/services/farcaster/types";
-import useFarcasterWrite from "./useFarcasterWrite";
-import useFarcasterAccount from "./useFarcasterAccount";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { useCallback, useMemo } from "react";
 import {
   addRecast,
   addRecastPending,
@@ -10,14 +6,17 @@ import {
   removeRecastPending,
   selectCastReactions,
 } from "~/features/cast/castReactionsSlice";
-import { usePrivy } from "@privy-io/react-auth";
-import useFarcasterSigner from "./useFarcasterSigner";
+import { FarCast } from "~/services/farcaster/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   getCastFid,
-  getCastHex,
-  getCastReactionsCount,
+  getCastHex
 } from "~/utils/farcaster/cast-utils";
+import useAuth from "../user/useAuth";
+import useFarcasterAccount from "./useFarcasterAccount";
+import useFarcasterSigner from "./useFarcasterSigner";
+import useFarcasterWrite from "./useFarcasterWrite";
 
 export default function useFarcasterRecastAction({
   cast,
@@ -32,7 +31,7 @@ export default function useFarcasterRecastAction({
   const { reactions, recastPendingCastIds } =
     useAppSelector(selectCastReactions);
 
-  const { authenticated, login } = usePrivy();
+  const { authenticated, login } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { recastCast, removeRecastCast } = useFarcasterWrite();
@@ -44,14 +43,18 @@ export default function useFarcasterRecastAction({
     () => !!reactions?.[castHex]?.recasted,
     [reactions, castHex],
   );
+  const recastCount = useMemo(
+    () => reactions?.[castHex]?.recastsCount || 0,
+    [reactions, castHex],
+  );
   const recastPending = useMemo(
     () => recastPendingCastIds.includes(castHex),
     [recastPendingCastIds, castHex],
   );
 
-  const [recastCount, setRecastCount] = useState<number>(
-    getCastReactionsCount(cast).recastsCount,
-  );
+  // const [recastCount, setRecastCount] = useState<number>(
+  //   getCastReactionsCount(cast).recastsCount,
+  // );
 
   const recastCastAction = useCallback(async () => {
     if (!authenticated) {
@@ -70,7 +73,7 @@ export default function useFarcasterRecastAction({
       const res = await recastCast(castHex, Number(castFid));
       console.log("recastCastAction", res);
       dispatch(addRecast(castHex));
-      setRecastCount((pre) => pre + 1);
+      // setRecastCount((pre) => pre + 1);
       onRecastSuccess?.();
     } catch (error) {
       console.error(error);
@@ -107,7 +110,7 @@ export default function useFarcasterRecastAction({
       const res = await removeRecastCast(castHex, Number(castFid));
       console.log("removeRecastAction", res);
       dispatch(removeRecast(castHex));
-      setRecastCount((pre) => pre - 1);
+      // setRecastCount((pre) => pre - 1);
       onRemoveRecastSuccess?.();
     } catch (error) {
       console.error(error);

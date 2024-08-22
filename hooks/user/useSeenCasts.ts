@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
@@ -8,12 +7,16 @@ import {
   submitUnreportedViewCasts,
 } from "~/features/user/userActionSlice";
 import { AsyncRequestStatus } from "~/services/shared/types";
+import useAuth from "./useAuth";
 
 export default function useSeenCasts() {
   const dispatch = useAppDispatch();
-  const { authenticated } = usePrivy();
-  const { unreportedViewCastsSubmitStatus, unreportedViewCasts } =
-    useAppSelector(selectUserAction);
+  const { login, ready, authenticated } = useAuth();
+  const {
+    unreportedViewCastsSubmitStatus,
+    unreportedViewCasts,
+    reportedViewCasts,
+  } = useAppSelector(selectUserAction);
 
   const postSeenCast = async (castHex: string) => {
     if (authenticated) {
@@ -31,5 +34,7 @@ export default function useSeenCasts() {
   return {
     submitSeenCast: postSeenCast,
     submitUnreportedViewCasts: postUnreportedViewCasts,
+    reportedViewCasts,
+    unreportedViewCasts,
   };
 }

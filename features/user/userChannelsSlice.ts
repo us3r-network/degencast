@@ -1,53 +1,80 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash";
-import { fetchUserChannels } from "~/services/farcaster/api";
-import { fetchUserActiveChannels } from "~/services/farcaster/neynar/farcaster";
+import { fetchUserRecommendChannels } from "~/services/farcaster/api";
+import {
+  fetchUserActiveChannels,
+  fetchUserFollowingChannels,
+} from "~/services/farcaster/neynar/farcaster";
 import { Channel } from "~/services/farcaster/types";
-import { PageInfo } from "~/services/farcaster/types/neynar";
+import {
+  NeynarChannelsResp,
+  PageInfo,
+} from "~/services/farcaster/types/neynar";
 import { AsyncRequestStatus } from "~/services/shared/types";
 import type { RootState } from "../../store/store";
 
 const MAX_PAGE_SIZE = 100;
+export enum UserChannelsType {
+  HOLDING = "holding",
+  FOLLOWING = "following",
+  ACTIVE = "active",
+}
 type UserChannelsState = {
-  // cache: Map<number, NeynarChannelsResp>;
   fid?: number;
-  items: Channel[];
-  next: PageInfo;
+  channels: Map<UserChannelsType, ChannelsState>;
   status: AsyncRequestStatus;
   error: string | undefined;
 };
 
-const initialUserChannelsState: UserChannelsState = {
-  fid: undefined,
+type ChannelsState = {
+  items: Channel[];
+  next: PageInfo;
+};
+
+const initialChannelsState: ChannelsState = {
   items: [],
   next: {
     cursor: null,
   },
+};
+
+const initialUserChannelsState: UserChannelsState = {
+  fid: undefined,
+  channels: new Map([
+    [UserChannelsType.HOLDING, { ...initialChannelsState }],
+    [UserChannelsType.FOLLOWING, { ...initialChannelsState }],
+    [UserChannelsType.ACTIVE, { ...initialChannelsState }],
+  ]),
   status: AsyncRequestStatus.IDLE,
   error: undefined,
 };
 
 export const fetchItems = createAsyncThunk(
   "userChannels/fetchItems",
-  async (fid: number, thunkAPI) => {
+  async ({ fid, type }: { fid: number; type: UserChannelsType }, thunkAPI) => {
     const { userChannels } = thunkAPI.getState() as {
       userChannels: UserChannelsState;
     };
-
-    let priorityChannels: Channel[] = [];
-    if (userChannels.fid !== fid) {
-      const firstRes = await fetchUserChannels({
-        fid,
-      });
-      priorityChannels = firstRes.data.data;
+    const channelState = userChannels.channels.get(type);
+    const cursor = channelState?.next.cursor;
+    switch (type) {
+      case UserChannelsType.HOLDING:
+        return fetchUserRecommendChannels({
+          fid,
+        });
+      case UserChannelsType.FOLLOWING:
+        return fetchUserFollowingChannels({
+          fid,
+          limit: MAX_PAGE_SIZE,
+          cursor,
+        });
+      case UserChannelsType.ACTIVE:
+        return fetchUserActiveChannels({
+          fid,
+          limit: MAX_PAGE_SIZE,
+          cursor,
+        });
     }
-    const response = await fetchUserActiveChannels({
-      fid,
-      limit: MAX_PAGE_SIZE,
-      cursor: userChannels.next.cursor,
-    });
-    response.channels = [...priorityChannels, ...response.channels];
-    return response;
   },
 );
 
@@ -59,19 +86,47 @@ export const userChannelsSlice = createSlice({
     builder
       .addCase(fetchItems.pending, (state, action) => {
         state.status = AsyncRequestStatus.PENDING;
+        if (state.fid !== action.meta.arg.fid) {
+          state.fid = action.meta.arg.fid;
+          const type = action.meta.arg.type;
+          state.channels.set(type, { ...initialChannelsState });
+          state.error = undefined;
+        }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;
-        if (state.fid !== action.meta.arg) {
-          state.fid = action.meta.arg;
-          state.items = [];
+        const type = action.meta.arg.type;
+        const channelState = state.channels.get(type);
+        // console.log("fetchItems.fulfilled", action.payload);
+        switch (action.meta.arg.type) {
+          case UserChannelsType.HOLDING: {
+            const allChannles = (action.payload as any).data.data;
+            state.channels.set(type, {
+              items: allChannles,
+              next: (action.payload as NeynarChannelsResp).next || {
+                cursor: null,
+              },
+            });
+            break;
+          }
+          case UserChannelsType.FOLLOWING:
+          case UserChannelsType.ACTIVE: {
+            const newChannles = (action.payload as NeynarChannelsResp).channels;
+            const mergeItems = uniqBy(
+              [...(channelState?.items || []), ...newChannles],
+              "id",
+            );
+            state.channels.set(type, {
+              items: mergeItems,
+              next: (action.payload as NeynarChannelsResp).next || {
+                cursor: null,
+              },
+            });
+            break;
+          }
+          default:
+            break;
         }
-        const channels = uniqBy(
-          [...state.items, ...action.payload.channels],
-          "id",
-        );
-        state.items = channels;
-        state.next.cursor = action.payload.next.cursor;
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.status = AsyncRequestStatus.REJECTED;

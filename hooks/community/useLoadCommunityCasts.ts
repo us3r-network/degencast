@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import {
   fetchItems,
   groupDataDefault,
@@ -22,6 +22,19 @@ export default function useLoadCommunityCasts(channelId: string) {
     if (loading) return;
     dispatch(fetchItems({ channelId }));
   }, [channelId, loading]);
+
+  useEffect(() => {
+    if (
+      !channelId ||
+      casts.length > 0 ||
+      [AsyncRequestStatus.FULFILLED, AsyncRequestStatus.REJECTED].includes(
+        status,
+      )
+    ) {
+      return;
+    }
+    loadCasts();
+  }, [casts, status, channelId]);
 
   return {
     loading,

@@ -1,33 +1,34 @@
-import { usePrivy } from "@privy-io/react-auth";
-import React, { useEffect, useMemo } from "react";
-import { View } from "react-native";
-import { Minus, Plus, User } from "~/components/common/Icons";
+import React, { useEffect } from "react";
+import { View,Image } from "react-native";
+import Toast from "react-native-toast-message";
 import { ExternalLink } from "~/components/common/ExternalLink";
+import { Minus, Plus, User } from "~/components/common/Icons";
+import { Loading } from "~/components/common/Loading";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { WARRPCAST } from "~/constants/farcaster";
-import useUserBulk from "~/hooks/user/useUserBulk";
-import { getUserFarcasterAccount, getUserWallets } from "~/utils/privy";
-import DegenTipsStats from "./DegenTipsStats";
+import { UserChannelsType } from "~/features/user/userChannelsSlice";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import Toast from "react-native-toast-message";
-import { Author } from "~/services/farcaster/types/neynar";
-import { Loading } from "~/components/common/Loading";
-import UserSettings from "./UserSettings";
-import { UserRoundCheck, UserRoundPlus } from "~/components/common/Icons";
+import useUserBulk from "~/hooks/user/useUserBulk";
 import useUserChannels from "~/hooks/user/useUserChannels";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { Author } from "~/services/farcaster/types/neynar";
 import { shortPubKey } from "~/utils/shortPubKey";
-import useUserCasts from "~/hooks/user/useUserCasts";
+import DegenTipsStats from "./DegenTipsStats";
+import UserSettings from "./UserSettings";
 
 export default function UserInfo({ fid }: { fid?: number }) {
-  const { user } = usePrivy();
-  const farcasterAccount = getUserFarcasterAccount(user);
-  const walletAccount = getUserWallets(user)[0];
-  fid = fid || farcasterAccount?.fid || undefined;
-  useUserChannels(fid); //preload channels
-  useUserCasts(fid, farcasterAccount?.fid || undefined); //preload casts
-  const { userInfo, load } = useUserBulk(farcasterAccount?.fid || undefined);
+  const { currFid } = useFarcasterAccount();
+  const { linkedWallets } = useWalletAccount();
+  const walletAccount =
+    linkedWallets?.length > 0 ? linkedWallets[0] : undefined;
+  fid = fid || currFid || undefined;
+  // useUserChannels(fid, UserChannelsType.FOLLOWING); //preload channels
+  // useUserChannels(fid, UserChannelsType.HOLDING); //preload channels
+  // useUserCasts(fid, currFid || undefined); //preload casts
+  const { userInfo, load } = useUserBulk(currFid || undefined);
   useEffect(() => {
     if (fid) load(fid);
   }, [fid]);
@@ -54,17 +55,14 @@ export default function UserInfo({ fid }: { fid?: number }) {
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
-          <Avatar
-            alt={username}
-            className="size-24 border-2 border-secondary bg-secondary/10"
-          >
+          <Avatar alt={username} className="size-24 border-2 ">
             <AvatarImage source={{ uri: userAvatar }} />
             <AvatarFallback className="bg-white">
               <User className="size-16 fill-primary/80 font-medium text-primary" />
             </AvatarFallback>
           </Avatar>
           <View className="absolute bottom-0 right-0 size-6">
-            {userInfo && farcasterAccount?.fid !== userInfo.fid ? (
+            {currFid !== userInfo.fid ? (
               <FollowUserButton farcasterUserInfo={userInfo} />
             ) : (
               <UserSettings />
@@ -73,17 +71,27 @@ export default function UserInfo({ fid }: { fid?: number }) {
         </View>
         <View className="flex w-full gap-1">
           <View className="w-full space-y-0">
-            {userDisplayName && (
-              <Text className="line-clamp-1 font-bold text-white">
-                {userDisplayName}
-              </Text>
-            )}
+            <View className="flex-row items-center gap-1">
+              {userDisplayName && (
+                <Text className="line-clamp-1 font-bold text-white">
+                  {userDisplayName}
+                </Text>
+              )}
+              {userInfo.power_badge && (
+                <Image
+                  source={require("~/assets/images/active-badge.webp")}
+                  style={{ width: 16, height: 16 }}
+                />
+              )}
+            </View>
             {username && (
-              <Text className="line-clamp-1 text-secondary">@{username}</Text>
+              <Text className="line-clamp-1 text-xs text-[#9BA1AD]">
+                @{username}
+              </Text>
             )}
           </View>
           <View className="w-full flex-row gap-4">
-            {userInfo?.following_count && (
+            {userInfo.following_count && (
               <ExternalLink
                 href={`${WARRPCAST}/${username}/following`}
                 target="_blank"
@@ -92,16 +100,16 @@ export default function UserInfo({ fid }: { fid?: number }) {
                   variant="link"
                   className="h-6 flex-row items-center gap-1 p-0"
                 >
-                  <Text className="text-sm font-medium text-white">
+                  <Text className="text-xs font-medium text-white">
                     {new Intl.NumberFormat("en-US", {
                       notation: "compact",
                     }).format(userInfo.following_count)}
                   </Text>
-                  <Text className="text-sm  text-secondary">Following</Text>
+                  <Text className="text-xs text-[#9BA1AD]">Following</Text>
                 </Button>
               </ExternalLink>
             )}
-            {userInfo?.follower_count && (
+            {userInfo.follower_count && (
               <ExternalLink
                 href={`${WARRPCAST}/${username}/followers`}
                 target="_blank"
@@ -111,20 +119,24 @@ export default function UserInfo({ fid }: { fid?: number }) {
                   variant="link"
                   className="h-6 flex-row items-center gap-1 p-0"
                 >
-                  <Text className="text-sm font-medium text-white">
+                  <Text className="text-xs font-medium text-white">
                     {new Intl.NumberFormat("en-US", {
                       notation: "compact",
                     }).format(userInfo.follower_count)}
                   </Text>
-                  <Text className="text-sm  text-secondary">Followers</Text>
+                  <Text className="text-xs text-[#9BA1AD]">Followers</Text>
                 </Button>
               </ExternalLink>
             )}
           </View>
           {fid && (
             <View className="flex-row items-center gap-1">
+              <Image
+                source={require("~/assets/images/degen-icon-2.png")}
+                style={{ width: 20, height: 20 }}
+              />
               <DegenTipsStats fid={fid} />
-              <Text className="text-sm text-secondary">DEGEN allowance</Text>
+              <Text className="text-xs text-[#9BA1AD]">DEGEN allowance</Text>
             </View>
           )}
         </View>
@@ -134,10 +146,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
-          <Avatar
-            alt={username}
-            className="size-24 border-2 border-secondary bg-secondary/10"
-          >
+          <Avatar alt={username} className="size-24 border-2">
             <AvatarFallback className="bg-white">
               <User className="size-16 fill-primary/80 font-medium text-primary" />
             </AvatarFallback>
@@ -183,7 +192,7 @@ function FollowUserButton({
       <Button
         size={"icon"}
         disabled={loading}
-        className="size-6 rounded-full bg-secondary"
+        className="size-6 rounded-full bg-secondary border-2 border-white"
         onPress={async () => {
           setLoading(true);
           const r = await unfollowUser(farcasterUserInfo?.fid || 0);
@@ -199,7 +208,7 @@ function FollowUserButton({
         }}
       >
         <Text>
-          <UserRoundCheck size={16} />
+          <Minus size={16} />
         </Text>
       </Button>
     );
@@ -208,7 +217,7 @@ function FollowUserButton({
       <Button
         size={"icon"}
         disabled={loading}
-        className="absolute bottom-0 right-0 size-6 rounded-full bg-secondary"
+        className="absolute bottom-0 right-0 size-6 rounded-full bg-secondary border-2 border-white"
         onPress={async () => {
           setLoading(true);
           const r = await followUser(farcasterUserInfo?.fid || 0);
@@ -224,7 +233,7 @@ function FollowUserButton({
         }}
       >
         <Text>
-          <UserRoundPlus size={16} />
+          <Plus size={16} />
         </Text>
       </Button>
     );

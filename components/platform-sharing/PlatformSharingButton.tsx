@@ -8,6 +8,7 @@ import {
   getAppWebsiteLink,
   getCommunityFrameLink,
   getCommunityWebsiteLink,
+  getMintNFTFrameLink,
   getPortfolioFrameLink,
   getPortfolioWebsiteLink,
   getTradePageFrameLink,
@@ -33,7 +34,8 @@ export default function PlatformSharingButton({
   twitterText,
   warpcastText,
   websiteLink,
-  frameLink,
+  warpcastEmbeds,
+  warpcastChannelId,
   className,
   navigateToCreatePageAfter,
   ...props
@@ -61,7 +63,8 @@ export default function PlatformSharingButton({
         twitterText={twitterText}
         warpcastText={warpcastText}
         websiteLink={websiteLink}
-        frameLink={frameLink}
+        warpcastEmbeds={warpcastEmbeds}
+        warpcastChannelId={warpcastChannelId}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>
@@ -76,9 +79,11 @@ export function ExploreSharingButton({ fid }: { fid: string | number }) {
       websiteLink={getAppWebsiteLink({
         fid,
       })}
-      frameLink={getAppFrameLink({
-        fid,
-      })}
+      warpcastEmbeds={[
+        getAppFrameLink({
+          fid,
+        }),
+      ]}
     />
   );
 }
@@ -91,9 +96,11 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
       websiteLink={getTradePageWebsiteLink({
         fid,
       })}
-      frameLink={getTradePageFrameLink({
-        fid,
-      })}
+      warpcastEmbeds={[
+        getTradePageFrameLink({
+          fid,
+        }),
+      ]}
     />
   );
 }
@@ -114,10 +121,12 @@ export function PortfolioSharingButton({
         fid,
         inviteFid: Number(currFid),
       })}
-      frameLink={getPortfolioFrameLink({
-        fid,
-        fname,
-      })}
+      warpcastEmbeds={[
+        getPortfolioFrameLink({
+          fid,
+          fname,
+        }),
+      ]}
     />
   );
 }
@@ -138,33 +147,68 @@ export function CommunitySharingButton({
       websiteLink={getCommunityWebsiteLink(channelId, {
         fid: currFid,
       })}
-      frameLink={getCommunityFrameLink(channelId, {
-        fid: currFid,
-      })}
+      warpcastEmbeds={[
+        getCommunityFrameLink(channelId, {
+          fid: currFid,
+        }),
+      ]}
+      warpcastChannelId={channelId}
     />
   );
 }
 
 type TransactionResultProps = {
   type: ONCHAIN_ACTION_TYPE;
+  castHash?: string;
   transactionDetailURL: string;
 };
 
 export function TransactionResultSharingButton({
   type,
   transactionDetailURL,
+  castHash,
   text,
   twitterText,
   warpcastText,
-  websiteLink,
-  frameLink,
+  warpcastEmbeds,
   className,
   navigateToCreatePageAfter,
   ...props
 }: ButtonProps & ShareProps & TransactionResultProps) {
   const [open, setOpen] = useState(false);
   const { currFid } = useFarcasterAccount();
-
+  let frameLink;
+  let websiteLink;
+  switch (type) {
+    case ONCHAIN_ACTION_TYPE.MINT_NFT:
+    case ONCHAIN_ACTION_TYPE.BURN_NFT:
+      if (!castHash) {
+        throw new Error("castHash is required for mintNFT action");
+      }
+      frameLink = getMintNFTFrameLink({
+        fid: currFid,
+        castHash,
+      });
+      websiteLink = getAppWebsiteLink({
+        fid: currFid,
+      });
+      break;
+    case ONCHAIN_ACTION_TYPE.SWAP_TOKEN:
+      frameLink = getTradePageFrameLink({
+        fid: currFid,
+      });
+      websiteLink = getTradePageWebsiteLink({
+        fid: currFid,
+      });
+      break;
+    default:
+      frameLink = getAppFrameLink({
+        fid: currFid,
+      });
+      websiteLink = getAppWebsiteLink({
+        fid: currFid,
+      });
+  }
   return (
     <View>
       <Button
@@ -188,13 +232,10 @@ export function TransactionResultSharingButton({
         warpcastText={getTransactionShareTextWithWarpcast(
           type,
           transactionDetailURL,
+          frameLink,
         )}
-        websiteLink={getTradePageWebsiteLink({
-          fid: currFid,
-        })}
-        frameLink={getTradePageFrameLink({
-          fid: currFid,
-        })}
+        websiteLink={websiteLink}
+        warpcastEmbeds={[frameLink]}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
       />
     </View>

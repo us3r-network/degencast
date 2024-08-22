@@ -1,22 +1,49 @@
 import { ApiResp } from "~/services/shared/types";
-import { ShareInfo, TokenWithTradeInfo } from "~/services/trade/types";
+import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
 import {
+  InvitationCodeRespEntity,
   LoginRespEntity,
   TipsInfo,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
+import { mockMyNFTs } from "../mocks/mynfts";
+import { Buffer } from "buffer";
 
-export function login(params?: {
-  inviterFid: string | number;
+export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
+  return request({
+    url: `degencast-users/me`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function getMyInvitationCodes(): RequestPromise<
+  ApiResp<Array<InvitationCodeRespEntity>>
+> {
+  return request({
+    url: `degencast-users/my-invitation-codes`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function loginDegencast(params?: {
+  inviterFid?: string | number;
+  inviteCode?: string;
 }): RequestPromise<ApiResp<LoginRespEntity>> {
-  const { inviterFid } = params || {};
+  const { inviterFid, inviteCode } = params || {};
   return request({
     url: `degencast-users/login`,
     method: "post",
     params: {
       ...(inviterFid ? { inviterFid } : {}),
+      ...(inviteCode ? { inviterCode: inviteCode } : {}),
     },
     headers: {
       needToken: true,
@@ -82,11 +109,25 @@ export function myTokens(
     },
   });
 }
-export function myShares(
+
+const mockMyNFTRequest = async ({ pubkey }: any) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    data: {
+      code: 0,
+      msg: "",
+      data: mockMyNFTs,
+    },
+  } as unknown as RequestPromise<ApiResp<ERC42069Token[]>>;
+};
+
+export function myNFTs(
   pubkey: `0x${string}`,
-): RequestPromise<ApiResp<ShareInfo[]>> {
+): RequestPromise<ApiResp<ERC42069Token[]>> {
+  // return mockMyNFTRequest(pubkey);
   return request({
-    url: `topics/my-shares`,
+    url: `topics/my-nfts`,
     method: "get",
     params: {
       pubkey,
@@ -96,6 +137,7 @@ export function myShares(
     },
   });
 }
+
 export function myTips(): RequestPromise<ApiResp<TipsInfo[]>> {
   return request({
     url: `topics/my-tips`,

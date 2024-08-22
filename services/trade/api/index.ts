@@ -1,13 +1,10 @@
-import request, { RequestPromise } from "../../shared/api/request";
 import { ApiResp } from "~/services/shared/types";
-import {
-  TokenTradeInfo,
-  ShareInfo,
-  TipsInfo,
-} from "../types";
+import request, { RequestPromise } from "../../shared/api/request";
+import { TokenWithTradeInfo } from "../types";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 export function communityTokens(): RequestPromise<
-  ApiResp<TokenTradeInfo[]>
+  ApiResp<TokenWithTradeInfo[]>
 > {
   return request({
     url: `topics/trade-tokens`,
@@ -17,23 +14,14 @@ export function communityTokens(): RequestPromise<
     },
   });
 }
-export function communityShares(): RequestPromise<
-  ApiResp<ShareInfo[]>
-> {
+export function createToken(
+  channelId: string,
+  fid: number,
+): RequestPromise<ApiResp<AttentionTokenEntity>> {
   return request({
-    url: `topics/trade-shares`,
-    method: "get",
-    headers: {
-      needToken: true,
-    },
-  });
-}
-export function communityTips(): RequestPromise<
-  ApiResp<TipsInfo[]>
-> {
-  return request({
-    url: `topics/trade-tips`,
-    method: "get",
+    url: `/topics/channels/${channelId}/attention-tokens`,
+    method: "post",
+    params: { fid },
     headers: {
       needToken: true,
     },

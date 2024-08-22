@@ -1,14 +1,14 @@
-import { useConnectWallet } from "@privy-io/react-auth";
 import { Wallet } from "~/components/common/Icons";
 import { View } from "react-native";
 import { useAccount } from "wagmi";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function ActiveWallet() {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   if (account.address)
     return (
       <View className="flex-row items-center justify-between">
@@ -17,7 +17,7 @@ export default function ActiveWallet() {
         </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
-          onPress={connectWallet}
+          onPress={()=>connectWallet()}
         >
           <Wallet className="font-medium text-secondary" />
           <Text className="text-xs font-medium text-secondary">Switch</Text>
@@ -32,7 +32,7 @@ export default function ActiveWallet() {
         </Text>
         <Button
           className="flex-row items-center gap-2 p-0"
-          onPress={connectWallet}
+          onPress={()=>connectWallet()}
         >
           <Wallet className="font-medium text-secondary" />
           <Text className="text-xs font-medium text-secondary">Connect</Text>

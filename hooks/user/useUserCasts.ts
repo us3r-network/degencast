@@ -6,13 +6,19 @@ import { AsyncRequestStatus } from "~/services/shared/types";
 
 export default function useUserCasts(fid?: number, viewer_fid?: number) {
   const dispatch = useDispatch();
-  const { items, status, error, next } = useSelector(selectUserCasts);
+  const {
+    items,
+    status,
+    error,
+    next,
+    fid: currentFid,
+  } = useSelector(selectUserCasts);
 
   useEffect(() => {
-    loadMore();
+    if (items?.length === 0 || fid !== currentFid) loadItems();
   }, [fid, viewer_fid]);
 
-  const loadMore = () => {
+  const loadItems = () => {
     if (status !== AsyncRequestStatus.PENDING && fid) {
       dispatch(fetchItems({ fid, viewer_fid }) as unknown as UnknownAction);
     }
@@ -23,6 +29,6 @@ export default function useUserCasts(fid?: number, viewer_fid?: number) {
     loading: status === AsyncRequestStatus.PENDING,
     error,
     hasNext: !!next.cursor,
-    loadMore,
+    loadItems,
   };
 }

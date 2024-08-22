@@ -1,37 +1,32 @@
 import { Address } from "viem";
-import { base } from "viem/chains";
-import { useChainId, useChains, useSwitchChain } from "wagmi";
+import { useAccount, useChainId, useChains, useSwitchChain } from "wagmi";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { NATIVE_TOKEN_ADDRESS } from "~/constants";
 import { useERC20Approve } from "~/hooks/trade/useERC20Contract";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 type OnChainActionButtonWarperProps = React.ComponentPropsWithoutRef<
   typeof Button
 > & {
   warpedButton?: React.ReactElement;
+  approveText?: string;
 };
 
 export default function OnChainActionButtonWarper({
   warpedButton,
-  takerAddress,
-  tokenAddress,
-  allowanceTarget,
-  allowanceValue,
+  approveText,
   targetChainId,
+  allowanceParams,
   ...props
 }: OnChainActionButtonWarperProps & {
-  takerAddress?: Address;
-  tokenAddress?: Address;
-  allowanceTarget?: Address;
-  allowanceValue?: bigint;
+  allowanceParams?: AllowanceProps;
 } & SwitchChainButtonProps) {
+  const { supportAtomicBatch } = useWalletAccount();
   if (
-    !takerAddress ||
-    !tokenAddress ||
-    !allowanceTarget ||
-    !allowanceValue ||
-    tokenAddress === NATIVE_TOKEN_ADDRESS
+    !allowanceParams ||
+    allowanceParams.tokenAddress === NATIVE_TOKEN_ADDRESS ||
+    (targetChainId && supportAtomicBatch(targetChainId))
   )
     return (
       <SwitchChainButtonWarper
@@ -42,10 +37,8 @@ export default function OnChainActionButtonWarper({
     );
   return (
     <ApproveButtonWarper
-      takerAddress={takerAddress}
-      tokenAddress={tokenAddress}
-      allowanceTarget={allowanceTarget}
-      allowanceValue={allowanceValue}
+      allowanceParams={allowanceParams}
+      text={approveText}
       warpedButton={
         <SwitchChainButtonWarper
           targetChainId={targetChainId}
@@ -59,36 +52,40 @@ export default function OnChainActionButtonWarper({
 }
 
 type ApproveButtonProps = {
-  takerAddress: Address;
+  allowanceParams: AllowanceProps;
+  text?: string;
+};
+
+type AllowanceProps = {
+  owner: Address;
   tokenAddress: Address;
-  allowanceTarget: Address;
-  allowanceValue: bigint;
+  spender: Address;
+  value: bigint;
 };
 
 function ApproveButtonWarper({
   warpedButton,
-  takerAddress,
-  tokenAddress,
-  allowanceTarget,
-  allowanceValue,
+  allowanceParams,
+  text,
   ...props
 }: OnChainActionButtonWarperProps & ApproveButtonProps) {
+  const { owner, tokenAddress, spender, value } = allowanceParams;
   const { allowance, approve, waiting, writing } = useERC20Approve({
-    takerAddress,
+    owner,
     tokenAddress,
-    allowanceTarget,
+    spender,
   });
-  console.log("allowance", allowance);
-  if (allowance === 0n || (!!allowance && allowance < allowanceValue))
+  // console.log("allowance", allowance);
+  if (allowance === 0n || (!!allowance && allowance < value))
     return (
       <Button
         disabled={waiting || writing}
         onPress={async () => {
-          await approve(allowanceValue);
+          await approve(value);
         }}
         {...props}
       >
-        <Text>Approve</Text>
+        <Text>{text || "Approve"}</Text>
       </Button>
     );
   else return warpedButton;
@@ -103,11 +100,26 @@ function SwitchChainButtonWarper({
   targetChainId,
   ...props
 }: OnChainActionButtonWarperProps & SwitchChainButtonProps) {
+  const { connectWallet } = useWalletAccount();
+  const { address, isConnected } = useAccount();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const chainId = useChainId();
   const chains = useChains();
   const targetChain = chains.find((c) => c.id === targetChainId);
-  if (targetChainId && targetChain && targetChainId !== chainId)
+  if (targetChainId && targetChain && targetChainId !== chainId) {
+    if (!isConnected) {
+      return (
+        <Button
+          disabled={switchChainStatus === "pending"}
+          onPress={async () => {
+            connectWallet();
+          }}
+          {...props}
+        >
+          <Text>Connect Wallet</Text>
+        </Button>
+      );
+    }
     return (
       <Button
         disabled={switchChainStatus === "pending"}
@@ -119,5 +131,5 @@ function SwitchChainButtonWarper({
         <Text>Switch to {targetChain.name}</Text>
       </Button>
     );
-  else return warpedButton;
+  } else return warpedButton;
 }

@@ -20,9 +20,31 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%; /* color for borders */
+    --border: 0, 0%, 88%;
     --input: 240 5.9% 90%;
     --ring: 262 99% 71%;
+
+    /* proposal */
+    --proposal-not-proposed: 40, 87%, 62%;
+    --proposal-not-proposed-foreground: 0, 0%, 100%;
+
+    --proposal-proposed: 168, 100%, 41%;
+    --proposal-proposed-foreground: 0, 0%, 100%;
+
+    --proposal-accepted: 168, 100%, 41%;
+    --proposal-accepted-foreground: 0, 0%, 100%;
+
+    --proposal-disputed: 347, 91%, 54%;
+    --proposal-disputed-foreground: 0, 0%, 100%;
+
+    --proposal-ready-to-mint: 168, 100%, 41%;
+    --proposal-ready-to-mint-foreground: 0, 0%, 100%;
+
+    --proposal-mint-expired: 274, 49%, 54%;
+    --proposal-mint-expired-foreground: 274, 49%, 54%;
+
+    --proposal-abandoned: 347, 91%, 54%;
+    --proposal-abandoned-foreground: 0, 0%, 100%;
   }
 
   /* .dark:root {
@@ -46,4 +68,15 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
   } */
+}
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }

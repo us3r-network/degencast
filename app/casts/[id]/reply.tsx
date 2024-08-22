@@ -1,24 +1,22 @@
-import { usePrivy } from "@privy-io/react-auth";
-import { Stack, useNavigation } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView } from "react-native";
+import { SafeAreaView, Text, View } from "react-native";
+import GoBackButton from "~/components/common/GoBackButton";
+import Editor from "~/components/social-farcaster/Editor";
+import FCast from "~/components/social-farcaster/FCast";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
-import { WarpcastChannel } from "~/services/community/api/community";
-import Editor from "~/components/social-farcaster/Editor";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
-import { useLocalSearchParams } from "expo-router";
-import { FarCast } from "~/services/farcaster/types";
-import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import { Card, CardContent } from "~/components/ui/card";
-import FCast from "~/components/social-farcaster/FCast";
-import { UserData } from "~/utils/farcaster/user-data";
-import { CommunityInfo } from "~/services/community/types/community";
-import GoBackButton from "~/components/common/GoBackButton";
-import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
-import { NeynarCast } from "~/services/farcaster/types/neynar";
+import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
+import useCastReply from "~/hooks/social-farcaster/useCastReply";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useLoadNeynarCastDetail from "~/hooks/social-farcaster/useLoadNeynarCastDetail";
+import useAuth from "~/hooks/user/useAuth";
+import { WarpcastChannel } from "~/services/community/api/community";
+import { CommunityEntity } from "~/services/community/types/community";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 
 const HomeChanel = {
   id: "",
@@ -26,12 +24,12 @@ const HomeChanel = {
   url: "",
   imageUrl: "",
   createdAt: 0,
-};
+} as WarpcastChannel;
 
 export default function ReplyScreen() {
   const params = useLocalSearchParams();
   const { id } = params;
-  const { castReplyData } = useCastPage();
+  const { castReplyData } = useCastReply();
   const { cast } = castReplyData || {};
   if (cast && id === getCastHex(cast)) {
     return <CachedCastReply />;
@@ -40,14 +38,13 @@ export default function ReplyScreen() {
 }
 
 function CachedCastReply() {
-  const { castReplyData } = useCastPage();
-  const { cast, community, farcasterUserDataObj } = castReplyData!;
+  const { castReplyData } = useCastReply();
+  const { cast, community } = castReplyData!;
 
   return (
     <CastReplyWithData
       castLoading={false}
       cast={cast!}
-      farcasterUserDataObj={farcasterUserDataObj}
       community={community!}
     />
   );
@@ -82,17 +79,13 @@ function FetchedCastReply() {
 function CastReplyWithData({
   castLoading,
   cast,
-  farcasterUserDataObj,
   community,
 }: {
   castLoading: boolean;
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: {
-    [key: string]: UserData;
-  };
-  community: CommunityInfo;
+  cast: NeynarCast;
+  community: CommunityEntity;
 }) {
-  const { addCastReplyRecordDataToStore } = useCastPage();
+  const { addCastReplyRecordDataToStore } = useCastReply();
   const { warpcastChannels } = useWarpcastChannels();
   const params = useLocalSearchParams();
   const { id } = params;
@@ -102,8 +95,8 @@ function CastReplyWithData({
   const [value, setValue] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [channel, setChannel] = useState<WarpcastChannel>(HomeChanel);
-  const { login, ready, user } = usePrivy();
-
+  const { login, ready } = useAuth();
+  const { farcasterAccount, signerPublicKey } = useFarcasterAccount();
   useEffect(() => {
     if (community) {
       const channelId = community.channelId;
@@ -171,9 +164,12 @@ function CastReplyWithData({
         className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
         id="create-view"
       >
-        {(!user?.farcaster?.signerPublicKey && (
+        {(!signerPublicKey && (
           <View className="flex-1 p-4 pt-16">
-            <Button className="rounded-lg bg-primary px-6 py-3" onPress={login}>
+            <Button
+              className="rounded-lg bg-primary px-6 py-3"
+              onPress={() => login()}
+            >
               <Text className="text-primary-foreground">
                 Log in with farcaster
               </Text>
@@ -182,16 +178,16 @@ function CastReplyWithData({
         )) || (
           <View className="h-full w-full" id="ad">
             <View className="mb-5 flex flex-row items-center gap-1">
-              {user?.farcaster?.pfp && (
+              {farcasterAccount.pfp && (
                 <Avatar alt="" className="h-5 w-5">
-                  <AvatarImage source={{ uri: user?.farcaster?.pfp }} />
+                  <AvatarImage source={{ uri: farcasterAccount.pfp }} />
                 </Avatar>
               )}
               <Text className="text-sm font-medium" id="textareaLabel">
-                {user?.farcaster?.displayName}
+                {farcasterAccount.displayName}
               </Text>
               <Text className="text-xs text-secondary" id="textareaLabel">
-                @{user?.farcaster?.username}
+                @{farcasterAccount.username}
               </Text>
             </View>
             <Editor
@@ -208,11 +204,7 @@ function CastReplyWithData({
                     {castLoading ? (
                       <View>Loading...</View>
                     ) : (
-                      <FCast
-                        cast={cast!}
-                        farcasterUserDataObj={farcasterUserDataObj}
-                        hidePoints
-                      />
+                      <FCast cast={cast!} />
                     )}
                   </CardContent>
                 </Card>

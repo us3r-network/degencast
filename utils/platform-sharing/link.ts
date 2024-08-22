@@ -50,14 +50,21 @@ export const getCommunityFrameLink = (
     fid?: string | number;
   },
 ) => {
-  let link = `${DEGENCAST_FRAME_HOST}/allowance/${id}`;
+  let link = `${DEGENCAST_FRAME_HOST}/atttoken/frames?attnft=${id}`;
   const { fid } = opts || {};
   if (fid) {
-    link += `/fid/${fid}`;
+    link += `&inviteFid=${fid}`;
   }
-  if (fid) {
-    link += `?inviteFid=${fid}`;
-  }
+
+  // TODO 下面这个链接修复后再还原
+  // let link = `${DEGENCAST_FRAME_HOST}/allowance/${id}`;
+  // const { fid } = opts || {};
+  // if (fid) {
+  //   link += `/fid/${fid}`;
+  // }
+  // if (fid) {
+  //   link += `?inviteFid=${fid}`;
+  // }
   return link;
 };
 
@@ -76,7 +83,7 @@ export const getAppFrameLink = (opts?: { fid?: string | number }) => {
   if (fid) {
     link += `?inviteFid=${fid}`;
   }
-  return link;
+  return link || "";
 };
 
 export const getPortfolioWebsiteLink = (opts?: {
@@ -122,6 +129,18 @@ export const getTradePageFrameLink = (opts?: { fid?: string | number }) => {
   return link;
 };
 
+export const getMintNFTFrameLink = (opts?: {
+  fid?: string | number;
+  castHash: string;
+}) => {
+  let link = `${DEGENCAST_FRAME_HOST}/curationnft/frames?castHash=${opts?.castHash}`;
+  const { fid } = opts || {};
+  if (fid) {
+    link += `&inviteFid=${fid}`;
+  }
+  return link;
+};
+
 export const getMintCastWebsiteLink = (opts: {
   chainId: number;
   contractAddress: string;
@@ -148,5 +167,20 @@ export const getMintCastFrameLink = (opts: {
     contractAddress,
     tokenId,
   });
+  return link;
+};
+
+export const getVoteProposalFrameLink = (
+  castHex: string,
+  opts?: {
+    fid?: string | number;
+  },
+) => {
+  const castHash = castHex.startsWith("0x") ? castHex : `0x${castHex}`;
+  let link = `${DEGENCAST_FRAME_HOST}/proposal/frames?castHash=${castHash}`;
+  const { fid } = opts || {};
+  if (fid) {
+    link += `?inviteFid=${fid}`;
+  }
   return link;
 };

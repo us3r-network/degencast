@@ -1,5 +1,8 @@
 import { FarcasterUserData } from "~/services/farcaster/types";
 import { TradeInfo } from "./trade";
+import { Address } from "viem";
+import { AttentionTokenEntity } from "./attention-token";
+import { Author } from "~/services/farcaster/types/neynar";
 
 export type CommunityEntity = {
   id: number;
@@ -34,8 +37,15 @@ export type CommunityEntity = {
     parent_url: string;
   }>;
   channelId?: string;
-  shares?: Array<{ subjectAddress: `0x${string}` }>;
-  hostUserData?: Array<FarcasterUserData>;
+  attentionTokenAddress: Address;
+  hostUserData?: Author;
+  tokenInitiatorUserData?: Author;
+  memberInfo?: {
+    totalNumber?: number;
+    newPostNumber?: number;
+    friendMemberNumber?: number;
+  };
+  attentionTokenInfo?: AttentionTokenEntity;
 };
 
 export type CommunityStatistics = {

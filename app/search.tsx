@@ -14,6 +14,8 @@ import { getSearchResult } from "~/services/farcaster/api";
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
 import GoBackButton from "~/components/common/GoBackButton";
+import NotFoundChannel from "~/components/community/NotFoundChannel";
+import { PRIMARY_COLOR } from "~/constants";
 
 type Community = {
   name: string;
@@ -183,7 +185,7 @@ export default function SearchScreen() {
         null}
 
       {(value && loading === false && recommend.length === 0 && (
-        <DefaultSearchIcon />
+        <NotFoundChannel />
       )) ||
         null}
     </ScrollView>
@@ -329,46 +331,18 @@ function CrossIcon() {
     >
       <path
         d="M15 5L5 15"
-        stroke="#4C2896"
+        stroke={PRIMARY_COLOR}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M5 5L15 15"
-        stroke="#4C2896"
+        stroke={PRIMARY_COLOR}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
-  );
-}
-
-function DefaultSearchIcon() {
-  return (
-    <View className="flex w-full flex-col items-center justify-center ">
-      <View className="flex w-72 flex-col items-center justify-center gap-8">
-        <Image
-          source={require("../assets/images/default-search.png")}
-          className="h-72 w-72"
-          contentFit="fill"
-          style={{ width: 280, height: 280 }}
-        />
-
-        <Text className="text-lg font-bold color-[#4C2896]">
-          Channel Not Found
-        </Text>
-        <Text className="text-center text-base leading-8 color-[#A36EFE]">
-          The channel you’re looking for does not seem to exist.
-        </Text>
-
-        <Link href="/(tabs)/trade" asChild>
-          <Button className="w-72 rounded-md  web:bg-[#A36EFE] web:hover:bg-[#A36EFE] web:active:bg-[#A36EFE]">
-            <Text className="color-white">Explore channels in rank</Text>
-          </Button>
-        </Link>
-      </View>
-    </View>
   );
 }

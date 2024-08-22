@@ -13,22 +13,24 @@ import useUserAction from "~/hooks/user/useUserAction";
 import Toast from "react-native-toast-message";
 
 export type ShareProps = {
+  modalTitle?: string;
   text?: string;
   twitterText?: string;
   warpcastText?: string;
+  warpcastEmbeds?: string[]; // share to warpcast
   warpcastChannelId?: string;
-  websiteLink?: string;
-  frameLink?: string;
+  websiteLink?: string; // share to twitter & copy
   navigateToCreatePageAfter?: () => void;
 };
 
 export default function PlatformSharingModal({
+  modalTitle,
   text,
   twitterText,
   warpcastText,
   websiteLink,
   warpcastChannelId,
-  frameLink,
+  warpcastEmbeds = [],
   open,
   hideWarpcastPoints,
   hideTwitterPoints,
@@ -49,7 +51,7 @@ export default function PlatformSharingModal({
   const onCreateCast = async () => {
     const createText = warpcastText || text || "";
     if (!signerPublicKey) {
-      openWarpcastCreateCast(createText, frameLink);
+      openWarpcastCreateCast(createText, warpcastEmbeds);
     } else {
       onOpenChange(false);
       navigation.navigate(
@@ -57,7 +59,7 @@ export default function PlatformSharingModal({
           "create",
           {
             text: createText,
-            embeds: [frameLink],
+            embeds: warpcastEmbeds,
             channelId: warpcastChannelId || "",
           },
         ] as never),
@@ -82,7 +84,7 @@ export default function PlatformSharingModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className=" box-border max-sm:w-screen">
         <DialogHeader>
-          <Text>Share</Text>
+          <Text>{modalTitle || "Share"}</Text>
         </DialogHeader>
         <View className="max-w-s flex flex-row gap-5 ">
           {warpcastText && (

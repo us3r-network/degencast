@@ -1,5 +1,12 @@
 export type LoginRespEntity = {
   id: number;
+  createdAt: string;
+  lastModifiedAt: string;
+};
+
+export type InvitationCodeRespEntity = {
+  code: string;
+  isUsed: boolean;
 };
 
 export enum UserActionName {
@@ -13,6 +20,7 @@ export enum UserActionName {
   Invite = "Invite",
   SwapToken = "SwapToken",
   MintCast = "MintCast",
+  ViewChannel = "ViewChannel",
 }
 
 export type UserActionData = {

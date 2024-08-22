@@ -41,8 +41,8 @@ export const communityTokenSlice = createSlice({
             ...item,
             decimals: item.decimals || 18,
             symbol: item.symbol || "",
-            name: item.name || item.tradeInfo.name,
-            logoURI: item.logoURI || item.tradeInfo.imageURL,
+            name: item.name || item.tradeInfo?.name || "",
+            logoURI: item.logoURI || item.tradeInfo?.imageURL || "",
           } as TokenWithTradeInfo;
         });
         // state.items = action.payload.data;

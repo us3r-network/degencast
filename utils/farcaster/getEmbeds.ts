@@ -1,5 +1,6 @@
 import { FarCast } from "~/services/farcaster/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { Buffer } from "buffer";
 
 export function isImg(url?: string) {
   if (!url) return false;

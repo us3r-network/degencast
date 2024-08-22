@@ -2,9 +2,9 @@ import { useCallback, useRef, useState } from "react";
 import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { fetchCastConversationWithHash } from "~/services/farcaster/neynar/farcaster";
 import { useAppDispatch } from "~/store/hooks";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 import useFarcasterAccount from "./useFarcasterAccount";
 import { ConversationCast } from "~/services/farcaster/types/neynar";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 export default function useLoadNeynarCastComments(castHex: string) {
   const dispatch = useAppDispatch();
@@ -26,8 +26,8 @@ export default function useLoadNeynarCastComments(castHex: string) {
       });
       const { direct_replies, replies } = res?.conversation?.cast || {};
       if (direct_replies) {
-        const viewerContexts = viewerContextsFromCasts(direct_replies);
-        dispatch(upsertManyToReactions(viewerContexts));
+        const reactions = getReactionsCountAndViewerContexts(direct_replies);
+        dispatch(upsertManyToReactions(reactions));
         setComments(direct_replies);
         setTotalComments(replies?.count || 0);
       } else {

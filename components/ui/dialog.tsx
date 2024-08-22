@@ -76,7 +76,10 @@ const DialogContent = React.forwardRef<
   }
 >(({ className, children, portalHost, hideCloseButton, ...props }, ref) => {
   const { open } = DialogPrimitive.useRootContext();
-  const dialogContainer = document.getElementById("dialog-container");
+  const dialogContainer =
+    Platform.OS === "web"
+      ? document.getElementById("dialog-container")
+      : undefined;
   return (
     <DialogPortal hostName={portalHost} container={dialogContainer}>
       <DialogOverlay>

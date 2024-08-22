@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 import { getUserDegenTipAllowance } from "~/services/farcaster/api";
@@ -9,14 +8,13 @@ export default function useUserDegenAllowance(params?: {
   fid?: string | number;
 }) {
   const { address: ownerAddress, fid: ownerFid } = params || {};
-  const { user } = usePrivy();
-  const { currFid } = useFarcasterAccount();
+  const { currFid, farcasterAccount } = useFarcasterAccount();
   const { address: connectedAddress } = useAccount();
 
   const address =
     ownerFid || ownerAddress
       ? ownerAddress
-      : user?.farcaster?.ownerAddress || connectedAddress;
+      : farcasterAccount?.ownerAddress || connectedAddress;
   const fid = ownerFid || ownerAddress ? ownerFid : currFid;
 
   const [totalDegenAllowance, setTotalDegenAllowance] = useState<number>(0);
@@ -32,7 +30,7 @@ export default function useUserDegenAllowance(params?: {
       });
       setTotalDegenAllowance(allowanceData.data?.[0]?.tip_allowance || "0");
       setRemainingDegenAllowance(
-        allowanceData.data?.[0]?.remaining_allowance || "0",
+        allowanceData.data?.[0]?.remaining_tip_allowance || "0",
       );
     } catch (e) {
       console.error(e);

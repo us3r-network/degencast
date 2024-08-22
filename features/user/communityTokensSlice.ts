@@ -31,10 +31,6 @@ export const fetchItems = createAsyncThunk(
       userCommunityTokens: UserCommunityTokenState;
     };
     if (userCommunityTokens.address !== address) {
-      userCommunityTokens.address = address;
-      userCommunityTokens.items = initialUserCommunityTokenState.items;
-      userCommunityTokens.error = initialUserCommunityTokenState.error;
-      userCommunityTokens.status = initialUserCommunityTokenState.status;
       const existCache = userCommunityTokens.cache.get(address);
       if (existCache?.data) return existCache;
     }
@@ -51,7 +47,13 @@ export const userCommunityTokenSlice = createSlice({
     builder
       .addCase(fetchItems.pending, (state, action) => {
         state.status = AsyncRequestStatus.PENDING;
-        state.items = [];
+        const address = action.meta.arg;
+        if (state.address !== address) {
+          state.address = address;
+          state.items = initialUserCommunityTokenState.items;
+          state.error = initialUserCommunityTokenState.error;
+          state.status = initialUserCommunityTokenState.status;
+        }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.status = AsyncRequestStatus.FULFILLED;

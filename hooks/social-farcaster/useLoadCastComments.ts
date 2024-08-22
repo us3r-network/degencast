@@ -4,8 +4,8 @@ import { getFarcasterCastComments } from "~/services/farcaster/api";
 import { FarCast } from "~/services/farcaster/types";
 import { ApiRespCode } from "~/services/shared/types";
 import { useAppDispatch } from "~/store/hooks";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 import { userDataObjFromArr } from "~/utils/farcaster/user-data";
-import { viewerContextsFromCasts } from "~/utils/farcaster/viewerContext";
 
 const PAGE_SIZE = 20;
 export default function useLoadCastComments(castHex: string) {
@@ -39,10 +39,10 @@ export default function useLoadCastComments(castHex: string) {
       if (code === ApiRespCode.SUCCESS) {
         const { farcasterUserData: farcasterUserDataTmp, casts: newComments } =
           data;
-        const viewerContexts = viewerContextsFromCasts(
+        const reactions = getReactionsCountAndViewerContexts(
           newComments.map((item) => item.data),
         );
-        dispatch(upsertManyToReactions(viewerContexts));
+        dispatch(upsertManyToReactions(reactions));
 
         const userDataObj = userDataObjFromArr(farcasterUserDataTmp);
         setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));

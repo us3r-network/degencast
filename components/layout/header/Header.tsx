@@ -20,32 +20,67 @@ export function Header({ className, ...props }: ViewProps) {
   );
 }
 
+export function HeaderLogo({ className, ...props }: ViewProps) {
+  return (
+    <Image
+      source={require("~/assets/images/degencast-logo.png")}
+      style={{
+        width: 24,
+        height: 24,
+        resizeMode: "contain",
+      }}
+    />
+  );
+}
+
 export function HeaderLeft({
-  title,
   className,
   ...props
-}: ViewProps & { title: string }) {
+}: ViewProps & { title?: string }) {
   return (
-    <View className={cn("flex-row items-center gap-5", className)} {...props}>
-      <View className="hidden sm:block">
-        <Image
-          source={require("~/assets/images/favicon.png")}
-          style={{
-            width: 40,
-            height: 40,
-            resizeMode: "contain",
-          }}
-        />
+    <View
+      className={cn(
+        "flex-row items-center justify-start gap-4 sm:min-w-52",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function HeaderLeftDefault({
+  title,
+  ...props
+}: ViewProps & { title?: string }) {
+  return (
+    <HeaderLeft {...props}>
+      <View>
+        <HeaderLogo />
       </View>
-      <Text className=" text-xl text-white">{title}</Text>
-    </View>
+      {title && <Text className=" text-xl text-white">{title}</Text>}
+    </HeaderLeft>
   );
 }
 
 export function HeaderRight({ className, ...props }: ViewProps) {
   return (
     <View
-      className={cn("flex-row items-center gap-[10px]", className)}
+      className={cn(
+        "flex-row items-center justify-end gap-[10px] sm:min-w-52",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function HeaderCenter({ className, ...props }: ViewProps) {
+  return (
+    <View
+      className={cn(
+        "m-auto w-full flex-1 max-sm:px-4 sm:w-full sm:max-w-screen-sm",
+        className,
+      )}
       {...props}
     />
   );

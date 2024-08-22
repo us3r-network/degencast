@@ -90,7 +90,7 @@ export const communityDetailTipsRankSlice = createSlice({
       .addCase(fetchItems.fulfilled, (state, action) => {
         const { channelId } = action.meta.arg;
         state[channelId].status = AsyncRequestStatus.FULFILLED;
-        const newItems = action.payload;
+        const newItems = action?.payload || [];
         state[channelId].items.push(...newItems);
         if (newItems.length >= PAGE_SIZE) {
           state[channelId].pageInfo.nextPageNumber += 1;

@@ -6,7 +6,7 @@ import {
   NativeTokenBalance,
 } from "~/components/trade/TokenBalance";
 import { TextClassContext } from "~/components/ui/text";
-import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
+import { DEGEN_TOKEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 
 export default function UserTokens({ address }: { address: Address }) {
   return (
@@ -26,12 +26,12 @@ export default function UserTokens({ address }: { address: Address }) {
         </View>
         <View className="flex flex-1 gap-2 rounded-lg bg-purple-100 p-4">
           <TokenInfo
-            name={DEGEN_METADATA.name}
-            logo={DEGEN_METADATA.logoURI}
-            symbol={DEGEN_METADATA.symbol}
+            name={DEGEN_TOKEN_METADATA.name}
+            logo={DEGEN_TOKEN_METADATA.logoURI}
+            symbol={DEGEN_TOKEN_METADATA.symbol}
           />
           <ERC20TokenBalance
-            token={DEGEN_METADATA}
+            token={DEGEN_TOKEN_METADATA}
             address={address}
             variant="big"
           />

@@ -1,13 +1,14 @@
 import { useEffect, useMemo } from "react";
-import { View, Image, Pressable } from "react-native";
+import { Image, Pressable } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Text } from "~/components/ui/text";
 import { Embeds } from "~/utils/farcaster/getEmbeds";
 import useLoadEmbedCastsMetadata from "~/hooks/social-farcaster/useLoadEmbedCastsMetadata";
 import { Card } from "~/components/ui/card";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import useCastDetails from "~/hooks/social-farcaster/useCastDetails";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { Link, useRouter } from "expo-router";
 
 export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
   const embedCastIds = casts.map((embed) => embed.castId || embed.cast_id);
@@ -22,7 +23,8 @@ export default function EmbedCasts({ casts }: { casts: Embeds["casts"] }) {
 }
 
 function EmbedCast({ cast }: { cast: NeynarCast }) {
-  const { navigateToCastDetail } = useCastPage();
+  const router = useRouter();
+  const { setCastDetailCacheData } = useCastDetails();
   const { author } = cast;
 
   const castImg = useMemo(() => {
@@ -33,30 +35,43 @@ function EmbedCast({ cast }: { cast: NeynarCast }) {
   return (
     <Pressable
       className="w-full "
-      onPress={() => {
+      onPress={(e) => {
+        e.stopPropagation();
         const castHex = getCastHex(cast);
-        // router.push(`/casts/${castHex}`);
-        navigateToCastDetail(castHex, {
+        setCastDetailCacheData({
           cast,
         });
+        router.push(`/casts/${castHex}`);
       }}
     >
       <Card className="flex w-full cursor-pointer flex-col gap-5 rounded-[10px] border-secondary p-3">
-        <View className="flex flex-row items-center gap-1">
+        <Link
+          className="flex flex-row items-center gap-1"
+          href={`/u/${author.fid}`}
+          onPress={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <Avatar alt={"Avatar"} className="h-5 w-5 rounded-full">
             <AvatarImage source={{ uri: author.pfp_url }} />
             <AvatarFallback>
               <Text>{author.display_name?.slice(0, 1)}</Text>
             </AvatarFallback>
           </Avatar>
-          <Text className="flex-shrink-0 text-sm font-medium">
+          <Text className="flex-shrink-0 font-bold hover:underline">
             {author.display_name}
           </Text>
-          <Text className="line-clamp-1 text-xs font-normal text-secondary">
+          {author?.power_badge && (
+            <Image
+              source={require("~/assets/images/active-badge.webp")}
+              style={{ width: 12, height: 12 }}
+            />
+          )}
+          <Text className="line-clamp-1 text-secondary hover:underline">
             @{author.username}
           </Text>
-        </View>
-        <Text className="line-clamp-6 text-base">{cast.text}</Text>
+        </Link>
+        <Text className="line-clamp-6">{cast.text}</Text>
         {castImg && (
           <Image
             className="w-full rounded-[10px] object-cover"

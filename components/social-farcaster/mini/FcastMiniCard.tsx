@@ -50,6 +50,7 @@ export default function FcastMiniCard({
     display: isNeynar
       ? (cast as NeynarCast).author.display_name
       : userData?.display,
+    power_badge: isNeynar ? (cast as NeynarCast).author.power_badge : false,
   };
   return (
     <Card
@@ -69,9 +70,14 @@ export default function FcastMiniCard({
             <Text>{userInfo.username}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className="line-clamp-1 text-xs font-medium">
-          {userInfo.display}
-        </Text>
+
+        <Text className="line-clamp-1 font-bold">{userInfo.display}</Text>
+        {userInfo.power_badge && (
+          <Image
+            source={require("~/assets/images/active-badge.webp")}
+            style={{ width: 12, height: 12 }}
+          />
+        )}
       </View>
       {/* body - text & embed */}
       {embedImgs.length === 0 && !!cast.text && (

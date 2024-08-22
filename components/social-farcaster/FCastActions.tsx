@@ -1,39 +1,37 @@
-import { usePrivy } from "@privy-io/react-auth";
-import { useState } from "react";
-import { ViewProps } from "react-native";
-import Toast from "react-native-toast-message";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
+import { forwardRef, LegacyRef, useState } from "react";
+import { View, ViewProps } from "react-native";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
 import { CommunityInfo } from "~/services/community/types/community";
-import { FarCast } from "~/services/farcaster/types";
-import { UserData } from "~/utils/farcaster/user-data";
-import { ExplorePostActions, PostDetailActions } from "../post/PostActions";
+import { PostMenuButton } from "../post/PostActions";
 import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
 import FCastShareModal from "./FCastShareModal";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
+import useAuth from "~/hooks/user/useAuth";
+import useCastReply from "~/hooks/social-farcaster/useCastReply";
+import useAppModals from "~/hooks/useAppModals";
 
-export function FCastDetailActions({
-  cast,
-  farcasterUserDataObj,
-  communityInfo,
-  ...props
-}: ViewProps & {
-  cast: FarCast | NeynarCast;
-  farcasterUserDataObj?: { [key: string]: UserData };
-  communityInfo: CommunityInfo;
-  isDetail?: boolean;
-}) {
-  const castFid = getCastFid(cast);
-  const castUserData = farcasterUserDataObj?.[castFid];
+export const FCastMenuButton = forwardRef(function (
+  {
+    direction,
+    cast,
+    communityInfo,
+    ...props
+  }: ViewProps & {
+    direction?: "top" | "left" | "right";
+    cast: NeynarCast;
+    communityInfo: CommunityInfo;
+  },
+  ref: LegacyRef<View>,
+) {
   const channelId = communityInfo?.channelId || "";
-  const { navigateToCastReply } = useCastPage();
-  const { authenticated, login } = usePrivy();
+  const { navigateToCastReply } = useCastReply();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
@@ -74,7 +72,6 @@ export function FCastDetailActions({
     const castHex = getCastHex(cast);
     navigateToCastReply(castHex, {
       cast,
-      farcasterUserDataObj,
       community: communityInfo,
     });
   };
@@ -88,133 +85,17 @@ export function FCastDetailActions({
     setOpenGiftModal(true);
   };
 
+  const { upsertProposalShareModal } = useAppModals();
   const onShare = () => {
     setOpenShareModal(true);
+    upsertProposalShareModal({ open: true, cast, channel: communityInfo });
   };
-
   return (
-    <>
-      <PostDetailActions
-        liked={liked}
-        liking={likePending}
-        reposted={recasted}
-        reposting={recastPending}
-        onLike={onLike}
-        onGift={onGift}
-        onShare={onShare}
-        onComment={onComment}
-        onRepost={onRepost}
-        onMint={() => {
-          if (!authenticated) {
-            login();
-            return;
-          }
-          setOpenMintNftModal(true);
-        }}
-        {...props}
-      />
-
-      <FCastGiftModal
-        totalAllowance={totalDegenAllowance}
-        remainingAllowance={remainingDegenAllowance}
-        cast={cast}
-        open={openGiftModal}
-        onOpenChange={setOpenGiftModal}
-      />
-      <FCastShareModal
-        cast={cast}
-        open={openShareModal}
-        onOpenChange={setOpenShareModal}
-      />
-      <FCastMintNftModal
-        cast={cast}
-        castUserData={castUserData}
+    <View className="z-20">
+      <PostMenuButton
+        ref={ref}
+        direction={direction}
         channelId={channelId}
-        open={openMintNftModal}
-        onOpenChange={setOpenMintNftModal}
-      />
-    </>
-  );
-}
-
-export function FCastExploreActions({
-  cast,
-  farcasterUserDataObj,
-  communityInfo,
-  showActions,
-  showActionsChange,
-  ...props
-}: ViewProps & {
-  cast: FarCast;
-  farcasterUserDataObj: { [key: string]: UserData };
-  communityInfo: CommunityInfo;
-  showActions: boolean;
-  showActionsChange: (showActions: boolean) => void;
-}) {
-  const castUserData = farcasterUserDataObj[cast.fid];
-  const channelId = communityInfo?.channelId || "";
-  const { navigateToCastReply } = useCastPage();
-  const { authenticated, login } = usePrivy();
-  const { currFid } = useFarcasterAccount();
-  const { requestSigner, hasSigner } = useFarcasterSigner();
-  const { likeCast, removeLikeCast, liked, likeCount, likePending } =
-    useFarcasterLikeAction({ cast });
-  const { recast, removeRecast, recasted, recastCount, recastPending } =
-    useFarcasterRecastAction({ cast });
-  const [openGiftModal, setOpenGiftModal] = useState(false);
-  const [openShareModal, setOpenShareModal] = useState(false);
-  const [openMintNftModal, setOpenMintNftModal] = useState(false);
-  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
-    useUserDegenAllowance();
-
-  const onLike = () => {
-    if (liked) {
-      removeLikeCast();
-    } else {
-      likeCast();
-    }
-  };
-
-  const onRepost = () => {
-    if (recasted) {
-      removeRecast();
-    } else {
-      recast();
-    }
-  };
-
-  const onComment = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
-    if (!currFid || !hasSigner) {
-      requestSigner();
-      return;
-    }
-    const castHex = getCastHex(cast);
-    navigateToCastReply(castHex, {
-      cast,
-      farcasterUserDataObj,
-      community: communityInfo,
-    });
-  };
-
-  const onGift = () => {
-    if (!authenticated) {
-      login();
-      return;
-    }
-    loadDegenAllowance();
-    setOpenGiftModal(true);
-  };
-
-  const onShare = () => {
-    setOpenShareModal(true);
-  };
-  return (
-    <>
-      <ExplorePostActions
         liked={liked}
         likeCount={likeCount}
         liking={likePending}
@@ -232,8 +113,6 @@ export function FCastExploreActions({
           }
           setOpenMintNftModal(true);
         }}
-        showActions={showActions}
-        showActionsChange={showActionsChange}
         {...props}
       />
 
@@ -244,29 +123,17 @@ export function FCastExploreActions({
         open={openGiftModal}
         onOpenChange={setOpenGiftModal}
       />
-      <FCastShareModal
+      {/* <FCastShareModal
         cast={cast}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
-      />
+      /> */}
       <FCastMintNftModal
         cast={cast}
-        castUserData={castUserData}
         channelId={channelId}
         open={openMintNftModal}
         onOpenChange={setOpenMintNftModal}
       />
-    </>
+    </View>
   );
-}
-
-export function CreatedFCastActions({
-  cast,
-  ...props
-}: ViewProps & {
-  cast: FarCast;
-}) {
-  const { authenticated, login } = usePrivy();
-  const onShare = () => {};
-  return <PostDetailActions onShare={onShare} hideGift hideLike {...props} />;
-}
+});

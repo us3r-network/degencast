@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import TradingViewChart from "./TradingViewChart";
 import axios from "axios";
@@ -6,6 +6,8 @@ import { Text } from "../ui/text";
 import TradingViewNotice from "./TradingViewNotice";
 import { TradeInfo } from "~/services/community/types/trade";
 import { shortAddress } from "~/utils/shortAddress";
+import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
+import { TradeButton, TradeChannelTokenButton } from "../trade/TradeButton";
 
 export default function CommunityTokenInfo({
   tokenInfo,
@@ -18,6 +20,17 @@ export default function CommunityTokenInfo({
   };
   tradeInfo: TradeInfo;
 }) {
+  const { loading: communityTokensLoading, items: communityTokens } =
+    useCommunityTokens();
+  const tokenAddress = tradeInfo.tokenAddress;
+  const communityToken = useMemo(
+    () =>
+      communityTokens.find(
+        (item) => tokenAddress && item.tradeInfo?.tokenAddress === tokenAddress,
+      ),
+    [communityTokens, tokenAddress],
+  );
+
   const [prices, setPrices] = useState([]);
   const { chain, poolAddress } = tradeInfo;
   const ohlcvApiBaseUrl = `https://api.geckoterminal.com/api/v2/networks/${chain}/pools/${poolAddress}`;
@@ -25,7 +38,7 @@ export default function CommunityTokenInfo({
   useEffect(() => {
     setPrices([]);
     axios
-      .get(`${ohlcvApiBaseUrl}/ohlcv/day?aggregate=1&limit=7`)
+      .get(`${ohlcvApiBaseUrl}/ohlcv/hour?aggregate=1&limit=168`)
       .then((res) => {
         const { data, meta } = res.data;
         const ohlcvList = data?.attributes?.ohlcv_list || [];
@@ -51,6 +64,14 @@ export default function CommunityTokenInfo({
         priceChange={Number(tradeInfo?.stats.price_change_percentage.h24)}
       />
       <TokenInfo tokenInfo={tokenInfo} tradeInfo={tradeInfo} />
+
+      {communityToken && (
+        <TradeChannelTokenButton
+          token2={communityToken}
+          className="mt-4 rounded-[10px] bg-primary"
+        />
+      )}
+
       <TradingViewNotice />
     </View>
   );

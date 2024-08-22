@@ -13,7 +13,7 @@ import { Text } from "~/components/ui/text";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { TradeButton } from "../../trade/TradeButton";
-import { DEGEN_ADDRESS } from "~/constants";
+import { DEGEN_TOKEN_ADDRESS } from "~/constants";
 import { Address } from "viem";
 
 const DEFAULT_ITEMS_NUM = 99;
@@ -26,7 +26,7 @@ export default function CommunityTokens({
   const otherTokens = useMemo(
     () =>
       items?.filter(
-        (item) => item.address.toLowerCase() !== DEGEN_ADDRESS.toLowerCase(),
+        (item) => item.address.toLowerCase() !== DEGEN_TOKEN_ADDRESS.toLowerCase(),
       ),
     [items],
   );
@@ -52,7 +52,7 @@ export default function CommunityTokens({
           otherTokens
             .slice(0, DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <MyCommunityToken key={item.address} token={item} />
+              <CommunityToken key={item.address} token={item} />
             ))}
       </View>
       <CollapsibleContent className="flex w-full gap-2">
@@ -60,14 +60,14 @@ export default function CommunityTokens({
           otherTokens
             .slice(DEFAULT_ITEMS_NUM)
             .map((item) => (
-              <MyCommunityToken key={item.address} token={item} />
+              <CommunityToken key={item.address} token={item} />
             ))}
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-export function MyCommunityToken({
+export function CommunityToken({
   token,
   withSwapButton,
 }: {
