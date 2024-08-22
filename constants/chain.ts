@@ -19,7 +19,7 @@ export const DEGEN_TOKEN_ADDRESS: Address =
 
 export const NATIVE_TOKEN_METADATA: TokenWithTradeInfo = {
   chainId: DEFAULT_CHAINID,
-  address: WRAP_NATIVE_TOKEN_ADDRESS, //TODO: change to NATIVE_TOKEN_ADDRESS
+  address: NATIVE_TOKEN_ADDRESS,
   name: DEFAULT_CHAIN.nativeCurrency.name,
   decimals: DEFAULT_CHAIN.nativeCurrency.decimals,
   symbol: DEFAULT_CHAIN.nativeCurrency.symbol,

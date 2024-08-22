@@ -14,46 +14,21 @@ type QuoteParams = {
   buyToken: TokenWithTradeInfo;
   sellAmount?: bigint;
   buyAmount?: bigint;
+  poolFee?: FeeAmount;
 };
 
-export function useQuote({ sellToken, buyToken }: QuoteParams) {
-  const fetchSellAmount = (buyAmount: bigint) => {
-    const quoterContract = {
-      address: UNISWAP_V3_QUOTER_CONTRACT_ADDRESS,
-      abi: QuoterV2.abi,
-      chainId: buyToken.chainId,
-    };
-    // console.log("fetchInputAmount", buyAmount, sellToken, buyToken);
-    const { data, error } = useReadContract({
-      ...quoterContract,
-      functionName: "quoteExactOutputSingle",
-      args: [
-        {
-          tokenIn: sellToken.address,
-          tokenOut: buyToken.address,
-          amount: buyAmount,
-          fee: FeeAmount.MEDIUM,
-          sqrtPriceLimitX96: 0,
-        },
-      ],
-    } as any);
-    // console.log("fetchOutputAmount", data, error?.cause.message);
-    return { sellAmount: data ? ((data as any[])[0] as bigint) : 0n, error };
-  };
-
-  return {
-    fetchSellAmount,
-  };
-}
-
-export function useSwap({ sellToken, buyToken }: QuoteParams) {
+export function useSwap({
+  sellToken,
+  buyToken,
+  poolFee = FeeAmount.MEDIUM,
+}: QuoteParams) {
   const tokenIn = convertToken(sellToken);
   const tokenOut = convertToken(buyToken);
   const [swapRoute, setSwapRoute] = useState<Route<Token, Token>>();
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const getRoute = async () => {
-      const swapRoute = await getSwapRoute(tokenIn, tokenOut, FeeAmount.HIGH);
+      const swapRoute = await getSwapRoute(tokenIn, tokenOut, poolFee);
       setSwapRoute(swapRoute);
       setReady(true);
       console.log("swapRoute", swapRoute, tokenIn, tokenOut);
@@ -86,7 +61,7 @@ export function useSwap({ sellToken, buyToken }: QuoteParams) {
     setSellAmount(undefined);
     setSwapRoute(undefined);
     setReady(false);
-  }
+  };
 
   return {
     ready,

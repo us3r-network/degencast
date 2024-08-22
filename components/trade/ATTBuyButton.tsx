@@ -43,6 +43,7 @@ import {
 import UserTokenSelect from "./UserTokenSelect";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { FeeAmount } from "@uniswap/v3-sdk";
 
 export function BuyButton({
   token,
@@ -367,6 +368,7 @@ function MintPriceBeforeGraduated({
   } = useSwap({
     sellToken: userSelectedToken!,
     buyToken: { address: paymentToken.address, chainId: ATT_CONTRACT_CHAIN.id },
+    poolFee: FeeAmount.HIGH,
   });
   const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo({
     contractAddress: tokenContract,
