@@ -38,14 +38,16 @@ const FCastDetailsCard = React.forwardRef<
           <FCastMenuButton cast={cast} communityInfo={channel as any} />
         )}
 
-        <View className="ml-auto">
-          <ProposalStatusActions
-            cast={cast}
-            channel={channel!}
-            tokenInfo={tokenInfo}
-            proposal={proposal!}
-          />
-        </View>
+        {cast && channelId && channelId !== "home" && (
+          <View className="ml-auto">
+            <ProposalStatusActions
+              cast={cast}
+              channel={channel!}
+              tokenInfo={tokenInfo}
+              proposal={proposal!}
+            />
+          </View>
+        )}
       </View>
     </CardWrapper>
   );
