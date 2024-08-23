@@ -12,6 +12,7 @@ import {
 import useUserInviteCode from "./useUserInviteCode";
 import { INVITE_ONLY } from "~/constants";
 import Toast from "react-native-toast-message";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 export default function useAuth() {
   const {
@@ -141,7 +142,7 @@ export default function useAuth() {
     const resp = await signupDegencast(inviteCode);
     if (resp) {
       setStatus(SigninStatus.SUCCESS);
-      loginHandler?.onSuccess?.();
+      eventBus.next({ type: EventTypes.USER_SIGNUP });
     } else {
       if (INVITE_ONLY) {
         setStatus(SigninStatus.NEED_INVITE_CODE);

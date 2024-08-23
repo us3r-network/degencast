@@ -40,6 +40,7 @@ const InviteCodeModal = React.forwardRef<
         <InviteCodeForm
           onSuccess={() => {
             console.log("signup degencast successful!");
+            setOpen(false);
           }}
           onFail={(error: unknown) => {
             console.log("Failed to signup degencast", error);
@@ -76,7 +77,7 @@ export function InviteCodeForm({
         variant="default"
         className="rounded-full"
         disabled={!inviteCode}
-        onPress={() => signup(inviteCode)}
+        onPress={() => signup(inviteCode).then(onSuccess).catch(onFail)}
       >
         <Text>Submit</Text>
       </Button>
