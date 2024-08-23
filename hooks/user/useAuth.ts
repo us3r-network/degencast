@@ -142,7 +142,7 @@ export default function useAuth() {
     const resp = await signupDegencast(inviteCode);
     if (resp) {
       setStatus(SigninStatus.SUCCESS);
-      eventBus.next({ type: EventTypes.USER_SIGNUP });
+      eventBus.next({ type: EventTypes.USER_SIGNUP_SUCCESS });
     } else {
       if (INVITE_ONLY) {
         setStatus(SigninStatus.NEED_INVITE_CODE);
@@ -152,6 +152,7 @@ export default function useAuth() {
         });
       } else {
         setStatus(SigninStatus.FAILED);
+        eventBus.next({ type: EventTypes.USER_SIGNUP_FAIL });
         Toast.show({
           type: "error",
           text1: "Failed to sign up",

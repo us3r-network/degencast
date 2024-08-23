@@ -15,7 +15,8 @@ export default function UserSignin({
   useEffect(() => {
     const subscription = eventBus.subscribe((event) => {
       console.log("event", event);
-      if ((event as any).type === EventTypes.USER_SIGNUP) onSuccess();
+      if ((event as any).type === EventTypes.USER_SIGNUP_SUCCESS) onSuccess();
+      if ((event as any).type === EventTypes.USER_SIGNUP_FAIL) onFail('Failed to sign up');
     });
     return () => {
       subscription?.unsubscribe();

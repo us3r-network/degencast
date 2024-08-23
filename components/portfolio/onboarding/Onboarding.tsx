@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
 import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
-import DepositButton from "~/components/trade/DepositButton";
+import { DepositDialog } from "~/components/trade/DepositButton";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
@@ -30,7 +30,7 @@ const OnboardingModal = React.forwardRef<
   }, [ready, authenticated]);
   const [showDeposit, setShowDeposit] = useState(false);
   const { activeWallet } = useWalletAccount();
-  if (showDeposit) return <DepositButton hideButton />;
+  if (showDeposit) return <DepositDialog open={open} setOpen={setOpen} />;
   return (
     <Dialog open={open} ref={ref}>
       <DialogContent hideCloseButton className="mx-auto max-w-screen-sm p-0">
