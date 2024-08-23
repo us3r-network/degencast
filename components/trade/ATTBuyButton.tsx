@@ -1,8 +1,17 @@
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import { formatUnits } from "viem";
+import * as Clipboard from "expo-clipboard";
+import React, {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { Image, Pressable, ScrollView, View } from "react-native";
+import { SceneMap, TabView } from "react-native-tab-view";
+import Toast from "react-native-toast-message";
+import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import About from "~/components/common/About";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
@@ -11,11 +20,9 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import {
   ATT_CONTRACT_CHAIN,
@@ -31,25 +38,32 @@ import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useQuote } from "~/hooks/trade/useUniSwapV3";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenActivitieList } from "../activity/Activities";
+import { ExternalLink } from "../common/ExternalLink";
+import { Copy } from "../common/Icons";
+import DialogTabBar from "../layout/tab-view/DialogTabBar";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import { NeynarCast } from "~/services/farcaster/types/neynar";
+
+export type NFTProps = {
+  cast: NeynarCast;
+  token: ERC42069Token;
+};
 
 export function BuyButton({
   token,
   cast,
   renderButton,
   onSuccess,
-}: {
-  token: ERC42069Token;
-  cast: NeynarCast;
+}: NFTProps & {
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
   onSuccess?: (mintNum: number) => void;
 }) {
@@ -83,89 +97,166 @@ export function BuyButton({
           token={token}
           cast={cast}
           open={open}
-          onOpenChange={setOpen}
           onSuccess={onSuccess}
-          setClose={() => setOpen(false)}
+          setOpen={setOpen}
         />
       )}
     </Pressable>
   );
 }
 
+const NftCtx = createContext<
+  | (NFTProps & {
+      setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    })
+  | undefined
+>(undefined);
+
+const useNftCtx = () => {
+  const ctx = useContext(NftCtx);
+  if (!ctx) {
+    throw new Error("useCreateProposalCtx must be used within a provider");
+  }
+  return ctx;
+};
+
 export function BuyDialog({
   token,
   cast,
   open,
-  onOpenChange,
+  setOpen,
   onSuccess,
-  setClose,
-}: {
-  token: ERC42069Token;
-  cast: NeynarCast;
+}: NFTProps & {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess?: (mintNum: number) => void;
-  setClose?: () => void;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "nft", title: "NFT" },
+    { key: "details", title: "Details" },
+    { key: "activity", title: "Activity" },
+  ]);
+
+  const MintNFTScene = () => (
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Active Wallet</Text>
+        <UserWalletSelect />
+      </View>
+      <MintNFT
+        nft={token}
+        onSuccess={(data) => {
+          setTransationData(data);
+          onSuccess?.(data.amount || 0);
+        }}
+        onError={setError}
+      />
+    </View>
+  );
+
+  const DetailsScene = () => (
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Contract Address</Text>
+        <View className="flex-row items-center justify-between gap-2">
+          <Text className="line-clamp-1">
+            {shortPubKey(token.contractAddress)}
+          </Text>
+          <Button
+            size="icon"
+            variant="ghost"
+            onPress={async (event) => {
+              await Clipboard.setStringAsync(token.contractAddress as Address);
+              Toast.show({
+                type: "info",
+                text1: "Wallet Address Copied!",
+              });
+            }}
+          >
+            <Copy className="size-4 text-white" />
+          </Button>
+        </View>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Token ID</Text>
+        <Text> {token.tokenId} </Text>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Token Standard</Text>
+        <Text>ERC-1155｜ERC-20</Text>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Chain</Text>
+        <Text>{ATT_CONTRACT_CHAIN.name}</Text>
+      </View>
+      <ExternalLink href={`https://opensea.io/`} target="_blank">
+        <View className="flex-row items-center justify-between gap-2">
+          <Image
+            source={{
+              uri: "https://storage.googleapis.com/opensea-static/Logomark/Logomark-Blue.png",
+            }}
+            style={{
+              width: 24,
+              height: 24,
+              resizeMode: "contain",
+            }}
+          />
+          <Text>Opensea</Text>
+        </View>
+      </ExternalLink>
+    </View>
+  );
+
+  const ActivityScene = () => (
+    <ScrollView
+      className="w-full max-h-[80vh]"
+      showsHorizontalScrollIndicator={false}
+    >
+      <TokenActivitieList token={token} />
+    </ScrollView>
+  );
+
+  const renderScene = SceneMap({
+    nft: MintNFTScene,
+    details: DetailsScene,
+    activity: ActivityScene,
+  });
+
   return (
     <Dialog
       open={open}
       onOpenChange={(o) => {
         setTransationData(undefined);
         setError("");
-        onOpenChange(o);
+        setOpen(o);
       }}
     >
       {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("mr-4 flex-row items-center")}>
-            <Pressable
-              disabled={!showDetails}
-              onPress={() => setShowDetails(false)}
-            >
-              <Text className={showDetails ? "text-secondary" : "text-white"}>
-                NFT
-              </Text>
-            </Pressable>
-            <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
-            <Pressable
-              disabled={showDetails}
-              onPress={() => setShowDetails(true)}
-            >
-              <Text className={!showDetails ? "text-secondary" : "text-white"}>
-                Details
-              </Text>
-            </Pressable>
-          </DialogHeader>
-          <ScrollView
-            className="max-h-[80vh] w-full"
-            showsHorizontalScrollIndicator={false}
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <NftCtx.Provider
+            value={{
+              cast,
+              token,
+              setOpen,
+            }}
           >
-            {showDetails ? (
-              <TokenActivitieList token={token} />
-            ) : (
-              <View className="gap-4">
-                <View className="flex-row items-center justify-between gap-2">
-                  <Text>Active Wallet</Text>
-                  <UserWalletSelect />
-                </View>
-                <MintNFT
-                  nft={token}
-                  onSuccess={(data) => {
-                    setTransationData(data);
-                    onSuccess?.(data.amount || 0);
-                  }}
-                  onError={setError}
-                />
-                {/* <DialogFooter>
-                  <About title={ATT_TITLE} info={ATT_INFO} />
-                </DialogFooter> */}
-              </View>
-            )}
-          </ScrollView>
+            <TabView
+              swipeEnabled={false}
+              navigationState={{ index, routes }}
+              renderScene={renderScene}
+              onIndexChange={setIndex}
+              renderTabBar={DialogTabBar}
+            />
+          </NftCtx.Provider>
         </DialogContent>
       )}
       {transationData && (
@@ -179,7 +270,7 @@ export function BuyDialog({
             data={transationData}
             buttonText="Mint more"
             buttonAction={() => setTransationData(undefined)}
-            navigateToCreatePageAfter={setClose}
+            navigateToCreatePageAfter={() => setOpen(false)}
           />
         </DialogContent>
       )}
