@@ -74,16 +74,22 @@ export default function useWalletAccount() {
     },
     [capabilities],
   );
-  const hasCoinBaseWallet = linkedWallets.find(
-    (wallet) => wallet.connectorType === "coinbase_wallet",
-  );
+  const coinBaseWallet =
+    linkedWallets.find(
+      (wallet) => wallet.connectorType === "coinbase_wallet",
+    ) ||
+    connectedWallets.find(
+      (wallet) => wallet.connectorType === "coinbase_wallet",
+    );
 
   const activeOneWallet = useCallback(() => {
     if (connectedWallets.length > 0) {
       setActiveWallet(connectedWallets[0]);
     } else {
       if (linkedWallets.length > 0) {
-        connectWallet({ suggestedAddress: linkedWallets[0].address });
+        connectWallet({
+          suggestedAddress: linkedWallets[0].address,
+        });
       }
     }
   }, [connectedWallets, linkedWallets]);
@@ -109,7 +115,7 @@ export default function useWalletAccount() {
     connectedExternalWallet,
     unconnectedLinkedWallets,
     supportAtomicBatch,
-    hasCoinBaseWallet,
+    coinBaseWallet,
   };
 }
 
