@@ -161,12 +161,14 @@ type TransactionResultProps = {
   type: ONCHAIN_ACTION_TYPE;
   castHash?: string;
   transactionDetailURL: string;
+  channelId: string;
 };
 
 export function TransactionResultSharingButton({
   type,
   transactionDetailURL,
   castHash,
+  channelId,
   text,
   twitterText,
   warpcastText,
@@ -237,6 +239,7 @@ export function TransactionResultSharingButton({
         websiteLink={websiteLink}
         warpcastEmbeds={[frameLink]}
         navigateToCreatePageAfter={navigateToCreatePageAfter}
+        warpcastChannelId={channelId}
       />
     </View>
   );

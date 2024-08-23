@@ -175,7 +175,7 @@ export function BuyDialog({
           </DialogHeader>
           <TransactionInfo
             type={ONCHAIN_ACTION_TYPE.MINT_NFT}
-            castHash={cast.hash}
+            cast={cast}
             data={transationData}
             buttonText="Mint more"
             buttonAction={() => setTransationData(undefined)}
