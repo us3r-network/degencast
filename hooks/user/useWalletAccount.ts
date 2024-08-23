@@ -12,7 +12,7 @@ import { useAccount } from "wagmi";
 import { useCapabilities } from "wagmi/experimental";
 
 export default function useWalletAccount() {
-  const { user, linkWallet, unlinkWallet } = usePrivy();
+  const { user, linkWallet, unlinkWallet, ready, authenticated } = usePrivy();
   const { connectWallet } = useConnectWallet();
   const { setActiveWallet } = useSetActiveWallet();
   const { wallets } = useWallets();
@@ -86,12 +86,16 @@ export default function useWalletAccount() {
         connectWallet({ suggestedAddress: linkedWallets[0].address });
       }
     }
-  }, [activeWallet, connectedWallets, linkedWallets]);
+  }, [connectedWallets, linkedWallets]);
 
   useEffect(() => {
-    if (!activeWallet || activeWallet?.connectorType === "embedded")
+    if (
+      ready &&
+      authenticated &&
+      (!activeWallet || activeWallet?.connectorType === "embedded")
+    )
       activeOneWallet();
-  }, [activeWallet]);
+  }, [activeWallet, ready, authenticated]);
   // console.log("supportAtomicBatch", supportAtomicBatch);
   return {
     connectWallet,
