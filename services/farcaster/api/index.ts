@@ -313,13 +313,13 @@ export function notifyTipApi(data: {
   });
 }
 
-export function fetchUserRecommendChannels({
+export function fetchUserAssetsChannels({
   fid,
 }: {
   fid: number;
 }): AxiosPromise<ApiResp<Channel[]>> {
   return request({
-    url: `/topics/recommendaton/channels?fid=${fid || ""}`,
+    url: `/topics/assets/channels?fid=${fid || ""}`,
     method: "get",
   });
 }

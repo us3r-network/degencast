@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash";
-import { fetchUserRecommendChannels } from "~/services/farcaster/api";
+import { fetchUserAssetsChannels } from "~/services/farcaster/api";
 import {
   fetchUserActiveChannels,
   fetchUserFollowingChannels,
@@ -59,7 +59,7 @@ export const fetchItems = createAsyncThunk(
     const cursor = channelState?.next.cursor;
     switch (type) {
       case UserChannelsType.HOLDING:
-        return fetchUserRecommendChannels({
+        return fetchUserAssetsChannels({
           fid,
         });
       case UserChannelsType.FOLLOWING:
