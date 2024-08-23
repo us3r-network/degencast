@@ -54,7 +54,7 @@ import {
 } from "./TranasactionResult";
 
 export type NFTProps = {
-  cast: NeynarCast;
+  cast?: NeynarCast;
   token: ERC42069Token;
 };
 
@@ -105,12 +105,7 @@ export function BuyButton({
   );
 }
 
-const NftCtx = createContext<
-  | (NFTProps & {
-      setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    })
-  | undefined
->(undefined);
+export const NftCtx = createContext<NFTProps | undefined>(undefined);
 
 const useNftCtx = () => {
   const ctx = useContext(NftCtx);
@@ -120,45 +115,9 @@ const useNftCtx = () => {
   return ctx;
 };
 
-export function BuyDialog({
-  token,
-  cast,
-  open,
-  setOpen,
-  onSuccess,
-}: NFTProps & {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSuccess?: (mintNum: number) => void;
-}) {
-  const [transationData, setTransationData] = useState<TransationData>();
-  const [error, setError] = useState("");
-
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "nft", title: "NFT" },
-    { key: "details", title: "Details" },
-    { key: "activity", title: "Activity" },
-  ]);
-
-  const MintNFTScene = () => (
-    <View className="gap-4">
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Active Wallet</Text>
-        <UserWalletSelect />
-      </View>
-      <MintNFT
-        nft={token}
-        onSuccess={(data) => {
-          setTransationData(data);
-          onSuccess?.(data.amount || 0);
-        }}
-        onError={setError}
-      />
-    </View>
-  );
-
-  const DetailsScene = () => (
+export const DetailsScene = () => {
+  const { token } = useNftCtx();
+  return (
     <View className="gap-4">
       <View className="flex-row items-center justify-between gap-2">
         <Text>Contract Address</Text>
@@ -210,14 +169,56 @@ export function BuyDialog({
       </ExternalLink>
     </View>
   );
+};
 
-  const ActivityScene = () => (
+export const ActivityScene = () => {
+  const { token } = useNftCtx();
+  return (
     <ScrollView
-      className="w-full max-h-[80vh]"
+      className="max-h-[80vh] w-full"
       showsHorizontalScrollIndicator={false}
     >
       <TokenActivitieList token={token} />
     </ScrollView>
+  );
+};
+
+export function BuyDialog({
+  token,
+  cast,
+  open,
+  setOpen,
+  onSuccess,
+}: NFTProps & {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onSuccess?: (mintNum: number) => void;
+}) {
+  const [transationData, setTransationData] = useState<TransationData>();
+  const [error, setError] = useState("");
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "nft", title: "NFT" },
+    { key: "details", title: "Details" },
+    { key: "activity", title: "Activity" },
+  ]);
+
+  const MintNFTScene = () => (
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Active Wallet</Text>
+        <UserWalletSelect />
+      </View>
+      <MintNFT
+        nft={token}
+        onSuccess={(data) => {
+          setTransationData(data);
+          onSuccess?.(data.amount || 0);
+        }}
+        onError={setError}
+      />
+    </View>
   );
 
   const renderScene = SceneMap({
@@ -246,7 +247,6 @@ export function BuyDialog({
             value={{
               cast,
               token,
-              setOpen,
             }}
           >
             <TabView
