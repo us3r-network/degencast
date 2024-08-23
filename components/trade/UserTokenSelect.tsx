@@ -156,11 +156,12 @@ export default function UserTokenSelect({
                 selectToken?.(token);
               }}
             >
-              <TokenInfo
+              {/* <TokenInfo
                 name={token.name}
                 logo={token.logoURI}
                 symbol={token.symbol}
-              />
+              /> */}
+              <Text className="text-white">{token.symbol}</Text>
               {showBalance && account.address && token && (
                 <View className="flex-row items-center gap-2">
                   {token.address === NATIVE_TOKEN_METADATA.address ? (

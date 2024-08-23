@@ -39,6 +39,7 @@ import {
 import UserTokenSelect from "./UserTokenSelect";
 import { eventBus, EventTypes } from "~/utils/eventBus";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import { Slider } from "../ui/slider";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -211,6 +212,14 @@ const SendToken = forwardRef<
             placeholder="Enter amount"
             value={String(amount)}
             onChangeText={(newText) => setAmount(newText)}
+            editable={!transationData}
+          />
+          <Slider
+            value={Number(amount)}
+            max={Number(token?.balance || 0)}
+            step={Number(token?.balance || 0) / 100}
+            onValueChange={(v) => setAmount(String(v))}
+            disabled={!!transationData}
           />
         </View>
         {token && (

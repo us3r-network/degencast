@@ -1,4 +1,5 @@
 import { Address } from "viem";
+import { NeynarChannel } from "~/services/farcaster/types/neynar";
 
 type VolumeStats = {
   volume_usd: string;
@@ -9,7 +10,7 @@ type VolumeStats = {
 export type TradeInfo = {
   id: string;
   chain_id: number;
-  channel:string;
+  channel: string;
   tokenAddress: `0x${string}`;
   name?: string | undefined;
   imageURL?: string;
@@ -43,6 +44,7 @@ export type TokenWithTradeInfo = {
   tradeInfo?: TradeInfo;
   rawBalance?: bigint | string;
   balance?: number | string | undefined;
+  channel?: NeynarChannel;
 };
 
 export type ERC42069Token = {
