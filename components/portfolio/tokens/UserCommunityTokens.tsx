@@ -75,10 +75,11 @@ export function CommunityToken({
   withSwapButton?: boolean;
 }) {
   // console.log("item", item);
+  const channelID = token.channel?.id || token.tradeInfo?.channel;
   return (
     <View className="flex-row items-center justify-between">
-      {token.tradeInfo?.channel ? (
-        <Link href={`/communities/${token.tradeInfo?.channel}/tokens`} asChild>
+      {channelID ? (
+        <Link href={`/communities/${channelID}/attention-token`} asChild>
           <Pressable>
             <TokenInfo
               name={token.name}

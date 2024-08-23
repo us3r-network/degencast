@@ -7,6 +7,7 @@ import { ExternalLink } from "../common/ExternalLink";
 import { Check, ReceiptText, X } from "../common/Icons";
 import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
 export type TransationData = {
   chain: Chain;
@@ -19,7 +20,7 @@ export type TransationData = {
 
 type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   type: ONCHAIN_ACTION_TYPE;
-  castHash?: string;
+  cast?: NeynarCast;
   data: TransationData;
   buttonText: string;
   buttonAction?: () => void;
@@ -28,13 +29,13 @@ type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 
 export function TransactionInfo({
   type,
-  castHash,
+  cast,
   data,
   buttonText,
   buttonAction,
   navigateToCreatePageAfter,
 }: TransactionInfoProps) {
-  console.log("TransactionSuccessInfo", data);
+  // console.log("TransactionSuccessInfo", data, cast);
   const transactionHash =
     (data.transactionReceipt as TransactionReceipt)?.transactionHash ||
     (
@@ -85,7 +86,8 @@ export function TransactionInfo({
           </Button>
           <TransactionResultSharingButton
             type={type}
-            castHash={castHash}
+            castHash={cast?.hash}
+            channelId={cast?.channel?.id || ""}
             transactionDetailURL={`${data?.chain?.blockExplorers?.default?.url || ""}/tx/${transactionHash}`}
             navigateToCreatePageAfter={navigateToCreatePageAfter}
           />

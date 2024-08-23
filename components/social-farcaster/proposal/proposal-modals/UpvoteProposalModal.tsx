@@ -15,22 +15,27 @@ import Toast from "react-native-toast-message";
 import { ProposeProposalWriteButton } from "../proposal-write-buttons/ProposalWriteButton";
 import { Slider } from "~/components/ui/slider";
 import { PriceRangeRow } from "./ChallengeProposalModal";
+import useAppModals from "~/hooks/useAppModals";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
   tokenInfo?: AttentionTokenEntity;
+  proposal?: ProposalEntity;
 };
 
 export default function UpvoteProposalModal({
   cast,
   channel,
   tokenInfo,
+  proposal,
   triggerButton,
 }: CastProposeStatusProps & {
   triggerButton: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const { upsertProposalShareModal } = useAppModals();
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -53,12 +58,14 @@ export default function UpvoteProposalModal({
             cast={cast}
             channel={channel}
             tokenInfo={tokenInfo}
+            proposal={proposal}
             onProposeSuccess={() => {
               Toast.show({
                 type: "success",
                 text1: "Voting speeds up success",
               });
               setOpen(false);
+              upsertProposalShareModal({ open: true, cast, channel });
             }}
             onProposeError={(error) => {
               Toast.show({
@@ -77,6 +84,7 @@ export default function UpvoteProposalModal({
 export function UpvoteProposalModalContentBody({
   cast,
   channel,
+  proposal,
   tokenInfo,
   onProposeSuccess,
   onProposeError,
@@ -164,6 +172,7 @@ export function UpvoteProposalModalContentBody({
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
+        proposal={proposal}
         tokenInfo={tokenInfo}
         price={price!}
         onProposeSuccess={onProposeSuccess}

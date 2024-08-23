@@ -22,6 +22,13 @@ export const getCastShareTextWithTwitter = () => {
   return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
 };
 
+export const getCastProposalShareTextWithWarpcast = () => {
+  return `Use frame to vote the proposal in /${WARPCAST_CHANNEL_NAME}`;
+};
+export const getCastProposalShareTextWithTwitter = () => {
+  return `Vote the proposal in @${TWITTER_SCREEN_NAME}`;
+};
+
 export const getPortfolioTextWithWarpcast = () => {
   return `Trade & explore news in /${WARPCAST_CHANNEL_NAME}`;
 };

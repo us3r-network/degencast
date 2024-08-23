@@ -107,12 +107,14 @@ export function FCastWithNftImage({
   tokenInfo,
   className,
   readOnly,
+  hideUserInfo = false,
 }: ViewProps & {
   cast: NeynarCast;
   proposal?: ProposalEntity;
   channel?: CommunityEntity | null | undefined;
   tokenInfo?: AttentionTokenEntity;
   readOnly?: boolean;
+  hideUserInfo?: boolean;
 }) {
   const castHex = getCastHex(cast);
   const router = useRouter();
@@ -167,17 +169,19 @@ export function FCastWithNftImage({
         </View>
 
         {/* user info */}
-        <View
-          className="flex flex-row items-center gap-6"
-          style={{
-            height: FCastUserHeight,
-          }}
-        >
-          <NeynarCastUserInfo
-            userData={cast.author}
-            timestamp={cast.timestamp}
-          />
-        </View>
+        {!hideUserInfo && (
+          <View
+            className="flex flex-row items-center gap-6"
+            style={{
+              height: FCastUserHeight,
+            }}
+          >
+            <NeynarCastUserInfo
+              userData={cast.author}
+              timestamp={cast.timestamp}
+            />
+          </View>
+        )}
       </Pressable>
     </View>
   );

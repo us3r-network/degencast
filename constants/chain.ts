@@ -23,7 +23,7 @@ export const NATIVE_TOKEN_METADATA: TokenWithTradeInfo = {
   name: DEFAULT_CHAIN.nativeCurrency.name,
   decimals: DEFAULT_CHAIN.nativeCurrency.decimals,
   symbol: DEFAULT_CHAIN.nativeCurrency.symbol,
-  logoURI: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  logoURI: "https://assets.coingecko.com/coins/images/31013/large/wrapped-eth-mantle-bridge.png",
 };
 
 export const WRAP_NATIVE_TOKEN_METADATA: TokenWithTradeInfo = {

@@ -26,13 +26,7 @@ export default function useUserChannels(
   //   }
   // }, [status, dispatch, fid]);
 
-  useEffect(() => {
-    if (channels.get(type)?.items.length === 0 || fid !== currentFid)
-      loadMore();
-  }, [fid, type]);
-
   const loadMore = () => {
-    if (status === AsyncRequestStatus.PENDING && fid === currentFid) return;
     if (fid && type)
       dispatch(fetchItems({ fid, type }) as unknown as UnknownAction);
   };

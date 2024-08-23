@@ -14,6 +14,7 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import useAuth from "~/hooks/user/useAuth";
 import useCastReply from "~/hooks/social-farcaster/useCastReply";
+import useAppModals from "~/hooks/useAppModals";
 
 export const FCastMenuButton = forwardRef(function (
   {
@@ -84,8 +85,10 @@ export const FCastMenuButton = forwardRef(function (
     setOpenGiftModal(true);
   };
 
+  const { upsertProposalShareModal } = useAppModals();
   const onShare = () => {
     setOpenShareModal(true);
+    upsertProposalShareModal({ open: true, cast, channel: communityInfo });
   };
   return (
     <View className="z-20">
@@ -120,11 +123,11 @@ export const FCastMenuButton = forwardRef(function (
         open={openGiftModal}
         onOpenChange={setOpenGiftModal}
       />
-      <FCastShareModal
+      {/* <FCastShareModal
         cast={cast}
         open={openShareModal}
         onOpenChange={setOpenShareModal}
-      />
+      /> */}
       <FCastMintNftModal
         cast={cast}
         channelId={channelId}

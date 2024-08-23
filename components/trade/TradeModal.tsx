@@ -81,11 +81,11 @@ export default function TradeModal({
           setSwaping={setSwaping}
           setClose={() => setOpen(false)}
         />
-        {!swaping && (
+        {/* {!swaping && (
           <DialogFooter>
             <About title="Swap & Earn" info={TRADE_INFO} />
           </DialogFooter>
-        )}
+        )} */}
       </DialogContent>
     </Dialog>
   );

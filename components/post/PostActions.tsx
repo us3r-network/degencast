@@ -402,6 +402,9 @@ export const PostMenuButton = forwardRef(function (
           translateXAnimatedValue,
         }}
       >
+        <ActionMenuItem index={6}>
+          <ShareButton onPress={onShare} />
+        </ActionMenuItem>
         <ActionMenuItem index={5}>
           <GiftButton onPress={onGift} />
         </ActionMenuItem>

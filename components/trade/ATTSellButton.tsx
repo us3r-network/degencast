@@ -1,5 +1,6 @@
-import React, { forwardRef, useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { forwardRef, useEffect, useState } from "react";
+import { View } from "react-native";
+import { SceneMap, TabView } from "react-native-tab-view";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import NFTImage from "~/components/common/NFTImage";
@@ -14,7 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
@@ -26,21 +26,49 @@ import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { ERC42069Token } from "~/services/trade/types";
-import { TokenActivitieList } from "../activity/Activities";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import DialogTabBar from "../layout/tab-view/DialogTabBar";
+import {
+  ActivityScene,
+  DetailsScene,
+  NftCtx
+} from "./ATTBuyButton";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
-  const [showDetails, setShowDetails] = useState(false);
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "nft", title: "NFT" },
+    { key: "details", title: "Details" },
+    { key: "activity", title: "Activity" },
+  ]);
+
+  const BurnNFTScene = () => (
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Active Wallet</Text>
+        <UserWalletSelect />
+      </View>
+      <BurnNFT nft={token} onSuccess={setTransationData} onError={setError} />
+    </View>
+  );
+
+  const renderScene = SceneMap({
+    nft: BurnNFTScene,
+    details: DetailsScene,
+    activity: ActivityScene,
+  });
+
   if (!account.address)
     return (
       <Button
@@ -67,47 +95,19 @@ export function SellButton({ token }: { token: ERC42069Token }) {
         </DialogTrigger>
         {!transationData && !error && (
           <DialogContent className="w-screen">
-            <DialogHeader className={cn("mr-4 flex-row items-center")}>
-              <Pressable
-                disabled={!showDetails}
-                onPress={() => setShowDetails(false)}
-              >
-                <Text className={showDetails ? "text-secondary" : "text-white"}>
-                  NFT
-                </Text>
-              </Pressable>
-              <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
-              <Pressable
-                disabled={showDetails}
-                onPress={() => setShowDetails(true)}
-              >
-                <Text
-                  className={!showDetails ? "text-secondary" : "text-white"}
-                >
-                  Details
-                </Text>
-              </Pressable>
-            </DialogHeader>
-            <ScrollView
-              className="max-h-[80vh] w-full"
-              showsHorizontalScrollIndicator={false}
+            <NftCtx.Provider
+              value={{
+                token,
+              }}
             >
-              {showDetails ? (
-                <TokenActivitieList token={token} />
-              ) : (
-                <View className="gap-4">
-                  <View className="flex-row items-center justify-between gap-2">
-                    <Text>Active Wallet</Text>
-                    <UserWalletSelect />
-                  </View>
-                  <BurnNFT
-                    nft={token}
-                    onSuccess={setTransationData}
-                    onError={setError}
-                  />
-                </View>
-              )}
-            </ScrollView>
+              <TabView
+                swipeEnabled={false}
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                renderTabBar={DialogTabBar}
+              />
+            </NftCtx.Provider>
           </DialogContent>
         )}
         {transationData && (
