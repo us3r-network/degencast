@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useAuth, { SigninStatus } from "~/hooks/user/useAuth";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 export default function UserSignin({
   onSuccess,
@@ -10,6 +12,16 @@ export default function UserSignin({
   onFail: (error: unknown) => void;
 }) {
   const { login, status } = useAuth();
+  useEffect(() => {
+    const subscription = eventBus.subscribe((event) => {
+      console.log("event", event);
+      if ((event as any).type === EventTypes.USER_SIGNUP_SUCCESS) onSuccess();
+      if ((event as any).type === EventTypes.USER_SIGNUP_FAIL) onFail('Failed to sign up');
+    });
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
   switch (status) {
     case SigninStatus.IDLE:
     case SigninStatus.FAILED:

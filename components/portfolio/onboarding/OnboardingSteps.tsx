@@ -137,7 +137,8 @@ export default function OnboardingSteps({
                 nextStep();
               }}
               onFail={(error: unknown) => {
-                console.log("Failed to login", error);
+                console.log("Failed to signup", error);
+                onComplete();
               }}
             />
           </View>
@@ -197,10 +198,9 @@ export default function OnboardingSteps({
             <StepImage step="2" />
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
               <StepIndicator stepNum={5} stepNo={step} />
-              <View>
+              <View className="flex-row gap-2">
                 <Button
                   variant="secondary"
-                  className="w-1/2 rounded-full"
                   onPress={() => connectCoinbaseSmartWallet()}
                 >
                   <Text>Create</Text>
@@ -208,7 +208,6 @@ export default function OnboardingSteps({
                 {isDesktop && (
                   <Button
                     variant="secondary"
-                    className="w-1/2 rounded-full"
                     onPress={() => linkWallet()}
                   >
                     <Text>Connect</Text>
