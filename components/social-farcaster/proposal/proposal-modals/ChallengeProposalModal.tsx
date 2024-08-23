@@ -59,13 +59,13 @@ export default function ChallengeProposalModal({
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "challenge", title: "Challenge" },
-    { key: "details", title: "Details" },
+    { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
 
   const renderScene = SceneMap({
     challenge: ChallengeProposalContentBodyScene,
-    details: CastActivitiesListScene,
+    activity: CastActivitiesListScene,
     about: AboutProposalChallenge,
   });
 

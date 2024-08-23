@@ -105,7 +105,7 @@ export default function CastDetail() {
                   <Text className=" text-base font-bold text-secondary">
                     Comments ({getCastRepliesCount(cast)})
                   </Text>
-                  <ChevronDown className=" stroke-secondary" />
+                  {/* <ChevronDown className=" stroke-secondary" /> */}
                 </View>
               </View>
             );

@@ -33,11 +33,15 @@ export default function DialogTabBar(
             ),
           });
           return (
-            <View className="flex flex-row items-center" key={index}>
+            <>
               {index > 0 && (
-                <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
+                <Separator
+                  key={index}
+                  className="mx-4 my-0 h-[12px] w-[1px] bg-white"
+                />
               )}
               <Pressable
+                key={index}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 onPress={onPress}
@@ -47,13 +51,14 @@ export default function DialogTabBar(
                   style={{
                     color: textColor,
                     fontSize: 16,
-                    fontWeight: 500,
+                    fontWeight: isFocused ? 700 : 500,
+                    lineHeight: 24,
                   }}
                 >
                   {label as any}
                 </Animated.Text>
               </Pressable>
-            </View>
+            </>
           );
         })}
       </DialogHeader>
