@@ -42,7 +42,7 @@ const OnboardingModal = React.forwardRef<
               nowDate.setDate(nowDate.getDate() + 7).toString(),
             );
             if (
-              activeWallet?.connectorType === "embedded" ||
+              // activeWallet?.connectorType === "embedded" ||
               activeWallet?.connectorType === "coinbase_wallet"
             )
               setShowDeposit(true);

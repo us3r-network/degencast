@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Dimensions, Image, View } from "react-native";
+import { Dimensions, Image, Platform, View } from "react-native";
 import { X } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -18,6 +18,7 @@ import { shortPubKey } from "~/utils/shortPubKey";
 import UserSignin from "../user/UserSignin";
 //todo: seperate install pwa from onboarding steps
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
+import { isDesktop } from "react-device-detect";
 
 export default function OnboardingSteps({
   onComplete,
@@ -80,7 +81,7 @@ export default function OnboardingSteps({
     },
   };
   const { linkFarcaster, linkWallet } = useLinkAccount(linkAccountHanler);
-  const {connectCoinbaseSmartWallet} = useConnectCoinbaseSmartWallet();
+  const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
   const injectedWallet = useMemo(
     () =>
       user?.linkedAccounts.find(
@@ -204,13 +205,15 @@ export default function OnboardingSteps({
                 >
                   <Text>Create</Text>
                 </Button>
-                <Button
-                  variant="secondary"
-                  className="w-1/2 rounded-full"
-                  onPress={() => linkWallet()}
-                >
-                  <Text>Connect</Text>
-                </Button>
+                {isDesktop && (
+                  <Button
+                    variant="secondary"
+                    className="w-1/2 rounded-full"
+                    onPress={() => linkWallet()}
+                  >
+                    <Text>Connect</Text>
+                  </Button>
+                )}
               </View>
             </View>
             {SkipButton}

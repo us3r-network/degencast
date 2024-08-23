@@ -22,12 +22,13 @@ import { shortPubKey } from "~/utils/shortPubKey";
 export default function UserWalletSelect() {
   const { ready, authenticated } = useAuth();
 
-  const { connectedWallets, activeWallet, setActiveWallet } =
+  const { connectedWallets, linkedWallets, activeWallet, setActiveWallet } =
     useWalletAccount();
 
   if (!ready || !authenticated) {
     return null;
   }
+
   return (
     <TextClassContext.Provider value="text-sm font-medium">
       <Select

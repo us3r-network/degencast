@@ -7,7 +7,7 @@ import {
   useWallets,
 } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { useCapabilities } from "wagmi/experimental";
 
@@ -15,15 +15,16 @@ export default function useWalletAccount() {
   const { user, linkWallet, unlinkWallet } = usePrivy();
   const { connectWallet } = useConnectWallet();
   const { setActiveWallet } = useSetActiveWallet();
-  const { wallets: connectedWallets } = useWallets();
+  const { wallets } = useWallets();
   const { address: activeWalletAddress } = useAccount();
-
-  const linkedWallets =
-    user?.linkedAccounts?.filter((account) => account.type === "wallet") || [];
-
-  const embededWallet = linkedWallets.find(
+  const connectedWallets = wallets.filter(
     (wallet) => wallet.connectorType !== "embedded",
   );
+  const linkedWallets: PrivyWalletWithMetadata[] =
+    (user?.linkedAccounts?.filter(
+      (account) =>
+        account.type === "wallet" && account.connectorType !== "embedded",
+    ) as PrivyWalletWithMetadata[]) || [];
 
   const activeWallet = useMemo(() => {
     // console.log("activeWalletAddress", connectedWallets, activeWalletAddress);
@@ -46,11 +47,9 @@ export default function useWalletAccount() {
   }, [connectedWallets]);
 
   const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets
-      .filter(
-        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-      )
-      .filter((wallet) => wallet.connectorType !== "embedded");
+    return linkedWallets.filter(
+      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+    );
   }, [linkedWallets, connectedWallets]);
 
   const linkAccountNum =
@@ -79,6 +78,20 @@ export default function useWalletAccount() {
     (wallet) => wallet.connectorType === "coinbase_wallet",
   );
 
+  const activeOneWallet = useCallback(() => {
+    if (connectedWallets.length > 0) {
+      setActiveWallet(connectedWallets[0]);
+    } else {
+      if (linkedWallets.length > 0) {
+        connectWallet({ suggestedAddress: linkedWallets[0].address });
+      }
+    }
+  }, [activeWallet, connectedWallets, linkedWallets]);
+
+  useEffect(() => {
+    if (!activeWallet || activeWallet?.connectorType === "embedded")
+      activeOneWallet();
+  }, [activeWallet]);
   // console.log("supportAtomicBatch", supportAtomicBatch);
   return {
     connectWallet,
@@ -86,14 +99,9 @@ export default function useWalletAccount() {
     unlinkWallet,
     setActiveWallet,
     linkAccountNum,
-    connectedWallets: connectedWallets.filter(
-      (wallet) => wallet.connectorType !== "embedded",
-    ),
-    linkedWallets: linkedWallets.filter(
-      (wallet) => wallet.connectorType !== "embedded",
-    ),
+    connectedWallets,
+    linkedWallets,
     activeWallet,
-    embededWallet,
     connectedExternalWallet,
     unconnectedLinkedWallets,
     supportAtomicBatch,

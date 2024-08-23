@@ -64,8 +64,7 @@ export const userCommunityTokenSlice = createSlice({
           (item) =>
             item.name &&
             item.balance &&
-            Number(item.balance) > 0 &&
-            item.tradeInfo?.channel,
+            Number(item.balance) > 0
         );
       })
       .addCase(fetchItems.rejected, (state, action) => {

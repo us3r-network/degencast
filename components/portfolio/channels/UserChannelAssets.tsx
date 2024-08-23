@@ -23,7 +23,6 @@ export default function UserChannelAssets({
   className?: string;
 }) {
   const userAssetsValue =
-    Number(channel.tokenInfo?.tradeInfo?.stats?.token_price_usd || 0) *
     Number(channel.tokenInfo?.balance || 0);
 
   if (userAssetsValue === 0) return null;
@@ -33,8 +32,6 @@ export default function UserChannelAssets({
         <View className={cn("rounded-full bg-secondary px-2", className)}>
           <Text className="text-xs text-white">
             {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
               notation: "compact",
             }).format(userAssetsValue)}
           </Text>
@@ -49,8 +46,6 @@ export default function UserChannelAssets({
             <CommunityInfo name={channel.name} logo={channel.image_url} />
             <Text>
               {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
                 notation: "compact",
               }).format(userAssetsValue)}
             </Text>
