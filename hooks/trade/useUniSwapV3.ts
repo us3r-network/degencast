@@ -1,8 +1,6 @@
 import { Token } from "@uniswap/sdk-core";
-import QuoterV2 from "@uniswap/v3-periphery/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json";
 import { FeeAmount, Route } from "@uniswap/v3-sdk";
 import { useEffect, useState } from "react";
-import { useReadContract } from "wagmi";
 import { UNISWAP_V3_QUOTER_CONTRACT_ADDRESS } from "~/constants";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { convertToken } from "~/services/uniswapV3";
@@ -22,16 +20,18 @@ export function useSwap({
   buyToken,
   poolFee = FeeAmount.MEDIUM,
 }: QuoteParams) {
-  const tokenIn = convertToken(sellToken);
-  const tokenOut = convertToken(buyToken);
   const [swapRoute, setSwapRoute] = useState<Route<Token, Token>>();
   const [ready, setReady] = useState(false);
+
+  const tokenIn = convertToken(sellToken);
+  const tokenOut = convertToken(buyToken);
+
   useEffect(() => {
     const getRoute = async () => {
       const swapRoute = await getSwapRoute(tokenIn, tokenOut, poolFee);
       setSwapRoute(swapRoute);
       setReady(true);
-      console.log("swapRoute", swapRoute, tokenIn, tokenOut);
+      // console.log("swapRoute done", swapRoute);
     };
     if (tokenIn && tokenOut) {
       reset();
@@ -49,7 +49,7 @@ export function useSwap({
     setFetchingSellAmount(true);
     getInputQuote(swapRoute, tokenOut, buyAmount)
       .then((data) => {
-        console.log("fetchSellAmount", data);
+        // console.log("fetchSellAmount", data);
         setSellAmount(data[0]);
       })
       .finally(() => {
