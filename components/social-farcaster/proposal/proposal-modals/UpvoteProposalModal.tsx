@@ -16,17 +16,20 @@ import { ProposeProposalWriteButton } from "../proposal-write-buttons/ProposalWr
 import { Slider } from "~/components/ui/slider";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import useAppModals from "~/hooks/useAppModals";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
   channel: CommunityEntity;
   tokenInfo?: AttentionTokenEntity;
+  proposal?: ProposalEntity;
 };
 
 export default function UpvoteProposalModal({
   cast,
   channel,
   tokenInfo,
+  proposal,
   triggerButton,
 }: CastProposeStatusProps & {
   triggerButton: React.ReactNode;
@@ -55,6 +58,7 @@ export default function UpvoteProposalModal({
             cast={cast}
             channel={channel}
             tokenInfo={tokenInfo}
+            proposal={proposal}
             onProposeSuccess={() => {
               Toast.show({
                 type: "success",
@@ -80,6 +84,7 @@ export default function UpvoteProposalModal({
 export function UpvoteProposalModalContentBody({
   cast,
   channel,
+  proposal,
   tokenInfo,
   onProposeSuccess,
   onProposeError,
@@ -167,6 +172,7 @@ export function UpvoteProposalModalContentBody({
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
+        proposal={proposal}
         tokenInfo={tokenInfo}
         price={price!}
         onProposeSuccess={onProposeSuccess}

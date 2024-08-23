@@ -130,7 +130,6 @@ function ProposedProposalModalContentBodyScene() {
     error: paymentTokenInfoError,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
-    castHash: cast.hash,
   });
   const {
     price,
@@ -307,6 +306,7 @@ function ProposedProposalModalContentBodyScene() {
                 upvoteText="Upvote"
                 cast={cast}
                 channel={channel}
+                proposal={{ ...proposal, status: ProposalState.Proposed }}
                 tokenInfo={tokenInfo}
                 price={price!}
                 onProposeSuccess={() => {

@@ -61,7 +61,7 @@ export default function useProposeProposal({
           status: proposals.state,
           finalizeTime: Number(proposals.deadline),
           roundIndex: Number(proposals.roundIndex),
-          upvoteCount: Number(proposal?.upvoteCount) + 1,
+          upvoteCount: Number(proposal?.upvoteCount || 0) + 1,
         });
       } catch (error) {
         setError(error);
