@@ -226,7 +226,7 @@ function ActivityCast({ cast }: { cast: NeynarCast }) {
         </View>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <FCastWithNftImage className="overflow-hidden" cast={cast} />
+        <FCastWithNftImage className="overflow-hidden mt-4 mb-[-24px]" cast={cast} hideUserInfo/>
       </CollapsibleContent>
     </Collapsible>
   );

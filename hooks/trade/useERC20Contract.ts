@@ -7,6 +7,7 @@ import {
 } from "wagmi";
 import { readContracts } from "@wagmi/core";
 import { wagmiConfig } from "~/config/wagmiConfig";
+import { DEGEN_TOKEN_ADDRESS, DEGEN_TOKEN_METADATA } from "~/constants";
 
 const MAX_ALLOWANCE = BigInt(2) ** BigInt(256) - BigInt(1);
 
@@ -176,6 +177,7 @@ export async function getTokenInfo({
   if (data[0].error || data[1].error || data[2].error || data[3].error) {
     return undefined;
   }
+  const logoURI = address===DEGEN_TOKEN_ADDRESS ? DEGEN_TOKEN_METADATA.logoURI : undefined;
   return {
     address,
     chainId,
@@ -187,5 +189,6 @@ export async function getTokenInfo({
       data[3].result as bigint,
       data[2].result as unknown as number,
     ),
+    logoURI,
   };
 }

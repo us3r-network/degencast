@@ -9,6 +9,7 @@ export type NeynarCast = {
     fid: any;
   };
   author: Author;
+  channel: NeynarChannel;
   text: string;
   timestamp: string;
   embeds: any[];
