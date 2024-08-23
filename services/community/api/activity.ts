@@ -47,7 +47,6 @@ export function getCastActivities(
 
 export function getTokenActivities(
   params: ActivitiesParams,
-  token: ERC42069Token,
 ): RequestPromise<ApiResp<Array<ActivityEntity>>> {
   return request({
     url: `/topics/channels/nfts/onchain`,
