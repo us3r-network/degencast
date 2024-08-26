@@ -21,7 +21,7 @@ export default function useLoadCommunityDetail(id: string) {
   const [rejected, setRejected] = useState(false);
 
   const loadCommunityDetail = useCallback(async () => {
-    if (!id || id === "home" || loading) {
+    if (!id || loading) {
       return;
     }
     try {
