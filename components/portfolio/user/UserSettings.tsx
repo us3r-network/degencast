@@ -169,16 +169,16 @@ function LinkWallets() {
 
 function CreateWallet() {
   const { ready, authenticated } = useAuth();
-  const { hasCoinBaseWallet, linkedWallets, connectedWallets } =
+  const { coinBaseWallet, linkedWallets, connectedWallets } =
     useWalletAccount();
   console.log(
     "hasCoinBaseWallet",
     linkedWallets,
     connectedWallets,
-    hasCoinBaseWallet,
+    coinBaseWallet,
   );
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
-  if (!ready || !authenticated || hasCoinBaseWallet) return null;
+  if (!ready || !authenticated || coinBaseWallet) return null;
   return (
     <View className="flex w-full gap-2">
       <Pressable

@@ -19,7 +19,7 @@ export default function ChannelList({
   const { loading, items, hasNext, loadMore } = useUserChannels(fid, type);
   // todo: when back from /user/channels/:id, the list is not updated
   useEffect(() => {
-      loadMore();
+    loadMore();
   }, [fid, type]);
   // console.log("ChannelList", { fid, loading, items, hasNext });
   return (
@@ -36,7 +36,8 @@ export default function ChannelList({
               columnWrapperStyle={{
                 gap: 12,
                 flex: 1,
-                justifyContent: "space-between",
+                justifyContent:
+                  items.length >= 3 ? "space-between" : "flex-start",
               }}
               ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
               renderItem={({ item }) => (

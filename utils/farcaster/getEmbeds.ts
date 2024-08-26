@@ -26,9 +26,17 @@ export function isVideo(url?: string) {
 }
 
 export type Embeds = {
-  imgs: {
+  imgs: Array<{
+    metadata: {
+      content_type: string;
+      content_length: string;
+      image: {
+        width_px: number;
+        height_px: number;
+      };
+    };
     url: string;
-  }[];
+  }>;
   videos: { url: string }[];
   webpages: {
     url: string;
@@ -68,9 +76,7 @@ export function formatEmbeds(
       });
     } else if (embed?.url) {
       if (isImg(embed.url)) {
-        imgs.push({
-          url: embed.url,
-        });
+        imgs.push(embed);
       } else if (isVideo(embed.url)) {
         videos.push({
           url: embed.url,

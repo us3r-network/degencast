@@ -73,26 +73,7 @@ export default function ChannelMetaInfo({
               {channelId && `/${channelId}`}
             </Text> */}
           </View>
-          {tokenInfo ? (
-            <LaunchProgress tokenInfo={tokenInfo} />
-          ) : isChannelHost && !tokenLaunched ? (
-            <CreateTokenButton
-              channelId={channelId!}
-              onComplete={() => {
-                setTokenLaunched(true);
-              }}
-              className="h-8"
-              renderButtonContent={({ loading }) => {
-                return loading ? (
-                  <Text className="text-lg font-bold">Launching Token...</Text>
-                ) : (
-                  <Text className="text-lg font-bold">Launch Token</Text>
-                );
-              }}
-            />
-          ) : (
-            <LaunchProgress />
-          )}
+          <LaunchProgress tokenInfo={tokenInfo} />
         </View>
       </Pressable>
     </View>

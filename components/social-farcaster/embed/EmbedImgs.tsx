@@ -1,8 +1,6 @@
 import { Embeds } from "~/utils/farcaster/getEmbeds";
-import { View, Image } from "react-native";
-import { useEffect, useState } from "react";
+import { Image } from "react-native";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
-// import { Image } from "expo-image";
 
 export default function EmbedImgs({
   imgs,
@@ -11,31 +9,16 @@ export default function EmbedImgs({
   imgs: Embeds["imgs"];
   maxHeight?: number;
 }) {
-  const [imgsInfo, setImgsInfo] = useState<
-    Array<{
-      ratio: number;
-    }>
-  >([]);
-  useEffect(() => {
-    imgs.forEach((img, idx) => {
-      Image.getSize(img.url, (width, height) => {
-        setImgsInfo((prev) => {
-          prev[idx] = { ratio: width / height };
-          return prev;
-        });
-      });
-    });
-  }, [imgs]);
   return (
     <>
       {imgs.map((img, idx) => {
-        if (!imgsInfo[idx]) {
-          return null;
-        }
+        const { url, metadata } = img;
+        const { width_px, height_px } = metadata.image;
+        const ratio = width_px / height_px;
         return (
-          <AspectRatio ratio={imgsInfo[idx].ratio} key={img.url}>
+          <AspectRatio ratio={ratio} key={url}>
             <Image
-              source={{ uri: img.url }}
+              source={{ uri: url }}
               style={{
                 borderRadius: 10,
                 width: "100%",
