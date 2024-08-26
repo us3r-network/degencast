@@ -26,7 +26,7 @@ const ChannelCastCollectCard = React.forwardRef<
       ref={ref}
     >
       <View className={cn("w-full flex-col gap-4 px-4")}>
-        {!channelId || channelId === "home" ? (
+        {!channelId ? (
           <HomeChannelMetaInfo />
         ) : (
           <ChannelMetaInfo channel={channel} tokenInfo={tokenInfo} />

@@ -26,7 +26,7 @@ const FCastDetailsCard = React.forwardRef<
   const { channelId } = channel || {};
   return (
     <CardWrapper className={cn("flex flex-col gap-4 p-4", className)} ref={ref}>
-      {channel && (!channelId || channelId === "home") ? (
+      {channel && !channelId ? (
         <HomeChannelMetaInfo />
       ) : channel ? (
         <ChannelMetaInfo channel={channel} tokenInfo={tokenInfo} />
@@ -38,7 +38,7 @@ const FCastDetailsCard = React.forwardRef<
           <FCastMenuButton cast={cast} communityInfo={channel as any} />
         )}
 
-        {cast && channelId && channelId !== "home" && (
+        {cast && channelId && (
           <View className="ml-auto">
             <ProposalStatusActions
               cast={cast}

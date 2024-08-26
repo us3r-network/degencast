@@ -26,7 +26,7 @@ const ChannelCastCard = React.forwardRef<
   const { channelId } = channel || {};
   return (
     <CardWrapper className={cn("flex flex-col gap-4 p-4", className)} ref={ref}>
-      {!channelId || channelId === "home" ? (
+      {!channelId ? (
         <HomeChannelMetaInfo />
       ) : (
         <ChannelMetaInfo channel={channel} tokenInfo={tokenInfo} />

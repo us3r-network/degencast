@@ -41,7 +41,6 @@ export const displayProposalActions = ({
 }) => {
   return !!(
     !!channel?.channelId &&
-    channel.channelId !== "home" &&
     !!tokenInfo?.danContract &&
     !!tokenInfo?.bondingCurve?.basePrice &&
     !!proposal &&
