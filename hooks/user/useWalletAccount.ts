@@ -87,6 +87,12 @@ export default function useWalletAccount() {
       setActiveWallet(connectedWallets[0]);
     } else {
       if (linkedWallets.length > 0) {
+        console.log(
+          "connectWallet",
+          linkedWallets,
+          connectedWallets,
+          activeWallet,
+        );
         connectWallet({
           suggestedAddress: linkedWallets[0].address,
         });
@@ -98,7 +104,8 @@ export default function useWalletAccount() {
     if (
       ready &&
       authenticated &&
-      (!activeWallet || activeWallet?.connectorType === "embedded")
+      activeWallet &&
+      activeWallet?.connectorType === "embedded"
     )
       activeOneWallet();
   }, [activeWallet, ready, authenticated]);
