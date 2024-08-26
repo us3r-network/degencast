@@ -1,8 +1,19 @@
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import { formatUnits } from "viem";
+import * as Clipboard from "expo-clipboard";
+import React, {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { Image, Pressable, ScrollView, View } from "react-native";
+import { SceneMap, TabView } from "react-native-tab-view";
+import Toast from "react-native-toast-message";
+import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import About from "~/components/common/About";
+// import About from "~/components/common/About";
+import { FeeAmount } from "@uniswap/v3-sdk";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
@@ -11,12 +22,12 @@ import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
+  // DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
+import { DEGEN_TOKEN_METADATA, NATIVE_TOKEN_ADDRESS } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -28,28 +39,36 @@ import {
   useATTFactoryContractMintAA,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
-import { useQuote } from "~/hooks/trade/useUniSwapV3";
+import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenActivitieList } from "../activity/Activities";
+import { ExternalLink } from "../common/ExternalLink";
+import { Copy } from "../common/Icons";
+import DialogTabBar from "../layout/tab-view/DialogTabBar";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import { NeynarCast } from "~/services/farcaster/types/neynar";
+import UserTokenSelect from "./UserTokenSelect";
+
+export type NFTProps = {
+  cast?: NeynarCast;
+  token: ERC42069Token;
+};
 
 export function BuyButton({
   token,
   cast,
   renderButton,
   onSuccess,
-}: {
-  token: ERC42069Token;
-  cast: NeynarCast;
+}: NFTProps & {
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
   onSuccess?: (mintNum: number) => void;
 }) {
@@ -83,89 +102,166 @@ export function BuyButton({
           token={token}
           cast={cast}
           open={open}
-          onOpenChange={setOpen}
           onSuccess={onSuccess}
-          setClose={() => setOpen(false)}
+          setOpen={setOpen}
         />
       )}
     </Pressable>
   );
 }
 
+export const NftCtx = createContext<NFTProps | undefined>(undefined);
+
+const useNftCtx = () => {
+  const ctx = useContext(NftCtx);
+  if (!ctx) {
+    throw new Error("useCreateProposalCtx must be used within a provider");
+  }
+  return ctx;
+};
+
+export const DetailsScene = () => {
+  const { token } = useNftCtx();
+  return (
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Contract Address</Text>
+        <View className="flex-row items-center justify-between gap-2">
+          <Text className="line-clamp-1">
+            {shortPubKey(token.contractAddress)}
+          </Text>
+          <Button
+            size="icon"
+            variant="ghost"
+            onPress={async (event) => {
+              await Clipboard.setStringAsync(token.contractAddress as Address);
+              Toast.show({
+                type: "info",
+                text1: "Wallet Address Copied!",
+              });
+            }}
+          >
+            <Copy className="size-4 text-white" />
+          </Button>
+        </View>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Token ID</Text>
+        <Text> {token.tokenId} </Text>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Token Standard</Text>
+        <Text>ERC-1155｜ERC-20</Text>
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Chain</Text>
+        <Text>{ATT_CONTRACT_CHAIN.name}</Text>
+      </View>
+      <ExternalLink href={`https://opensea.io/`} target="_blank">
+        <View className="flex-row items-center justify-between gap-2">
+          <Image
+            source={{
+              uri: "https://storage.googleapis.com/opensea-static/Logomark/Logomark-Blue.png",
+            }}
+            style={{
+              width: 24,
+              height: 24,
+              resizeMode: "contain",
+            }}
+          />
+          <Text>Opensea</Text>
+        </View>
+      </ExternalLink>
+    </View>
+  );
+};
+
+export const ActivityScene = () => {
+  const { token } = useNftCtx();
+  return (
+    <ScrollView
+      className="max-h-[80vh] w-full"
+      showsHorizontalScrollIndicator={false}
+    >
+      <TokenActivitieList token={token} />
+    </ScrollView>
+  );
+};
+
 export function BuyDialog({
   token,
   cast,
   open,
-  onOpenChange,
+  setOpen,
   onSuccess,
-  setClose,
-}: {
-  token: ERC42069Token;
-  cast: NeynarCast;
+}: NFTProps & {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess?: (mintNum: number) => void;
-  setClose?: () => void;
 }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "nft", title: "NFT" },
+    { key: "details", title: "Details" },
+    { key: "activity", title: "Activity" },
+  ]);
+
+  const MintNFTScene = () => (
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Active Wallet</Text>
+        <UserWalletSelect />
+      </View>
+      <MintNFT
+        nft={token}
+        onSuccess={(data) => {
+          setTransationData(data);
+          onSuccess?.(data.amount || 0);
+        }}
+        onError={setError}
+      />
+    </View>
+  );
+
+  const renderScene = SceneMap({
+    nft: MintNFTScene,
+    details: DetailsScene,
+    activity: ActivityScene,
+  });
+
   return (
     <Dialog
       open={open}
       onOpenChange={(o) => {
         setTransationData(undefined);
         setError("");
-        onOpenChange(o);
+        setOpen(o);
       }}
     >
       {!transationData && !error && (
-        <DialogContent className="w-screen">
-          <DialogHeader className={cn("mr-4 flex-row items-center")}>
-            <Pressable
-              disabled={!showDetails}
-              onPress={() => setShowDetails(false)}
-            >
-              <Text className={showDetails ? "text-secondary" : "text-white"}>
-                NFT
-              </Text>
-            </Pressable>
-            <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
-            <Pressable
-              disabled={showDetails}
-              onPress={() => setShowDetails(true)}
-            >
-              <Text className={!showDetails ? "text-secondary" : "text-white"}>
-                Details
-              </Text>
-            </Pressable>
-          </DialogHeader>
-          <ScrollView
-            className="max-h-[80vh] w-full"
-            showsHorizontalScrollIndicator={false}
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <NftCtx.Provider
+            value={{
+              cast,
+              token,
+            }}
           >
-            {showDetails ? (
-              <TokenActivitieList token={token} />
-            ) : (
-              <View className="gap-4">
-                <View className="flex-row items-center justify-between gap-2">
-                  <Text>Active Wallet</Text>
-                  <UserWalletSelect />
-                </View>
-                <MintNFT
-                  nft={token}
-                  onSuccess={(data) => {
-                    setTransationData(data);
-                    onSuccess?.(data.amount || 0);
-                  }}
-                  onError={setError}
-                />
-                {/* <DialogFooter>
-                  <About title={ATT_TITLE} info={ATT_INFO} />
-                </DialogFooter> */}
-              </View>
-            )}
-          </ScrollView>
+            <TabView
+              swipeEnabled={false}
+              navigationState={{ index, routes }}
+              renderScene={renderScene}
+              onIndexChange={setIndex}
+              renderTabBar={DialogTabBar}
+            />
+          </NftCtx.Provider>
         </DialogContent>
       )}
       {transationData && (
@@ -175,11 +271,11 @@ export function BuyDialog({
           </DialogHeader>
           <TransactionInfo
             type={ONCHAIN_ACTION_TYPE.MINT_NFT}
-            castHash={cast.hash}
+            cast={cast}
             data={transationData}
             buttonText="Mint more"
             buttonAction={() => setTransationData(undefined)}
-            navigateToCreatePageAfter={setClose}
+            navigateToCreatePageAfter={() => setOpen(false)}
           />
         </DialogContent>
       )}
@@ -224,11 +320,20 @@ const MintNFT = forwardRef<
   //   maxTokensPerIdPerUser,
   //   totalNFTSupply,
   // );
+  const [selectedToken, setSelectedToken] =
+    useState<TokenWithTradeInfo>(DEGEN_TOKEN_METADATA);
+
   const [nftPrice, setNftPrice] = useState<bigint>();
+  const [nftPriceEth, setNftPriceEth] = useState<bigint>();
   const perNFTPrice =
-    nftPrice && amount && token?.decimals
-      ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
-      : "0";
+    selectedToken.address === token?.address
+      ? nftPrice && amount && token?.decimals
+        ? formatUnits(nftPrice / BigInt(amount), token.decimals!)
+        : "0"
+      : nftPriceEth && amount && selectedToken?.decimals
+        ? formatUnits(nftPriceEth / BigInt(amount), selectedToken.decimals!)
+        : "0";
+
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
   const availableAmount = useMemo(() => {
     if (!account || !maxTokensPerIdPerUser) return 0;
@@ -254,15 +359,23 @@ const MintNFT = forwardRef<
   return (
     <View className="flex gap-4">
       <NFTImage nft={nft} />
+      {supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
+        <UserTokenSelect
+          selectToken={setSelectedToken}
+          chain={ATT_CONTRACT_CHAIN}
+          defaultToken={DEGEN_TOKEN_METADATA}
+        />
+      )}
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
           {perNFTPrice ? (
             <Text className="text-xs">
               {new Intl.NumberFormat("en-US", {
-                maximumFractionDigits: 2,
+                maximumFractionDigits:
+                  selectedToken.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
               }).format(Number(perNFTPrice))}{" "}
-              {token?.symbol} per NFT
+              {selectedToken?.symbol} per NFT
             </Text>
           ) : (
             <Text className="text-xs text-secondary">calculating price...</Text>
@@ -280,15 +393,19 @@ const MintNFT = forwardRef<
           <MintPriceAfterGraduated
             tokenContract={nft.contractAddress}
             paymentToken={token}
+            userSelectedToken={selectedToken}
             nftAmount={amount}
             setNftPrice={setNftPrice}
+            setNftPriceEth={setNftPriceEth}
           />
         ) : (
           <MintPriceBeforeGraduated
             tokenContract={nft.contractAddress}
             paymentToken={token}
+            userSelectedToken={selectedToken}
             nftAmount={amount}
             setNftPrice={setNftPrice}
+            setNftPriceEth={setNftPriceEth}
           />
         ))}
       {token &&
@@ -303,8 +420,10 @@ const MintNFT = forwardRef<
               <MintButtonAA
                 nft={nft}
                 paymentToken={token}
+                userSelectedToken={selectedToken}
                 amount={amount}
                 nftPrice={nftPrice}
+                nftPriceEth={nftPriceEth}
                 onSuccess={onSuccess}
                 onError={onError}
               />
@@ -320,6 +439,7 @@ const MintNFT = forwardRef<
               <MintButton
                 nft={nft}
                 paymentToken={token}
+                userSelectedToken={selectedToken}
                 amount={amount}
                 nftPrice={nftPrice}
                 onSuccess={onSuccess}
@@ -336,30 +456,77 @@ function MintPriceBeforeGraduated({
   tokenContract,
   nftAmount,
   setNftPrice,
+  setNftPriceEth,
   paymentToken,
+  userSelectedToken,
 }: {
   tokenContract: `0x${string}`;
   nftAmount: number;
   setNftPrice: (price: bigint) => void;
+  setNftPriceEth: (price: bigint) => void;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
 }) {
+  // console.log("MintPriceBeforeGraduated", userSelectedToken, nftAmount);
+  const {
+    fetchSellAmount,
+    sellAmount: nftPriceEth,
+    ready: swapReady,
+  } = useSwap({
+    sellToken: userSelectedToken!,
+    buyToken: { address: paymentToken.address, chainId: ATT_CONTRACT_CHAIN.id },
+    poolFee: FeeAmount.HIGH,
+  });
   const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo({
     contractAddress: tokenContract,
     tokenId: 0,
   });
   const { nftPrice } = getMintNFTPriceAfterFee(nftAmount);
+  // console.log(
+  //   "nftPrice",
+  //   nftPrice,
+  //   nftPriceEth,
+  //   paymentToken,
+  //   userSelectedToken,
+  // );
   useEffect(() => {
-    if (nftPrice) setNftPrice(nftPrice);
-  }, [nftPrice]);
+    if (nftPrice) {
+      setNftPrice(nftPrice);
+      if (userSelectedToken?.address !== paymentToken.address) {
+        if (swapReady) fetchSellAmount(nftPrice);
+      }
+    }
+  }, [nftPrice, swapReady, userSelectedToken]);
+
+  useEffect(() => {
+    console.log("nftPriceEth", nftPriceEth);
+    if (nftPriceEth) setNftPriceEth(nftPriceEth);
+  }, [nftPriceEth]);
+
   return (
     <View className="flex-row items-center justify-between">
       <Text className="text-lg font-medium">Total Cost</Text>
-      {nftPrice && paymentToken ? (
+      {userSelectedToken?.address === paymentToken.address ? (
+        nftPrice && paymentToken ? (
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 2,
+            }).format(
+              Number(formatUnits(nftPrice, paymentToken.decimals!)),
+            )}{" "}
+            {paymentToken.symbol}
+          </Text>
+        ) : (
+          <Text>fetching price...</Text>
+        )
+      ) : nftPriceEth && userSelectedToken ? (
         <Text>
           {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 2,
-          }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
-          {paymentToken.symbol}
+            maximumFractionDigits: 6,
+          }).format(
+            Number(formatUnits(nftPriceEth, userSelectedToken.decimals!)),
+          )}{" "}
+          {userSelectedToken.symbol}
         </Text>
       ) : (
         <Text>fetching price...</Text>
@@ -372,38 +539,89 @@ function MintPriceAfterGraduated({
   tokenContract,
   nftAmount,
   setNftPrice,
+  setNftPriceEth,
   paymentToken,
+  userSelectedToken,
 }: {
   tokenContract: `0x${string}`;
   nftAmount: number;
   setNftPrice: (price: bigint) => void;
+  setNftPriceEth: (price: bigint) => void;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken: TokenWithTradeInfo;
 }) {
   const { tokenUnit } = useATTNftInfo({
     tokenContract,
   });
-  const { fetchSellAmount } = useQuote({
+  const {
+    fetchSellAmount,
+    sellAmount,
+    ready: swapReady,
+  } = useSwap({
     sellToken: paymentToken,
     buyToken: { address: tokenContract, chainId: ATT_CONTRACT_CHAIN.id },
   });
-  const { sellAmount } = fetchSellAmount(
-    BigInt(nftAmount) * BigInt(tokenUnit || 0n),
-  );
+  const {
+    fetchSellAmount: fetchSellAmountEth,
+    sellAmount: nftPriceEth,
+    ready: swapReadyEth,
+  } = useSwap({
+    sellToken: userSelectedToken,
+    buyToken: paymentToken,
+    poolFee: FeeAmount.HIGH,
+  });
+
+  useEffect(() => {
+    // console.log("nftAmount", nftAmount, tokenUnit, swapReady);
+    if (nftAmount && tokenUnit && swapReady)
+      fetchSellAmount(BigInt(nftAmount) * BigInt(tokenUnit));
+  }, [nftAmount, tokenUnit, swapReady]);
+
   const nftPrice = sellAmount
     ? sellAmount + sellAmount / 10n + sellAmount / 2000n //add 10% fee and 0.05% sliperage
     : undefined;
+
   useEffect(() => {
     if (nftPrice) setNftPrice(nftPrice);
   }, [nftPrice]);
+
+  useEffect(() => {
+    if (nftPrice) {
+      setNftPrice(nftPrice);
+      if (userSelectedToken?.address !== paymentToken.address) {
+        if (swapReadyEth) fetchSellAmountEth(nftPrice);
+      }
+    }
+  }, [nftPrice, swapReadyEth, userSelectedToken]);
+
+  useEffect(() => {
+    if (nftPriceEth) setNftPriceEth(nftPriceEth);
+  }, [nftPriceEth]);
+
   return (
     <View className="flex-row items-center justify-between">
       <Text className="text-lg font-medium">Total Cost</Text>
-      {nftPrice && paymentToken ? (
+      {userSelectedToken?.address === paymentToken.address ? (
+        nftPrice && paymentToken ? (
+          <Text>
+            {new Intl.NumberFormat("en-US", {
+              maximumFractionDigits: 2,
+            }).format(
+              Number(formatUnits(nftPrice, paymentToken.decimals!)),
+            )}{" "}
+            {paymentToken.symbol}
+          </Text>
+        ) : (
+          <Text>fetching price...</Text>
+        )
+      ) : nftPriceEth && userSelectedToken ? (
         <Text>
           {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 2,
-          }).format(Number(formatUnits(nftPrice, paymentToken.decimals!)))}{" "}
-          {paymentToken.symbol}
+            maximumFractionDigits: 6,
+          }).format(
+            Number(formatUnits(nftPriceEth, userSelectedToken.decimals!)),
+          )}{" "}
+          {userSelectedToken.symbol}
         </Text>
       ) : (
         <Text>fetching price...</Text>
@@ -415,6 +633,7 @@ function MintPriceAfterGraduated({
 function MintButton({
   nft,
   paymentToken,
+  userSelectedToken,
   amount,
   nftPrice,
   onSuccess,
@@ -422,6 +641,7 @@ function MintButton({
 }: {
   nft: ERC42069Token;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
   amount: number;
   nftPrice: bigint;
   onSuccess?: (data: TransationData) => void;
@@ -481,15 +701,19 @@ function MintButton({
 function MintButtonAA({
   nft,
   paymentToken,
+  userSelectedToken,
   amount,
   nftPrice,
+  nftPriceEth,
   onSuccess,
   onError,
 }: {
   nft: ERC42069Token;
   paymentToken: TokenWithTradeInfo;
+  userSelectedToken?: TokenWithTradeInfo;
   amount: number;
   nftPrice: bigint;
+  nftPriceEth?: bigint;
   onSuccess?: (data: TransationData) => void;
   onError?: (error: string) => void;
 }) {
@@ -510,7 +734,18 @@ function MintButtonAA({
         description: (
           <View className="flex-row items-center gap-2">
             <Text>Mint {amount} nfts and cost</Text>
-            <TokenWithValue token={paymentToken} value={nftPrice} />
+            <TokenWithValue
+              token={
+                userSelectedToken?.address === NATIVE_TOKEN_ADDRESS
+                  ? userSelectedToken
+                  : paymentToken
+              }
+              value={
+                userSelectedToken?.address === NATIVE_TOKEN_ADDRESS
+                  ? nftPriceEth || 0
+                  : nftPrice
+              }
+            />
           </View>
         ),
         amount,
@@ -537,7 +772,7 @@ function MintButtonAA({
       }
       onPress={() => {
         if (nftPrice && paymentToken)
-          mint(amount, nftPrice, paymentToken.address);
+          mint(amount, nftPrice, paymentToken, userSelectedToken);
       }}
     >
       <Text>{isPending ? "Confirming..." : "Mint"}</Text>

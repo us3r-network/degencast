@@ -10,27 +10,32 @@ import {
 import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
 import useAuth, { SigninStatus } from "~/hooks/user/useAuth";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 const InviteCodeModal = React.forwardRef<
   React.ElementRef<typeof Dialog>,
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
   const [open, setOpen] = useState(false);
-  const { status, logout } = useAuth();
+
   useEffect(() => {
-    const needInviteCode = async () => {
-      if (status === SigninStatus.NEED_INVITE_CODE) setOpen(true);
+    const subscription = eventBus.subscribe((event) => {
+      console.log("event", event);
+      if ((event as any).type === EventTypes.USER_SIGNUP_SHOW_INVITE_CODE_MODEL)
+        setOpen(true);
+    });
+    return () => {
+      subscription?.unsubscribe();
     };
-    needInviteCode();
-  }, [status]);
+  }, []);
 
   return (
     <Dialog
       open={open}
       ref={ref}
       onOpenChange={(open) => {
-        logout();
         setOpen(open);
+        eventBus.next({type: EventTypes.USER_SIGNUP_CLOSE_INVITE_CODE_MODEL});
       }}
     >
       <DialogContent className="w-screen">
@@ -40,10 +45,10 @@ const InviteCodeModal = React.forwardRef<
         <InviteCodeForm
           onSuccess={() => {
             console.log("signup degencast successful!");
+            setOpen(false);
           }}
           onFail={(error: unknown) => {
             console.log("Failed to signup degencast", error);
-            logout();
           }}
         />
       </DialogContent>
@@ -61,7 +66,7 @@ export function InviteCodeForm({
   onFail: (error: unknown) => void;
   showCancelButton?: boolean;
 }) {
-  const { signup } = useAuth();
+  const { signupDegencast } = useAuth();
   const [inviteCode, setInviteCode] = useState<string>("");
 
   return (
@@ -76,7 +81,9 @@ export function InviteCodeForm({
         variant="default"
         className="rounded-full"
         disabled={!inviteCode}
-        onPress={() => signup(inviteCode)}
+        onPress={() =>
+          signupDegencast(inviteCode).then(onSuccess)
+        }
       >
         <Text>Submit</Text>
       </Button>

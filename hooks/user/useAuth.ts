@@ -12,6 +12,7 @@ import {
 import useUserInviteCode from "./useUserInviteCode";
 import { INVITE_ONLY } from "~/constants";
 import Toast from "react-native-toast-message";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 
 export default function useAuth() {
   const {
@@ -24,8 +25,6 @@ export default function useAuth() {
 
   const { degencastId, degencastLoginRequestStatus } =
     useAppSelector(selectUserAuth);
-  const degencastLoginPending =
-    degencastLoginRequestStatus === AsyncRequestStatus.PENDING;
 
   const { usedInviterFid } = useUserInviteCode();
   const inviterFidRef = useRef<string | number>("");
@@ -47,6 +46,7 @@ export default function useAuth() {
         const resp = await getMyDegencast();
         // console.log("my degencast resp", resp);
         if (resp.data?.code === ApiRespCode.SUCCESS) {
+          // console.log("my degencast id", resp.data?.data?.id);
           const id = resp.data?.data?.id;
           if (id) {
             await AsyncStorage.setItem(
@@ -70,36 +70,12 @@ export default function useAuth() {
     }
   };
   const checkDegencastLogin = useCallback(async () => {
-    if (degencastLoginPending) return;
+    if (degencastLoginRequestStatus === AsyncRequestStatus.PENDING) return;
     const privyDid = privyUser?.id;
     if (privyAuthenticated && privyDid && !degencastId) {
       syncDegencastId(privyDid);
     }
-  }, [privyAuthenticated, privyUser, degencastId]);
-
-  const signupDegencast = async (inviteCode?: string) => {
-    dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.PENDING));
-    try {
-      const resp = await loginDegencast({
-        inviterFid: inviterFidRef.current,
-        inviteCode,
-      });
-      // console.log("login resp", resp);
-      if (resp.data?.code === ApiRespCode.SUCCESS) {
-        const id = resp.data?.data?.id;
-        if (id) {
-          dispatch(setDegencastId(id));
-        }
-        dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.FULFILLED));
-        return id;
-      } else {
-        throw new Error("degencast login error: " + resp.data?.msg || "");
-      }
-    } catch (error) {
-      dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.REJECTED));
-      return null;
-    }
-  };
+  }, [privyAuthenticated, degencastId]);
 
   const [status, setStatus] = useState<SigninStatus>(SigninStatus.IDLE);
   const privyLoginHanler = {
@@ -113,21 +89,28 @@ export default function useAuth() {
       //   user,
       //   isNewUser,
       //   wasAlreadyAuthenticated,
+      //   status,
       // );
-      setStatus(SigninStatus.LOGGINGIN_DEGENCAST);
-      syncDegencastId(user.id).then((degencastId) => {
-        // console.log("degencastId", degencastId);
-        if (degencastId) {
-          setStatus(SigninStatus.SUCCESS);
-          loginHandler?.onSuccess?.();
-        } else {
-          if (INVITE_ONLY) {
-            setStatus(SigninStatus.NEED_INVITE_CODE);
+      if (status === SigninStatus.LOGGINGIN_PRIVY) {
+        setStatus(SigninStatus.LOGGINGIN_DEGENCAST);
+        syncDegencastId(user.id).then((degencastId) => {
+          // console.log("degencastId", degencastId);
+          if (degencastId) {
+            setStatus(SigninStatus.SUCCESS);
+            loginHandler?.onSuccess?.();
           } else {
-            signup();
+            // console.log("need signup", INVITE_ONLY);
+            if (INVITE_ONLY) {
+              setStatus(SigninStatus.NEED_INVITE_CODE);
+              eventBus.next({
+                type: EventTypes.USER_SIGNUP_SHOW_INVITE_CODE_MODEL,
+              });
+            } else {
+              signupDegencast();
+            }
           }
-        }
-      });
+        });
+      }
     },
     onError: (error: unknown) => {
       // console.error("Failed to login", error);
@@ -136,26 +119,38 @@ export default function useAuth() {
     },
   };
 
-  const signup = async (inviteCode?: string) => {
+  const signupDegencast = async (inviteCode?: string) => {
+    dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.PENDING));
     setStatus(SigninStatus.LOGGINGIN_DEGENCAST);
-    const resp = await signupDegencast(inviteCode);
-    if (resp) {
-      setStatus(SigninStatus.SUCCESS);
-      loginHandler?.onSuccess?.();
-    } else {
-      if (INVITE_ONLY) {
-        setStatus(SigninStatus.NEED_INVITE_CODE);
+    try {
+      const resp = await loginDegencast({
+        inviterFid: inviterFidRef.current,
+        inviteCode,
+      });
+      // console.log("login resp", resp);
+      if (resp.data?.code === ApiRespCode.SUCCESS) {
+        const id = resp.data?.data?.id;
+        if (id) {
+          dispatch(setDegencastId(id));
+          setStatus(SigninStatus.SUCCESS);
+          eventBus.next({ type: EventTypes.USER_SIGNUP_SUCCESS });
+        }
+        dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.FULFILLED));
+      } else if (resp.data?.code === ApiRespCode.ERROR && resp.data?.msg) {
         Toast.show({
           type: "error",
-          text1: "Failed to sign up",
+          text1: resp.data?.msg,
         });
+        logout();
       } else {
-        setStatus(SigninStatus.FAILED);
         Toast.show({
           type: "error",
-          text1: "Failed to sign up",
+          text1: "Failed to sign up!",
         });
+        logout();
       }
+    } catch (error) {
+      dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.REJECTED));
     }
   };
 
@@ -189,7 +184,7 @@ export default function useAuth() {
     degencastId,
     checkDegencastLogin,
     status,
-    signup,
+    signupDegencast,
     login,
     logout,
   };

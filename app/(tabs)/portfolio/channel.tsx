@@ -3,7 +3,6 @@ import { SceneMap, TabView } from "react-native-tab-view";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
 import ChannelList from "~/components/portfolio/channels/UserChannels";
-import { UserCurationCastList } from "~/components/portfolio/posts/UserCasts";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import { UserChannelsType } from "~/features/user/userChannelsSlice";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
@@ -43,8 +42,8 @@ export default function UserChannelScreen({ fid }: { fid?: number }) {
   const { currFid } = useFarcasterAccount();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "holding", title: "Holding" },
     { key: "following", title: "Following" },
+    { key: "holding", title: "Holding" },
   ]);
   const renderScene = SceneMap({
     following: FollowingChannelsScene,

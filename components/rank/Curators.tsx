@@ -77,7 +77,7 @@ function Item({ item, index }: { item: CuratorEntity; index: number }) {
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
         <Text className="w-6 text-center text-xs font-medium">{index}</Text>
-        <Link className="flex-1" href={`/u/${item.user.fid}/wallets`} asChild>
+        <Link className="flex-1" href={`/u/${item.user.fid}/wallet`} asChild>
           <Pressable>
             <UserInfo userInfo={item.user} />
           </Pressable>

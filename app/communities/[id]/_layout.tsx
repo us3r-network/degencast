@@ -178,25 +178,27 @@ export default function CommunityDetail() {
                 </View>
               ) : (
                 <View className="sm:hidden">
-                  <CreateTokenButton
-                    channelId={channelId}
-                    onComplete={() => {
-                      loadCommunityDetail();
-                    }}
-                    className="h-8"
-                    variant={"secondary"}
-                    renderButtonContent={({ loading }) => {
-                      return loading ? (
-                        <Text className="text-lg text-secondary-foreground">
-                          {isChannelHost ? "Launching..." : "Activating..."}
-                        </Text>
-                      ) : (
-                        <Text className="text-lg text-secondary-foreground">
-                          {isChannelHost ? "Launch" : "Activate"}
-                        </Text>
-                      );
-                    }}
-                  />
+                  {community && (
+                    <CreateTokenButton
+                      channelId={channelId}
+                      onComplete={() => {
+                        loadCommunityDetail();
+                      }}
+                      className="h-8"
+                      variant={"secondary"}
+                      renderButtonContent={({ loading }) => {
+                        return loading ? (
+                          <Text className="text-lg text-secondary-foreground">
+                            {isChannelHost ? "Launching..." : "Activating..."}
+                          </Text>
+                        ) : (
+                          <Text className="text-lg text-secondary-foreground">
+                            {isChannelHost ? "Launch" : "Activate"}
+                          </Text>
+                        );
+                      }}
+                    />
+                  )}
                 </View>
               )}
             </View>

@@ -4,6 +4,7 @@ import { mockCasts } from "../mocks/casts";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "../types/proposal";
 import { mockProposals } from "../mocks/proposal";
+import { getExploreCastFeeds } from ".";
 
 const mockFeedRequest = async (props: any) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -119,6 +120,7 @@ export function getChannelCastFeeds({
   ...params
 }: ChannelCastFeedsParams): RequestPromise<ApiResp<ChannelCastFeedsData>> {
   // return mockCastsFeedRequest(params);
+  if (channelId === "home") return getExploreCastFeeds(params);
   return request({
     url: `/topics/channels/${channelId}/feed/cast`,
     method: "get",

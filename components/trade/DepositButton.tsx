@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
 import {
   Address,
@@ -41,44 +41,58 @@ import UserTokenSelect from "./UserTokenSelect";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function DepositButton({
-  hideButton = false,
+  renderButton,
 }: {
-  hideButton?: boolean;
+  renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
   const { connectWallet, activeWallet, connectedExternalWallet } =
     useWalletAccount();
-
-  if (!activeWallet) {
-    if (!hideButton)
-      return (
+  const [open, setOpen] = useState(false);
+  return (
+    <Pressable
+      disabled={
+        activeWallet?.connectorType !== "embedded" &&
+        activeWallet?.connectorType !== "coinbase_wallet"
+      }
+    >
+      {renderButton ? (
+        renderButton({ onPress: () => setOpen(true) })
+      ) : (
         <Button
           size={"icon"}
           className="rounded-full"
-          onPress={() => connectWallet}
+          onPress={() => setOpen(true)}
         >
           <Text>
             <ArrowDown />
           </Text>
         </Button>
-      );
-  } else
+      )}
+      <DepositDialog open={open} setOpen={setOpen} />
+    </Pressable>
+  );
+}
+
+export function DepositDialog({
+  open,
+  setOpen,
+  onSuccess,
+}: {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onSuccess?: (mintNum: number) => void;
+}) {
+  const { connectWallet, activeWallet, connectedExternalWallet } =
+    useWalletAccount();
+
+  if (activeWallet) {
     return (
-      <Dialog open={hideButton ? true : undefined}>
-        {!hideButton && (
-          <DialogTrigger
-            asChild
-            disabled={
-              activeWallet?.connectorType !== "embedded" &&
-              activeWallet?.connectorType !== "coinbase_wallet"
-            }
-          >
-            <Button size={"icon"} className="rounded-full">
-              <Text>
-                <ArrowDown />
-              </Text>
-            </Button>
-          </DialogTrigger>
-        )}
+      <Dialog
+        open={open}
+        onOpenChange={(o) => {
+          setOpen(o);
+        }}
+      >
         <DialogContent className="w-screen">
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Deposit</DialogTitle>
@@ -124,8 +138,8 @@ export default function DepositButton({
         </DialogContent>
       </Dialog>
     );
+  }
 }
-
 function TransferFromExternalWallet({
   fromWallet,
   toWallet,

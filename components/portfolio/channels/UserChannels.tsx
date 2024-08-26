@@ -7,6 +7,7 @@ import useUserChannels from "~/hooks/user/useUserChannels";
 import { Channel } from "~/services/farcaster/types";
 import UserChannelAssets from "./UserChannelAssets";
 import { UserChannelsType } from "~/features/user/userChannelsSlice";
+import { useEffect } from "react";
 
 export default function ChannelList({
   fid,
@@ -16,6 +17,10 @@ export default function ChannelList({
   type: UserChannelsType;
 }) {
   const { loading, items, hasNext, loadMore } = useUserChannels(fid, type);
+  // todo: when back from /user/channels/:id, the list is not updated
+  useEffect(() => {
+    loadMore();
+  }, [fid, type]);
   // console.log("ChannelList", { fid, loading, items, hasNext });
   return (
     <View className="container h-full">
@@ -31,7 +36,8 @@ export default function ChannelList({
               columnWrapperStyle={{
                 gap: 12,
                 flex: 1,
-                justifyContent: "space-between",
+                justifyContent:
+                  items.length >= 3 ? "space-between" : "flex-start",
               }}
               ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
               renderItem={({ item }) => (
