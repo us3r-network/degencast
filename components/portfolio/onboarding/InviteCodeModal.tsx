@@ -17,7 +17,6 @@ const InviteCodeModal = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
   const [open, setOpen] = useState(false);
-  const { logout } = useAuth();
 
   useEffect(() => {
     const subscription = eventBus.subscribe((event) => {
@@ -35,8 +34,8 @@ const InviteCodeModal = React.forwardRef<
       open={open}
       ref={ref}
       onOpenChange={(open) => {
-        logout();
         setOpen(open);
+        eventBus.next({type: EventTypes.USER_SIGNUP_CLOSE_INVITE_CODE_MODEL});
       }}
     >
       <DialogContent className="w-screen">
@@ -50,7 +49,6 @@ const InviteCodeModal = React.forwardRef<
           }}
           onFail={(error: unknown) => {
             console.log("Failed to signup degencast", error);
-            logout();
           }}
         />
       </DialogContent>
@@ -84,7 +82,7 @@ export function InviteCodeForm({
         className="rounded-full"
         disabled={!inviteCode}
         onPress={() =>
-          signupDegencast(inviteCode).then(onSuccess).catch(onFail)
+          signupDegencast(inviteCode).then(onSuccess)
         }
       >
         <Text>Submit</Text>
