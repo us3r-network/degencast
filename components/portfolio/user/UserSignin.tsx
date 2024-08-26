@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useAuth, { SigninStatus } from "~/hooks/user/useAuth";
@@ -12,11 +12,20 @@ export default function UserSignin({
   onFail: (error: unknown) => void;
 }) {
   const { login, status } = useAuth();
+  const [showInviteCodeModal, setShowInviteCodeModal] = useState(false);
+
   useEffect(() => {
     const subscription = eventBus.subscribe((event) => {
       console.log("event", event);
       if ((event as any).type === EventTypes.USER_SIGNUP_SUCCESS) onSuccess();
-      if ((event as any).type === EventTypes.USER_SIGNUP_FAIL) onFail('Failed to sign up');
+      // if ((event as any).type === EventTypes.USER_SIGNUP_FAIL)
+      //   onFail("Failed to sign up");
+      if ((event as any).type === EventTypes.USER_SIGNUP_SHOW_INVITE_CODE_MODEL)
+        setShowInviteCodeModal(true);
+      if (
+        (event as any).type === EventTypes.USER_SIGNUP_CLOSE_INVITE_CODE_MODEL
+      )
+        setShowInviteCodeModal(false);
     });
     return () => {
       subscription?.unsubscribe();
@@ -31,7 +40,7 @@ export default function UserSignin({
           variant="secondary"
           className="w-1/2 min-w-fit rounded-full"
           onPress={() => {
-            login({ onSuccess, onFail });
+            login({ onSuccess });
           }}
         >
           <Text>Sign in</Text>
@@ -39,7 +48,23 @@ export default function UserSignin({
       );
     case SigninStatus.LOGGINGIN_DEGENCAST:
     case SigninStatus.NEED_INVITE_CODE:
-      return <Text>Logging in Degencast...</Text>;
+      if (showInviteCodeModal) {
+        return <Text>Logging in Degencast...</Text>;
+      } else {
+        return (
+          <Button
+            variant="secondary"
+            className="w-1/2 min-w-fit rounded-full"
+            onPress={() => {
+              eventBus.next({
+                type: EventTypes.USER_SIGNUP_SHOW_INVITE_CODE_MODEL,
+              });
+            }}
+          >
+            <Text>Input Invite Code</Text>
+          </Button>
+        );
+      }
     case SigninStatus.SUCCESS:
       return <Text>Signed in</Text>;
   }

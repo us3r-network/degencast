@@ -77,8 +77,6 @@ export default function useAuth() {
     }
   }, [privyAuthenticated, degencastId]);
 
-
-
   const [status, setStatus] = useState<SigninStatus>(SigninStatus.IDLE);
   const privyLoginHanler = {
     onComplete: (
@@ -138,15 +136,19 @@ export default function useAuth() {
           eventBus.next({ type: EventTypes.USER_SIGNUP_SUCCESS });
         }
         dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.FULFILLED));
-      }else{
-        setStatus(SigninStatus.FAILED);
-        eventBus.next({ type: EventTypes.USER_SIGNUP_FAIL });
+      } else if (resp.data?.code === ApiRespCode.ERROR && resp.data?.msg) {
         Toast.show({
           type: "error",
-          text1: "Failed to sign up",
+          text1: resp.data?.msg,
         });
+        logout();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Failed to sign up!",
+        });
+        logout();
       }
-
     } catch (error) {
       dispatch(setDegencastLoginRequestStatus(AsyncRequestStatus.REJECTED));
     }
