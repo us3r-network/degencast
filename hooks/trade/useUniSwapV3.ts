@@ -31,7 +31,7 @@ export function useSwap({
       const swapRoute = await getSwapRoute(tokenIn, tokenOut, poolFee);
       setSwapRoute(swapRoute);
       setReady(true);
-      // console.log("swapRoute done", swapRoute);
+      console.log("swapRoute done", swapRoute);
     };
     if (tokenIn && tokenOut) {
       reset();
@@ -47,9 +47,10 @@ export function useSwap({
       return;
     }
     setFetchingSellAmount(true);
+    console.log("fetchSellAmount", swapRoute, tokenOut, buyAmount);
     getInputQuote(swapRoute, tokenOut, buyAmount)
       .then((data) => {
-        // console.log("fetchSellAmount", data);
+        console.log("fetchSellAmount done", data);
         setSellAmount(data[0]);
       })
       .finally(() => {
