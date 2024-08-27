@@ -48,13 +48,9 @@ export default function DepositButton({
   const { connectWallet, activeWallet, connectedExternalWallet } =
     useWalletAccount();
   const [open, setOpen] = useState(false);
+  console.log("activeWallet", activeWallet);
   return (
-    <Pressable
-      disabled={
-        activeWallet?.connectorType !== "embedded" &&
-        activeWallet?.connectorType !== "coinbase_wallet"
-      }
-    >
+    <>
       {renderButton ? (
         renderButton({ onPress: () => setOpen(true) })
       ) : (
@@ -62,6 +58,11 @@ export default function DepositButton({
           size={"icon"}
           className="rounded-full"
           onPress={() => setOpen(true)}
+          disabled={
+            !activeWallet ||
+            (activeWallet?.connectorType !== "embedded" &&
+              activeWallet?.connectorType !== "coinbase_wallet")
+          }
         >
           <Text>
             <ArrowDown />
@@ -69,7 +70,7 @@ export default function DepositButton({
         </Button>
       )}
       <DepositDialog open={open} setOpen={setOpen} />
-    </Pressable>
+    </>
   );
 }
 
@@ -93,7 +94,12 @@ export function DepositDialog({
           setOpen(o);
         }}
       >
-        <DialogContent className="w-screen">
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Deposit</DialogTitle>
           </DialogHeader>

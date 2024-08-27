@@ -28,11 +28,7 @@ import { cn } from "~/lib/utils";
 import { ERC42069Token } from "~/services/trade/types";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import DialogTabBar from "../layout/tab-view/DialogTabBar";
-import {
-  ActivityScene,
-  DetailsScene,
-  NftCtx
-} from "./ATTBuyButton";
+import { ActivityScene, DetailsScene, NftCtx } from "./ATTBuyButton";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
@@ -94,7 +90,12 @@ export function SellButton({ token }: { token: ERC42069Token }) {
           </Button>
         </DialogTrigger>
         {!transationData && !error && (
-          <DialogContent className="w-screen">
+          <DialogContent
+            className="w-screen"
+            onInteractOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
             <NftCtx.Provider
               value={{
                 token,
@@ -111,7 +112,12 @@ export function SellButton({ token }: { token: ERC42069Token }) {
           </DialogContent>
         )}
         {transationData && (
-          <DialogContent className="w-screen">
+          <DialogContent
+            className="w-screen"
+            onInteractOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
             <DialogHeader className={cn("flex gap-2")}>
               <DialogTitle>Transaction</DialogTitle>
             </DialogHeader>
@@ -124,7 +130,12 @@ export function SellButton({ token }: { token: ERC42069Token }) {
           </DialogContent>
         )}
         {error && (
-          <DialogContent className="w-screen">
+          <DialogContent
+            className="w-screen"
+            onInteractOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
             <DialogHeader className={cn("flex gap-2")}>
               <DialogTitle>Error</DialogTitle>
             </DialogHeader>

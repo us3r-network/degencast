@@ -265,7 +265,10 @@ export function BuyDialog({
         </DialogContent>
       )}
       {transationData && (
-        <DialogContent className="w-screen">
+        <DialogContent className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}>
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Transaction</DialogTitle>
           </DialogHeader>
@@ -280,7 +283,10 @@ export function BuyDialog({
         </DialogContent>
       )}
       {error && (
-        <DialogContent className="w-screen">
+        <DialogContent className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}>
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Error</DialogTitle>
           </DialogHeader>
