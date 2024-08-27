@@ -85,6 +85,9 @@ export default function useFarcasterSigner() {
           // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
           setRequestingSigner(true);
           requestFarcasterSignerFromWarpcast();
+          setTimeout(() => {
+            setRequestingSigner(false);
+          }, 5000);
         } catch (error) {
           console.log("requestFarcasterSignerFromWarpcast Error: ", error);
           setRequestingSigner(false);

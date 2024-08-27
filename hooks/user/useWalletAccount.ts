@@ -100,6 +100,15 @@ export default function useWalletAccount() {
     }
   }, [connectedWallets, linkedWallets]);
 
+  const injectedWallet = useMemo(
+    () =>
+      user?.linkedAccounts.find(
+        (account) =>
+          account.type === "wallet" && account.connectorType === "injected",
+      ) as unknown as ConnectedWallet,
+    [user],
+  );
+
   useEffect(() => {
     if (
       ready &&
@@ -123,6 +132,7 @@ export default function useWalletAccount() {
     unconnectedLinkedWallets,
     supportAtomicBatch,
     coinBaseWallet,
+    injectedWallet,
   };
 }
 

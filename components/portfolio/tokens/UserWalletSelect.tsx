@@ -88,13 +88,14 @@ function LinkWallets() {
   if (!ready || !authenticated) return null;
   return (
     <View className="flex w-full gap-2">
-      {unconnectedLinkedWallets.map((wallet) => (
-        <WalletItem
-          key={wallet.address}
-          wallet={wallet}
-          action={() => connectWallet()}
-        />
-      ))}
+      {unconnectedLinkedWallets?.length > 0 &&
+        unconnectedLinkedWallets.map((wallet) => (
+          <WalletItem
+            key={wallet.address}
+            wallet={wallet}
+            action={() => connectWallet()}
+          />
+        ))}
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
