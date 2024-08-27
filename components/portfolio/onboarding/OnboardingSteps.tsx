@@ -19,6 +19,7 @@ import UserSignin from "../user/UserSignin";
 //todo: seperate install pwa from onboarding steps
 const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
 import { isDesktop } from "react-device-detect";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function OnboardingSteps({
   onComplete,
@@ -29,16 +30,18 @@ export default function OnboardingSteps({
 
   const { user } = usePrivy();
   const { logout } = useAuth();
+  const { coinBaseWallet, injectedWallet } = useWalletAccount();
 
   const nextStep = (newUser?: User) => {
     const u = newUser || user;
+    console.log("next step", u);
     if (!u?.farcaster?.fid) {
       setStep(1);
     } else if (
       !u?.linkedAccounts.find(
         (account) =>
           account.type === "wallet" && account.connectorType !== "embedded",
-      )
+      ) && !coinBaseWallet
     ) {
       setStep(2);
     } else if (!u?.farcaster?.signerPublicKey) {
@@ -82,14 +85,7 @@ export default function OnboardingSteps({
   };
   const { linkFarcaster, linkWallet } = useLinkAccount(linkAccountHanler);
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
-  const injectedWallet = useMemo(
-    () =>
-      user?.linkedAccounts.find(
-        (account) =>
-          account.type === "wallet" && account.connectorType === "injected",
-      ) as unknown as ConnectedWallet,
-    [user],
-  );
+
   const CloseButton = (
     <Button
       variant="default"
@@ -179,13 +175,14 @@ export default function OnboardingSteps({
           </View>
         ))}
       {step === 2 &&
-        (!!injectedWallet ? (
+        (!!injectedWallet || !!coinBaseWallet ? (
           <View className="relative h-full w-full">
             <StepImage step="2a" />
             <View className="absolute top-40 flex w-full items-center justify-center gap-2">
               <Text className="text-xl font-bold">Your active wallet is</Text>
               <Text className="text-xl font-bold">
-                {shortPubKey(injectedWallet.address)}
+                {injectedWallet && shortPubKey(injectedWallet.address)}
+                {coinBaseWallet && shortPubKey(coinBaseWallet.address)}
               </Text>
             </View>
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
@@ -206,10 +203,7 @@ export default function OnboardingSteps({
                   <Text>Create</Text>
                 </Button>
                 {isDesktop && (
-                  <Button
-                    variant="secondary"
-                    onPress={() => linkWallet()}
-                  >
+                  <Button variant="secondary" onPress={() => linkWallet()}>
                     <Text>Connect</Text>
                   </Button>
                 )}
