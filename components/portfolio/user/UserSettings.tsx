@@ -138,7 +138,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
   );
 }
 
-function LinkWallets() {
+export function LinkWallets() {
   const { ready, authenticated } = useAuth();
   const { unconnectedLinkedWallets, connectWallet, linkWallet } =
     useWalletAccount();
@@ -199,10 +199,10 @@ function CreateWallet() {
 
 type WalletItemProps = {
   wallet: ConnectedWallet | WalletWithMetadata;
-  action: () => void;
+  action?: () => void;
 };
 
-const WalletItem = React.forwardRef<
+export const WalletItem = React.forwardRef<
   ViewRef,
   SlottableViewProps & WalletItemProps
 >(({ wallet, action }, ref) => {
@@ -211,7 +211,10 @@ const WalletItem = React.forwardRef<
   const { connectedWallets, unlinkWallet } = useWalletAccount();
   return (
     <View className="w-full flex-row items-center justify-between gap-6">
-      <Pressable className="flex-row items-center gap-2" onPress={action}>
+      <Pressable
+        className="flex-row items-center gap-2"
+        onPress={() => action?.()}
+      >
         <WalletIcon type={wallet.walletClientType} />
         <Text>{shortPubKey(wallet.address)}</Text>
       </Pressable>
@@ -239,12 +242,15 @@ const WalletItem = React.forwardRef<
             <Pressable
               disabled
               className="flex-row items-center gap-2"
-              onPress={action}
+              onPress={() => action?.()}
             >
               <Plug className="size-4 fill-secondary/50" />
             </Pressable>
           ) : (
-            <Pressable className="flex-row items-center gap-2" onPress={action}>
+            <Pressable
+              className="flex-row items-center gap-2"
+              onPress={() => action?.()}
+            >
               <Plug className="size-4" />
             </Pressable>
           )}
