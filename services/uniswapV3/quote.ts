@@ -30,7 +30,7 @@ export async function getInputQuote(
       useQuoterV2: true,
     },
   );
-
+  console.log("callData", calldata);
   const callDataDecoded = decodeFunctionData({
     abi: QuoterV2ABI.abi,
     data: calldata as `0x${string}`,

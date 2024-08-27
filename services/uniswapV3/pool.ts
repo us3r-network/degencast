@@ -36,13 +36,13 @@ export async function getPoolInfo({
   if (!tokenIn.address || !tokenOut.address) {
     throw new Error("Token address is not defined");
   }
-  // console.log(
-  //   "getPoolInfo",
-  //   tokenIn,
-  //   tokenOut,
-  //   poolFee,
-  //   UNISWAP_V3_POOL_CONTRACT_ADDRESS,
-  // );
+  console.log(
+    "getPoolInfo",
+    tokenIn,
+    tokenOut,
+    poolFee,
+    UNISWAP_V3_POOL_CONTRACT_ADDRESS,
+  );
   const publicClient = createPublicClient({
     chain: getChain(tokenIn.chainId),
     transport: http(),
@@ -54,7 +54,7 @@ export async function getPoolInfo({
     tokenB: tokenOut,
     fee: poolFee,
   });
-  // console.log("currentPoolAddress", currentPoolAddress);
+  console.log("currentPoolAddress", currentPoolAddress);
   const poolContract = getContract({
     address: currentPoolAddress as Address,
     abi: IUniswapV3PoolABI.abi,
@@ -70,7 +70,14 @@ export async function getPoolInfo({
       poolContract.read.liquidity(),
       poolContract.read.slot0(),
     ]);
-
+  console.log("poolInfo", {
+    token0,
+    token1,
+    fee,
+    tickSpacing,
+    liquidity,
+    slot0,
+  });
   return {
     token0: token0 as Address,
     token1: token1 as Address,

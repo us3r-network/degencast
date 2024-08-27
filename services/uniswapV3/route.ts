@@ -27,7 +27,7 @@ export async function getSwapRoute(
       poolInfo.liquidity.toString(),
       poolInfo.tick,
     );
-  
+    console.log("pool", pool);
     return new Route(
       [pool],
       tokenIn,
