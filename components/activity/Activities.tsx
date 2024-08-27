@@ -134,7 +134,7 @@ export function TokenActivitieList({ token }: { token: ERC42069Token }) {
   useEffect(() => {
     loadItems();
   }, []);
-  console.log("TokenActivitieList", { items, loading });
+  // console.log("TokenActivitieList", { items, loading });
   return (
     <FlatList
       className="h-full flex-1 gap-4"
