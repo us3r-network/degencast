@@ -63,7 +63,10 @@ export default function TradeModal({
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
+      <DialogContent className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}>
         <DialogHeader
           className={cn("mr-4 flex-row items-center justify-between gap-2")}
         >

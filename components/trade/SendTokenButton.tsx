@@ -48,7 +48,8 @@ export default function SendTokenButton({
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
-  const { connectWallet, connectedWallets, activeWallet } = useWalletAccount();
+  const { connectWallet, connectedWallets, activeWallet, injectedWallet } =
+    useWalletAccount();
 
   if (!activeWallet?.address)
     return (
@@ -82,11 +83,20 @@ export default function SendTokenButton({
             </Text>
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-screen">
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>{!sending ? "Withdraw" : "Transaction"}</DialogTitle>
           </DialogHeader>
-          <SendToken chain={defaultChain} setSending={setSending} />
+          <SendToken
+            chain={defaultChain}
+            setSending={setSending}
+            defaultAddress={injectedWallet?.address as Address}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -95,20 +105,16 @@ export default function SendTokenButton({
 const SendToken = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View> & {
+    defaultAddress: Address | undefined;
     chain: Chain;
     setSending?: (swaping: boolean) => void;
   }
->(({ className, chain, setSending, ...props }, ref) => {
+>(({ className, defaultAddress, chain, setSending, ...props }, ref) => {
   const account = useAccount();
 
-  const [address, setAddress] = useState<`0x${string}`>();
+  const [address, setAddress] = useState<`0x${string}`>(defaultAddress||"0x");
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
-
-  const { embededWallet } = useWalletAccount();
-  useEffect(() => {
-    if (embededWallet) setAddress(embededWallet.address as `0x${string}`);
-  }, [embededWallet]);
 
   useEffect(() => {
     if (token) {
