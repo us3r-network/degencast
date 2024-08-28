@@ -203,7 +203,7 @@ export const WalletItem = React.forwardRef<
 >(({ wallet, action }, ref) => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { connectedWallets, unlinkWallet } = useWalletAccount();
+  const { connectedWallets, unlinkWallet, connectWallet } = useWalletAccount();
   return (
     <View className="w-full flex-row items-center justify-between gap-6">
       <Pressable
@@ -235,21 +235,22 @@ export const WalletItem = React.forwardRef<
         <View className="flex-row gap-2">
           {connectedWallets.find((w) => w.address === wallet.address) ? (
             <Pressable
-              disabled
               className="flex-row items-center gap-2"
-              onPointerUp={() => action?.()}
+              onPointerUp={() => disconnect()}
             >
               <Plug className="size-4 fill-secondary/50" />
             </Pressable>
           ) : (
             <Pressable
               className="flex-row items-center gap-2"
-              onPointerUp={() => action?.()}
+              onPointerUp={() =>
+                connectWallet({ suggestedAddress: wallet.address })
+              }
             >
               <Plug className="size-4" />
             </Pressable>
           )}
-          {get(wallet, "linked") && !!action && (
+          {(get(wallet, "linked") || get(wallet, "type") === "wallet") && (
             <UnlinkButton
               action={() => {
                 console.log("unlinking wallet", wallet.address);
