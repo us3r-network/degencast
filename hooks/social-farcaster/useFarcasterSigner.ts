@@ -3,7 +3,7 @@ import {
   useCreateWallet,
   useFarcasterSigner as usePrivyFarcasterSigner,
   useLinkAccount,
-  useWallets
+  useWallets,
 } from "@privy-io/react-auth";
 import { ExternalEd25519Signer } from "@standard-crypto/farcaster-js-hub-rest";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -23,10 +23,12 @@ export default function useFarcasterSigner() {
   );
 
   const linkFarcasterHanler = {
-    onSuccess: (user: User) => {
-      console.log("Linked farcaster account", user);
-      setLinkingFarcaster(false);
-      if (!requestingSigner) requestSigner();
+    onSuccess: (user: User, loginMethod: any) => {
+      // console.log("Linked farcaster account", user, loginMethod);
+      if (loginMethod === "farcaster" && linkingFarcaster) {
+        setLinkingFarcaster(false);
+        if (!requestingSigner) requestSigner();
+      }
     },
     onError: (error: unknown) => {
       console.error("Failed to link farcaster account", error);
@@ -41,9 +43,7 @@ export default function useFarcasterSigner() {
     signFarcasterMessage,
   } = usePrivyFarcasterSigner();
 
-  const [hasSigner, setHasSigner] = useState(
-    !!signerPublicKey,
-  );
+  const [hasSigner, setHasSigner] = useState(!!signerPublicKey);
   useEffect(() => {
     if (signerPublicKey && !hasSigner) {
       setHasSigner(true);
@@ -51,7 +51,7 @@ export default function useFarcasterSigner() {
         setRequestingSigner(false);
         submitUserAction({
           action: UserActionName.ConnectFarcaster,
-          data: { signerPublicKey},
+          data: { signerPublicKey },
         });
       }
     }

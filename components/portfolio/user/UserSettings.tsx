@@ -172,12 +172,6 @@ function CreateWallet() {
   const { ready, authenticated } = useAuth();
   const { coinBaseWallet, linkedWallets, connectedWallets } =
     useWalletAccount();
-  console.log(
-    "hasCoinBaseWallet",
-    linkedWallets,
-    connectedWallets,
-    coinBaseWallet,
-  );
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
   if (!ready || !authenticated || coinBaseWallet) return null;
   return (
