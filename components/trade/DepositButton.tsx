@@ -83,9 +83,21 @@ export function DepositDialog({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess?: (mintNum: number) => void;
 }) {
-  const { connectWallet, activeWallet, connectedExternalWallet } =
-    useWalletAccount();
+  const {
+    connectWallet,
+    activeWallet,
+    connectedExternalWallet,
+    setFreezeAutoSwitchActiveWallet,
+  } = useWalletAccount();
 
+  useEffect(() => {
+    if (open) {
+      setFreezeAutoSwitchActiveWallet(false);
+    } else {
+      setFreezeAutoSwitchActiveWallet(true);
+    }
+  }, [open]);
+  
   if (activeWallet) {
     return (
       <Dialog
