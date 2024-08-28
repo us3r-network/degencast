@@ -156,7 +156,16 @@ export function LinkWallets() {
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={linkWallet}
+        onPress={(e) => {
+          console.log("linking wallet press", e);
+          linkWallet();
+        }}
+        onPointerDown={(e) => {
+          console.log("linking wallet pointer down", e);
+        }}
+        onTouchEnd={(e) => {
+          console.log("linking wallet touch end", e);
+        }}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />

@@ -83,6 +83,15 @@ export default function useWalletAccount() {
     );
 
   const activeOneWallet = useCallback(() => {
+    if (coinBaseWallet) {
+      if (
+        connectedWallets.find(
+          (wallet) => wallet.address === coinBaseWallet.address,
+        )
+      )
+        setActiveWallet(coinBaseWallet as PrivyConnectedWalletType);
+      else connectWallet({ suggestedAddress: coinBaseWallet.address });
+    }
     if (connectedWallets.length > 0) {
       setActiveWallet(connectedWallets[0]);
     } else {
@@ -133,6 +142,7 @@ export default function useWalletAccount() {
     supportAtomicBatch,
     coinBaseWallet,
     injectedWallet,
+    activeOneWallet,
   };
 }
 
