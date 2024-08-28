@@ -78,13 +78,7 @@ export default function useWalletAccount() {
   }, [walletAddress, freezeAutoSwitchActiveWallet]);
 
   const activeWallet = useMemo(() => {
-    console.log(
-      "activeWalletAddress",
-      connectedWallets,
-      activeWalletAddress,
-      freezeAutoSwitchActiveWallet,
-    );
-    if (!connectedWallets?.length) return undefined;
+    if (!connectedWallets?.length || !activeWalletAddress) return undefined;
     const currentWallet = connectedWallets.find(
       (wallet) => wallet.address === activeWalletAddress,
     );
