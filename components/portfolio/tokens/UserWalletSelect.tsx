@@ -72,8 +72,8 @@ export default function UserWalletSelect() {
                   <WalletItem wallet={wallet} />
                 </SelectItem>
               ))}
+              <LinkWallets />
             </SelectGroup>
-            <LinkWallets />
           </View>
         </SelectContent>
       </Select>

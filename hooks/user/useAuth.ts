@@ -157,12 +157,13 @@ export default function useAuth() {
   const { login: privyLogin } = useLogin(privyLoginHanler);
   const [loginHandler, setLoginHandler] = useState<LoginHander>();
 
-  const login = async (opts?: any,
+  const login = async (
+    opts?: any,
     onSuccess?: () => void,
     onFail?: (error: unknown) => void,
   ) => {
     // const { onSuccess, onFail } = opts || {};
-    await logout();
+    if (privyAuthenticated) await logout();
     setLoginHandler({
       onSuccess,
       onFail,
