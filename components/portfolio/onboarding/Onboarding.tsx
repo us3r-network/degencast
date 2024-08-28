@@ -41,14 +41,10 @@ const OnboardingModal = React.forwardRef<
               SKIP_ONBOARDING_KEY,
               nowDate.setDate(nowDate.getDate() + 7).toString(),
             );
-            if (
-              // activeWallet?.connectorType === "embedded" ||
-              activeWallet?.connectorType === "coinbase_wallet"
-            )
-              if (!!coinBaseWallet) {
-                activeOneWallet();
-                setShowDeposit(true);
-              } else setOpen(false);
+            if (!!coinBaseWallet) {
+              activeOneWallet();
+              setShowDeposit(true);
+            } else setOpen(false);
           }}
         />
       </DialogContent>
