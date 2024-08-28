@@ -29,7 +29,7 @@ const OnboardingModal = React.forwardRef<
     goOnboarding();
   }, [ready, authenticated]);
   const [showDeposit, setShowDeposit] = useState(false);
-  const { activeWallet } = useWalletAccount();
+  const { activeWallet, activeOneWallet, coinBaseWallet } = useWalletAccount();
   if (showDeposit) return <DepositDialog open={open} setOpen={setOpen} />;
   return (
     <Dialog open={open} ref={ref}>
@@ -45,8 +45,10 @@ const OnboardingModal = React.forwardRef<
               // activeWallet?.connectorType === "embedded" ||
               activeWallet?.connectorType === "coinbase_wallet"
             )
-              setShowDeposit(true);
-            else setOpen(false);
+              if (!!coinBaseWallet) {
+                activeOneWallet();
+                setShowDeposit(true);
+              } else setOpen(false);
           }}
         />
       </DialogContent>

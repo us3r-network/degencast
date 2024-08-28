@@ -25,7 +25,7 @@ export default function TabLayout() {
   useEffect(() => {
     if (Platform.OS === "web") logGA("app_open", {});
   }, []);
-  const { authenticated, login } = useAuth();
+  const { ready, authenticated, login } = useAuth();
   const navigation = useNavigation();
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -37,6 +37,7 @@ export default function TabLayout() {
           tabPress: (e: any) => {
             AUTH_PROTECTED_ROUTES.forEach((route) => {
               if ((e.target as string).startsWith(route)) {
+                if (!ready) return;
                 if (!authenticated) {
                   e.preventDefault();
                   login({

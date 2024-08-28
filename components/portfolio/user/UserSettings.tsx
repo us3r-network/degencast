@@ -156,7 +156,8 @@ export function LinkWallets() {
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={linkWallet}
+        // onPress={() => linkWallet()}
+        onPointerUp={() => linkWallet()}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
@@ -183,8 +184,8 @@ function CreateWallet() {
     <View className="flex w-full gap-2">
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={() => {
-          console.log("connectCoinbaseSmartWallet");
+        onPointerUp={() => {
+          // console.log("connectCoinbaseSmartWallet");
           connectCoinbaseSmartWallet();
         }}
       >
@@ -213,7 +214,7 @@ export const WalletItem = React.forwardRef<
     <View className="w-full flex-row items-center justify-between gap-6">
       <Pressable
         className="flex-row items-center gap-2"
-        onPress={() => action?.()}
+        onPointerUp={() => action?.()}
       >
         <WalletIcon type={wallet.walletClientType} />
         <Text>{shortPubKey(wallet.address)}</Text>
@@ -222,7 +223,7 @@ export const WalletItem = React.forwardRef<
         <View className="flex-row gap-2">
           <Pressable
             className="flex-row items-center gap-2"
-            onPress={async (event) => {
+            onPointerUp={async (event) => {
               await Clipboard.setStringAsync(wallet.address);
               Toast.show({
                 type: "info",
@@ -242,19 +243,19 @@ export const WalletItem = React.forwardRef<
             <Pressable
               disabled
               className="flex-row items-center gap-2"
-              onPress={() => action?.()}
+              onPointerUp={() => action?.()}
             >
               <Plug className="size-4 fill-secondary/50" />
             </Pressable>
           ) : (
             <Pressable
               className="flex-row items-center gap-2"
-              onPress={() => action?.()}
+              onPointerUp={() => action?.()}
             >
               <Plug className="size-4" />
             </Pressable>
           )}
-          {get(wallet, "linked") && (
+          {get(wallet, "linked") && !!action && (
             <UnlinkButton
               action={() => {
                 console.log("unlinking wallet", wallet.address);

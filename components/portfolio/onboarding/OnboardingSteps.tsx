@@ -202,11 +202,11 @@ export default function OnboardingSteps({
                 >
                   <Text>Create</Text>
                 </Button>
-                {isDesktop && (
+                {/* {isDesktop && (
                   <Button variant="secondary" onPress={() => linkWallet()}>
                     <Text>Connect</Text>
                   </Button>
-                )}
+                )} */}
               </View>
             </View>
             {SkipButton}
