@@ -157,24 +157,28 @@ export default function useAuth() {
   const { login: privyLogin } = useLogin(privyLoginHanler);
   const [loginHandler, setLoginHandler] = useState<LoginHander>();
 
-  const login = async (opts?: {
-    onSuccess?: () => void;
-    onFail?: (error: unknown) => void;
-  }) => {
-    const { onSuccess, onFail } = opts || {};
+  const login = async (
+    opts?: any,
+    onSuccess?: () => void,
+    onFail?: (error: unknown) => void,
+  ) => {
+    // const { onSuccess, onFail } = opts || {};
+    if (privyAuthenticated) await logout();
     setLoginHandler({
       onSuccess,
       onFail,
     });
     setStatus(SigninStatus.LOGGINGIN_PRIVY);
-    privyLogin();
+    privyLogin(opts);
   };
 
   const privyLogoutHanler = {
     onSuccess: () => {
-      console.log("privy logout");
-      dispatch(setDegencastId(""));
-      setStatus(SigninStatus.IDLE);
+      if (status !== SigninStatus.IDLE) {
+        console.log("privy logout");
+        setStatus(SigninStatus.IDLE);
+        dispatch(setDegencastId(""));
+      }
     },
   };
   const { logout } = useLogout(privyLogoutHanler);

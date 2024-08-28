@@ -18,6 +18,7 @@ import useWalletAccount, {
 } from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { shortPubKey } from "~/utils/shortPubKey";
+import { LinkWallets, WalletItem } from "../user/UserSettings";
 
 export default function UserWalletSelect() {
   const { ready, authenticated } = useAuth();
@@ -57,7 +58,7 @@ export default function UserWalletSelect() {
             </Text>
           </View>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="flex items-start gap-4 divide-solid">
           <View className="flex items-start gap-4 divide-solid">
             <SelectGroup className={cn("flex gap-2")}>
               {connectedWallets.map((wallet) => (
@@ -71,78 +72,11 @@ export default function UserWalletSelect() {
                   <WalletItem wallet={wallet} />
                 </SelectItem>
               ))}
+              <LinkWallets />
             </SelectGroup>
-            <LinkWallets />
           </View>
         </SelectContent>
       </Select>
     </TextClassContext.Provider>
-  );
-}
-
-function LinkWallets() {
-  const { ready, authenticated } = useAuth();
-  const { connectWallet, linkWallet, unconnectedLinkedWallets } =
-    useWalletAccount();
-
-  if (!ready || !authenticated) return null;
-  return (
-    <View className="flex w-full gap-2">
-      {unconnectedLinkedWallets.map((wallet) => (
-        <WalletItem
-          key={wallet.address}
-          wallet={wallet}
-          action={() => connectWallet()}
-        />
-      ))}
-      {/* link wallet */}
-      <Pressable
-        className="w-full flex-row items-center justify-between gap-2"
-        onPress={linkWallet}
-      >
-        <View className="flex-row items-center gap-2">
-          <PlusCircle className="size-4" />
-          <Text>Link a wallet</Text>
-        </View>
-      </Pressable>
-    </View>
-  );
-}
-
-function WalletItem({
-  wallet,
-  action,
-}: {
-  wallet: ConnectedWallet | WalletWithMetadata;
-  action?: () => void;
-}) {
-  const { connectedWallets } = useWalletAccount();
-  return (
-    <View
-      className="w-full flex-row items-center justify-between gap-6"
-      key={wallet.address}
-    >
-      <Pressable className="flex-row items-center gap-2" onPress={action}>
-        <WalletIcon type={wallet.walletClientType} />
-        <Text>{shortPubKey(wallet.address)}</Text>
-      </Pressable>
-      {wallet.connectorType !== "embedded" && (
-        <View className="flex-row gap-2">
-          {connectedWallets.find((w) => w.address === wallet.address) ? (
-            <Pressable
-              disabled
-              className="flex-row items-center gap-2"
-              onPress={action}
-            >
-              <Plug className="size-4 fill-secondary/50" />
-            </Pressable>
-          ) : (
-            <Pressable className="flex-row items-center gap-2" onPress={action}>
-              <Plug className="size-4" />
-            </Pressable>
-          )}
-        </View>
-      )}
-    </View>
   );
 }

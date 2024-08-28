@@ -8,8 +8,8 @@ export const privyConfig: PrivyClientConfig = {
     logo: "/logo192.png",
     showWalletLoginFirst: false,
     walletList: [
-      "metamask",
       "coinbase_wallet",
+      "metamask",
       "wallet_connect",
       "detected_wallets",
       "rainbow",
@@ -30,15 +30,15 @@ export const privyConfig: PrivyClientConfig = {
     useSandbox: true,
   },
   loginMethods: ["wallet", "farcaster"],
-  loginMethodsAndOrder: {
-    primary: [
-      "farcaster",
-      // "twitter",
-      "metamask",
-      "coinbase_wallet",
-      "wallet_connect",
-      "detected_wallets",
-      "rainbow",
-    ],
-  },
+  // loginMethodsAndOrder: {
+  //   primary: [
+  //     "farcaster",
+  //     // "twitter",
+  //     "metamask",
+  //     "coinbase_wallet",
+  //     "wallet_connect",
+  //     "detected_wallets",
+  //     "rainbow",
+  //   ],
+  // },
 };

@@ -138,7 +138,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
   );
 }
 
-function LinkWallets() {
+export function LinkWallets() {
   const { ready, authenticated } = useAuth();
   const { unconnectedLinkedWallets, connectWallet, linkWallet } =
     useWalletAccount();
@@ -156,7 +156,8 @@ function LinkWallets() {
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={linkWallet}
+        // onPress={() => linkWallet()}
+        onPointerUp={() => linkWallet()}
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
@@ -171,20 +172,14 @@ function CreateWallet() {
   const { ready, authenticated } = useAuth();
   const { coinBaseWallet, linkedWallets, connectedWallets } =
     useWalletAccount();
-  console.log(
-    "hasCoinBaseWallet",
-    linkedWallets,
-    connectedWallets,
-    coinBaseWallet,
-  );
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
   if (!ready || !authenticated || coinBaseWallet) return null;
   return (
     <View className="flex w-full gap-2">
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
-        onPress={() => {
-          console.log("connectCoinbaseSmartWallet");
+        onPointerUp={() => {
+          // console.log("connectCoinbaseSmartWallet");
           connectCoinbaseSmartWallet();
         }}
       >
@@ -199,19 +194,22 @@ function CreateWallet() {
 
 type WalletItemProps = {
   wallet: ConnectedWallet | WalletWithMetadata;
-  action: () => void;
+  action?: () => void;
 };
 
-const WalletItem = React.forwardRef<
+export const WalletItem = React.forwardRef<
   ViewRef,
   SlottableViewProps & WalletItemProps
 >(({ wallet, action }, ref) => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { connectedWallets, unlinkWallet } = useWalletAccount();
+  const { connectedWallets, unlinkWallet, connectWallet } = useWalletAccount();
   return (
     <View className="w-full flex-row items-center justify-between gap-6">
-      <Pressable className="flex-row items-center gap-2" onPress={action}>
+      <Pressable
+        className="flex-row items-center gap-2"
+        onPointerUp={() => action?.()}
+      >
         <WalletIcon type={wallet.walletClientType} />
         <Text>{shortPubKey(wallet.address)}</Text>
       </Pressable>
@@ -219,7 +217,7 @@ const WalletItem = React.forwardRef<
         <View className="flex-row gap-2">
           <Pressable
             className="flex-row items-center gap-2"
-            onPress={async (event) => {
+            onPointerUp={async (event) => {
               await Clipboard.setStringAsync(wallet.address);
               Toast.show({
                 type: "info",
@@ -237,18 +235,22 @@ const WalletItem = React.forwardRef<
         <View className="flex-row gap-2">
           {connectedWallets.find((w) => w.address === wallet.address) ? (
             <Pressable
-              disabled
               className="flex-row items-center gap-2"
-              onPress={action}
+              onPointerUp={() => disconnect()}
             >
               <Plug className="size-4 fill-secondary/50" />
             </Pressable>
           ) : (
-            <Pressable className="flex-row items-center gap-2" onPress={action}>
+            <Pressable
+              className="flex-row items-center gap-2"
+              onPointerUp={() =>
+                connectWallet({ suggestedAddress: wallet.address })
+              }
+            >
               <Plug className="size-4" />
             </Pressable>
           )}
-          {get(wallet, "linked") && (
+          {(get(wallet, "linked") || get(wallet, "type") === "wallet") && (
             <UnlinkButton
               action={() => {
                 console.log("unlinking wallet", wallet.address);

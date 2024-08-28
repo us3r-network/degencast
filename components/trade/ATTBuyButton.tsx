@@ -57,6 +57,7 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
+import { kebabCase } from "lodash";
 
 export type NFTProps = {
   cast?: NeynarCast;
@@ -121,7 +122,8 @@ const useNftCtx = () => {
 };
 
 export const DetailsScene = () => {
-  const { token } = useNftCtx();
+  const { token, cast } = useNftCtx();
+  // console.log("DetailsScene", token, cast);
   return (
     <View className="gap-4">
       <View className="flex-row items-center justify-between gap-2">
@@ -157,7 +159,24 @@ export const DetailsScene = () => {
         <Text>Chain</Text>
         <Text>{ATT_CONTRACT_CHAIN.name}</Text>
       </View>
-      <ExternalLink href={`https://opensea.io/`} target="_blank">
+      {/* <View className="flex-row items-center justify-between gap-2">
+        <Text>Channel Host</Text>
+        <Text>@{cast?.channel?.hosts[0]?.username}</Text>
+      </View> */}
+      {cast && (
+        <View className="flex-row items-center justify-between gap-2">
+          <Text>Cast Author</Text>
+          <Text>@{cast?.author?.username}</Text>
+        </View>
+      )}
+      {/* <View className="flex-row items-center justify-between gap-2">
+        <Text>Curators</Text>
+        <Text>{ATT_CONTRACT_CHAIN.name}</Text>
+      </View> */}
+      <ExternalLink
+        href={`https://${ATT_CONTRACT_CHAIN.testnet && "testnets."}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${token.contractAddress}/${token.tokenId}`}
+        target="_blank"
+      >
         <View className="flex-row items-center justify-between gap-2">
           <Image
             source={{
@@ -265,7 +284,12 @@ export function BuyDialog({
         </DialogContent>
       )}
       {transationData && (
-        <DialogContent className="w-screen">
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Transaction</DialogTitle>
           </DialogHeader>
@@ -280,7 +304,12 @@ export function BuyDialog({
         </DialogContent>
       )}
       {error && (
-        <DialogContent className="w-screen">
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Error</DialogTitle>
           </DialogHeader>

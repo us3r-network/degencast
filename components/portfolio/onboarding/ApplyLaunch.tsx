@@ -27,33 +27,37 @@ export default function ApplyLaunch({
   }
   return (
     <View className="relative flex h-full w-full  flex-col items-center justify-center ">
-      <ScrollView className="flex h-full w-full" contentContainerClassName="items-center">
-        <View className="max-w-screen-sm p-6">
-          <View className="mb-8 flex flex-col items-center justify-center gap-8 pt-2">
-            <Text className="text-3xl font-bold text-white">
-              Hosting Channels
+      <View className="max-w-screen-sm p-6">
+        <View className="mb-8 flex flex-col items-center justify-center gap-8 pt-2">
+          <Text className="text-3xl font-bold text-white">
+            Hosting Channels
+          </Text>
+          <View>
+            <Text className="text-center text-base font-bold text-secondary">
+              Click the launch button to enable Curation Token and other
+              curation features.
             </Text>
-            <View>
-              <Text className="text-center text-base font-bold text-secondary">
-                Degencast is releasing Channel Share and Token Launch features
-                soon.
-              </Text>
-              <Text className="text-center text-base font-bold text-secondary">
-                Please apply in advance.
-              </Text>
-            </View>
           </View>
-          <View className="flex flex-col gap-5">
+        </View>
+        <ScrollView
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          className="max-h-[50vh]"
+        >
+          <View className="flex gap-5">
             {channels.map((channel) => {
               return <ChannelItem key={channel.id} channel={channel} />;
             })}
           </View>
-        </View>
-      </ScrollView>
-      <View className="flex-grow" />
+        </ScrollView>
+      </View>
       <View className="flex w-full items-center p-2">
-        <Button className="h-14 w-80" onPress={() => onComplete()}>
-          <Text className="text-secondary">Not now</Text>
+        <Button
+          variant={"secondary"}
+          className="w-full"
+          onPress={() => onComplete()}
+        >
+          <Text>Not now</Text>
         </Button>
       </View>
     </View>
@@ -74,11 +78,11 @@ function ChannelItem({
       <View className="flex flex-row gap-2">
         <Image
           source={{ uri: channel.imageUrl }}
-          style={{ width: 50, height: 50, borderRadius: 25 }}
+          style={{ width: 48, height: 48, borderRadius: 24 }}
         />
         <View className="flex flex-col justify-center">
-          <Text className="text-xl text-white">{channel.name}</Text>
-          <Text className="text-base text-secondary">{`/${channel.id}`}</Text>
+          <Text className="text-base text-white">{channel.name}</Text>
+          <Text className="text-xs text-secondary">{`/${channel.id}`}</Text>
         </View>
       </View>
       <View className="flex-grow"></View>

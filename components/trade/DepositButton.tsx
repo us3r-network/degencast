@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import {
   Address,
@@ -19,7 +19,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import {
@@ -31,30 +30,24 @@ import useWalletAccount, {
   ConnectedWallet,
 } from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
+import { TokenWithTradeInfo } from "~/services/trade/types";
+import { eventBus, EventTypes } from "~/utils/eventBus";
 import { shortPubKey } from "~/utils/shortPubKey";
 import UserTokens from "../portfolio/tokens/UserTokens";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import FundButton from "./FundButton";
-import { eventBus, EventTypes } from "~/utils/eventBus";
 import UserTokenSelect from "./UserTokenSelect";
-import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function DepositButton({
   renderButton,
 }: {
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
-  const { connectWallet, activeWallet, connectedExternalWallet } =
-    useWalletAccount();
+  const { activeWallet } = useWalletAccount();
   const [open, setOpen] = useState(false);
   return (
-    <Pressable
-      disabled={
-        activeWallet?.connectorType !== "embedded" &&
-        activeWallet?.connectorType !== "coinbase_wallet"
-      }
-    >
+    <>
       {renderButton ? (
         renderButton({ onPress: () => setOpen(true) })
       ) : (
@@ -62,6 +55,11 @@ export default function DepositButton({
           size={"icon"}
           className="rounded-full"
           onPress={() => setOpen(true)}
+          disabled={
+            !activeWallet ||
+            (activeWallet?.connectorType !== "embedded" &&
+              activeWallet?.connectorType !== "coinbase_wallet")
+          }
         >
           <Text>
             <ArrowDown />
@@ -69,7 +67,7 @@ export default function DepositButton({
         </Button>
       )}
       <DepositDialog open={open} setOpen={setOpen} />
-    </Pressable>
+    </>
   );
 }
 
@@ -82,8 +80,22 @@ export function DepositDialog({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess?: (mintNum: number) => void;
 }) {
-  const { connectWallet, activeWallet, connectedExternalWallet } =
-    useWalletAccount();
+  const {
+    connectWallet,
+    activeWallet,
+    connectedExternalWallet,
+    setFreezeAutoSwitchActiveWallet,
+  } = useWalletAccount();
+
+  useEffect(() => {
+    if (open) {
+      console.log("freeze");
+      setFreezeAutoSwitchActiveWallet(true);
+    } else {
+      console.log("unfreeze");
+      setFreezeAutoSwitchActiveWallet(false);
+    }
+  }, [open]);
 
   if (activeWallet) {
     return (
@@ -93,7 +105,12 @@ export function DepositDialog({
           setOpen(o);
         }}
       >
-        <DialogContent className="w-screen">
+        <DialogContent
+          className="w-screen"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Deposit</DialogTitle>
           </DialogHeader>
