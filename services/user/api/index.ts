@@ -1,15 +1,19 @@
+import { Buffer } from "buffer";
+import { uniq } from "lodash";
+import { Address } from "viem";
 import { ApiResp } from "~/services/shared/types";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
+import { mockMyNFTs } from "../mocks/mynfts";
 import {
   InvitationCodeRespEntity,
   LoginRespEntity,
   TipsInfo,
+  UserAccount,
+  UserAccountType,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
-import { mockMyNFTs } from "../mocks/mynfts";
-import { Buffer } from "buffer";
 
 export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
   return request({
@@ -50,6 +54,72 @@ export function loginDegencast(params?: {
     },
   });
 }
+
+export function linkUserWallet(
+  address: Address,
+): RequestPromise<ApiResp<null>> {
+  return linkUserAccount({
+    type: UserAccountType.EVM,
+    thirdpartyId: address.toLowerCase(),
+  });
+}
+
+function linkUserAccount(params: UserAccount): RequestPromise<ApiResp<null>> {
+  return request({
+    url: `degencast-users/link`,
+    method: "post",
+    headers: {
+      needToken: true,
+    },
+    data: params,
+  });
+}
+
+const REPORTED_USER_ACCOUNTS_KEY = "reportedUserAccounts";
+export const storeReportedUserAccount = (
+  thirdpartyId: string,
+  type: UserAccountType,
+) => {
+  const reportedUserAccounts = getReportedUserAccount();
+  const newReportedUserAccount = uniq([
+    ...reportedUserAccounts,
+    { thirdpartyId, type },
+  ]);
+  localStorage.setItem(
+    REPORTED_USER_ACCOUNTS_KEY,
+    JSON.stringify(newReportedUserAccount),
+  );
+};
+export const getReportedUserAccount = (): UserAccount[] => {
+  try {
+    const reportedUserAccount = localStorage.getItem(
+      REPORTED_USER_ACCOUNTS_KEY,
+    );
+    if (reportedUserAccount) {
+      return JSON.parse(reportedUserAccount) as [];
+    }
+    return [];
+  } catch (error) {
+    return [];
+  }
+};
+export const isReportedUserAccount = (
+  thirdpartyId: string,
+  type: UserAccountType,
+) => {
+  try {
+    const reportedUserAccounts = getReportedUserAccount();
+    if (
+      reportedUserAccounts.find(
+        (account: UserAccount) =>
+          account.thirdpartyId === thirdpartyId && account.type === type,
+      )
+    )
+      return true;
+  } catch (error) {
+    return false;
+  }
+};
 
 export function postUserActions(actions: UserActionData[], hmac: string) {
   const hmacBase64 = Buffer.from(hmac).toString("base64");
