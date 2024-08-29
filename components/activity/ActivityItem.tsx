@@ -62,7 +62,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
           <View className="w-full flex-row items-center gap-2">
             {data.channel && (
               <>
-                <Link href={`/casts/${data.cast.hash}`}>
+                <Link href={`/casts/${data?.cast?.hash}`}>
                   <Text className="text-primary underline">cast</Text>
                 </Link>
                 <Text>{`${data.rewardDescription}`}</Text>
@@ -79,7 +79,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             )}
             {data.channel && (
               <>
-                <Link href={`/casts/${data.cast.hash}`}>
+                <Link href={`/casts/${data?.cast?.hash}`}>
                   <Text className="text-primary underline">cast</Text>
                 </Link>
                 <Text>in</Text>
@@ -90,12 +90,12 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
         )}
         <View className="flex-row items-center gap-2">
           <Text>From</Text>
-          <ActivityItemUser userData={data.cast.author} hideHandle />
+          <ActivityItemUser userData={data?.cast?.author} hideHandle />
           {data.paymentTokenAmount && data.paymentTokenInfo && (
             <Text>{`for ${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
           )}
         </View>
-        {data.cast && <ActivityCast cast={data.cast} />}
+        {data?.cast && <ActivityCast cast={data?.cast} />}
       </CardContent>
     </Card>
   );
@@ -226,7 +226,11 @@ function ActivityCast({ cast }: { cast: NeynarCast }) {
         </View>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <FCastWithNftImage className="overflow-hidden mt-4 mb-[-24px]" cast={cast} hideUserInfo/>
+        <FCastWithNftImage
+          className="mb-[-24px] mt-4 overflow-hidden"
+          cast={cast}
+          hideUserInfo
+        />
       </CollapsibleContent>
     </Collapsible>
   );
