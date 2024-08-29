@@ -93,7 +93,7 @@ export default function CommunityDetail() {
   const tokens = useMemo(() => {
     return (
       communityDetail?.tokens?.filter((token) => {
-        if (!token.tradeInfo || tokenContracts.current.has(token.contract)) {
+        if (!token?.tradeInfo || tokenContracts.current.has(token.contract)) {
           return false;
         }
         tokenContracts.current.add(token.contract);
@@ -107,7 +107,7 @@ export default function CommunityDetail() {
         const tokenRoutes = tokens.map((token) => {
           return {
             key: `${token.contract}`,
-            title: `${token.tradeInfo.name} Token`,
+            title: `${token?.tradeInfo?.name} Token`,
             component: TokensScreen,
             initParams: { contract: token.contract },
           };
