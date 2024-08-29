@@ -11,6 +11,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useCapabilities } from "wagmi/experimental";
+import {
+  isReportedUserAccount,
+  linkUserWallet,
+  storeReportedUserAccount,
+} from "~/services/user/api";
+import { UserAccountType } from "~/services/user/types";
 
 export default function useWalletAccount() {
   const { user, linkWallet, unlinkWallet, ready, authenticated } = usePrivy();
@@ -34,6 +40,22 @@ export default function useWalletAccount() {
         wallet.connectorType !== "coinbase_wallet",
     );
     if (currentWallet) return currentWallet;
+  }, [connectedWallets]);
+
+  // link connected wallets to degencast user
+  useEffect(() => {
+    if (!connectedWallets?.length) return undefined;
+    const unlinkedConnectedWallets = connectedWallets.filter(
+      (wallet) => !linkedWallets.find((w) => w.address === wallet.address),
+    );
+    if (unlinkedConnectedWallets.length > 0) {
+      unlinkedConnectedWallets.forEach((wallet) => {
+        if (!isReportedUserAccount(wallet.address, UserAccountType.EVM)) {
+          storeReportedUserAccount(wallet.address, UserAccountType.EVM);
+          linkUserWallet(wallet.address as Address);
+        }
+      });
+    }
   }, [connectedWallets]);
 
   const unconnectedLinkedWallets = useMemo(() => {

@@ -84,7 +84,8 @@ export default function CreateProposalWriteButton({
               {
                 castHash: cast.hash,
                 castCreator: String(
-                  cast.author.verified_addresses.eth_addresses[0],
+                  cast.author.verified_addresses.eth_addresses[0] ||
+                    cast.author.custody_address,
                 ) as `0x${string}`,
               },
               {
