@@ -36,6 +36,9 @@ export async function getPoolInfo({
   if (!tokenIn.address || !tokenOut.address) {
     throw new Error("Token address is not defined");
   }
+  if (tokenIn.address === tokenOut.address) {
+    throw new Error("Same Token!");
+  }
   console.log(
     "getPoolInfo",
     tokenIn,
