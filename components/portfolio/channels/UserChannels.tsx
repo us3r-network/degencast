@@ -63,7 +63,7 @@ export default function ChannelList({
 }
 
 function ChannelThumb({ channel, fid }: { channel: Channel; fid?: number }) {
-  const isHost = channel.hosts?.some((host) => host.fid === fid);
+  const isHost = channel.lead?.fid === fid;
   const hasToken = Number(channel.tokenInfo?.balance || 0) > 0;
   return (
     <View className="relative w-full">

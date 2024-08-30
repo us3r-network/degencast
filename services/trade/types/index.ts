@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { NeynarChannel } from "~/services/farcaster/types/neynar";
+import { Author, NeynarCast, NeynarChannel } from "~/services/farcaster/types/neynar";
 
 type VolumeStats = {
   volume_usd: string;
@@ -57,4 +57,10 @@ export type ERC42069Token = {
   symbol?: string;
   decimals?: number;
   logoUri?: string;
+};
+
+export type CurationTokenInfo = {
+  cast: NeynarCast;
+  channel: NeynarChannel;
+  curators: Author[];
 };
