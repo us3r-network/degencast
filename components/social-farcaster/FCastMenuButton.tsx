@@ -16,19 +16,16 @@ import useAuth from "~/hooks/user/useAuth";
 import useCastReply from "~/hooks/social-farcaster/useCastReply";
 import useAppModals from "~/hooks/useAppModals";
 
-export const FCastMenuButton = forwardRef(function (
-  {
-    direction,
-    cast,
-    communityInfo,
-    ...props
-  }: ViewProps & {
-    direction?: "top" | "left" | "right";
-    cast: NeynarCast;
-    communityInfo: CommunityInfo;
-  },
-  ref: LegacyRef<View>,
-) {
+export default function FCastMenuButton({
+  direction,
+  cast,
+  communityInfo,
+  ...props
+}: ViewProps & {
+  direction?: "top" | "left" | "right";
+  cast: NeynarCast;
+  communityInfo: CommunityInfo;
+}) {
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastReply();
   const { login, ready, authenticated } = useAuth();
@@ -93,7 +90,6 @@ export const FCastMenuButton = forwardRef(function (
   return (
     <View className="z-20">
       <PostMenuButton
-        ref={ref}
         direction={direction}
         channelId={channelId}
         liked={liked}
@@ -113,7 +109,6 @@ export const FCastMenuButton = forwardRef(function (
           }
           setOpenMintNftModal(true);
         }}
-        {...props}
       />
 
       <FCastGiftModal
@@ -136,4 +131,4 @@ export const FCastMenuButton = forwardRef(function (
       />
     </View>
   );
-});
+}

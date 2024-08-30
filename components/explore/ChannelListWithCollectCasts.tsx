@@ -47,12 +47,7 @@ export default function ChannelListWithCollectCasts({
                   items.length === 0 ? "h-[70vh]" : "",
                 )}
               >
-                <Text
-                  nativeID="invoice-table"
-                  className="items-center text-sm text-muted-foreground"
-                >
-                  <Loading />
-                </Text>
+                <Loading />
               </View>
             </>
           );
