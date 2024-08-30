@@ -269,7 +269,6 @@ function ProposedProposalModalContentBodyScene() {
         ) : (
           <View className="flex flex-row items-center justify-between gap-5">
             <View className="flex-1">
-              {" "}
               <DisputeProposalWriteButton
                 approveText="Downvote (Approve)"
                 downvoteText="Downvote"

@@ -23,8 +23,23 @@ export async function getTradeCallData({
   poolFee?: FeeAmount;
   walletAddress: Address;
 }): Promise<any> {
-
-const swapRoute = await getSwapRoute(
+  
+  if (!tokenIn || !tokenOut) {
+    throw new Error("Token is not defined");
+  }
+  if (!tokenIn.chainId || !tokenOut.chainId) {
+    throw new Error("Token chainId is not defined");
+  }
+  if (!tokenIn.address || !tokenOut.address) {
+    throw new Error("Token address is not defined");
+  }
+  if (tokenIn.address === tokenOut.address) {
+    throw new Error("Same Token!");
+  }
+  if (!amountOut) {
+    throw new Error("No amount!");
+  }
+  const swapRoute = await getSwapRoute(
     tokenIn,
     tokenOut,
     poolFee || FeeAmount.MEDIUM,
@@ -37,17 +52,16 @@ const swapRoute = await getSwapRoute(
     tokenIn: tokenIn.address,
     tokenOut: tokenOut.address,
     fee: poolFee,
-    recipient:walletAddress,
+    recipient: walletAddress,
     amountOut,
     amountInMaximum: amountIn,
     sqrtPriceLimitX96: 0,
   };
-  return     {
-      address: UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS,
-      abi: SwapRouterABI.abi,
-      chainId: ATT_CONTRACT_CHAIN.id,
-      functionName: "exactOutputSingle",
-      args: [exactOutputSingleParams],
-    }
-  
+  return {
+    address: UNISWAP_V3_SWAP_ROUTER_CONTRACT_ADDRESS,
+    abi: SwapRouterABI.abi,
+    chainId: ATT_CONTRACT_CHAIN.id,
+    functionName: "exactOutputSingle",
+    args: [exactOutputSingleParams],
+  };
 }

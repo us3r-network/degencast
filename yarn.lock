@@ -2950,6 +2950,11 @@
   dependencies:
     zod "^3.21.4"
 
+"@privy-io/expo-native-extensions@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.npmjs.org/@privy-io/expo-native-extensions/-/expo-native-extensions-0.0.3.tgz#6398ad2b1b825e1dc168e85c2232da953059ada3"
+  integrity sha512-T6WgIISeSxj5Yf4kpo/YhyjTG4XASW0ky0vjHRZeqPSCrFjQm4ziIn5RMPFAHUaS8inKPM6FjSZgrcdA4a2adw==
+
 "@privy-io/expo@^0.22.5":
   version "0.22.5"
   resolved "https://registry.npmjs.org/@privy-io/expo/-/expo-0.22.5.tgz#942a4d89b831d9022107eaa183137807fcac8ff8"
@@ -7439,6 +7444,11 @@ expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
+expo-apple-authentication@^6.4.2:
+  version "6.4.2"
+  resolved "https://registry.npmjs.org/expo-apple-authentication/-/expo-apple-authentication-6.4.2.tgz#1c2ea4fcbd1de5736483dccd370cdd6b8e3de15d"
+  integrity sha512-X4u1n3Ql1hOpztXHbKNq4I1l4+Ff82gC6RmEeW43Eht7VE6E8PrQBpYKw+JJv8osrCJt7R5O1PZwed6WLN5oig==
+
 expo-application@~5.9.1:
   version "5.9.1"
   resolved "https://registry.npmjs.org/expo-application/-/expo-application-5.9.1.tgz#a12e0cf2741b6f084cc49cd0121ad0a70c770459"
@@ -11808,6 +11818,11 @@ react-native-pager-view@6.3.0:
   version "6.3.0"
   resolved "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-6.3.0.tgz#7e734e84b1692f877591335373f6fd92f0d67aa6"
   integrity sha512-ufJOoVa9pFL1J/yb4hpsCqp8n1qTlcF5VvwqvCacHX//D7hSeRscsiIXg1u1pXNWwllvACb+mqxec/3Uj2mxrA==
+
+react-native-passkeys@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/react-native-passkeys/-/react-native-passkeys-0.3.0.tgz#83bf8aacacfb7d2dc8577f5091cd176957b42333"
+  integrity sha512-xjdoZVRInwFXXD92jpUvSM1OGiEmJgPWm6xc4WFSHb7LnypJ4LjSbfofi59WwA/n7Z/25mcnqZNh5Xq4Viuk+Q==
 
 react-native-reanimated-carousel@4.0.0-alpha.12:
   version "4.0.0-alpha.12"

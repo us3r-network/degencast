@@ -208,7 +208,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       if (
         userSelectedToken &&
         paymentToken &&
-        userSelectedToken !== paymentToken &&
+        userSelectedToken.address !== paymentToken.address &&
         account?.address
       ) {
         const tradeContractMethodData = await getTradeCallData({
