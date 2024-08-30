@@ -34,7 +34,6 @@ export function ProposalButtonBody({
       <ProposalText>{upvoteCount}</ProposalText>
       {!hideDownvote && (
         <>
-          {" "}
           <Separator
             orientation="vertical"
             className="mx-1 h-[12px] w-[1.5px] bg-white"

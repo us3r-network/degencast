@@ -21,7 +21,6 @@ export function ReadyToMintButton({
   if (isExpired) {
     return (
       <ProposalButton variant={"mint-expired"}>
-        {" "}
         <ProposalText>End</ProposalText>
       </ProposalButton>
     );
