@@ -58,6 +58,8 @@ import {
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
 import { kebabCase } from "lodash";
+import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
+import NeynarCastUserInfo from "../social-farcaster/proposal/NeynarCastUserInfo";
 
 export type NFTProps = {
   cast?: NeynarCast;
@@ -122,62 +124,88 @@ const useNftCtx = () => {
 };
 
 export const DetailsScene = () => {
-  const { token, cast } = useNftCtx();
+  const { token } = useNftCtx();
+  const { tokenInfo } = useCurationTokenInfo(
+    token.contractAddress,
+    token.tokenId,
+  );
   // console.log("DetailsScene", token, cast);
   return (
-    <View className="gap-4">
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Contract Address</Text>
-        <View className="flex-row items-center justify-between gap-2">
-          <Text className="line-clamp-1">
-            {shortPubKey(token.contractAddress)}
-          </Text>
-          <Button
-            size="icon"
-            variant="ghost"
-            onPress={async (event) => {
-              await Clipboard.setStringAsync(token.contractAddress as Address);
-              Toast.show({
-                type: "info",
-                text1: "Wallet Address Copied!",
-              });
-            }}
-          >
-            <Copy className="size-4 text-white" />
-          </Button>
+    <View className="relative h-full max-h-[80vh] gap-4 pt-4">
+      <ScrollView
+        className="flex-1"
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="gap-4">
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Contract Address</Text>
+            <View className="flex-row items-center justify-between gap-2">
+              <Text className="line-clamp-1">
+                {shortPubKey(token.contractAddress)}
+              </Text>
+              <Button
+                size="icon"
+                className="h-6 w-6 p-0"
+                onPress={async (event) => {
+                  await Clipboard.setStringAsync(
+                    token.contractAddress as Address,
+                  );
+                  Toast.show({
+                    type: "info",
+                    text1: "Wallet Address Copied!",
+                  });
+                }}
+              >
+                <Copy className="size-4 text-white" />
+              </Button>
+            </View>
+          </View>
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Token ID</Text>
+            <Text> {token.tokenId} </Text>
+          </View>
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Token Standard</Text>
+            <Text>ERC-1155｜ERC-20</Text>
+          </View>
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Chain</Text>
+            <Text>{ATT_CONTRACT_CHAIN.name}</Text>
+          </View>
+          {tokenInfo?.channel && (
+            <View className="flex-row items-center justify-between gap-2">
+              <Text>Channel Host</Text>
+              <NeynarCastUserInfo userData={tokenInfo.channel?.lead} />
+            </View>
+          )}
+          {tokenInfo?.cast && (
+            <View className="flex-row items-center justify-between gap-2">
+              <Text>Cast Author</Text>
+              <NeynarCastUserInfo userData={tokenInfo.cast.author} />
+            </View>
+          )}
+          {tokenInfo?.curators && tokenInfo.curators.length > 0 && (
+            <View className="flex-row items-start justify-between gap-2">
+              <Text>Curators</Text>
+              <View className="flex items-end gap-4">
+                {tokenInfo.curators.map((curator, index) => (
+                  <NeynarCastUserInfo key={index} userData={curator} />
+                ))}
+              </View>
+            </View>
+          )}
         </View>
-      </View>
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Token ID</Text>
-        <Text> {token.tokenId} </Text>
-      </View>
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Token Standard</Text>
-        <Text>ERC-1155｜ERC-20</Text>
-      </View>
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Chain</Text>
-        <Text>{ATT_CONTRACT_CHAIN.name}</Text>
-      </View>
-      {/* <View className="flex-row items-center justify-between gap-2">
-        <Text>Channel Host</Text>
-        <Text>@{cast?.channel?.hosts[0]?.username}</Text>
-      </View> */}
-      {cast && (
-        <View className="flex-row items-center justify-between gap-2">
-          <Text>Cast Author</Text>
-          <Text>@{cast?.author?.username}</Text>
-        </View>
-      )}
-      {/* <View className="flex-row items-center justify-between gap-2">
-        <Text>Curators</Text>
-        <Text>{ATT_CONTRACT_CHAIN.name}</Text>
-      </View> */}
+      </ScrollView>
       <ExternalLink
         href={`https://${ATT_CONTRACT_CHAIN.testnet && "testnets."}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${token.contractAddress}/${token.tokenId}`}
         target="_blank"
       >
-        <View className="flex-row items-center justify-between gap-2">
+        <Button
+          variant={"secondary"}
+          className="absolute bottom-0 w-full flex-row items-center gap-2"
+        >
+          <Text>View</Text>
           <Image
             source={{
               uri: "https://storage.googleapis.com/opensea-static/Logomark/Logomark-Blue.png",
@@ -189,7 +217,7 @@ export const DetailsScene = () => {
             }}
           />
           <Text>Opensea</Text>
-        </View>
+        </Button>
       </ExternalLink>
     </View>
   );
@@ -199,7 +227,7 @@ export const ActivityScene = () => {
   const { token } = useNftCtx();
   return (
     <ScrollView
-      className="max-h-[80vh] w-full"
+      className="max-h-[70vh] w-full"
       showsHorizontalScrollIndicator={false}
     >
       <TokenActivitieList token={token} />
@@ -808,14 +836,3 @@ function MintButtonAA({
     </Button>
   );
 }
-
-// export const ATT_TITLE = "About Proposal, upvote & channel NFT";
-// export const ATT_INFO = [
-//   "Propose: Turn a cast into a Channel NFT.",
-//   "Approve: Approved proposal = Channel NFT.",
-//   "Curators: After proposal is approved, top 10 upvoters(include proposer) = curators. The earlier the more revenue.",
-//   "NFT transaction fee: Degencast 1%, Channel host 2%, Creator 3%, ,Curators 4%.",
-//   "All Channel NFTs share a same channel bonding curve.",
-//   "When channel bounding curve reaches a market cap of 4,206,900 DEGEN, all the liquidity will be deposited into Uniswap v3.",
-//   "Channel NFT holders could claim airdrops after channel token launch.",
-// ];

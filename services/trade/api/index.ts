@@ -1,7 +1,8 @@
 import { ApiResp } from "~/services/shared/types";
 import request, { RequestPromise } from "../../shared/api/request";
-import { TokenWithTradeInfo } from "../types";
+import { CurationTokenInfo, TokenWithTradeInfo } from "../types";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import { Address } from "viem";
 
 export function communityTokens(): RequestPromise<
   ApiResp<TokenWithTradeInfo[]>
@@ -14,6 +15,7 @@ export function communityTokens(): RequestPromise<
     },
   });
 }
+
 export function createToken(
   channelId: string,
   fid: number,
@@ -24,6 +26,20 @@ export function createToken(
     params: { fid },
     headers: {
       needToken: true,
+    },
+  });
+}
+
+export function curationTokenInfo(
+  address: Address,
+  tokenID: number,
+): RequestPromise<ApiResp<CurationTokenInfo>> {
+  return request({
+    url: `/topics/casts/curation-token`,
+    method: "get",
+    params: { address, tokenID },
+    headers: {
+      needToken: false,
     },
   });
 }
