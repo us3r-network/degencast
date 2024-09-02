@@ -9,6 +9,7 @@ import {
   TradeIcon,
 } from "~/components/common/SvgIcons";
 import TabBar from "~/components/layout/tabBar/TabBar";
+import { PRIMARY_COLOR } from "~/constants";
 import useChannelRank from "~/hooks/rank/useChannelRank";
 import useCuratorRank from "~/hooks/rank/useCuratorRank";
 import useTokenRank from "~/hooks/rank/useTokenRank";
@@ -29,9 +30,9 @@ export default function TabLayout() {
   const navigation = useNavigation();
   return (
     <SafeAreaView
-      className="flex-1 bg-background"
       style={{
         flex: 1,
+        backgroundColor: PRIMARY_COLOR,
       }}
     >
       <Tabs
