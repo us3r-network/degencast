@@ -1,4 +1,4 @@
-import { User, usePrivy } from "@privy-io/expo";
+import { User, useLoginWithFarcaster, usePrivy } from "@privy-io/expo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
@@ -10,14 +10,12 @@ import {
   setDegencastLoginRequestStatus,
 } from "~/features/user/userAuthSlice";
 import useUserInviteCode from "./useUserInviteCode";
-import { INVITE_ONLY } from "~/constants";
+import { DEGENCAST_WEB_HOST, INVITE_ONLY } from "~/constants";
 import Toast from "react-native-toast-message";
 
 export default function useAuth() {
-
-  const privyReady = false;
-  const privyUser = { id: "0" };
-  const privyAuthenticated = false;
+  const { isReady: privyReady, user: privyUser } = usePrivy();
+  const [privyAuthenticated, setPrivyAuthenticated] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -102,22 +100,19 @@ export default function useAuth() {
 
   const [status, setStatus] = useState<SigninStatus>(SigninStatus.IDLE);
   const privyLoginHanler = {
-    onComplete: (
+    onSuccess: (
       user: User,
-      isNewUser: boolean,
-      wasAlreadyAuthenticated: boolean,
     ) => {
-      // console.log(
-      //   "privy login completed: ",
-      //   user,
-      //   isNewUser,
-      //   wasAlreadyAuthenticated,
-      // );
+      console.log(
+        "privy login completed: ",
+        user,
+      );
       setStatus(SigninStatus.LOGGINGIN_DEGENCAST);
       syncDegencastId(user.id).then((degencastId) => {
         // console.log("degencastId", degencastId);
         if (degencastId) {
           setStatus(SigninStatus.SUCCESS);
+          setPrivyAuthenticated(true);
           loginHandler?.onSuccess?.();
         } else {
           if (INVITE_ONLY) {
@@ -140,6 +135,7 @@ export default function useAuth() {
     const resp = await signupDegencast(inviteCode);
     if (resp) {
       setStatus(SigninStatus.SUCCESS);
+      setPrivyAuthenticated(true);
       loginHandler?.onSuccess?.();
     } else {
       if (INVITE_ONLY) {
@@ -158,11 +154,13 @@ export default function useAuth() {
     }
   };
 
+  const { loginWithFarcaster, state: loginState } = useLoginWithFarcaster(privyLoginHanler);
   const [loginHandler, setLoginHandler] = useState<LoginHander>();
 
   const login = async (opts?: {
     onSuccess?: () => void;
     onFail?: (error: unknown) => void;
+    redirectUrl?: string;
   }) => {
     const { onSuccess, onFail } = opts || {};
     setLoginHandler({
@@ -170,6 +168,11 @@ export default function useAuth() {
       onFail,
     });
     setStatus(SigninStatus.LOGGINGIN_PRIVY);
+    console.log("privy login");
+    loginWithFarcaster({
+      relyingParty: DEGENCAST_WEB_HOST,
+      redirectUrl: opts?.redirectUrl ? opts.redirectUrl : "/",
+    });
   };
 
   const privyLogoutHanler = {
@@ -177,6 +180,7 @@ export default function useAuth() {
       console.log("privy logout");
       dispatch(setDegencastId(""));
       setStatus(SigninStatus.IDLE);
+      setPrivyAuthenticated(false);
     },
   };
   const { logout } = usePrivy();

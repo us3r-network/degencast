@@ -87,7 +87,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name={`portfolio${Platform.OS === "web" ? "" : "/index"}`}
+          name={`portfolio`}
           options={{
             title: authenticated ? "Portfolio" : "Login",
             tabBarLabelPosition: "below-icon",
