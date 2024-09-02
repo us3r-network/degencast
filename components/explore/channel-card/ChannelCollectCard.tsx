@@ -43,13 +43,13 @@ const ChannelCastCollectCard = React.forwardRef<
       ) : (
         <View className="flex w-full flex-row items-center justify-between px-4">
           <Text>No Curation Cast now</Text>
-          {channelId && (
+          {channelId ? (
             <Link href={`/communities/${channelId}/casts`} asChild>
               <ActionButton className="w-auto px-3">
                 <Text>Curate</Text>
               </ActionButton>
             </Link>
-          )}
+          ) : null}
         </View>
       )}
     </ExploreCard>

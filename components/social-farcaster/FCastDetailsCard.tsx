@@ -10,7 +10,7 @@ import { CardWrapper } from "./proposal/ProposalStyled";
 import ChannelMetaInfo, {
   HomeChannelMetaInfo,
 } from "./proposal/channel-card/ChannelMetaInfo";
-import { FCastMenuButton } from "./FCastActions";
+import FCastMenuButton from "./FCastMenuButton";
 import ProposalStatusActions from "./proposal/proposal-status-actions/ProposalStatusActions";
 import FCast from "./FCast";
 type FCastDetailsCardProps = ViewProps & {

@@ -6,7 +6,6 @@ import {
   ViewabilityConfigCallbackPairs,
 } from "react-native";
 import { CommunityEntity } from "~/services/community/types/community";
-import Animated from "react-native-reanimated";
 import {
   FCastHeightWithNftImage,
   FCastWithNftImage,
@@ -17,7 +16,7 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import ProposalStatusActions, {
   ProposalStatusActionsHeight,
 } from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
-import { FCastMenuButton } from "~/components/social-farcaster/FCastActions";
+import FCastMenuButton from "~/components/social-farcaster/FCastMenuButton";
 
 const itemHeight = FCastHeightWithNftImage + ProposalStatusActionsHeight + 15;
 
@@ -78,8 +77,8 @@ const ChannelCollectCardCasts = forwardRef(function (
           setItemWidth(layout.width);
         }}
       >
-        {itemWidth && (
-          <Animated.FlatList
+        {itemWidth ? (
+          <FlatList
             horizontal
             disableIntervalMomentum={true}
             pagingEnabled={true}
@@ -131,15 +130,15 @@ const ChannelCollectCardCasts = forwardRef(function (
               );
             }}
           />
-        )}
+        ) : null}
       </View>
-      {showCasts.length > 1 && (
+      {showCasts.length > 1 ? (
         <Pagination
           index={currentIndex}
           data={showCasts}
           onPress={onPressPagination}
         />
-      )}
+      ) : null}
     </View>
   );
 });

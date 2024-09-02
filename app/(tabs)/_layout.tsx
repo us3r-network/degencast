@@ -28,7 +28,12 @@ export default function TabLayout() {
   const { ready, authenticated, login } = useAuth();
   const navigation = useNavigation();
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView
+      className="flex-1 bg-background"
+      style={{
+        flex: 1,
+      }}
+    >
       <Tabs
         screenOptions={{ headerShown: false }}
         sceneContainerStyle={{ backgroundColor: "transparent" }}

@@ -7,7 +7,7 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { CardWrapper } from "./proposal/ProposalStyled";
-import { FCastMenuButton } from "./FCastActions";
+import FCastMenuButton from "./FCastMenuButton";
 import ProposalStatusActions from "./proposal/proposal-status-actions/ProposalStatusActions";
 import FCast from "./FCast";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
