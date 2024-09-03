@@ -3972,6 +3972,16 @@
   resolved "https://registry.npmjs.org/@resvg/resvg-wasm/-/resvg-wasm-2.4.0.tgz#e01164b9a267c822e1ff797daa2fb91b663ea6f0"
   integrity sha512-C7c51Nn4yTxXFKvgh2txJFNweaVcfUPQxwEUFw4aWsCmfiBDJsTSwviIF8EcwjQ6k8bPyMWCl1vw4BdxE569Cg==
 
+"@rn-primitives/collapsible@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@rn-primitives/collapsible/-/collapsible-1.0.3.tgz#78b38f26c54694b42b6bd84f857e56d3c13bdbd9"
+  integrity sha512-C+SqlRn/5dmecBWf3ZbcAzODGBBKNUC20GJsm3Dc5fWMk93AEmxNPXo66V+9cQRDNb9liFIYiLfBfYD4mzEKpw==
+  dependencies:
+    "@radix-ui/react-collapsible" "^1.0.3"
+    "@rn-primitives/hooks" "1.0.3"
+    "@rn-primitives/slot" "1.0.3"
+    "@rn-primitives/types" "1.0.3"
+
 "@rn-primitives/hooks@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@rn-primitives/hooks/-/hooks-1.0.3.tgz#f66d32ae294860e1dfdf8f262c642665183f11de"

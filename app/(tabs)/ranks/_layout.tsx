@@ -14,7 +14,7 @@ const TABS = [
   // { label: "Tokens", value: "tokens", component: TokensScreen },
 ];
 
-export default function PortfolioScreen() {
+export default function RankScreen() {
   const segments = useSegments();
   return (
     <View className="flex-1 pb-4">

@@ -1,25 +1,20 @@
-import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import {
-  ArrowDownNarrowWide,
-  ArrowUpNarrowWide,
+    ArrowDownNarrowWide,
+    ArrowUpNarrowWide,
 } from "~/components/common/Icons";
 import { RadioGroup, RadioGroupItemButton } from "~/components/ui/radio-group";
 import { Text } from "~/components/ui/text";
-import { cn } from "~/lib/utils";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
 
-export default function RanksScreen() {
-  return <Redirect href="/ranks/channels" />;
-}
 
 export const RankOrderList = [
   { icon: <ArrowDownNarrowWide size="14" color="white" />, value: "DESC" },
   { icon: <ArrowUpNarrowWide size="14" color="white" />, value: "ASC" },
 ];
 
-export function OrderSelect({
+export default function RankFilter({
   rankOrderByList,
   defaultOrder,
   setOrderParams,

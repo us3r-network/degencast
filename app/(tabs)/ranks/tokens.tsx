@@ -10,7 +10,7 @@ import { DEFAULT_ORDER_PARAMS } from "~/features/rank/tokenRankSlice";
 import useTokenRank from "~/hooks/rank/useTokenRank";
 import { Channel } from "~/services/farcaster/types";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
-import { OrderSelect } from ".";
+import RankFilter from "~/components/rank/Filter";
 
 const RankOrderByList = [
   { label: "Market Cap", value: RankOrderBy.MARKET_CAP },
@@ -31,7 +31,7 @@ export default function TokensScreen() {
   return (
     <PageContent>
       <View className="flex h-full gap-4">
-        <OrderSelect
+        <RankFilter
           setOrderParams={setOrderParams}
           rankOrderByList={RankOrderByList}
           defaultOrder={DEFAULT_ORDER_PARAMS}
