@@ -50,7 +50,7 @@ export default function ExploreLayout() {
       navigationState={{ index, routes }}
       renderScene={renderScene}
       onIndexChange={setIndex}
-      renderTabBar={(props) => <PageTabBar showCreatePost {...props} />}
+      renderTabBar={(props) => <PageTabBar {...props} />}
     />
   );
 }
