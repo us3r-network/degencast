@@ -408,7 +408,7 @@ export const PostMenuButton = forwardRef(function (
         <ActionMenuItem index={5}>
           <GiftButton onPress={onGift} />
         </ActionMenuItem>
-        <ActionMenuItem index={4}>
+        {/* <ActionMenuItem index={4}>
           <Link
             href={`/create${channelId ? "?channelId=" + channelId : ""}`}
             asChild
@@ -421,14 +421,14 @@ export const PostMenuButton = forwardRef(function (
               />
             </ActionMenuItemButton>
           </Link>
-        </ActionMenuItem>
+        </ActionMenuItem> */}
 
-        <ActionMenuItem index={3}>
+        <ActionMenuItem index={4}>
           <CommentButton onPress={onComment} />
         </ActionMenuItem>
-        {/* <ActionMenuItem index={3}>
+        <ActionMenuItem index={3}>
           <MintButton onPress={onMint} />
-        </ActionMenuItem> */}
+        </ActionMenuItem>
         <ActionMenuItem index={2}>
           {/* <ShareButton  onPress={onShare} /> */}
           <RepostButton
