@@ -51,7 +51,11 @@ export default function PlatformSharingModal({
   const onCreateCast = async () => {
     const createText = warpcastText || text || "";
     if (!signerPublicKey) {
-      openWarpcastCreateCast(createText, warpcastEmbeds);
+      openWarpcastCreateCast(
+        createText,
+        warpcastChannelId || "",
+        warpcastEmbeds,
+      );
     } else {
       onOpenChange(false);
       navigation.navigate(
