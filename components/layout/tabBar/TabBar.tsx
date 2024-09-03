@@ -1,15 +1,16 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useNavigation, useRouter } from "expo-router";
 import { Platform, Pressable, View } from "react-native";
+import { SquarePen } from "~/components/common/Icons";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_TABBAR_HEIGHT, SECONDARY_COLOR } from "~/constants";
 import { cn } from "~/lib/utils";
 
 function MobileTabBar(props: BottomTabBarProps) {
   const { state, descriptors, navigation } = props;
-
   return (
     <View
-      className="shadow-md-top flex items-center justify-evenly border-t-0 bg-background"
+      className="flex items-center justify-evenly border-t-0 bg-background shadow-md-top"
       style={{
         height: DEFAULT_TABBAR_HEIGHT,
       }}
@@ -52,31 +53,35 @@ function MobileTabBar(props: BottomTabBarProps) {
             });
           };
 
+          const customRoute = insertCustomRouteAfterIndex(index);
           return (
-            <Pressable
-              key={route.key}
-              className=" flex h-fit w-fit min-w-[60px] items-center justify-center gap-1"
-              accessibilityRole={Platform.OS === "web" ? "link" : "button"}
-              accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
-              onPress={onPress}
-              onLongPress={onLongPress}
-            >
-              {options.tabBarIcon &&
-                options.tabBarIcon({
-                  focused: isFocused,
-                  color: isFocused ? "white" : SECONDARY_COLOR,
-                  size: 0,
-                })}
-              <Text
-                className={cn(
-                  "text-xs font-medium",
-                  isFocused ? "text-white" : "text-secondary",
-                )}
+            <>
+              <Pressable
+                key={route.key}
+                className=" flex h-fit w-fit min-w-[60px] items-center justify-center gap-1"
+                accessibilityRole={Platform.OS === "web" ? "link" : "button"}
+                accessibilityState={isFocused ? { selected: true } : {}}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                onPress={onPress}
+                onLongPress={onLongPress}
               >
-                {label as string}
-              </Text>
-            </Pressable>
+                {options.tabBarIcon &&
+                  options.tabBarIcon({
+                    focused: isFocused,
+                    color: isFocused ? "white" : SECONDARY_COLOR,
+                    size: 0,
+                  })}
+                <Text
+                  className={cn(
+                    "text-xs font-medium",
+                    isFocused ? "text-white" : "text-secondary",
+                  )}
+                >
+                  {label as string}
+                </Text>
+              </Pressable>
+              {customRoute}
+            </>
           );
         })}
         <View className="sm:hidden" />
@@ -86,3 +91,35 @@ function MobileTabBar(props: BottomTabBarProps) {
 }
 
 export default MobileTabBar;
+
+const insertCustomRouteAfterIndex = (index: number) => {
+  const router = useRouter();
+  if (index === 1) {
+    const isFocused = false;
+    return (
+      <Pressable
+        key={"create"}
+        className=" flex h-fit w-fit min-w-[60px] items-center justify-center gap-1"
+        accessibilityRole={Platform.OS === "web" ? "link" : "button"}
+        accessibilityState={isFocused ? { selected: true } : {}}
+        onPress={() => {
+          router.push("/create");
+        }}
+        onLongPress={() => {
+          router.push("/create");
+        }}
+      >
+        <SquarePen stroke={isFocused ? "white" : SECONDARY_COLOR} />
+        <Text
+          className={cn(
+            "text-xs font-medium",
+            isFocused ? "text-white" : "text-secondary",
+          )}
+        >
+          Cast
+        </Text>
+      </Pressable>
+    );
+  }
+  return null;
+};
