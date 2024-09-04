@@ -260,7 +260,7 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
     query: {
       enabled: !!id,
       // Poll every second until the calls are confirmed
-      refetchInterval: (data) =>
+      refetchInterval: (data:any) =>
         data.state.data?.status === "CONFIRMED" ? false : 1000,
     },
   });
@@ -270,7 +270,6 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
     () => getPaymasterService(account.chainId),
     [account.chainId],
   );
-  console.log("AA swap capabilities", capabilities);
   useEffect(() => {
     if (transationStatus !== "pending") {
       setSwaping(false);
@@ -283,14 +282,14 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
     sellAmount,
     buyAmount,
   }: SwapParams) => {
-    console.log(
-      "swap with AA wallet",
-      sellToken,
-      buyToken,
-      sellAmount,
-      buyAmount,
-      capabilities,
-    );
+    // console.log(
+    //   "swap with AA wallet",
+    //   sellToken,
+    //   buyToken,
+    //   sellAmount,
+    //   buyAmount,
+    //   capabilities,
+    // );
     if (!sellToken || !buyToken) {
       return;
     }

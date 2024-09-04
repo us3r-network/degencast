@@ -183,7 +183,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
     query: {
       enabled: !!id,
       // Poll every second until the calls are confirmed
-      refetchInterval: (data) =>
+      refetchInterval: (data:any) =>
         data.state.data?.status === "CONFIRMED" ? false : 1000,
     },
   });
@@ -199,15 +199,15 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       paymentToken?: TokenWithTradeInfo,
       userSelectedToken?: TokenWithTradeInfo,
     ) => {
-      console.log(
-        "mint with AA wallet",
-        token,
-        amount,
-        maxPayment,
-        paymentToken,
-        userSelectedToken,
-        capabilities,
-      );
+      // console.log(
+      //   "mint with AA wallet",
+      //   token,
+      //   amount,
+      //   maxPayment,
+      //   paymentToken,
+      //   userSelectedToken,
+      //   capabilities,
+      // );
       const contracts: any[] = [];
       if (
         userSelectedToken &&
