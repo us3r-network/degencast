@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useCapabilities } from "wagmi/experimental";
+import { PAYMASTER_AND_BUNDLER_ENDPOINT } from "~/constants";
 import {
   isReportedUserAccount,
   linkUserWallet,
@@ -140,22 +141,49 @@ export default function useWalletAccount() {
   }, [activeWallet, ready, authenticated]);
 
   //AA
-  const { data: capabilities } = useCapabilities({
+  const { data: availableCapabilities } = useCapabilities({
     account: walletAddress,
   });
   const supportAtomicBatch = useCallback(
-    (chainId: number) => {
-      if (capabilities && chainId) {
-        const capability = capabilities[chainId];
-        if (capability && capability.atomicBatch?.supported) {
+    (chainId: number | undefined) => {
+      if (availableCapabilities && chainId) {
+        const capabilitiesForChain = availableCapabilities[chainId];
+        if (capabilitiesForChain?.atomicBatch?.supported) {
           return true;
         }
       }
       return false;
     },
-    [capabilities],
+    [availableCapabilities],
   );
-
+  const supportAuxiliaryFunds = useCallback(
+    (chainId: number | undefined) => {
+      if (availableCapabilities && chainId) {
+        const capabilitiesForChain = availableCapabilities[chainId];
+        if (capabilitiesForChain?.auxiliaryFunds?.supported) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [availableCapabilities],
+  );
+  const getPaymasterService = useCallback(
+    (chainId: number | undefined) => {
+      if (availableCapabilities && chainId) {
+        const capabilitiesForChain = availableCapabilities[chainId];
+        if (capabilitiesForChain?.paymasterService?.supported) {
+          return {
+            paymasterService: {
+              url: PAYMASTER_AND_BUNDLER_ENDPOINT,
+            },
+          };
+        }
+      }
+      return {};
+    },
+    [availableCapabilities],
+  );
   return {
     connectWallet,
     linkWallet,
@@ -168,6 +196,8 @@ export default function useWalletAccount() {
     connectedExternalWallet,
     unconnectedLinkedWallets,
     supportAtomicBatch,
+    supportAuxiliaryFunds,
+    getPaymasterService,
     coinBaseWallet,
     injectedWallet,
     activeOneWallet,

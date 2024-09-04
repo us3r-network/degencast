@@ -20,6 +20,7 @@ import { convertToken } from "~/services/uniswapV3";
 import { getTradeCallData } from "~/services/uniswapV3/trading";
 import { useATTContractBurn } from "./useATTContract";
 import useATTNftInfo from "./useATTNftInfo";
+import useWalletAccount from "../user/useWalletAccount";
 
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
@@ -182,13 +183,15 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
     query: {
       enabled: !!id,
       // Poll every second until the calls are confirmed
-      refetchInterval: (data) =>
+      refetchInterval: (data:any) =>
         data.state.data?.status === "CONFIRMED" ? false : 1000,
     },
   });
   const account = useAccount();
   const { getGraduated } = useATTFactoryContractInfo(token);
   const { graduated } = getGraduated();
+  const { getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(account.chainId);
   const mint = useCallback(
     async (
       amount: number,
@@ -203,6 +206,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       //   maxPayment,
       //   paymentToken,
       //   userSelectedToken,
+      //   capabilities,
       // );
       const contracts: any[] = [];
       if (
@@ -260,6 +264,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       });
       writeContracts({
         contracts,
+        capabilities,
       });
     },
     [graduated],
