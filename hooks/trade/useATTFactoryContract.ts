@@ -20,6 +20,7 @@ import { convertToken } from "~/services/uniswapV3";
 import { getTradeCallData } from "~/services/uniswapV3/trading";
 import { useATTContractBurn } from "./useATTContract";
 import useATTNftInfo from "./useATTNftInfo";
+import useWalletAccount from "../user/useWalletAccount";
 
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
@@ -189,6 +190,8 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
   const account = useAccount();
   const { getGraduated } = useATTFactoryContractInfo(token);
   const { graduated } = getGraduated();
+  const { getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(account.chainId);
   const mint = useCallback(
     async (
       amount: number,
@@ -196,14 +199,15 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       paymentToken?: TokenWithTradeInfo,
       userSelectedToken?: TokenWithTradeInfo,
     ) => {
-      // console.log(
-      //   "mint with AA wallet",
-      //   token,
-      //   amount,
-      //   maxPayment,
-      //   paymentToken,
-      //   userSelectedToken,
-      // );
+      console.log(
+        "mint with AA wallet",
+        token,
+        amount,
+        maxPayment,
+        paymentToken,
+        userSelectedToken,
+        capabilities,
+      );
       const contracts: any[] = [];
       if (
         userSelectedToken &&
@@ -260,6 +264,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       });
       writeContracts({
         contracts,
+        capabilities,
       });
     },
     [graduated],
