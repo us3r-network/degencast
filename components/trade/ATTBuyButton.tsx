@@ -60,6 +60,7 @@ import UserTokenSelect from "./UserTokenSelect";
 import { kebabCase } from "lodash";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import NeynarCastUserInfo from "../social-farcaster/proposal/NeynarCastUserInfo";
+import ATTExternalLink from "./ATTExternalLink";
 
 export type NFTProps = {
   cast?: NeynarCast;
@@ -197,28 +198,10 @@ export const DetailsScene = () => {
           )}
         </View>
       </ScrollView>
-      <ExternalLink
-        href={`https://${ATT_CONTRACT_CHAIN.testnet && "testnets."}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${token.contractAddress}/${token.tokenId}`}
-        target="_blank"
-      >
-        <Button
-          variant={"secondary"}
-          className="absolute bottom-0 w-full flex-row items-center gap-2"
-        >
-          <Text>View</Text>
-          <Image
-            source={{
-              uri: "https://storage.googleapis.com/opensea-static/Logomark/Logomark-Blue.png",
-            }}
-            style={{
-              width: 24,
-              height: 24,
-              resizeMode: "contain",
-            }}
-          />
-          <Text>Opensea</Text>
-        </Button>
-      </ExternalLink>
+      <ATTExternalLink
+        contractAddress={token.contractAddress}
+        tokenId={token.tokenId}
+      />
     </View>
   );
 };
