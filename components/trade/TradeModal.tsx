@@ -432,7 +432,7 @@ function TokenWithAmount({
   setBalance?: (balance: number) => void;
 }) {
   const account = useAccount();
-  // console.log("Token", token, amount);
+  // console.log("TokenWithAmount", tokenSet, amount);
   const [token, setToken] = useState(
     tokenSet.defaultToken || NATIVE_TOKEN_METADATA,
   );
