@@ -13,6 +13,7 @@ export default function ApplyLaunchButton({
       onPress={() => {
         openWarpcastCreateCast(
           `Hey @liang, I want to /degencast for /${props.channelId}!`,
+          props.channelId,
         );
       }}
     >
@@ -34,6 +35,7 @@ export function ExploreApplyLaunchButton({
       onPress={() => {
         openWarpcastCreateCast(
           `Hey @liang, I want to /degencast for /${props.channelId}!`,
+          props.channelId,
         );
       }}
     >

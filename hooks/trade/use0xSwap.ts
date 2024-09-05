@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { erc20Abi, formatUnits, parseUnits } from "viem";
-import { useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useSendTransaction,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { useCallsStatus, useSendCalls } from "wagmi/experimental";
 import {
   DEFAULT_CHAINID,
@@ -256,11 +260,16 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
     query: {
       enabled: !!id,
       // Poll every second until the calls are confirmed
-      refetchInterval: (data) =>
+      refetchInterval: (data:any) =>
         data.state.data?.status === "CONFIRMED" ? false : 1000,
     },
   });
-
+  const account = useAccount();
+  const { getPaymasterService } = useWalletAccount();
+  const capabilities = useMemo(
+    () => getPaymasterService(account.chainId),
+    [account.chainId],
+  );
   useEffect(() => {
     if (transationStatus !== "pending") {
       setSwaping(false);
@@ -273,13 +282,14 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
     sellAmount,
     buyAmount,
   }: SwapParams) => {
-    console.log(
-      "swap with AA wallet",
-      sellToken,
-      buyToken,
-      sellAmount,
-      buyAmount,
-    );
+    // console.log(
+    //   "swap with AA wallet",
+    //   sellToken,
+    //   buyToken,
+    //   sellAmount,
+    //   buyAmount,
+    //   capabilities,
+    // );
     if (!sellToken || !buyToken) {
       return;
     }
@@ -350,7 +360,7 @@ export function useSwapTokenAA(taker?: `0x${string}`) {
       }
       calls.push(quote.transaction);
       console.log("calls", calls);
-      await sendCallsAsync({ calls });
+      await sendCallsAsync({ calls, capabilities });
       console.log("sendCallsAsync done");
       setWaitingUserSign(false);
     } catch (e) {
