@@ -444,7 +444,7 @@ function TokenWithAmount({
     }
   }, [token]);
 
-  const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
+  const price = Number(token?.tradeInfo?.stats?.token_price_usd) || 0;
 
   return (
     <View className="flex gap-2">
