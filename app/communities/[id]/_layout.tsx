@@ -171,12 +171,12 @@ export default function CommunityDetail() {
                 <View className="sm:hidden">
                   {tokenInfo.poolAddress ? (
                     <ChannelTokens tokenInfo={tokenInfo} channel={community} />
-                  ) : (
-                    <LaunchProgress
-                      textClassName="text-white"
-                      tokenInfo={tokenInfo}
-                    />
-                  )}
+                  ) : null
+                  // <LaunchProgress
+                  //   textClassName="text-white"
+                  //   tokenInfo={tokenInfo}
+                  // />
+                  }
                 </View>
               ) : (
                 <View className="sm:hidden">

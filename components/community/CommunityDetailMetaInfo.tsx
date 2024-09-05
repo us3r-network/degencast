@@ -270,7 +270,7 @@ export function CommunityDetailMetaInfoMobile({
           </Text>
         </View>
       ) : null}
-      {communityInfo?.attentionTokenInfo && (
+      {/* {communityInfo?.attentionTokenInfo && (
         <View className="flex flex-row items-center justify-between">
           <Text className={cn("text-sm text-primary-foreground")}>
             Curation NFT
@@ -279,7 +279,7 @@ export function CommunityDetailMetaInfoMobile({
             {communityInfo?.attentionTokenInfo?.readyToMintCount || 0}
           </Text>
         </View>
-      )}
+      )} */}
 
       {communityInfo?.attentionTokenInfo && (
         <View className="flex flex-row items-center justify-between">
