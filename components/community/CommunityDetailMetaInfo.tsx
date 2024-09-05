@@ -236,24 +236,18 @@ export function CommunityDetailMetaInfoMobile({
       {communityInfo?.attentionTokenInfo?.poolAddress ? (
         <View className="flex flex-row items-center justify-between">
           <View className="flex flex-row items-center gap-2">
-            <Avatar
-              alt={communityInfo?.attentionTokenInfo?.name || ""}
-              className="size-[24px]"
-            >
-              <AvatarImage
-                source={{ uri: communityInfo?.attentionTokenInfo?.logo || "" }}
-              />
+            <Avatar alt={communityInfo?.name || ""} className="size-[24px]">
+              <AvatarImage source={{ uri: communityInfo?.logo || "" }} />
               <AvatarFallback>
-                <Text className="text-sm font-bold">
-                  {communityInfo?.attentionTokenInfo?.name}
-                </Text>
+                <Text className="text-sm font-bold">{communityInfo?.name}</Text>
               </AvatarFallback>
             </Avatar>
             <Text className={cn("text-sm text-primary-foreground")}>
-              {communityInfo?.attentionTokenInfo?.name || ""}
+              {communityInfo?.name || ""}
             </Text>
           </View>
           <TradeButton
+            className="h-8"
             token2={{
               chainId: ATT_CONTRACT_CHAIN.id,
               address: communityInfo?.attentionTokenInfo?.tokenContract,

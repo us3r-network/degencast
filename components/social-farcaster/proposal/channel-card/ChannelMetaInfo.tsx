@@ -49,7 +49,7 @@ export default function ChannelMetaInfo({
               {name}
             </Text>
           </View>
-          <ChannelTokens tokenInfo={tokenInfo} channel={channel} />
+          <LaunchProgress tokenInfo={tokenInfo} />
         </View>
       </Pressable>
     </View>

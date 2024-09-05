@@ -29,7 +29,15 @@ export default function useLoadCommunityDetail(id: string) {
       const res = await fetchCommunity(id);
       const { code, data, msg } = res.data;
       if (code === ApiRespCode.SUCCESS) {
-        dispatch(upsertCommunityDetailData({ id, data }));
+        dispatch(
+          upsertCommunityDetailData({
+            id,
+            data: {
+              ...data,
+              tokens: data?.tokens?.filter((item) => !!item) || [],
+            },
+          }),
+        );
       } else {
         throw new Error(msg);
       }
