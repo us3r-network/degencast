@@ -1,7 +1,15 @@
 import { erc20Abi, PublicClient, TransactionReceipt, WalletClient } from "viem";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import DanAbi from "~/services/proposal/abi/DanAbi.json";
-
+type WriteContractsCapabilities =
+  | {
+      paymasterService: {
+        url: string | undefined;
+      };
+    }
+  | {
+      paymasterService?: undefined;
+    };
 export enum ProposalState {
   NotProposed = -1,
   Proposed = 0,
@@ -203,6 +211,7 @@ export const createProposal = async ({
       chain: any;
       account: any;
       contracts: any[];
+      capabilities?: WriteContractsCapabilities;
     }) => Promise<any>;
     getCallsStatus?: (opts: any) => Promise<any>;
   };
@@ -216,6 +225,7 @@ export const createProposal = async ({
     paymentPrice: bigint;
     enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
     paymentTokenAddress?: `0x${string}`;
+    capabilities?: WriteContractsCapabilities;
   };
 }) => {
   if (!contractAddress) {
@@ -246,8 +256,12 @@ export const createProposal = async ({
     throw new Error("Wallet is not connected");
   }
 
-  const { paymentPrice, enableApprovePaymentStep, paymentTokenAddress } =
-    paymentConfig;
+  const {
+    paymentPrice,
+    enableApprovePaymentStep,
+    paymentTokenAddress,
+    capabilities,
+  } = paymentConfig;
 
   const config = {
     contentHash: proposalConfig.castHash,
@@ -294,6 +308,7 @@ export const createProposal = async ({
       chain,
       account,
       contracts,
+      capabilities,
     });
     const res: any = await new Promise((resolve, reject) => {
       const interval = setInterval(async () => {
@@ -346,6 +361,7 @@ type HandleProposalCommonOpts = {
       chain: any;
       account: any;
       contracts: any[];
+      capabilities?: WriteContractsCapabilities;
     }) => Promise<any>;
     getCallsStatus?: (opts: any) => Promise<any>;
   };
@@ -355,6 +371,7 @@ type HandleProposalCommonOpts = {
     paymentPrice: bigint;
     enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
     paymentTokenAddress?: `0x${string}`;
+    capabilities?: WriteContractsCapabilities;
   };
 };
 const challengeProposal = async ({
@@ -390,6 +407,7 @@ const challengeProposal = async ({
     paymentPrice: inputPrice,
     enableApprovePaymentStep,
     paymentTokenAddress,
+    capabilities,
   } = paymentConfig;
   let paymentPrice = inputPrice;
   if (!inputPrice) {
@@ -444,6 +462,7 @@ const challengeProposal = async ({
       chain,
       account,
       contracts,
+      capabilities,
     });
     const res: any = await new Promise((resolve, reject) => {
       const interval = setInterval(async () => {

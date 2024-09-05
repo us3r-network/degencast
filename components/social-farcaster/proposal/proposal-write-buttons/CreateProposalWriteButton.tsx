@@ -61,7 +61,8 @@ export default function CreateProposalWriteButton({
         }
       : undefined;
 
-  const { supportAtomicBatch } = useWalletAccount();
+  const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(paymentTokenInfo?.chainId!);
   const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
 
   return (
@@ -94,6 +95,7 @@ export default function CreateProposalWriteButton({
                   ? {
                       enableApprovePaymentStep: true,
                       paymentTokenAddress: paymentTokenInfo?.address,
+                      capabilities,
                     }
                   : {}),
               },
