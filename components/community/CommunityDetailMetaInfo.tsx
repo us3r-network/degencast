@@ -117,10 +117,12 @@ export function CommunityDetailMetaInfoMobile({
   communityInfo,
   className,
   navigateBefore,
+  openTradeBefore,
   ...props
 }: ViewProps & {
   communityInfo: CommunityData;
   navigateBefore?: () => void;
+  openTradeBefore?: () => void;
 }) {
   const {
     name,
@@ -252,6 +254,7 @@ export function CommunityDetailMetaInfoMobile({
               chainId: ATT_CONTRACT_CHAIN.id,
               address: communityInfo?.attentionTokenInfo?.tokenContract,
             }}
+            onOpenBefore={openTradeBefore}
           />
         </View>
       ) : communityInfo?.attentionTokenInfo?.progress ? (
@@ -353,6 +356,9 @@ export function CommunityDetailMetaInfoDropdown({
         <CommunityDetailMetaInfoMobile
           communityInfo={community}
           navigateBefore={() => {
+            setOpen(false);
+          }}
+          openTradeBefore={() => {
             setOpen(false);
           }}
         />

@@ -47,26 +47,31 @@ export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
   triggerButton,
+  onOpenBefore,
 }: {
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
   triggerButton: React.ReactNode;
+  onOpenBefore?: () => void;
 }) {
   const [swaping, setSwaping] = useState(false);
   const [open, setOpen] = useState(false);
   return (
     <Dialog
       onOpenChange={(open) => {
+        if (open && onOpenBefore) onOpenBefore();
         setOpen(open);
         setSwaping(false);
       }}
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen"
-          onInteractOutside={(e) => {
-            e.preventDefault();
-          }}>
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader
           className={cn("mr-4 flex-row items-center justify-between gap-2")}
         >

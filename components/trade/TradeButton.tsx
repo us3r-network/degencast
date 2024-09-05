@@ -51,10 +51,12 @@ export function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
   className,
+  onOpenBefore,
 }: {
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
   className?: string;
+  onOpenBefore?: () => void;
 }) {
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
@@ -74,6 +76,7 @@ export function TradeButton({
       <TradeModal
         token1={token1}
         token2={token2}
+        onOpenBefore={onOpenBefore}
         triggerButton={
           <Button
             className={cn("w-14", className)}
