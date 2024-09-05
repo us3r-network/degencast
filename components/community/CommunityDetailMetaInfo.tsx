@@ -23,6 +23,8 @@ import { Separator } from "../ui/separator";
 import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
 import { formatUnits } from "viem";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
+import { TradeButton } from "../trade/TradeButton";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -111,7 +113,7 @@ export default function CommunityDetailMetaInfo({
   );
 }
 
-export function CommunityDetailMetaInfo2({
+export function CommunityDetailMetaInfoMobile({
   communityInfo,
   className,
   navigateBefore,
@@ -226,11 +228,52 @@ export function CommunityDetailMetaInfo2({
         <Separator className="bg-secondary/20" />
       )}
 
-      {communityInfo?.attentionTokenInfo && (
+      {/* {communityInfo?.attentionTokenInfo && (
         <ChannelDetailLaunchProgress
           tokenInfo={communityInfo?.attentionTokenInfo}
         />
-      )}
+      )} */}
+      {communityInfo?.attentionTokenInfo?.poolAddress ? (
+        <View className="flex flex-row items-center justify-between">
+          <View className="flex flex-row items-center gap-2">
+            <Avatar alt={communityInfo?.name || ""} className="size-[24px]">
+              <AvatarImage source={{ uri: communityInfo?.logo || "" }} />
+              <AvatarFallback>
+                <Text className="text-sm font-bold">{communityInfo?.name}</Text>
+              </AvatarFallback>
+            </Avatar>
+            <Text className={cn("text-sm text-primary-foreground")}>
+              {communityInfo?.name || ""}
+            </Text>
+          </View>
+          <TradeButton
+            className="h-8"
+            token2={{
+              chainId: ATT_CONTRACT_CHAIN.id,
+              address: communityInfo?.attentionTokenInfo?.tokenContract,
+            }}
+          />
+        </View>
+      ) : communityInfo?.attentionTokenInfo?.progress ? (
+        <View className="flex flex-row items-center justify-between">
+          <Text className={cn("text-sm text-primary-foreground")}>
+            Bounding Curve Progress
+          </Text>
+          <Text className={cn("text-sm text-primary-foreground")}>
+            {communityInfo?.attentionTokenInfo?.progress}
+          </Text>
+        </View>
+      ) : null}
+      {/* {communityInfo?.attentionTokenInfo && (
+        <View className="flex flex-row items-center justify-between">
+          <Text className={cn("text-sm text-primary-foreground")}>
+            Curation NFT
+          </Text>
+          <Text className={cn("text-sm text-primary-foreground")}>
+            {communityInfo?.attentionTokenInfo?.readyToMintCount || 0}
+          </Text>
+        </View>
+      )} */}
 
       {communityInfo?.attentionTokenInfo && (
         <View className="flex flex-row items-center justify-between">
@@ -307,7 +350,7 @@ export function CommunityDetailMetaInfoDropdown({
         className=" w-screen rounded-none border-none bg-primary p-4 pt-0"
         overlayClassName="bg-black bg-opacity-50 fixed w-screen h-[calc(100vh-100px)] top-[100px] left-0"
       >
-        <CommunityDetailMetaInfo2
+        <CommunityDetailMetaInfoMobile
           communityInfo={community}
           navigateBefore={() => {
             setOpen(false);

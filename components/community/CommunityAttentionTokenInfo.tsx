@@ -20,6 +20,8 @@ import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { CopyTextContainer } from "../common/CopyText";
 import { getChain } from "~/utils/chain/getChain";
 import { ATT_CONTRACT_CHAIN } from "~/constants";
+import { TradeButton } from "../trade/TradeButton";
+import ATTExternalLink from "../trade/ATTExternalLink";
 
 export default function CommunityAttentionTokenInfo({
   channelId,
@@ -43,7 +45,7 @@ export default function CommunityAttentionTokenInfo({
   // }
   // if (rejected || !tokenInfo) return null;
   return (
-    <View className="w-full flex-col gap-4">
+    <View className="flex h-full w-full flex-col gap-4">
       {/* <View className="flex-row items-center gap-1">
         <Avatar
           alt={attentionTokenInfo.name || ""}
@@ -58,9 +60,28 @@ export default function CommunityAttentionTokenInfo({
           {attentionTokenInfo.name}
         </Text>
       </View> */}
-      <TokenLaunchProgress tokenInfo={attentionTokenInfo} />
+      {!attentionTokenInfo.poolAddress ? (
+        <TokenLaunchProgress tokenInfo={attentionTokenInfo} />
+      ) : null}
+
       <TokenPrice tokenInfo={attentionTokenInfo} />
       <TokenInfo tokenInfo={attentionTokenInfo} />
+
+      <View className="mt-auto py-4">
+        {attentionTokenInfo.poolAddress ? (
+          <TradeButton
+            className="w-full self-end"
+            token2={{
+              chainId: ATT_CONTRACT_CHAIN.id,
+              address: attentionTokenInfo?.tokenContract,
+            }}
+          />
+        ) : (
+          <ATTExternalLink
+            contractAddress={attentionTokenInfo?.tokenContract}
+          />
+        )}
+      </View>
     </View>
   );
 }

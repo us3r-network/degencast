@@ -34,6 +34,7 @@ import { isDesktop } from "react-device-detect";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
+import { ChannelTokens } from "~/components/social-farcaster/proposal/channel-card/ChannelMetaInfo";
 
 const initialRouteName = "selection";
 
@@ -75,15 +76,11 @@ export default function CommunityDetail() {
     { key: "vote", title: "Vote", component: ProposalFeeds },
     { key: "collect", title: "Collect", component: SelectionFeeds },
     { key: "activities", title: "Activity", component: ActivitiesScreen },
-    ...(isDesktop
-      ? [
-          {
-            key: "attention-token",
-            title: "Curation Token",
-            component: AttentionTokenScreen,
-          },
-        ]
-      : []),
+    {
+      key: "attention-token",
+      title: "Curation Token",
+      component: AttentionTokenScreen,
+    },
     { key: "curators", title: "Curator", component: CuratorsScreen },
   ]);
 
@@ -153,6 +150,7 @@ export default function CommunityDetail() {
                 <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
                   Channel
                 </Text>
+                {/* mobile */}
                 <View className=" sm:hidden">
                   {community && (
                     <CommunityDetailMetaInfoDropdown community={community} />

@@ -2,23 +2,15 @@ import { Pressable, View, ViewProps } from "react-native";
 import { Text } from "~/components/ui/text";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { cn } from "~/lib/utils";
-import { CommunityAvatarJoinIconButton } from "~/components/community/CommunityJoinButton";
 import useCommunityPage from "~/hooks/community/useCommunityPage";
-import { CommunityEntity } from "~/services/community/types/community";
+import {
+  CommunityEntity,
+  CommunityTokens,
+} from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { Home } from "~/components/common/Icons";
 import LaunchProgress from "~/components/community/LaunchProgress";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import useUserHostChannels from "~/hooks/user/useUserHostChannels";
-import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
-import { useState } from "react";
 
-const displayValue = (value: number) => {
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 1,
-    notation: "compact",
-  }).format(Number(value));
-};
 export default function ChannelMetaInfo({
   channel,
   tokenInfo,
@@ -32,13 +24,6 @@ export default function ChannelMetaInfo({
 }) {
   const { navigateToCommunityDetail } = useCommunityPage();
   const { name, logo, memberInfo, channelId } = channel;
-  const { totalNumber, newPostNumber } = memberInfo || {};
-  const { currFid } = useFarcasterAccount();
-  const { channels } = useUserHostChannels(Number(currFid));
-  const isChannelHost =
-    !!channelId && !!channels.find((channel) => channel.id === channelId);
-
-  const [tokenLaunched, setTokenLaunched] = useState(false);
   return (
     <View className={cn("w-full ", className)} {...props}>
       <Pressable
@@ -57,21 +42,12 @@ export default function ChannelMetaInfo({
                 <Text className="text-sm font-bold">{name}</Text>
               </AvatarFallback>
             </Avatar>
-            {/* {channelId && !readOnly && (
-              <CommunityAvatarJoinIconButton
-                channelId={channelId}
-                className=" absolute -bottom-1 -right-1"
-              />
-            )} */}
           </View>
 
           <View className="flex-1 flex-col justify-center">
             <Text className="line-clamp-1 font-bold leading-6 text-foreground">
               {name}
             </Text>
-            {/* <Text className="text-sm font-normal leading-6 text-[#9BA1AD]">
-              {channelId && `/${channelId}`}
-            </Text> */}
           </View>
           <LaunchProgress tokenInfo={tokenInfo} />
         </View>
@@ -89,6 +65,92 @@ export function HomeChannelMetaInfo() {
       <Text className="line-clamp-1 font-bold leading-6 text-foreground">
         Home
       </Text>
+    </View>
+  );
+}
+
+export function ChannelTokenAvatar({
+  tokenInfo,
+  className,
+}: {
+  tokenInfo: {
+    name: string;
+    logo: string;
+    contract: string;
+  };
+  className?: string;
+}) {
+  return (
+    <View className={cn("flex", className)}>
+      <Avatar alt={tokenInfo.name || ""} className="size-[24px]">
+        <AvatarImage source={{ uri: tokenInfo.logo || "" }} />
+        <AvatarFallback>
+          <Text className="text-sm font-bold">{tokenInfo.name}</Text>
+        </AvatarFallback>
+      </Avatar>
+    </View>
+  );
+}
+
+export function ChannelToken({
+  tokenInfo,
+  className,
+}: {
+  tokenInfo: AttentionTokenEntity;
+  className?: string;
+}) {
+  return (
+    <View className={cn("flex flex-row items-center gap-1", className)}>
+      <ChannelTokenAvatar
+        tokenInfo={{
+          name: tokenInfo.name,
+          logo: tokenInfo.logo,
+          contract: tokenInfo.tokenContract,
+        }}
+      />
+      <Text className={cn("font-bold text-foreground")}>{tokenInfo.name}</Text>
+    </View>
+  );
+}
+
+export function ChannelTokens({
+  channel,
+  tokenInfo,
+  className,
+}: {
+  channel: CommunityEntity;
+  tokenInfo?: AttentionTokenEntity;
+  className?: string;
+}) {
+  return (
+    <View className={cn("flex flex-row items-center gap-1", className)}>
+      {!!tokenInfo?.poolAddress ? (
+        channel?.tokens && channel.tokens?.length > 0 ? (
+          <View className="flex flex-row items-center gap-1">
+            <ChannelTokenAvatar
+              tokenInfo={{
+                name: tokenInfo.name,
+                logo: tokenInfo.logo,
+                contract: tokenInfo.tokenContract,
+              }}
+            />
+            {channel.tokens.map((token) => (
+              <ChannelTokenAvatar
+                key={token.contract}
+                tokenInfo={{
+                  name: token.tradeInfo.name,
+                  logo: token.tradeInfo.imageURL,
+                  contract: token.contract,
+                }}
+              />
+            ))}
+          </View>
+        ) : (
+          <ChannelToken tokenInfo={tokenInfo} />
+        )
+      ) : (
+        <LaunchProgress tokenInfo={tokenInfo} />
+      )}
     </View>
   );
 }

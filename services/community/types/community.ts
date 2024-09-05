@@ -17,12 +17,7 @@ export type CommunityEntity = {
     name: string;
     website: string;
   }>;
-  tokens?: Array<{
-    url: string;
-    contract: string;
-    tokenStandard: string;
-    tradeInfo: TradeInfo;
-  }>;
+  tokens?: CommunityTokens;
   nfts?: Array<{
     url: string;
     contract: string;
@@ -47,6 +42,13 @@ export type CommunityEntity = {
   };
   attentionTokenInfo?: AttentionTokenEntity;
 };
+
+export type CommunityTokens = Array<{
+  url: string;
+  contract: string;
+  tokenStandard: string;
+  tradeInfo: TradeInfo;
+}>;
 
 export type CommunityStatistics = {
   memberInfo: {

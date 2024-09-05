@@ -50,16 +50,18 @@ export default function SwapButton() {
 export function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
+  className,
 }: {
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
+  className?: string;
 }) {
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
   if (!account.address)
     return (
       <Button
-        className={cn("w-14")}
+        className={cn("w-14", className)}
         size="sm"
         variant={"secondary"}
         onPress={() => connectWallet()}
@@ -74,7 +76,7 @@ export function TradeButton({
         token2={token2}
         triggerButton={
           <Button
-            className={cn("w-14")}
+            className={cn("w-14", className)}
             size="sm"
             variant={"secondary"}
             disabled={
