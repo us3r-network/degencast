@@ -39,6 +39,7 @@ export default function useCreateProposal({
         paymentPrice: bigint;
         enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
         paymentTokenAddress?: `0x${string}`;
+        capabilities?: any;
       },
     ) => {
       try {

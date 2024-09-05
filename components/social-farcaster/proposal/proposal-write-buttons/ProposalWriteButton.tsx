@@ -73,7 +73,8 @@ export function ProposeProposalWriteButton({
           value: price,
         }
       : undefined;
-  const { supportAtomicBatch } = useWalletAccount();
+  const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(paymentTokenInfo?.chainId!);
   const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
   return (
     <OnChainActionButtonWarper
@@ -98,6 +99,7 @@ export function ProposeProposalWriteButton({
                 ? {
                     enableApprovePaymentStep: true,
                     paymentTokenAddress: paymentTokenInfo?.address,
+                    capabilities,
                   }
                 : {}),
             });
@@ -197,7 +199,8 @@ export function DisputeProposalWriteButton({
         }
       : undefined;
 
-  const { supportAtomicBatch } = useWalletAccount();
+  const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(paymentTokenInfo?.chainId!);
   const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
   return (
     <OnChainActionButtonWarper
@@ -222,6 +225,7 @@ export function DisputeProposalWriteButton({
                 ? {
                     enableApprovePaymentStep: true,
                     paymentTokenAddress: paymentTokenInfo?.address,
+                    capabilities,
                   }
                 : {}),
             });
