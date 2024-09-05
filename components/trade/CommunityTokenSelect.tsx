@@ -22,6 +22,7 @@ export default function CommunityTokenSelect({
   const { items: communityTokens } = useCommunityTokens();
 
   const tokens: TokenWithTradeInfo[] = useMemo(() => {
+    // console.log("communityTokens", communityTokens, chainId, defaultToken);
     if (
       defaultToken &&
       communityTokens.findIndex(
@@ -29,7 +30,7 @@ export default function CommunityTokenSelect({
       ) < 0
     ) {
       return [defaultToken, ...communityTokens].filter(
-        (token) => token?.chainId === chainId,
+        (token) => Number(token?.chainId) === chainId,
       );
     } else {
       return communityTokens.filter((token) => token?.chainId === chainId);
