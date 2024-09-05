@@ -15,6 +15,7 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { ArrowUpDown } from "../common/Icons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import TradeModal from "./TradeModal";
+import useAppModals from "~/hooks/useAppModals";
 
 export default function SwapButton() {
   const account = useAccount();
@@ -60,39 +61,35 @@ export function TradeButton({
 }) {
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
-  if (!account.address)
-    return (
-      <Button
-        className={cn("w-14", className)}
-        size="sm"
-        variant={"secondary"}
-        onPress={() => connectWallet()}
-      >
-        <Text>Trade</Text>
-      </Button>
-    );
-  else
-    return (
-      <TradeModal
-        token1={token1}
-        token2={token2}
-        onOpenBefore={onOpenBefore}
-        triggerButton={
-          <Button
-            className={cn("w-14", className)}
-            size="sm"
-            variant={"secondary"}
-            disabled={
-              (!token1 && !token2) ||
-              token1.chainId !== DEFAULT_CHAINID ||
-              token2.chainId !== DEFAULT_CHAINID
-            }
-          >
-            <Text>Trade</Text>
-          </Button>
+  const { setTradeTokenModal } = useAppModals();
+  return (
+    <Button
+      className={cn("w-14", className)}
+      size="sm"
+      variant={"secondary"}
+      disabled={
+        (!token1 && !token2) ||
+        token1.chainId !== DEFAULT_CHAINID ||
+        token2.chainId !== DEFAULT_CHAINID
+      }
+      onPress={() => {
+        if (!account.address) {
+          connectWallet();
+          return;
         }
-      />
-    );
+        if (onOpenBefore) {
+          onOpenBefore();
+        }
+        setTradeTokenModal({
+          open: true,
+          token1,
+          token2,
+        });
+      }}
+    >
+      <Text>Trade</Text>
+    </Button>
+  );
 }
 
 export function ExploreTradeButton({

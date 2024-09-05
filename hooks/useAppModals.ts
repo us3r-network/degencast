@@ -2,13 +2,16 @@ import { useCallback } from "react";
 import {
   ProposalShareModal,
   selectAppModals,
+  setTradeTokenModal,
+  TradeTokenModal,
   upsertProposalShareModal,
 } from "~/features/appModalsSlice";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 
 export default function useAppModals() {
   const dispatch = useAppDispatch();
-  const { proposalShareModal } = useAppSelector(selectAppModals);
+  const { proposalShareModal, tradeTokenModal } =
+    useAppSelector(selectAppModals);
 
   const upsertProposalShareModalAction = useCallback(
     (data: ProposalShareModal) => {
@@ -17,8 +20,14 @@ export default function useAppModals() {
     [],
   );
 
+  const setTradeTokenModalAction = useCallback((data: TradeTokenModal) => {
+    dispatch(setTradeTokenModal(data));
+  }, []);
+
   return {
     proposalShareModal,
+    tradeTokenModal,
     upsertProposalShareModal: upsertProposalShareModalAction,
+    setTradeTokenModal: setTradeTokenModalAction,
   };
 }
