@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View, Image } from "react-native";
 import { Button } from "~/components/ui/button";
 import {
@@ -13,6 +13,16 @@ import ImageSelector from "../common/ImageSelector";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Image as ImageIcon } from "~/components/common/Icons";
+import {
+  createDegencastChannel,
+  fetchCommunity,
+} from "~/services/community/api/community";
+import { debounce, set, throttle } from "lodash";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
+import { useRouter } from "expo-router";
+import { reset } from "viem/actions";
+import { PercentPrograssText } from "../common/PercentPrograssText";
 
 export default function CreateChannelButton({
   renderButton,
@@ -20,13 +30,18 @@ export default function CreateChannelButton({
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const { hasSigner, requestSigner } = useFarcasterSigner();
   return (
     <>
       {renderButton ? (
         renderButton({ onPress: () => setOpen(true) })
-      ) : (
+      ) : hasSigner ? (
         <Button variant={"secondary"} onPress={() => setOpen(true)}>
           <Text>Create Channel</Text>
+        </Button>
+      ) : (
+        <Button variant={"secondary"} onPress={requestSigner}>
+          <Text>Request Farcaster signer</Text>
         </Button>
       )}
       <CreateChannelDialog open={open} setOpen={setOpen} />
@@ -45,11 +60,14 @@ export function CreateChannelDialog({
 }) {
   const [channelName, setChannelName] = useState("");
   const [channelId, setChannelId] = useState("");
-  const [channelImage, setChannelImage] = useState("");
+  const [channelImageUrl, setChannelImageUrl] = useState("");
   const [channelDescription, setChannelDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [validated, setValidated] = useState(false);
+  const { submitCast } = useFarcasterWrite();
+  const router = useRouter();
   const submit = async () => {
-    if (!channelName || !channelId || !channelImage) {
+    if (!channelName || !channelId || !channelImageUrl) {
       return;
     }
     setLoading(true);
@@ -57,11 +75,63 @@ export function CreateChannelDialog({
       "submit",
       channelName,
       channelId,
-      channelImage,
+      channelImageUrl,
       channelDescription,
     );
+    const res = await createDegencastChannel({
+      name: channelName,
+      id: channelId,
+      imageUrl: channelImageUrl,
+      description: channelDescription,
+    });
+    console.log("res", res);
+    const cast = await submitCast({
+      text: `Degencast Channel ${channelName} created!`,
+      embeds: [
+        {
+          url: channelImageUrl,
+        },
+      ],
+      parentUrl: `https://warpcast.com/~/channel/${channelId}`,
+    });
+    console.log("cast", cast);
     setLoading(false);
+    router.navigate(`/communities/${channelId}/casts`);
+    setOpen(false);
+    // reset();
   };
+  const reset = () => {
+    setChannelName("");
+    setChannelId("");
+    setChannelImageUrl("");
+    setChannelDescription("");
+    setLoading(false);
+    setValidated(false);
+  };
+  const validate = async () => {
+    // console.log("validate", channelId);
+    setValidated(false);
+    try {
+      const channel = await fetchCommunity(channelId);
+      if (!channel?.data?.data?.id) {
+        setValidated(true);
+      }
+    } catch (e) {
+      console.log("validate error", e);
+      setValidated(true);
+    }
+  };
+  const debouncedValidate = useCallback(
+    throttle(debounce(validate, 500), 1000), // 0x api rate limit 1/second
+    [channelId],
+  );
+  useEffect(() => {
+    setValidated(false);
+    if (channelId) {
+      debouncedValidate();
+    }
+  }, [channelId]);
+
   return (
     <Dialog
       open={open}
@@ -94,24 +164,26 @@ export function CreateChannelDialog({
               className="text-secondary"
               placeholder="Input Channel ID"
               value={channelId}
+              blurOnSubmit={true}
               onChangeText={(text) => setChannelId(text)}
+              onSubmitEditing={debouncedValidate}
             ></Input>
           </View>
           <View className="flex gap-4">
             <Text>Channel Image</Text>
             <View className="flex-row items-center gap-4">
-              {channelImage && (
+              {channelImageUrl && (
                 <Image
                   resizeMode="contain"
                   className="rounded-xl"
                   style={{ height: 100, width: 100 }}
                   source={{
-                    uri: channelImage,
+                    uri: channelImageUrl,
                   }}
                 />
               )}
               <ImageSelector
-                imageUrlCallback={setChannelImage}
+                imageUrlCallback={setChannelImageUrl}
                 renderButton={({ onPress, loading }) => (
                   <Button
                     onPress={onPress}
@@ -122,7 +194,7 @@ export function CreateChannelDialog({
                     <ImageIcon color="white" />
                     {loading ? (
                       <Text>Uploading...</Text>
-                    ) : channelImage ? (
+                    ) : channelImageUrl ? (
                       <Text>Change Image</Text>
                     ) : (
                       <Text>Upload Image</Text>
@@ -144,11 +216,19 @@ export function CreateChannelDialog({
           <Button
             variant="secondary"
             disabled={
-              loading || !channelName || !channelId || !channelDescription
+              loading ||
+              !validated ||
+              !channelName ||
+              !channelId ||
+              !channelDescription
             }
             onPress={() => submit()}
           >
-            <Text>Create Channel & Activate </Text>
+            {loading ? (
+              <PercentPrograssText duration={8000} divisor={100} />
+            ) : (
+              <Text>Create Channel & Launch Curation Token</Text>
+            )}
           </Button>
         </View>
       </DialogContent>
