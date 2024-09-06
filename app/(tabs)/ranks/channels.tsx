@@ -6,6 +6,7 @@ import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
+import CreateChannelButton from "~/components/rank/CreateChannelButton";
 import RankFilter from "~/components/rank/Filter";
 import { Text } from "~/components/ui/text";
 import { DEGEN_TOKEN_METADATA } from "~/constants";
@@ -78,6 +79,7 @@ export default function ChannelsScreen() {
             </View>
           )}
         </CardWarper>
+        <CreateChannelButton />
       </View>
     </PageContent>
   );
