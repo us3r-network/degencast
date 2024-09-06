@@ -30,18 +30,13 @@ export default function CreateChannelButton({
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const { hasSigner, requestSigner } = useFarcasterSigner();
   return (
     <>
       {renderButton ? (
         renderButton({ onPress: () => setOpen(true) })
-      ) : hasSigner ? (
+      ) : (
         <Button variant={"secondary"} onPress={() => setOpen(true)}>
           <Text>Create Channel</Text>
-        </Button>
-      ) : (
-        <Button variant={"secondary"} onPress={requestSigner}>
-          <Text>Request Farcaster signer</Text>
         </Button>
       )}
       <CreateChannelDialog open={open} setOpen={setOpen} />
@@ -64,6 +59,8 @@ export function CreateChannelDialog({
   const [channelDescription, setChannelDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
+
+  const { hasSigner, requestSigner } = useFarcasterSigner();
   const { submitCast } = useFarcasterWrite();
   const router = useRouter();
   const submit = async () => {
@@ -213,23 +210,29 @@ export function CreateChannelDialog({
               onChangeText={(text) => setChannelDescription(text)}
             ></Textarea>
           </View>
-          <Button
-            variant="secondary"
-            disabled={
-              loading ||
-              !validated ||
-              !channelName ||
-              !channelId ||
-              !channelDescription
-            }
-            onPress={() => submit()}
-          >
-            {loading ? (
-              <PercentPrograssText duration={8000} divisor={100} />
-            ) : (
-              <Text>Create Channel & Launch Curation Token</Text>
-            )}
-          </Button>
+          {hasSigner ? (
+            <Button
+              variant="secondary"
+              disabled={
+                loading ||
+                !validated ||
+                !channelName ||
+                !channelId ||
+                !channelDescription
+              }
+              onPress={() => submit()}
+            >
+              {loading ? (
+                <PercentPrograssText duration={8000} divisor={100} />
+              ) : (
+                <Text>Create Channel & Launch Curation Token</Text>
+              )}
+            </Button>
+          ) : (
+            <Button variant={"secondary"} onPress={requestSigner}>
+              <Text>Request Farcaster signer</Text>
+            </Button>
+          )}
         </View>
       </DialogContent>
     </Dialog>
