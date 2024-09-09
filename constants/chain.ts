@@ -1,3 +1,4 @@
+import { FeeAmount } from "@uniswap/v3-sdk";
 import { Address } from "viem";
 import { base } from "viem/chains";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -45,3 +46,9 @@ export const DEGEN_TOKEN_METADATA: TokenWithTradeInfo = {
   logoURI:
     "https://assets.coingecko.com/coins/images/34515/standard/android-chrome-512x512.png",
 };
+
+export const UNISWAP_V3_DEGEN_ETH_POOL_FEES =
+  DEFAULT_CHAINID === base.id &&
+  DEGEN_TOKEN_ADDRESS === "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+    ? FeeAmount.MEDIUM
+    : FeeAmount.HIGH;
