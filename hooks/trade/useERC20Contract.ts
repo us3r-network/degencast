@@ -1,28 +1,31 @@
 import { useEffect } from "react";
-import { Address, erc20Abi } from "viem";
+import { Address, erc20Abi, formatUnits } from "viem";
 import {
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { readContracts } from "@wagmi/core";
+import { wagmiConfig } from "~/config/wagmiConfig";
+import { DEGEN_TOKEN_ADDRESS, DEGEN_TOKEN_METADATA } from "~/constants";
 
 const MAX_ALLOWANCE = BigInt(2) ** BigInt(256) - BigInt(1);
 
 export function useERC20Approve({
-  takerAddress,
+  owner,
   tokenAddress,
-  allowanceTarget,
+  spender,
 }: {
-  takerAddress: Address;
+  owner: Address;
   tokenAddress: Address;
-  allowanceTarget: Address;
+  spender: Address;
 }) {
   // 1. Read from ERC20 contract. Does spender (0x Exchange Proxy) have an allowance?
   const { data: allowance, refetch } = useReadContract({
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "allowance",
-    args: [takerAddress, allowanceTarget],
+    args: [owner, spender],
   });
 
   // 2. (Only if no allowance): Write to ERC20, approve 0x Exchange Proxy to spend max integer
@@ -49,7 +52,7 @@ export function useERC20Approve({
       address: tokenAddress,
       abi: erc20Abi,
       functionName: "approve",
-      args: [allowanceTarget, value || MAX_ALLOWANCE],
+      args: [spender, value || MAX_ALLOWANCE],
     });
   };
 
@@ -129,5 +132,63 @@ export function useERC20Transfer({
     transationError,
     transationLoading,
     transationStatus,
+  };
+}
+
+export async function getTokenInfo({
+  address,
+  chainId,
+  account,
+}: {
+  address: Address;
+  chainId: number;
+  account: Address;
+}) {
+  if (!address || !chainId) return undefined;
+  const chain = wagmiConfig.chains.find((chain) => chain.id === chainId);
+  if (!chain) return undefined;
+  const contract = {
+    address,
+    abi: erc20Abi,
+    chainId: chain.id,
+  };
+  const data = await readContracts(wagmiConfig, {
+    contracts: [
+      {
+        ...contract,
+        functionName: "name",
+      },
+      {
+        ...contract,
+        functionName: "symbol",
+      },
+      {
+        ...contract,
+        functionName: "decimals",
+      },
+      {
+        ...contract,
+        functionName: "balanceOf",
+        args: [account],
+      },
+    ],
+  });
+  if (!data || data.length < 4) return undefined;
+  if (data[0].error || data[1].error || data[2].error || data[3].error) {
+    return undefined;
+  }
+  const logoURI = address===DEGEN_TOKEN_ADDRESS ? DEGEN_TOKEN_METADATA.logoURI : undefined;
+  return {
+    address,
+    chainId,
+    name: data[0].result,
+    symbol: data[1].result,
+    decimals: data[2].result,
+    rawBalance: data[3].result,
+    balance: formatUnits(
+      data[3].result as bigint,
+      data[2].result as unknown as number,
+    ),
+    logoURI,
   };
 }

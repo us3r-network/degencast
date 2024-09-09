@@ -45,11 +45,11 @@ const RadioGroupItemButton = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
 >(({ className, ...props }, ref) => {
   return (
-    <TextClassContext.Provider value="text-sm text-primary">
+    <TextClassContext.Provider value="text-sm text-secondary">
       <RadioGroupPrimitive.Item
         ref={ref}
         className={cn(
-          "rounded-lg border border-primary bg-primary/10 px-2 py-1 aria-checked:bg-primary",
+          "rounded-lg border border-secondary bg-secondary/10 px-2 py-1 aria-checked:bg-secondary",
           props.disabled && "opacity-50 web:cursor-not-allowed",
           className,
         )}

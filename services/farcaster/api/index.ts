@@ -1,6 +1,9 @@
 import axios, { AxiosPromise } from "axios";
 import { API_BASE_URL } from "~/constants";
-import { CommunityInfo } from "~/services/community/types/community";
+import {
+  CommunityEntity,
+  CommunityInfo,
+} from "~/services/community/types/community";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { UserActionData } from "~/services/user/types";
 import {
@@ -8,9 +11,11 @@ import {
   Channel,
   FarCast,
   FarCastEmbedMetaV2,
-  SocialPlatform
+  SocialPlatform,
 } from "../types";
 import { NeynarCast } from "../types/neynar";
+import { ProposalCast } from "~/services/feeds/api";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 
 export type FarcasterPageInfo = {
   startIndex: number;
@@ -308,13 +313,13 @@ export function notifyTipApi(data: {
   });
 }
 
-export function fetchUserChannels({
+export function fetchUserAssetsChannels({
   fid,
 }: {
   fid: number;
 }): AxiosPromise<ApiResp<Channel[]>> {
   return request({
-    url: `/topics/recommendaton/channels?fid=${fid || ""}&pubkey=0xA25532B1287dEe6501fFa13Ff457fFcc9a6Ca6B0`,
+    url: `/topics/assets/channels?fid=${fid || ""}`,
     method: "get",
   });
 }
@@ -331,5 +336,50 @@ export function fetchUserHostChannels({
   return request({
     url: `/topics/host-channels?fid=${fid}`,
     method: "get",
+  });
+}
+
+export type CastDetailsData = ProposalCast & {
+  channel: CommunityEntity;
+  tokenInfo: AttentionTokenEntity;
+};
+export function getCastDetails(
+  hash: string,
+): RequestPromise<ApiResp<CastDetailsData>> {
+  return request({
+    url: `/topics/casts/${hash}/detail`,
+    method: "get",
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type CastReplies = {
+  limit?: number;
+  cursor?: string;
+};
+export type CastRepliesData = {
+  casts: Array<
+    ProposalCast & {
+      channel: CommunityEntity;
+      tokenInfo: AttentionTokenEntity;
+    }
+  >;
+  next: {
+    cursor: string;
+  };
+};
+export function getCastReplies(
+  castHash: string,
+  params: CastReplies,
+): RequestPromise<ApiResp<CastRepliesData>> {
+  return request({
+    url: `/topics/casts/${castHash}/replies`,
+    method: "get",
+    params,
+    headers: {
+      needToken: true,
+    },
   });
 }

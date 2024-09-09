@@ -1,3 +1,6 @@
+import { Address } from "viem";
+import { Author, NeynarCast, NeynarChannel } from "~/services/farcaster/types/neynar";
+
 type VolumeStats = {
   volume_usd: string;
   date: number;
@@ -7,7 +10,7 @@ type VolumeStats = {
 export type TradeInfo = {
   id: string;
   chain_id: number;
-  channel:string;
+  channel: string;
   tokenAddress: `0x${string}`;
   name?: string | undefined;
   imageURL?: string;
@@ -34,27 +37,30 @@ export type TradeInfo = {
 export type TokenWithTradeInfo = {
   chainId: number;
   address: `0x${string}`;
-  name: string | undefined;
-  decimals: number | undefined;
-  symbol: string | undefined;
+  name?: string | undefined;
+  decimals?: number | undefined;
+  symbol?: string | undefined;
   logoURI?: string;
   tradeInfo?: TradeInfo;
-  rawBalance?: BigInt | string;
+  rawBalance?: bigint | string;
   balance?: number | string | undefined;
+  channel?: NeynarChannel;
 };
 
-export type ShareInfo = {
-  name?: string | undefined;
-  channelId: string;
-  logo?: string;
-  priceETH?: string;
-  sharesSubject: `0x${string}`;
-  trend: number;
-  amount?: number;
+export type ERC42069Token = {
+  contractAddress: Address;
+  tokenId: number;
+  uri?: string;
+  balance?: string;
+  nftBalance?: string;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  logoUri?: string;
 };
 
-// export type TipsInfo = {
-//   name?: string | undefined;
-//   logo?: string;
-//   amount: number;
-// };
+export type CurationTokenInfo = {
+  cast: NeynarCast;
+  channel: NeynarChannel;
+  curators: Author[];
+};

@@ -1,10 +1,16 @@
+import { Buffer } from "buffer";
+import { uniq } from "lodash";
+import { Address } from "viem";
 import { ApiResp } from "~/services/shared/types";
-import { ShareInfo, TokenWithTradeInfo } from "~/services/trade/types";
+import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
+import { mockMyNFTs } from "../mocks/mynfts";
 import {
   InvitationCodeRespEntity,
   LoginRespEntity,
   TipsInfo,
+  UserAccount,
+  UserAccountType,
   UserActionData,
   UserActionPointConfig,
 } from "../types";
@@ -19,7 +25,9 @@ export function getMyDegencast(): RequestPromise<ApiResp<LoginRespEntity>> {
   });
 }
 
-export function getMyInvitationCodes(): RequestPromise<ApiResp<InvitationCodeRespEntity>> {
+export function getMyInvitationCodes(): RequestPromise<
+  ApiResp<Array<InvitationCodeRespEntity>>
+> {
   return request({
     url: `degencast-users/my-invitation-codes`,
     method: "get",
@@ -39,13 +47,79 @@ export function loginDegencast(params?: {
     method: "post",
     params: {
       ...(inviterFid ? { inviterFid } : {}),
-      ...(inviteCode ? { inviterCode:inviteCode } : {}),
+      ...(inviteCode ? { inviterCode: inviteCode } : {}),
     },
     headers: {
       needToken: true,
     },
   });
 }
+
+export function linkUserWallet(
+  address: Address,
+): RequestPromise<ApiResp<null>> {
+  return linkUserAccount({
+    type: UserAccountType.EVM,
+    thirdpartyId: address.toLowerCase(),
+  });
+}
+
+function linkUserAccount(params: UserAccount): RequestPromise<ApiResp<null>> {
+  return request({
+    url: `degencast-users/link`,
+    method: "post",
+    headers: {
+      needToken: true,
+    },
+    data: params,
+  });
+}
+
+const REPORTED_USER_ACCOUNTS_KEY = "reportedUserAccounts";
+export const storeReportedUserAccount = (
+  thirdpartyId: string,
+  type: UserAccountType,
+) => {
+  const reportedUserAccounts = getReportedUserAccount();
+  const newReportedUserAccount = uniq([
+    ...reportedUserAccounts,
+    { thirdpartyId, type },
+  ]);
+  localStorage.setItem(
+    REPORTED_USER_ACCOUNTS_KEY,
+    JSON.stringify(newReportedUserAccount),
+  );
+};
+export const getReportedUserAccount = (): UserAccount[] => {
+  try {
+    const reportedUserAccount = localStorage.getItem(
+      REPORTED_USER_ACCOUNTS_KEY,
+    );
+    if (reportedUserAccount) {
+      return JSON.parse(reportedUserAccount) as [];
+    }
+    return [];
+  } catch (error) {
+    return [];
+  }
+};
+export const isReportedUserAccount = (
+  thirdpartyId: string,
+  type: UserAccountType,
+) => {
+  try {
+    const reportedUserAccounts = getReportedUserAccount();
+    if (
+      reportedUserAccounts.find(
+        (account: UserAccount) =>
+          account.thirdpartyId === thirdpartyId && account.type === type,
+      )
+    )
+      return true;
+  } catch (error) {
+    return false;
+  }
+};
 
 export function postUserActions(actions: UserActionData[], hmac: string) {
   const hmacBase64 = Buffer.from(hmac).toString("base64");
@@ -105,11 +179,25 @@ export function myTokens(
     },
   });
 }
-export function myShares(
+
+const mockMyNFTRequest = async ({ pubkey }: any) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    data: {
+      code: 0,
+      msg: "",
+      data: mockMyNFTs,
+    },
+  } as unknown as RequestPromise<ApiResp<ERC42069Token[]>>;
+};
+
+export function myNFTs(
   pubkey: `0x${string}`,
-): RequestPromise<ApiResp<ShareInfo[]>> {
+): RequestPromise<ApiResp<ERC42069Token[]>> {
+  // return mockMyNFTRequest(pubkey);
   return request({
-    url: `topics/my-shares`,
+    url: `topics/my-nfts`,
     method: "get",
     params: {
       pubkey,
@@ -119,6 +207,7 @@ export function myShares(
     },
   });
 }
+
 export function myTips(): RequestPromise<ApiResp<TipsInfo[]>> {
   return request({
     url: `topics/my-tips`,

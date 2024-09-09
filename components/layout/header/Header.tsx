@@ -38,7 +38,13 @@ export function HeaderLeft({
   ...props
 }: ViewProps & { title?: string }) {
   return (
-    <View className={cn("flex-row items-center gap-4", className)} {...props} />
+    <View
+      className={cn(
+        "flex-row items-center justify-start gap-4 sm:min-w-52",
+        className,
+      )}
+      {...props}
+    />
   );
 }
 
@@ -59,7 +65,22 @@ export function HeaderLeftDefault({
 export function HeaderRight({ className, ...props }: ViewProps) {
   return (
     <View
-      className={cn("flex-row items-center gap-[10px]", className)}
+      className={cn(
+        "flex-row items-center justify-end gap-[10px] sm:min-w-52",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function HeaderCenter({ className, ...props }: ViewProps) {
+  return (
+    <View
+      className={cn(
+        "m-auto w-full flex-1 max-sm:px-4 sm:w-full sm:max-w-screen-sm",
+        className,
+      )}
       {...props}
     />
   );

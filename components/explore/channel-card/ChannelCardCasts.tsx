@@ -1,211 +1,185 @@
-import { useRef, useState } from "react";
-import { FlatList, LayoutRectangle, Pressable, View } from "react-native";
-import { Loading } from "~/components/common/Loading";
-import FCast from "~/components/social-farcaster/FCast";
-import { FCastExploreActions } from "~/components/social-farcaster/FCastActions";
-import { Card } from "~/components/ui/card";
-import { Text } from "~/components/ui/text";
-import useCommunityPage from "~/hooks/community/useCommunityPage";
-import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
-import { cn } from "~/lib/utils";
-import { CommunityInfo } from "~/services/community/types/community";
-import { getCastHex } from "~/utils/farcaster/cast-utils";
-export default function ChannelCardCasts({
-  channelId,
-  communityInfo,
-}: {
-  channelId: string;
-  communityInfo: CommunityInfo;
-}) {
-  const { navigateToCommunityDetail } = useCommunityPage();
+import { forwardRef, LegacyRef, useRef, useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  View,
+  ViewabilityConfigCallbackPairs,
+} from "react-native";
+import { CommunityEntity } from "~/services/community/types/community";
+import Animated from "react-native-reanimated";
+import FCast, { FCastHeight } from "../../social-farcaster/proposal/FCast";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import ProposalStatusActions, {
+  ProposalStatusActionsHeight,
+} from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
+import FCastMenuButton from "~/components/social-farcaster/FCastMenuButton";
 
-  const { casts, loading, pageInfo } = useLoadCommunityCasts(channelId);
-  const [layout, setLayout] = useState<LayoutRectangle>();
-  const layoutRef = useRef<LayoutRectangle>();
-  const layoutWidth = layout?.width || 0;
-  const layoutHeight = layout?.height || 0;
-  const itemWidth = layoutWidth ? layoutWidth - 30 : 0;
-  const itemHeight = layoutHeight;
+const itemHeight = FCastHeight + ProposalStatusActionsHeight + 15;
+const ChannelCardCasts = forwardRef(function (
+  {
+    channel,
+    tokenInfo,
+    casts,
+  }: {
+    channel?: CommunityEntity;
+    tokenInfo?: AttentionTokenEntity;
+    casts: Array<{
+      cast: NeynarCast;
+      proposal: ProposalEntity;
+    }>;
+  },
+  ref: LegacyRef<View>,
+) {
   const showCasts = casts.slice(0, 10);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const currentCast = showCasts[currentIndex];
 
-  // const showViewMore =
-  //   !loading &&
-  //   showCasts.length > 0 &&
-  //   pageInfo?.hasNextPage &&
-  //   currentIndex > 0;
-
-  const viewabilityConfigCallbackPairs = useRef([
-    {
-      viewabilityConfig: {
-        viewAreaCoveragePercentThreshold: 80,
+  const [itemWidth, setItemWidth] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const flatListRef =
+    useRef<FlatList<{ cast: NeynarCast; proposal: ProposalEntity }>>(null);
+  const onPressPagination = (index: number) => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        index,
+        animated: true,
+      });
+    }
+  };
+  const viewabilityConfigCallbackPairs = useRef<ViewabilityConfigCallbackPairs>(
+    [
+      {
+        viewabilityConfig: {
+          itemVisiblePercentThreshold: 80,
+        },
+        onViewableItemsChanged: ({ viewableItems }) => {
+          if (viewableItems.length > 0) {
+            const index = Number(viewableItems[0].index);
+            setCurrentIndex(index);
+          }
+        },
       },
-      onViewableItemsChanged: ({ viewableItems, changed }: any) => {
-        const viewableIndex = viewableItems?.[0]?.index || 0;
-
-        if (viewableItems.length === 1) {
-          setCurrentIndex(viewableIndex);
-        }
-      },
-    },
-  ]);
-
+    ],
+  );
   return (
-    <View
-      className="relative h-full w-full"
-      onLayout={(e) => {
-        if (!layoutRef.current) {
-          setLayout(e.nativeEvent.layout);
-          layoutRef.current = e.nativeEvent.layout;
-        }
-      }}
-    >
-      <View className=" absolute bottom-4 right-[30px] z-20">
-        {currentCast && (
-          <FCastExploreActions
-            cast={currentCast}
-            communityInfo={communityInfo}
+    <View className="relative flex w-full flex-col gap-4">
+      <View
+        className="w-full"
+        style={{
+          height: itemHeight,
+        }}
+        onLayout={(e) => {
+          const layout = e.nativeEvent.layout;
+          if (layout.width === 0 && layout.height === 0) return;
+          setItemWidth(layout.width);
+        }}
+      >
+        {itemWidth && (
+          <Animated.FlatList
+            horizontal
+            disableIntervalMomentum={true}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            ref={flatListRef}
+            data={showCasts}
+            viewabilityConfigCallbackPairs={
+              viewabilityConfigCallbackPairs.current
+            }
+            getItemLayout={(data, index) => ({
+              length: itemWidth,
+              offset: itemWidth * index,
+              index,
+            })}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => {
+              const { cast, proposal } = item;
+              return (
+                <View
+                  key={index.toString()}
+                  style={{
+                    width: itemWidth,
+                    height: itemHeight,
+                  }}
+                  className="flex flex-col gap-4 px-4"
+                >
+                  <FCast
+                    className="overflow-hidden"
+                    cast={cast}
+                    channel={channel}
+                  />
+                  <View className="flex flex-row items-center justify-between">
+                    <FCastMenuButton
+                      cast={cast}
+                      communityInfo={channel as any}
+                    />
+                    <View className="ml-auto">
+                      <ProposalStatusActions
+                        cast={cast}
+                        channel={channel!}
+                        tokenInfo={tokenInfo}
+                        proposal={proposal}
+                      />
+                    </View>
+                  </View>
+                </View>
+              );
+            }}
           />
         )}
       </View>
+      {showCasts.length > 1 && (
+        <Pagination
+          index={currentIndex}
+          data={showCasts}
+          onPress={onPressPagination}
+        />
+      )}
+    </View>
+  );
+});
+export default ChannelCardCasts;
 
-      <FlatList
-        data={showCasts}
-        horizontal={true}
-        inverted={false}
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled={true}
-        keyExtractor={(item, index) => index.toString()}
-        onEndReached={() => {
-          return;
-          // if (casts.length === 0 || loading) return;
-          // loadCasts();
-        }}
-        onEndReachedThreshold={0.5}
-        ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
-        style={{ flex: 1 }}
-        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-        // onScroll={(e) => {
-        //   // Hide cast menu when swiping to view more cards
-        //   const hideCastMenuIndex = 9999;
-        //   if (!showViewMore || currentIndex === hideCastMenuIndex) return;
-        //   if (
-        //     e.nativeEvent.contentOffset.x +
-        //       e.nativeEvent.layoutMeasurement.width >=
-        //     e.nativeEvent.contentSize.width - itemWidth / 2
-        //   ) {
-        //     setCurrentIndex(hideCastMenuIndex);
-        //   }
-        // }}
-        getItemLayout={(item, index) => {
-          return {
-            length: itemWidth,
-            offset: itemWidth * index,
-            index,
-          };
-        }}
-        renderItem={({ item: cast, index }) => {
-          const isLastItem = index === showCasts.length - 1;
+function Pagination({
+  data,
+  index,
+  onPress,
+}: {
+  data: any[];
+  index: number;
+  onPress: (index: number) => void;
+}) {
+  const itemGap = 15;
+  return (
+    <View className="flex w-full flex-row items-center justify-center">
+      <View
+        className="flex w-fit flex-row items-center justify-center"
+        style={{ gap: itemGap }}
+      >
+        {data.map((_, idx) => {
           return (
-            <View
-              key={getCastHex(cast)}
-              className="h-full"
+            <Pressable
+              key={idx.toString()}
+              className="overflow-hidden rounded-full bg-secondary/20"
               style={{
-                height: itemHeight,
-                width: isLastItem ? layoutWidth + 5 : itemWidth,
+                width: 10,
+                height: 10,
+              }}
+              onPress={() => {
+                onPress(idx);
               }}
             >
               <View
-                className="relative h-full w-full"
+                className="h-full w-full rounded-full bg-primary transition-all"
                 style={{
-                  width: itemWidth,
-                  marginLeft: 15,
+                  width: 10,
+                  height: 10,
+                  opacity: index === idx ? 1 : 0,
                 }}
-              >
-                <Pressable
-                  className={cn(" h-full w-full ")}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    navigateToCommunityDetail(
-                      channelId,
-                      communityInfo,
-                      "casts",
-                    );
-                  }}
-                >
-                  <Card
-                    className={cn(
-                      "z-10 box-border h-full w-full overflow-hidden rounded-[20px] border-none p-4 pb-0",
-                    )}
-                  >
-                    <FCast cast={cast} webpageImgIsFixedRatio={true} />
-                  </Card>
-                </Pressable>
-              </View>
-            </View>
+              />
+            </Pressable>
           );
-        }}
-        ListFooterComponent={() => {
-          if (loading) {
-            return (
-              <View
-                className="flex items-center justify-center p-5"
-                style={{
-                  height: itemHeight,
-                  width: layoutWidth + 5,
-                }}
-              >
-                <Loading />
-              </View>
-            );
-          }
-          // if (showViewMore) {
-          //   return (
-          //     <View
-          //       style={{
-          //         height: itemHeight,
-          //         width: layoutWidth + 5,
-          //       }}
-          //     >
-          //       <View
-          //         className="relative h-full w-full"
-          //         style={{
-          //           width: itemWidth,
-          //           marginLeft: 20,
-          //         }}
-          //       >
-          //         <Pressable
-          //           className={cn(" h-full w-full")}
-          //           onPress={(e) => {
-          //             e.stopPropagation();
-          //             navigateToCommunityDetail(
-          //               channelId,
-          //               communityInfo,
-          //               "casts",
-          //             );
-          //           }}
-          //         >
-          //           <Card
-          //             className={cn(
-          //               "z-10 box-border flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] border-none p-4 pb-0",
-          //             )}
-          //           >
-          //             <Text className=" text-center text-xl font-bold text-secondary">
-          //               View More
-          //             </Text>
-          //           </Card>
-          //         </Pressable>
-          //       </View>
-          //     </View>
-          //   );
-          // }
-          return null;
-        }}
-        ListEmptyComponent={() => {
-          return null;
-        }}
-      />
+        })}
+      </View>
     </View>
   );
 }

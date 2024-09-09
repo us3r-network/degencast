@@ -1,24 +1,32 @@
-import { useConnectWallet } from "@privy-io/react-auth";
-import { base } from "viem/chains";
+import { upperFirst } from "lodash";
+import { LegacyRef, forwardRef } from "react";
+import { View } from "react-native";
 import { useAccount } from "wagmi";
 import { Button, ButtonProps } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { DEGEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
+import {
+  DEFAULT_CHAINID,
+  DEGEN_TOKEN_METADATA,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import TradeModal from "./TradeModal";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { upperFirst } from "lodash";
 import { ArrowUpDown } from "../common/Icons";
-import { LegacyRef, forwardRef } from "react";
-import { View } from "react-native";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import TradeModal from "./TradeModal";
+import useAppModals from "~/hooks/useAppModals";
 
 export default function SwapButton() {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
   if (!account.address)
     return (
-      <Button size={"icon"} className="rounded-full" onPress={connectWallet}>
+      <Button
+        size={"icon"}
+        className="rounded-full"
+        onPress={() => connectWallet()}
+      >
         <Text>
           <ArrowUpDown />
         </Text>
@@ -28,7 +36,7 @@ export default function SwapButton() {
     return (
       <TradeModal
         token1={NATIVE_TOKEN_METADATA}
-        token2={DEGEN_METADATA}
+        token2={DEGEN_TOKEN_METADATA}
         triggerButton={
           <Button size={"icon"} className="rounded-full">
             <Text>
@@ -43,44 +51,45 @@ export default function SwapButton() {
 export function TradeButton({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
+  className,
+  onOpenBefore,
 }: {
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
+  className?: string;
+  onOpenBefore?: () => void;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
-  if (!account.address)
-    return (
-      <Button
-        className={cn("w-14")}
-        size="sm"
-        variant={"secondary"}
-        onPress={connectWallet}
-      >
-        <Text>Trade</Text>
-      </Button>
-    );
-  else
-    return (
-      <TradeModal
-        token1={token1}
-        token2={token2}
-        triggerButton={
-          <Button
-            className={cn("w-14")}
-            size="sm"
-            variant={"secondary"}
-            disabled={
-              (!token1 && !token2) ||
-              token1.chainId !== base.id ||
-              token2.chainId !== base.id
-            }
-          >
-            <Text>Trade</Text>
-          </Button>
+  const { connectWallet } = useWalletAccount();
+  const { setTradeTokenModal } = useAppModals();
+  return (
+    <Button
+      className={cn("w-14", className)}
+      size="sm"
+      variant={"secondary"}
+      disabled={
+        (!token1 && !token2) ||
+        token1.chainId !== DEFAULT_CHAINID ||
+        token2.chainId !== DEFAULT_CHAINID
+      }
+      onPress={() => {
+        if (!account.address) {
+          connectWallet();
+          return;
         }
-      />
-    );
+        if (onOpenBefore) {
+          onOpenBefore();
+        }
+        setTradeTokenModal({
+          open: true,
+          token1,
+          token2,
+        });
+      }}
+    >
+      <Text>Trade</Text>
+    </Button>
+  );
 }
 
 export function ExploreTradeButton({
@@ -92,7 +101,7 @@ export function ExploreTradeButton({
   token2?: TokenWithTradeInfo;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
 
   const symbol = token2?.symbol || "";
   const logo = token2?.logoURI || "";
@@ -101,7 +110,7 @@ export function ExploreTradeButton({
       <ExploreTradeStyledButton
         name={symbol}
         logo={logo}
-        onPress={connectWallet}
+        onPress={() => connectWallet()}
         {...props}
       />
     );
@@ -116,8 +125,8 @@ export function ExploreTradeButton({
             logo={logo}
             disabled={
               (!token1 && !token2) ||
-              token1.chainId !== base.id ||
-              token2.chainId !== base.id
+              token1.chainId !== DEFAULT_CHAINID ||
+              token2.chainId !== DEFAULT_CHAINID
             }
             {...props}
           />
@@ -126,7 +135,7 @@ export function ExploreTradeButton({
     );
 }
 
-export function ChannelExploreTradeButton({
+export function TradeChannelTokenButton({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
   ...props
@@ -135,16 +144,17 @@ export function ChannelExploreTradeButton({
   token2?: TokenWithTradeInfo;
 }) {
   const account = useAccount();
-  const { connectWallet } = useConnectWallet();
+  const { connectWallet } = useWalletAccount();
 
   const symbol = token2?.symbol || "";
   const logo = token2?.logoURI || "";
+
   if (!account.address)
     return (
-      <ChannelExploreTradeStyledButton
+      <TradeChannelTokenStyledButton
         name={symbol}
         logo={logo}
-        onPress={connectWallet}
+        onPress={() => connectWallet()}
         {...props}
       />
     );
@@ -154,13 +164,13 @@ export function ChannelExploreTradeButton({
         token1={token1}
         token2={token2}
         triggerButton={
-          <ChannelExploreTradeStyledButton
+          <TradeChannelTokenStyledButton
             name={symbol}
             logo={logo}
             disabled={
               (!token1 && !token2) ||
-              token1.chainId !== base.id ||
-              token2.chainId !== base.id
+              token1.chainId !== DEFAULT_CHAINID ||
+              token2.chainId !== DEFAULT_CHAINID
             }
             {...props}
           />
@@ -194,7 +204,7 @@ const ExploreTradeStyledButton = forwardRef(function (
       {logo && (
         <Avatar alt={name || ""} className={cn(" size-6")}>
           <AvatarImage source={{ uri: logo || "" }} />
-          <AvatarFallback className="bg-secondary">
+          <AvatarFallback>
             <Text className="text-sm font-medium">
               {upperFirst(name?.slice(0, 2))}
             </Text>
@@ -208,7 +218,7 @@ const ExploreTradeStyledButton = forwardRef(function (
   );
 });
 
-const ChannelExploreTradeStyledButton = forwardRef(function (
+const TradeChannelTokenStyledButton = forwardRef(function (
   {
     name,
     logo,
@@ -233,7 +243,7 @@ const ChannelExploreTradeStyledButton = forwardRef(function (
       {logo && (
         <Avatar alt={name || ""} className={cn(" size-5")}>
           <AvatarImage source={{ uri: logo || "" }} />
-          <AvatarFallback className="bg-secondary">
+          <AvatarFallback>
             <Text className="text-sm font-medium">
               {upperFirst(name?.slice(0, 2))}
             </Text>

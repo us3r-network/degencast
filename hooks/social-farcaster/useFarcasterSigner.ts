@@ -1,24 +1,20 @@
 import {
-  FarcasterWithMetadata,
   User,
   useCreateWallet,
-  useExperimentalFarcasterSigner,
+  useFarcasterSigner as usePrivyFarcasterSigner,
   useLinkAccount,
-  usePrivy,
   useWallets,
 } from "@privy-io/react-auth";
 import { ExternalEd25519Signer } from "@standard-crypto/farcaster-js-hub-rest";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserActionName } from "~/services/user/types";
 import useUserAction from "../user/useUserAction";
+import useFarcasterAccount from "./useFarcasterAccount";
 
 export default function useFarcasterSigner() {
   const { submitUserAction } = useUserAction();
 
-  const { user } = usePrivy();
-  const farcasterAccount = user?.linkedAccounts.find(
-    (account) => account.type === "farcaster",
-  ) as FarcasterWithMetadata;
+  const { farcasterAccount, signerPublicKey } = useFarcasterAccount();
 
   const { createWallet } = useCreateWallet();
   const { wallets } = useWallets();
@@ -27,10 +23,12 @@ export default function useFarcasterSigner() {
   );
 
   const linkFarcasterHanler = {
-    onSuccess: (user: User) => {
-      console.log("Linked farcaster account", user);
-      setLinkingFarcaster(false);
-      if (!requestingSigner) requestSigner();
+    onSuccess: (user: User, loginMethod: any) => {
+      // console.log("Linked farcaster account", user, loginMethod);
+      if (loginMethod === "farcaster" && linkingFarcaster) {
+        setLinkingFarcaster(false);
+        if (!requestingSigner) requestSigner();
+      }
     },
     onError: (error: unknown) => {
       console.error("Failed to link farcaster account", error);
@@ -43,23 +41,21 @@ export default function useFarcasterSigner() {
     requestFarcasterSignerFromWarpcast,
     getFarcasterSignerPublicKey,
     signFarcasterMessage,
-  } = useExperimentalFarcasterSigner();
+  } = usePrivyFarcasterSigner();
 
-  const [hasSigner, setHasSigner] = useState(
-    !!farcasterAccount?.signerPublicKey,
-  );
+  const [hasSigner, setHasSigner] = useState(!!signerPublicKey);
   useEffect(() => {
-    if (farcasterAccount && farcasterAccount.signerPublicKey && !hasSigner) {
+    if (signerPublicKey && !hasSigner) {
       setHasSigner(true);
       if (requestingSigner) {
         setRequestingSigner(false);
         submitUserAction({
           action: UserActionName.ConnectFarcaster,
-          data: { signerPublicKey: farcasterAccount.signerPublicKey },
+          data: { signerPublicKey },
         });
       }
     }
-  }, [farcasterAccount]);
+  }, [signerPublicKey]);
 
   const privySigner = useMemo(
     () =>
@@ -83,12 +79,15 @@ export default function useFarcasterSigner() {
       setLinkingFarcaster(true);
       linkFarcaster(); // this does not mean linking is done, it just starts the process, the user will have to confirm the linking, then the onSuccess callback will be called
     } else {
-      if (!farcasterAccount?.signerPublicKey) {
+      if (!signerPublicKey) {
         console.log("Requesting farcaster signer");
         try {
           // todo: this should be done in the background, and a onSuccess callback should be called after the signer is ready
           setRequestingSigner(true);
           requestFarcasterSignerFromWarpcast();
+          setTimeout(() => {
+            setRequestingSigner(false);
+          }, 5000);
         } catch (error) {
           console.log("requestFarcasterSignerFromWarpcast Error: ", error);
           setRequestingSigner(false);

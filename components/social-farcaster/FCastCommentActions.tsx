@@ -1,14 +1,14 @@
 import { ViewProps } from "react-native";
-import { usePrivy } from "@privy-io/react-auth";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import { PostCommentActions } from "../post/PostCommentActions";
 import { CommunityInfo } from "~/services/community/types/community";
-import useCastPage from "~/hooks/social-farcaster/useCastPage";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import { getCastHex, getCastRepliesCount } from "~/utils/farcaster/cast-utils";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import useAuth from "~/hooks/user/useAuth";
+import useCastReply from "~/hooks/social-farcaster/useCastReply";
 
 export default function FCastCommentActions({
   cast,
@@ -18,8 +18,8 @@ export default function FCastCommentActions({
   cast: NeynarCast;
   communityInfo: CommunityInfo;
 }) {
-  const { navigateToCastReply } = useCastPage();
-  const { authenticated, login } = usePrivy();
+  const { navigateToCastReply } = useCastReply();
+  const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =

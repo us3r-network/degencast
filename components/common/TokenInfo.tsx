@@ -15,15 +15,18 @@ type TokenInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
   textClassName?: string;
 };
 
-export function TokenInfo({ name, logo, symbol, mc, textClassName }: TokenInfoProps) {
+export function TokenInfo({
+  name,
+  logo,
+  symbol,
+  mc,
+  textClassName,
+}: TokenInfoProps) {
   return (
-    <View className="flex-1 flex-row items-center gap-2">
-      <Avatar
-        alt={name || ""}
-        className={cn("size-8 border-2 border-secondary/10")}
-      >
+    <View className="flex-row items-center gap-2">
+      <Avatar alt={name || ""} className={cn("size-8 border-2")}>
         <AvatarImage source={{ uri: logo || "" }} />
-        <AvatarFallback className="bg-secondary">
+        <AvatarFallback>
           <Text className="text-sm font-medium">
             {upperFirst(name?.slice(0, 2))}
           </Text>
@@ -57,18 +60,15 @@ export function TokenWithValue({ token, value }: TokenWithValueProps) {
     value = formatUnits(value, token.decimals || 18);
   }
   const displayValue = new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 6,
+    maximumFractionDigits: 10,
     notation: "compact",
   }).format(Number(value));
 
   return (
     <View className="flex-row items-center gap-2">
-      <Avatar
-        alt={token.name || ""}
-        className={cn("size-8 border-2 border-secondary/10")}
-      >
+      <Avatar alt={token.name || ""} className={cn("size-8 border-2")}>
         <AvatarImage source={{ uri: token.logoURI || "" }} />
-        <AvatarFallback className="bg-secondary">
+        <AvatarFallback>
           <Text className="text-sm font-medium">
             {upperFirst(token.name?.slice(0, 2))}
           </Text>

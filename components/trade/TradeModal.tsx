@@ -2,7 +2,6 @@ import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Address, parseUnits } from "viem";
-import { base } from "viem/chains";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,8 +13,13 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { NATIVE_TOKEN_METADATA } from "~/constants";
-import useSwapToken from "~/hooks/trade/useSwapToken";
+import {
+  DEFAULT_CHAIN,
+  DEFAULT_CHAINID,
+  DEGEN_TOKEN_METADATA,
+  NATIVE_TOKEN_METADATA,
+} from "~/constants";
+import { useFetchPrice, useSwapToken } from "~/hooks/trade/use0xSwap";
 import useUserAction from "~/hooks/user/useUserAction";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -27,7 +31,7 @@ import { TokenWithValue } from "../common/TokenInfo";
 import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import CommunityToeknSelect from "./CommunityTokenSelect";
+import CommunityTokenSelect from "./CommunityTokenSelect";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 import {
@@ -36,28 +40,39 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
+import { eventBus, EventTypes } from "~/utils/eventBus";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import useAppModals from "~/hooks/useAppModals";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
   triggerButton,
+  onOpenBefore,
 }: {
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
   triggerButton: React.ReactNode;
+  onOpenBefore?: () => void;
 }) {
   const [swaping, setSwaping] = useState(false);
   const [open, setOpen] = useState(false);
   return (
     <Dialog
       onOpenChange={(open) => {
+        if (open && onOpenBefore) onOpenBefore();
         setOpen(open);
         setSwaping(false);
       }}
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen">
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader
           className={cn("mr-4 flex-row items-center justify-between gap-2")}
         >
@@ -75,11 +90,64 @@ export default function TradeModal({
           setSwaping={setSwaping}
           setClose={() => setOpen(false)}
         />
-        {!swaping && (
+        {/* {!swaping && (
           <DialogFooter>
             <About title="Swap & Earn" info={TRADE_INFO} />
           </DialogFooter>
+        )} */}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function TradeTokenGlobalModal() {
+  const [swaping, setSwaping] = useState(false);
+  const { tradeTokenModal, setTradeTokenModal } = useAppModals();
+  const { open } = tradeTokenModal;
+  const token1 = tradeTokenModal.token1 || NATIVE_TOKEN_METADATA;
+  const token2 = tradeTokenModal.token2 || NATIVE_TOKEN_METADATA;
+  return (
+    <Dialog
+      onOpenChange={(open) => {
+        setSwaping(false);
+        setTradeTokenModal({ open, token1, token2 });
+      }}
+      open={open}
+    >
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogHeader
+          className={cn("mr-4 flex-row items-center justify-between gap-2")}
+        >
+          <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
+        </DialogHeader>
+        {!swaping && (
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Active Wallet</Text>
+            <UserWalletSelect />
+          </View>
         )}
+        <SwapToken
+          token1={token1}
+          token2={token2}
+          setSwaping={setSwaping}
+          setClose={() => {
+            setTradeTokenModal({
+              open: false,
+              token1: NATIVE_TOKEN_METADATA,
+              token2: NATIVE_TOKEN_METADATA,
+            });
+          }}
+        />
+        {/* {!swaping && (
+          <DialogFooter>
+            <About title="Swap & Earn" info={TRADE_INFO} />
+          </DialogFooter>
+        )} */}
       </DialogContent>
     </Dialog>
   );
@@ -136,15 +204,14 @@ function SwapToken({
       });
   }, [token2]);
 
+  const { fetchingPrice, fetchPrice } = useFetchPrice(account.address);
+
   const {
     swaping,
-    fetchingPrice,
     fetchingQuote,
     waitingUserSign,
-    fetchPrice,
     swapToken,
     transactionReceipt,
-    transationStatus,
     transationLoading,
     isSuccess,
     error,
@@ -206,7 +273,7 @@ function SwapToken({
         (isSuccess && transactionReceipt))
     ) {
       const transationData = {
-        chain: base,
+        chain: DEFAULT_CHAIN,
         transactionReceipt,
         description: (
           <View className="flex w-full items-center gap-2">
@@ -245,6 +312,18 @@ function SwapToken({
         action: UserActionName.SwapToken,
         data: { hash: transactionReceipt?.transactionHash },
       });
+    if (isSuccess) {
+      if (
+        fromToken?.address === NATIVE_TOKEN_METADATA.address ||
+        toToken?.address === NATIVE_TOKEN_METADATA.address
+      )
+        eventBus.next({ type: EventTypes.NATIVE_TOKEN_BALANCE_CHANGE });
+      if (
+        fromToken?.address !== DEGEN_TOKEN_METADATA.address ||
+        toToken?.address !== DEGEN_TOKEN_METADATA.address
+      )
+        eventBus.next({ type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE });
+    }
   }, [isSuccess]);
 
   useEffect(() => {
@@ -276,9 +355,23 @@ function SwapToken({
     });
   };
 
+  const allowanceParams =
+    account?.address &&
+    fromToken?.address &&
+    fromToken?.decimals &&
+    fromAmount &&
+    allowanceTarget
+      ? {
+          owner: account.address,
+          tokenAddress: fromToken.address,
+          spender: allowanceTarget,
+          value: parseUnits(fromAmount, fromToken.decimals),
+        }
+      : undefined;
   if (transationData)
     return (
       <TransactionInfo
+        type={ONCHAIN_ACTION_TYPE.SWAP_TOKEN}
         data={transationData}
         buttonText="Trade more"
         buttonAction={tryAgain}
@@ -331,14 +424,7 @@ function SwapToken({
               variant="secondary"
               className="mt-6"
               targetChainId={fromToken.chainId}
-              takerAddress={account.address}
-              tokenAddress={fromToken.address}
-              allowanceTarget={allowanceTarget}
-              allowanceValue={
-                Number(fromAmount) > 0
-                  ? parseUnits(fromAmount, fromToken.decimals)
-                  : undefined
-              }
+              allowanceParams={allowanceParams}
               warpedButton={
                 <Button
                   variant="secondary"
@@ -347,7 +433,6 @@ function SwapToken({
                     !fromTokenBalance ||
                     fromTokenBalance < Number(fromAmount) ||
                     fetchingPrice ||
-                    fetchingQuote ||
                     fetchingQuote ||
                     Number(fromAmount) === 0 ||
                     Number(toAmount) === 0 ||
@@ -406,7 +491,7 @@ function TokenWithAmount({
   setBalance?: (balance: number) => void;
 }) {
   const account = useAccount();
-  // console.log("Token", token, amount);
+  // console.log("TokenWithAmount", tokenSet, amount);
   const [token, setToken] = useState(
     tokenSet.defaultToken || NATIVE_TOKEN_METADATA,
   );
@@ -418,7 +503,7 @@ function TokenWithAmount({
     }
   }, [token]);
 
-  const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
+  const price = Number(token?.tradeInfo?.stats?.token_price_usd) || 0;
 
   return (
     <View className="flex gap-2">
@@ -427,12 +512,13 @@ function TokenWithAmount({
           <UserTokenSelect
             defaultToken={tokenSet.defaultToken}
             selectToken={setToken}
-            showBalance={false}
+            variant={"dropdown"}
           />
         ) : tokenSet.type === TokenType.COMMUNITY_TOKENS ? (
-          <CommunityToeknSelect
+          <CommunityTokenSelect
             defaultToken={tokenSet.defaultToken}
             selectToken={setToken}
+            chainId={DEFAULT_CHAINID}
           />
         ) : (
           <Loading />

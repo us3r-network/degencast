@@ -10,19 +10,23 @@ import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
 import joinCommunity from "~/features/community/joinCommunitySlice";
 import warpcastChannels from "~/features/community/warpcastChannelsSlice";
-import communityRank from "~/features/rank/communityRankSlice";
-import communityShares from "~/features/trade/communitySharesSlice";
+import channelRank from "~/features/rank/channelRankSlice";
+import tokenRank from "~/features/rank/tokenRankSlice";
+import curatorRank from "~/features/rank/curatorRankSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
 import userChannels from "~/features/user/userChannelsSlice";
 import userCasts from "~/features/user/userCastsSlice";
+import userCurationCasts from "~/features/user/userCurationCastsSlice";
 import userHostChannels from "~/features/user/userHostChannelsSlice";
-import userCommunityShares from "~/features/user/communitySharesSlice";
 import userCommunityTokens from "~/features/user/communityTokensSlice";
+import userCommunityNFTs from "~/features/user/communityNFTsSlice";
 import userAction from "~/features/user/userActionSlice";
 import inviteCode from "~/features/user/inviteCodeSlice";
 import userAuth from "~/features/user/userAuthSlice";
 import castPage from "~/features/cast/castPageSlice";
 import castReactions from "~/features/cast/castReactionsSlice";
+import castProposal from "~/features/cast/castProposalSlice";
+import castAttToken from "~/features/cast/castAttTokenSlice";
 import embedCasts from "~/features/cast/embedCastsSlice";
 import castCollection from "~/features/cast/castCollectionSlice";
 import channelExplorePage from "~/features/community/channelExplorePageSlice";
@@ -37,6 +41,7 @@ import exploreTrendingChannels from "~/features/community/exploreTrendingChannel
 import exploreFollowingChannels from "~/features/community/exploreFollowingChannelsSlice";
 import exploreHostingChannels from "~/features/community/exploreHostingChannelsSlice";
 import appSettings from "~/features/appSettingsSlice";
+import appModals from "~/features/appModalsSlice";
 // import userTips from "~/features/user/tipsSlice";
 
 enableMapSet();
@@ -51,13 +56,15 @@ export const store = configureStore({
     castPage,
     castCollection,
     communityTokens,
-    communityShares,
-    communityRank,
+    channelRank,
+    tokenRank,
+    curatorRank,
     userCommunityTokens,
+    userCommunityNFTs,
     userChannels,
     userCasts,
+    userCurationCasts,
     userHostChannels,
-    userCommunityShares,
     channelExplorePage,
     communityDetail,
     communityDetailTipsRank,
@@ -72,6 +79,9 @@ export const store = configureStore({
     castReactions,
     embedCasts,
     appSettings,
+    appModals,
+    castProposal,
+    castAttToken,
     // userTips,
   },
   middleware: (getDefaultMiddleware) =>

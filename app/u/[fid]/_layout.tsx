@@ -1,82 +1,77 @@
-import {
-  Stack,
-  useLocalSearchParams,
-  useNavigation,
-  useSegments,
-} from "expo-router";
-import { useEffect, useMemo } from "react";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { Stack, useLocalSearchParams, useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
-import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
-import { PortfolioContent } from "~/components/portfolio/PortfolioContent";
-import { Text } from "~/components/ui/text";
-import { DEFAULT_HEADER_HEIGHT } from "~/constants";
-import useUserBulk from "~/hooks/user/useUserBulk";
+import { UserPortfolioCtx, useUserPortfolioCtx } from "~/app/(tabs)/portfolio/_layout";
+import { PageContent } from "~/components/layout/content/Content";
+import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
+import UserInfo from "~/components/portfolio/user/UserInfo";
+import { PRIMARY_COLOR } from "~/constants";
+import UserChannelScreen from "./channel";
+import UserFeedScreen from "./feed";
+import UserWalletScreen from "./wallet";
+
+function WalletScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserWalletScreen fid={fid} />;
+}
+
+function ChannelScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserChannelScreen fid={fid} />;
+}
+
+function FeedScreen() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserFeedScreen fid={fid} />;
+}
+
+const Tab = createMaterialTopTabNavigator();
+const TABS = [
+  { label: "Wallet", value: "wallet", component: WalletScreen },
+  { label: "Channel", value: "channel", component: ChannelScreen },
+  { label: "Feed", value: "feed", component: FeedScreen },
+];
 
 export default function UserPortfolioScreen() {
   const segments = useSegments();
-  const navigation = useNavigation();
   const { fid } = useLocalSearchParams<{ fid: string }>();
-  const { userInfo, load } = useUserBulk();
 
-  useEffect(() => {
-    if (Number(fid)) load(Number(fid));
-  }, [fid]);
-
-  const username = useMemo(() => {
-    if (!userInfo) return undefined;
-    if (userInfo?.username) return userInfo.username;
-    return "User Portfolio";
-  }, [userInfo]);
-
+  console.log("UserPortfolioScreen", fid);
   if (Number(fid))
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          paddingTop: DEFAULT_HEADER_HEIGHT + 20,
-          paddingBottom: 20,
-        }}
-        className="flex-1 bg-background p-2"
-      >
-        <Stack.Screen
-          options={{
-            headerTransparent: true,
-            header: () => (
-              <View
-                style={{
-                  height: DEFAULT_HEADER_HEIGHT,
-                  paddingLeft: 15,
-                  paddingRight: 15,
-                }}
-                className="flex-row items-center justify-between bg-primary"
-              >
-                <View className="flex flex-row items-center gap-3">
-                  <GoBackButtonBgPrimary
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                  />
-                  <Text className=" text-xl font-bold text-primary-foreground">
-                    {username || "User Portfolio"}
-                  </Text>
-                </View>
-                <View className="flex flex-row items-center gap-[10px]">
-                  {fid && (
-                    <PortfolioSharingButton
-                      fid={Number(fid)}
-                      fname={username || ""}
-                    />
-                  )}
-                </View>
+      <SafeAreaView className="flex-1 bg-background">
+        <Stack.Screen options={{ headerShown: false }} />
+        <UserPortfolioCtx.Provider value={{ fid: Number(fid) || 0 }}>
+          <Tab.Navigator
+            initialRouteName={segments?.[0]}
+            tabBar={(props) => (
+              <View className="mb-4 flex gap-4">
+                <PageTabBar {...props} level={1} />
+                <PageContent className="h-24 flex-none">
+                  <UserInfo fid={Number(fid)} />
+                </PageContent>
               </View>
-            ),
-          }}
-        />
-        <View className="mx-auto box-border w-full max-w-screen-sm flex-1 px-4">
-          <PortfolioContent fid={Number(fid)} defaultTab={segments?.[2]} />
-        </View>
+            )}
+            sceneContainerStyle={{
+              backgroundColor: PRIMARY_COLOR,
+              paddingBottom: 16,
+            }}
+          >
+            {TABS.map((tab) => {
+              return (
+                <Tab.Screen
+                  key={tab.value}
+                  name={tab.value}
+                  component={tab.component}
+                  options={{
+                    title: tab.label,
+                  }}
+                />
+              );
+            })}
+          </Tab.Navigator>
+        </UserPortfolioCtx.Provider>
       </SafeAreaView>
     );
 }

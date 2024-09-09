@@ -1,8 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { FarCast } from "~/services/farcaster/types";
-import useFarcasterWrite from "./useFarcasterWrite";
-import useFarcasterAccount from "./useFarcasterAccount";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { useCallback, useMemo } from "react";
 import {
   addRecast,
   addRecastPending,
@@ -10,14 +6,17 @@ import {
   removeRecastPending,
   selectCastReactions,
 } from "~/features/cast/castReactionsSlice";
-import { usePrivy } from "@privy-io/react-auth";
-import useFarcasterSigner from "./useFarcasterSigner";
+import { FarCast } from "~/services/farcaster/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   getCastFid,
-  getCastHex,
-  getCastReactionsCount,
+  getCastHex
 } from "~/utils/farcaster/cast-utils";
+import useAuth from "../user/useAuth";
+import useFarcasterAccount from "./useFarcasterAccount";
+import useFarcasterSigner from "./useFarcasterSigner";
+import useFarcasterWrite from "./useFarcasterWrite";
 
 export default function useFarcasterRecastAction({
   cast,
@@ -32,7 +31,7 @@ export default function useFarcasterRecastAction({
   const { reactions, recastPendingCastIds } =
     useAppSelector(selectCastReactions);
 
-  const { authenticated, login } = usePrivy();
+  const { authenticated, login } = useAuth();
   const { currFid } = useFarcasterAccount();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { recastCast, removeRecastCast } = useFarcasterWrite();

@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   addCommunityDetailPendingId,
   removeCommunityDetailPendingId,
@@ -18,9 +18,10 @@ export default function useLoadCommunityDetail(id: string) {
   const communityDetail = detailData[id];
   const communityBasic = basicData[id];
   const loading = detailPendingIds.includes(id);
+  const [rejected, setRejected] = useState(false);
 
   const loadCommunityDetail = useCallback(async () => {
-    if (!id || id === "home" || loading) {
+    if (!id || loading) {
       return;
     }
     try {
@@ -28,12 +29,21 @@ export default function useLoadCommunityDetail(id: string) {
       const res = await fetchCommunity(id);
       const { code, data, msg } = res.data;
       if (code === ApiRespCode.SUCCESS) {
-        dispatch(upsertCommunityDetailData({ id, data }));
+        dispatch(
+          upsertCommunityDetailData({
+            id,
+            data: {
+              ...data,
+              tokens: data?.tokens?.filter((item) => !!item) || [],
+            },
+          }),
+        );
       } else {
         throw new Error(msg);
       }
     } catch (error) {
       console.error(error);
+      setRejected(true);
     } finally {
       dispatch(removeCommunityDetailPendingId(id));
     }
@@ -41,6 +51,7 @@ export default function useLoadCommunityDetail(id: string) {
 
   return {
     loading,
+    rejected,
     communityDetail,
     communityBasic,
     loadCommunityDetail,

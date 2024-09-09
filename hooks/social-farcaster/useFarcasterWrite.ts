@@ -1,8 +1,8 @@
-import { FarcasterWithMetadata, usePrivy } from "@privy-io/react-auth";
 import { HubRestAPIClient } from "@standard-crypto/farcaster-js-hub-rest";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { FARCASTER_HUB_URL } from "~/constants/farcaster";
+import useFarcasterAccount from "./useFarcasterAccount";
 import useFarcasterSigner from "./useFarcasterSigner";
 
 const hubClient = new HubRestAPIClient({
@@ -52,11 +52,7 @@ export type ReplyCastRes = Promise<
 >;
 
 export default function useFarcasterWrite() {
-  const { user } = usePrivy();
-  const farcasterAccount = user?.linkedAccounts.find(
-    (account) => account.type === "farcaster",
-  ) as FarcasterWithMetadata;
-
+  const { farcasterAccount } = useFarcasterAccount();
   const { requesting, getPrivySigner } = useFarcasterSigner();
 
   const [writing, setWriting] = useState(false);
@@ -73,7 +69,8 @@ export default function useFarcasterWrite() {
             embeds: data.embeds?.map((embed) => ({
               url: embed.url,
             })),
-            parentUrl: data.parentUrl,
+            // parentUrl: data.parentUrl,
+            ...(data.parentUrl ? { parentUrl: data.parentUrl } : {}),
             parentCastId: data.parentCastId,
           },
           farcasterAccount.fid!,

@@ -1,53 +1,44 @@
-import { FarCast } from "~/services/farcaster/types";
-import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
-import { ActivityIndicator, View } from "react-native";
-import { Text } from "../ui/text";
-import { Button } from "../ui/button";
 import { Image } from "expo-image";
-import { AspectRatio } from "../ui/aspect-ratio";
-import { useEffect, useMemo, useState } from "react";
-import { Loading } from "../common/Loading";
+import { useMemo, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { ZORA_CAST_NFT_CHAIN_ID } from "~/constants/zora";
+import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 import useCreateNew1155Token, {
   MintInfo,
 } from "~/hooks/social-farcaster/cast-nft/useCreateNew1155Token";
-import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
-import PlatformSharingModal from "../platform-sharing/PlatformSharingModal";
-import {
-  getMintCastTextWithTwitter,
-  getMintCastTextWithWarpcast,
-} from "~/utils/platform-sharing/text";
+import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
+import { getCastImageUrl } from "~/services/farcaster/api";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { getCastHex } from "~/utils/farcaster/cast-utils";
 import {
   getMintCastFrameLink,
   getMintCastWebsiteLink,
 } from "~/utils/platform-sharing/link";
-import { getCastImageUrl } from "~/services/farcaster/api";
-import { usePrivy } from "@privy-io/react-auth";
-import { UserData } from "~/utils/farcaster/user-data";
-import useUserBulk from "~/hooks/user/useUserBulk";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { getCastHex } from "~/utils/farcaster/cast-utils";
-import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
-// import useCreateNew1155TokenForFree from "~/hooks/social-farcaster/cast-nft/useCreateNew1155TokenForFree";
+import {
+  getMintCastTextWithTwitter,
+  getMintCastTextWithWarpcast,
+} from "~/utils/platform-sharing/text";
+import { Loading } from "../common/Loading";
+import PlatformSharingModal from "../platform-sharing/PlatformSharingModal";
+import { AspectRatio } from "../ui/aspect-ratio";
+import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { Text } from "../ui/text";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function FCastMintNftModal({
   cast,
   channelId,
   open,
   onOpenChange,
-  castUserData,
 }: {
-  cast: FarCast | NeynarCast;
+  cast: NeynarCast;
   channelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  castUserData?: {
-    display: string;
-  };
 }) {
-  const { connectWallet } = usePrivy();
+  const { connectWallet } = useWalletAccount();
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
@@ -70,39 +61,19 @@ export default function FCastMintNftModal({
 
   const { currUserInfo, loading: currUserDataLoading } = useCurrUserInfo();
 
-  const currUserDisplayName = currUserInfo ? currUserInfo.display_name : "";
   const {
     createNewToken,
     createNewCollection,
     loading: create1155TokenLoading,
   } = useCreateNew1155Token({
     cast,
-    castUserData,
-    imgUrl: imgUrl,
     channelId,
-    currUserDisplayName,
     onCreateTokenSuccess: (data) => {
       setCreatedTokenInfo(data);
       onOpenChange(false);
       setOpenShare(true);
     },
   });
-
-  // premint
-  // const {
-  //   createNewCollection,
-  //   createNewToken,
-  //   loading: create1155TokenLoading,
-  // } = useCreateNew1155TokenForFree({
-  //   cast,
-  //   imgUrl: originImgUrl,
-  //   channelId,
-  //   onCreateTokenSuccess: (data) => {
-  //     setCreatedTokenInfo(data);
-  //     onOpenChange(false);
-  //     setOpenShare(true);
-  //   },
-  // });
 
   return (
     <>

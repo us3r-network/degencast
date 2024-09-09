@@ -1,21 +1,26 @@
 import { ReactNode } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Chain, TransactionReceipt } from "viem";
+import { Chain, TransactionReceipt, WalletCallReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { ExternalLink } from "../common/ExternalLink";
 import { Check, ReceiptText, X } from "../common/Icons";
 import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import { NeynarCast } from "~/services/farcaster/types/neynar";
 
-const EXPLORE_URL = "https://www.onceupon.xyz";
 export type TransationData = {
   chain: Chain;
-  transactionReceipt?: TransactionReceipt;
+  transactionReceipt?:
+    | TransactionReceipt
+    | WalletCallReceipt<bigint, "success" | "reverted">;
   description: ReactNode;
+  amount?: number;
 };
 
 type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
+  type: ONCHAIN_ACTION_TYPE;
+  cast?: NeynarCast;
   data: TransationData;
   buttonText: string;
   buttonAction?: () => void;
@@ -23,15 +28,25 @@ type TransactionInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 };
 
 export function TransactionInfo({
+  type,
+  cast,
   data,
   buttonText,
   buttonAction,
   navigateToCreatePageAfter,
 }: TransactionInfoProps) {
-  // console.log("TransactionSuccessInfo", data);
+  // console.log("TransactionSuccessInfo", data, cast);
+  const transactionHash =
+    (data.transactionReceipt as TransactionReceipt)?.transactionHash ||
+    (
+      data.transactionReceipt as WalletCallReceipt<
+        bigint,
+        "success" | "reverted"
+      >
+    )?.transactionHash;
   return (
     <View className="flex w-full items-center gap-6">
-      {data.transactionReceipt?.transactionHash ? (
+      {transactionHash ? (
         <View className="size-16 items-center justify-center rounded-full bg-[green]/40">
           <Check className="size-8 text-[green]" />
         </View>
@@ -41,19 +56,17 @@ export function TransactionInfo({
           <ActivityIndicator size="large" color="white" />
         </View>
       )}
-      <Text className="font-medium">
-        {data.transactionReceipt?.transactionHash
-          ? "Transaction Completed!"
-          : "Confirm Transaction!"}
+      <Text className="max-w-full font-medium">
+        {transactionHash ? "Transaction Completed!" : "Confirm Transaction!"}
       </Text>
       {data.description}
-      {data.transactionReceipt?.transactionHash ? (
+      {transactionHash ? (
         <View className="w-full flex-row justify-items-stretch gap-2">
-          {data.chain?.blockExplorers && (
+          {data.chain?.blockExplorers?.default && (
             <ExternalLink
               className="flex-1/2 text-primary-foreground/80"
               // href={`${data.chain.blockExplorers.default.url}/tx/${data.transactionReceipt.transactionHash}`}
-              href={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+              href={`${data.chain.blockExplorers.default.url}/tx/${transactionHash}`}
               target="_blank"
             >
               <Button variant="secondary">
@@ -72,8 +85,10 @@ export function TransactionInfo({
             <Text>{buttonText}</Text>
           </Button>
           <TransactionResultSharingButton
-            type={ONCHAIN_ACTION_TYPE.SWAP}
-            transactionDetailURL={`${EXPLORE_URL}/${data.transactionReceipt.transactionHash}`}
+            type={type}
+            castHash={cast?.hash}
+            channelId={cast?.channel?.id || ""}
+            transactionDetailURL={`${data?.chain?.blockExplorers?.default?.url || ""}/tx/${transactionHash}`}
             navigateToCreatePageAfter={navigateToCreatePageAfter}
           />
         </View>
@@ -96,7 +111,7 @@ export function ErrorInfo({ error, buttonText, buttonAction }: ErrorInfoProps) {
       <View className="size-16 items-center justify-center rounded-full bg-[red]/40">
         <X className="size-8 text-[red]" />
       </View>
-      <Text className="font-medium">{error}</Text>
+      <Text className="max-w-full font-medium">{error}</Text>
       <View className="w-full flex-row justify-items-stretch gap-4">
         <Button
           variant="secondary"

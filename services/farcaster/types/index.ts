@@ -1,6 +1,7 @@
 import type { Frame } from "frames.js";
 import { NeynarChannel } from "./neynar";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+import { Address } from "viem";
 
 export enum ApiRespCode {
   SUCCESS = 0,
@@ -233,5 +234,8 @@ export type FarcasterUserData = {
 
 export type Channel = NeynarChannel & {
   tokenInfo?: TokenWithTradeInfo;
-  newCastCount?:number;
+  newCastCount?: number;
+  progress?: string;
+  price?: string;
+  attentionTokenAddress?: Address;
 };

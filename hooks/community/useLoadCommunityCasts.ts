@@ -24,10 +24,17 @@ export default function useLoadCommunityCasts(channelId: string) {
   }, [channelId, loading]);
 
   useEffect(() => {
-    if (channelId && !loading && casts.length === 0) {
-      loadCasts();
+    if (
+      !channelId ||
+      casts.length > 0 ||
+      [AsyncRequestStatus.FULFILLED, AsyncRequestStatus.REJECTED].includes(
+        status,
+      )
+    ) {
+      return;
     }
-  }, [casts, loading, channelId]);
+    loadCasts();
+  }, [casts, status, channelId]);
 
   return {
     loading,

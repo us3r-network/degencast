@@ -7,6 +7,10 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      backgroundImage: {
+        "primary-gradient-to-r":
+          "linear-gradient(to right, #4C2896 0.01%, #A36EFE 99.99%)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -41,6 +45,34 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        proposalNotProposed: {
+          DEFAULT: "hsl(var(--proposal-not-proposed))",
+          foreground: "hsl(var(--proposal-not-proposed-foreground))",
+        },
+        proposalProposed: {
+          DEFAULT: "hsl(var(--proposal-proposed))",
+          foreground: "hsl(var(--proposal-proposed-foreground))",
+        },
+        proposalAccepted: {
+          DEFAULT: "hsl(var(--proposal-accepted))",
+          foreground: "hsl(var(--proposal-accepted-foreground))",
+        },
+        proposalDisputed: {
+          DEFAULT: "hsl(var(--proposal-disputed))",
+          foreground: "hsl(var(--proposal-disputed-foreground))",
+        },
+        proposalReadyToMint: {
+          DEFAULT: "hsl(var(--proposal-ready-to-mint))",
+          foreground: "hsl(var(--proposal-ready-to-mint-foreground))",
+        },
+        proposalMintExpired: {
+          DEFAULT: "hsl(var(--proposal-mint-expired))",
+          foreground: "hsl(var(--proposal-mint-expired-foreground))",
+        },
+        proposalAbandoned: {
+          DEFAULT: "hsl(var(--proposal-abandoned))",
+          foreground: "hsl(var(--proposal-abandoned-foreground))",
+        },
       },
       borderWidth: {
         hairline: hairlineWidth(),
@@ -64,6 +96,7 @@ module.exports = {
         4: "0.9375rem", // 15px
       },
       boxShadow: {
+        "md-top": "0px -4px 4px 0px rgba(76, 40, 150, 0.60)",
         "floating-button": "0px 4px 4px 0px rgba(76, 40, 150, 0.60)",
       },
       gridTemplateRows: {

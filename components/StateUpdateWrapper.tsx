@@ -9,7 +9,12 @@ import useUserInviteCode from "~/hooks/user/useUserInviteCode";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
-import OnboardingModal from "./portfolio/user/Onboarding";
+import OnboardingModal from "./portfolio/onboarding/Onboarding";
+import InviteCodeModal from "./portfolio/onboarding/InviteCodeModal";
+import useUserInvitationCodes from "~/hooks/user/useUserInvitationCodes";
+import useUserHostChannels from "~/hooks/user/useUserHostChannels";
+import ProposalShareGlobalModal from "./social-farcaster/proposal/proposal-modals/ProposalShareGlobalModal";
+import { TradeTokenGlobalModal } from "./trade/TradeModal";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { currFid } = useFarcasterAccount();
@@ -24,9 +29,13 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { checkInviteLinkParams, clearUsedInviterData } = useUserInviteCode();
   const { fetchCastCollections } = useCastCollection();
   const { loadCurrUserInfo } = useCurrUserInfo();
-
+  const { loadUserHostChannels } = useUserHostChannels();
+  const { clearMyInvitationCodes } = useUserInvitationCodes();
   useEffect(() => {
-    if (currFid) loadCurrUserInfo(Number(currFid));
+    if (currFid) {
+      loadCurrUserInfo(Number(currFid));
+      loadUserHostChannels(Number(currFid));
+    }
   }, [currFid]);
 
   useEffect(() => {
@@ -42,6 +51,12 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
       clearUsedInviterData();
     }
   }, [authenticated, clearUsedInviterData]);
+
+  useEffect(() => {
+    if (!authenticated) {
+      clearMyInvitationCodes();
+    }
+  }, [authenticated, clearMyInvitationCodes]);
 
   useEffect(() => {
     loadWarpcastChannels();
@@ -86,6 +101,9 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
     <>
       {children}
       <OnboardingModal />
+      <InviteCodeModal />
+      <ProposalShareGlobalModal />
+      <TradeTokenGlobalModal />
     </>
   );
 }

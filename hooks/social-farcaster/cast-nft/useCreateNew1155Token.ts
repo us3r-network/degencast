@@ -9,14 +9,18 @@ import { usePublicClient, useWalletClient } from "wagmi";
 import { DEGENCAST_WEB_HOST } from "~/constants";
 import { ZORA_CREATE_REFERRAL } from "~/constants/zora";
 import { FarCast } from "~/services/farcaster/types";
-import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { storeNFT } from "~/services/shared/api/nftStorage";
+import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { postZoraToken } from "~/services/zora-collection/api";
 import { ZoraCollectionType } from "~/services/zora-collection/types";
-import { getCastHex } from "~/utils/farcaster/cast-utils";
-import { imgLinkToBlob } from "~/utils/image";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 import { getCastDetailWebsiteLink } from "~/utils/platform-sharing/link";
 import useCastCollection from "./useCastCollection";
+import {
+  arUploadCastImage,
+  arUploadMetadata,
+  ARUploadResult,
+} from "~/services/upload";
+import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
 
 const CAST_COLLECTION_NAME = "Degencast Cast";
 const CAST_COLLECTION_DESCRIPTION = "Degencast Cast";
@@ -25,22 +29,115 @@ export const CAST_TOKEN_EXTERNAL_URL = DEGENCAST_WEB_HOST + "?nft_link=cast";
 const getCreateAt = () => {
   return Math.floor(Date.now() / 1000);
 };
-const getCastCollectionMetadata = async ({
-  imgUrl,
-  currUserDisplayName,
+const getCommonTags = ({
+  cast,
+  channelId,
+  currUserInfo,
 }: {
-  imgUrl: string;
-  currUserDisplayName: string;
+  cast: FarCast | NeynarCast;
+  channelId: string;
+  currUserInfo: Author;
 }) => {
-  const imageBlob = await imgLinkToBlob(imgUrl);
+  const castHex = getCastHex(cast);
+  const castFid = getCastFid(cast);
+  return [
+    { name: "protocol", value: "farcaster" },
+    { name: "app", value: "degencast" },
+    { name: "user_id", value: String(currUserInfo?.fid || "") },
+    { name: "channel_id", value: channelId },
+    { name: "content_id", value: castHex },
+    { name: "content_user_id", value: String(castFid) },
+  ];
+};
+const tagsToProperties = (tags: Array<{ name: string; value: string }>) => {
+  const properties: Record<string, string> = {};
+  tags.forEach((tag) => {
+    properties[tag.name] = tag.value;
+  });
+  return properties;
+};
+const uploadCastImgToArweave = async ({
+  cast,
+  channelId,
+  currUserInfo,
+}: {
+  cast: FarCast | NeynarCast;
+  channelId: string;
+  currUserInfo: Author;
+}) => {
+  const castHex = getCastHex(cast);
+  const tags = getCommonTags({ cast, channelId, currUserInfo });
+  const res = await arUploadCastImage(castHex, [
+    ...tags,
+    { name: "app_content_type", value: "cast-image" },
+  ]);
+  return res.data.data;
+};
+const uploadCastTokenMetataToArweave = async ({
+  metadata,
+  cast,
+  channelId,
+  currUserInfo,
+  castImageUploadData,
+}: {
+  metadata: any;
+  cast: FarCast | NeynarCast;
+  channelId: string;
+  currUserInfo: Author;
+  castImageUploadData: ARUploadResult;
+}) => {
+  const tags = getCommonTags({ cast, channelId, currUserInfo });
+  const res = await arUploadMetadata(metadata, [
+    ...tags,
+    { name: "app_content_type", value: "cast-1155-token" },
+    { name: "url", value: castImageUploadData.arUrl },
+  ]);
+  return res.data.data;
+};
+const uploadCastCollectionMetataToArweave = async ({
+  metadata,
+  cast,
+  channelId,
+  currUserInfo,
+  castImageUploadData,
+}: {
+  metadata: any;
+  cast: FarCast | NeynarCast;
+  channelId: string;
+  currUserInfo: Author;
+  castImageUploadData: ARUploadResult;
+}) => {
+  const tags = getCommonTags({ cast, channelId, currUserInfo });
+  const res = await arUploadMetadata(metadata, [
+    ...tags,
+    { name: "app_content_type", value: "cast-1155-collection" },
+    { name: "url", value: castImageUploadData.arUrl },
+  ]);
+  return res.data.data;
+};
+const getCastCollectionMetadata = async ({
+  cast,
+  channelId,
+  currUserInfo,
+  castImageUploadData,
+}: {
+  cast: FarCast | NeynarCast;
+  channelId: string;
+  currUserInfo: Author;
+  castImageUploadData: ARUploadResult;
+}) => {
+  const { arUrl, arseedUrl } = castImageUploadData;
+  const tags = getCommonTags({ cast, channelId, currUserInfo });
+  const properties = tagsToProperties(tags);
   return {
-    name: `${currUserDisplayName}'s Degencast`,
-    description: `${currUserDisplayName}'s Zora mint with degencast.wtf`,
+    name: `${currUserInfo.display_name}'s Degencast`,
+    description: `${currUserInfo.display_name}'s Zora mint with degencast.wtf`,
     external_url: CAST_TOKEN_EXTERNAL_URL,
-    image: imageBlob,
+    image: arUrl,
     properties: {
-      imageOriginUrl: imgUrl,
-      createAt: getCreateAt(),
+      ...properties,
+      image_url: arseedUrl,
+      create_at: getCreateAt(),
     },
   };
 };
@@ -48,33 +145,33 @@ const getCastCollectionMetadata = async ({
 const CAST_TOKEN_NAME = "Degencast Cast";
 const CAST_TOKEN_DESCRIPTION = "Degencast Cast";
 const getCastTokenMetadata = async ({
-  imgUrl,
   cast,
-  castUserData,
   channelId,
+  currUserInfo,
+  castImageUploadData,
 }: {
-  imgUrl: string;
   cast: FarCast | NeynarCast;
-  castUserData?: {
-    display: string;
-  };
   channelId: string;
+  currUserInfo: Author;
+  castImageUploadData: ARUploadResult;
 }) => {
-  const imageBlob = await imgLinkToBlob(imgUrl);
+  const castHex = getCastHex(cast);
+  const { arUrl } = castImageUploadData;
+
   const text = cast.text;
   const textPreview = text.length > 100 ? text.slice(0, 100) + "..." : text;
-  const userDisplayName = castUserData?.display || "";
-  const castHex = getCastHex(cast);
+  const userDisplayName = (cast as NeynarCast)?.author?.display_name || "";
+  const tags = getCommonTags({ cast, channelId, currUserInfo });
+  const properties = tagsToProperties(tags);
   return {
     name: `${userDisplayName}: ${textPreview}`,
     description: getCastDetailWebsiteLink(castHex),
     external_url: CAST_TOKEN_EXTERNAL_URL,
-    image: imageBlob,
+    image: arUrl,
     properties: {
-      imageOriginUrl: imgUrl,
-      channelId,
-      castJson: JSON.stringify(cast),
-      createAt: getCreateAt(),
+      ...properties,
+      image_url: arUrl,
+      create_at: getCreateAt(),
     },
   };
 };
@@ -142,21 +239,14 @@ function customizer(value: any) {
 
 export default function useCreateNew1155Token({
   cast,
-  castUserData,
-  imgUrl,
   channelId,
-  currUserDisplayName,
   onCreateTokenSuccess,
 }: {
   cast: FarCast | NeynarCast;
-  castUserData?: {
-    display: string;
-  };
-  imgUrl: string;
   channelId: string;
-  currUserDisplayName: string;
   onCreateTokenSuccess?: (data: MintInfo) => void;
 }) {
+  const { currUserInfo, loading: currUserDataLoading } = useCurrUserInfo();
   // const { submitUserAction } = useUserAction();
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
@@ -174,13 +264,26 @@ export default function useCreateNew1155Token({
       if (!publicClient || !walletClient) {
         throw new Error("Wallet not connected");
       }
-      const tokenMetadata = await getCastTokenMetadata({
-        imgUrl,
+      const castImageUploadData = await uploadCastImgToArweave({
         cast,
         channelId,
-        castUserData,
+        currUserInfo: currUserInfo!,
       });
-      const tokenMetadataURI = await storeNFT(tokenMetadata);
+      const tokenMetadata = await getCastTokenMetadata({
+        cast,
+        channelId,
+        currUserInfo: currUserInfo!,
+        castImageUploadData,
+      });
+      const res = await uploadCastTokenMetataToArweave({
+        metadata: tokenMetadata,
+        cast,
+        channelId,
+        currUserInfo: currUserInfo!,
+        castImageUploadData,
+      });
+
+      const tokenMetadataURI = res.arUrl;
       if (!tokenMetadataURI) {
         throw new Error("Failed to store NFT metadata");
       }
@@ -228,19 +331,41 @@ export default function useCreateNew1155Token({
         throw new Error("Wallet not connected");
       }
 
-      const contractMetadata = await getCastCollectionMetadata({
-        imgUrl,
-        currUserDisplayName,
-      });
-      const tokenMetadata = await getCastTokenMetadata({
-        imgUrl,
+      const castImageUploadData = await uploadCastImgToArweave({
         cast,
         channelId,
-        castUserData,
+        currUserInfo: currUserInfo!,
+      });
+      const contractMetadata = await getCastCollectionMetadata({
+        cast,
+        channelId,
+        currUserInfo: currUserInfo!,
+        castImageUploadData,
+      });
+      const tokenMetadata = await getCastTokenMetadata({
+        cast,
+        channelId,
+        currUserInfo: currUserInfo!,
+        castImageUploadData,
       });
 
-      const contractMetadataURI = await storeNFT(contractMetadata);
-      const tokenMetadataURI = await storeNFT(tokenMetadata);
+      const collectionRes = await uploadCastCollectionMetataToArweave({
+        metadata: contractMetadata,
+        cast,
+        channelId,
+        currUserInfo: currUserInfo!,
+        castImageUploadData,
+      });
+      const contractMetadataURI = collectionRes.arUrl;
+
+      const tokenRes = await uploadCastTokenMetataToArweave({
+        metadata: tokenMetadata,
+        cast,
+        channelId,
+        currUserInfo: currUserInfo!,
+        castImageUploadData,
+      });
+      const tokenMetadataURI = tokenRes.arUrl;
       if (!contractMetadataURI || !tokenMetadataURI) {
         throw new Error("Failed to store NFT metadata");
       }

@@ -9,6 +9,7 @@ export type NeynarCast = {
     fid: any;
   };
   author: Author;
+  channel: NeynarChannel;
   text: string;
   timestamp: string;
   embeds: any[];
@@ -98,7 +99,7 @@ export type NeynarChannel = {
   image_url: string;
   object: string;
   parent_url: string;
-  hosts: Author[];
+  lead: Author;
   created_at: string;
 };
 

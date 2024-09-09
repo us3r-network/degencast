@@ -96,6 +96,7 @@ const defaultActionPointConfig: UserActionPointConfig = {
   Invite: { unit: 200 },
   SwapToken: { unit: 500 },
   MintCast: { unit: 200 },
+  ViewChannel: { unit: 1, dailyLimit: 10 },
 };
 const userActionState: UserActionState = {
   actionPointConfig: defaultActionPointConfig,

@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useMemo } from "react";
 import {
   fetchTotalPoints,
@@ -7,10 +6,11 @@ import {
 import { AsyncRequestStatus } from "~/services/shared/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import getActionPoint from "~/utils/action/getActionPoint";
+import useAuth from "./useAuth";
 
 export default function useUserTotalPoints() {
   const dispatch = useAppDispatch();
-  const { authenticated } = usePrivy();
+  const { login, ready, authenticated } = useAuth();
 
   const {
     actionPointConfig,

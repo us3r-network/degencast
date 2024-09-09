@@ -1,7 +1,9 @@
-import { PrivyProvider } from "@privy-io/react-auth";
-import { WagmiProvider } from "@privy-io/wagmi";
+import "fast-text-encoding";
+import "react-native-get-random-values";
+import "@ethersproject/shims";
+
+import { PrivyProvider, WagmiProvider } from "~/lib/privy";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Link, Stack } from "expo-router";
@@ -20,9 +22,20 @@ import { store } from "~/store/store";
 import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
 import "../global.css";
+import { Buffer } from "buffer";
+// TODO 运行app模式可能会报错，注意处理兼容性问题
+global.Buffer = Buffer;
+
+if (Platform.OS !== "web") {
+  Object.assign(window, {
+    addEventListener: () => 0,
+    removeEventListener: () => {},
+    dispatchEvent: () => true,
+    CustomEvent: class CustomEvent {} as any,
+  });
+}
 
 dayjs.extend(relativeTime);
-global.Buffer = Buffer; //monkey patch for buffer in react-native
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,17 +62,17 @@ const toastConfig = {
     </View>
   ),
   success: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className=" z-50 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+    <View className=" z-50 flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),
   error: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="z-50 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+    <View className="z-50 flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),
   info: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="z-50 flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+    <View className="z-50 flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">{text1}</Text>
     </View>
   ),

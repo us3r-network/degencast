@@ -2,6 +2,7 @@ import { FarCast } from "~/services/farcaster/types";
 import getCastId from "./getCastId";
 import { CastId } from "@external-types/farcaster";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { Buffer } from "buffer";
 
 export function isNeynarCast(cast: FarCast | NeynarCast) {
   return typeof cast?.hash === "string" && cast.hash.startsWith("0x");

@@ -1,47 +1,53 @@
+import { Stack, useLocalSearchParams, useNavigation, Link } from "expo-router";
 import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-  useSegments,
-  useNavigation,
-  Link,
-} from "expo-router";
-import { createContext, useContext, useEffect, useState } from "react";
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import { GoBackButtonBgPrimary } from "~/components/common/GoBackButton";
-import { Search } from "~/components/common/Icons";
 import { EditIcon } from "~/components/common/SvgIcons";
 import CommunityDetailMetaInfo, {
   CommunityDetailMetaInfoDropdown,
 } from "~/components/community/CommunityDetailMetaInfo";
-import { CommunitySharingButton } from "~/components/platform-sharing/PlatformSharingButton";
-import UserGlobalPoints from "~/components/point/UserGlobalPoints";
 import { Button } from "~/components/ui/button";
-import { Card } from "~/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { DEFAULT_HEADER_HEIGHT } from "~/constants";
-import useLoadCommunityCasts from "~/hooks/community/useLoadCommunityCasts";
 import useLoadCommunityDetail from "~/hooks/community/useLoadCommunityDetail";
-import useLoadCommunityMembersShare from "~/hooks/community/useLoadCommunityMembersShare";
-import useLoadCommunityTipsRank from "~/hooks/community/useLoadCommunityTipsRank";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
-import { cn } from "~/lib/utils";
 import { CommunityData } from "~/services/community/api/community";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { ScrollTabBar } from "~/components/layout/material-top-tabs/TabBar";
+import { ScreenLoading } from "~/components/common/Loading";
+import NotFoundChannel from "~/components/community/NotFoundChannel";
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import SelectionFeeds from "./selections";
+import ProposalFeeds from "./proposal";
+import CastFeeds from "./casts";
+import CuratorsScreen from "./curators";
+import ActivitiesScreen from "./activities";
+import AttentionTokenScreen from "./attention-token";
+import TokensScreen from "./tokens/[contract]";
+import LaunchProgress from "~/components/community/LaunchProgress";
+import { isDesktop } from "react-device-detect";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import useUserHostChannels from "~/hooks/user/useUserHostChannels";
+import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
+import { ChannelTokens } from "~/components/social-farcaster/proposal/channel-card/ChannelMetaInfo";
 
-const initialRouteName = "tokens";
+const initialRouteName = "selection";
 
-const TABS = [
-  { label: "Tokens", value: "tokens" },
-  // { label: "Shares", value: "shares" },
-  { label: "Contributions", value: "contributions" },
-  { label: "Casts", value: "casts" },
-];
+const Tab = createMaterialTopTabNavigator();
 
 const CommunityContext = createContext<{
   community: CommunityData | null | undefined;
+  tokens?: CommunityData["tokens"];
+  tokenInfo?: AttentionTokenEntity | null | undefined;
   loading: boolean;
 }>({
   community: null,
+  tokenInfo: null,
   loading: false,
 });
 
@@ -54,46 +60,69 @@ export function useCommunityCtx() {
 }
 
 export default function CommunityDetail() {
-  const { currFid } = useFarcasterAccount();
   const headerHeight = DEFAULT_HEADER_HEIGHT;
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { id: channelId } = params as { id: string };
-  const segments = useSegments();
-  const [activeScreen, setActiveScreen] = useState(initialRouteName);
-  useEffect(() => {
-    if (segments?.[2]) {
-      setActiveScreen(segments[2]);
-    }
-  }, [segments]);
-  const router = useRouter();
-  const { communityDetail, communityBasic, loading, loadCommunityDetail } =
-    useLoadCommunityDetail(channelId);
+  const {
+    communityDetail,
+    communityBasic,
+    loading,
+    rejected,
+    loadCommunityDetail,
+  } = useLoadCommunityDetail(channelId);
+  const [routes, setRoutes] = useState<any[]>([
+    { key: "casts", title: "Cast", component: CastFeeds },
+    { key: "vote", title: "Vote", component: ProposalFeeds },
+    { key: "collect", title: "Collect", component: SelectionFeeds },
+    { key: "activities", title: "Activity", component: ActivitiesScreen },
+    {
+      key: "attention-token",
+      title: "Curation Token",
+      component: AttentionTokenScreen,
+    },
+    { key: "curators", title: "Curator", component: CuratorsScreen },
+  ]);
 
   const community = communityDetail || communityBasic;
+  const tokenInfo = communityDetail?.attentionTokenInfo;
+  const tokenContracts = useRef(new Set<string>());
+  const tokens = useMemo(() => {
+    return (
+      communityDetail?.tokens?.filter((token) => {
+        if (!token?.tradeInfo || tokenContracts.current.has(token.contract)) {
+          return false;
+        }
+        tokenContracts.current.add(token.contract);
+        return true;
+      }) || []
+    );
+  }, [communityDetail?.tokens]);
+  useEffect(() => {
+    if (tokens.length > 0) {
+      setRoutes((pre) => {
+        const tokenRoutes = tokens.map((token) => {
+          return {
+            key: `${token.contract}`,
+            title: `${token?.tradeInfo?.name} Token`,
+            component: TokensScreen,
+            initParams: { contract: token.contract },
+          };
+        });
+        return [...pre, ...tokenRoutes];
+      });
+    }
+  }, [tokens]);
 
   useEffect(() => {
-    if (!communityDetail) {
-      loadCommunityDetail();
-    }
-  }, [communityDetail, loadCommunityDetail]);
+    if (loading || rejected || communityDetail) return;
+    loadCommunityDetail();
+  }, [loading, rejected, communityDetail, loadCommunityDetail]);
 
-  const { tipsRank, loadTipsRank } = useLoadCommunityTipsRank(channelId);
-  const { membersShare, loadMembersShare } =
-    useLoadCommunityMembersShare(channelId);
-  const { casts, loadCasts } = useLoadCommunityCasts(channelId);
-
-  useEffect(() => {
-    if (tipsRank.length === 0) {
-      loadTipsRank();
-    }
-  }, [tipsRank]);
-
-  useEffect(() => {
-    if (membersShare.length === 0) {
-      loadMembersShare();
-    }
-  }, [membersShare]);
+  const { currFid } = useFarcasterAccount();
+  const { channels } = useUserHostChannels(Number(currFid));
+  const isChannelHost =
+    !!channelId && !!channels.find((channel) => channel.id === channelId);
 
   return (
     <SafeAreaView
@@ -121,19 +150,14 @@ export default function CommunityDetail() {
                 <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
                   Channel
                 </Text>
+                {/* mobile */}
                 <View className=" sm:hidden">
                   {community && (
                     <CommunityDetailMetaInfoDropdown community={community} />
                   )}
                 </View>
               </View>
-              <View className="flex flex-row items-center gap-[10px]">
-                <UserGlobalPoints />
-                <Link href="/search" asChild>
-                  <Button variant={"link"} className="m-0 p-0">
-                    <Search className=" h-6 w-6 cursor-pointer stroke-white" />
-                  </Button>
-                </Link>
+              <View className="flex flex-row items-center gap-[10px] max-sm:hidden">
                 <Link
                   href={`/create${channelId ? "?channelId=" + channelId : ""}`}
                   asChild
@@ -142,67 +166,91 @@ export default function CommunityDetail() {
                     <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
                   </Button>
                 </Link>
-                <View>
-                  <CommunitySharingButton
-                    name={community?.name || ""}
-                    channelId={channelId || ""}
-                    currFid={currFid}
+              </View>
+              {tokenInfo ? (
+                <View className="sm:hidden">
+                  <LaunchProgress
+                    textClassName="text-white"
+                    tokenInfo={tokenInfo}
                   />
                 </View>
-              </View>
+              ) : (
+                <View className="sm:hidden">
+                  {community && (
+                    <CreateTokenButton
+                      channelId={channelId}
+                      onComplete={() => {
+                        loadCommunityDetail();
+                      }}
+                      className="h-8"
+                      variant={"secondary"}
+                      renderButtonContent={({ loading }) => {
+                        return loading ? (
+                          <Text className="text-lg text-secondary-foreground">
+                            {isChannelHost ? "Launching..." : "Activating..."}
+                          </Text>
+                        ) : (
+                          <Text className="text-lg text-secondary-foreground">
+                            {isChannelHost ? "Launch" : "Activate"}
+                          </Text>
+                        );
+                      }}
+                    />
+                  )}
+                </View>
+              )}
             </View>
           ),
         }}
       />
       <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
-        {community && (
+        {community ? (
           <>
             <CommunityDetailMetaInfo
               communityInfo={community}
               className=" max-sm:hidden "
             />
-            <View className="box-border w-full flex-1 pt-5">
-              <Tabs
-                value={activeScreen}
-                onValueChange={(value) => {
-                  setActiveScreen(value);
-                  router.push(`/communities/${channelId}/${value}` as any);
-                }}
-                className=" absolute left-1/2 top-0 z-10 box-border w-full -translate-x-1/2 px-4"
+            <View className="box-border w-full flex-1">
+              <CommunityContext.Provider
+                value={{ community, tokenInfo, loading, tokens }}
               >
-                <TabsList className="flex-row rounded-full bg-white shadow-lg">
-                  {TABS.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      className={cn("flex-1 flex-row rounded-full")}
-                      value={tab.value}
-                    >
-                      <Text
-                        className={cn(
-                          "whitespace-nowrap font-medium text-primary",
-                          activeScreen === tab.value &&
-                            "text-primary-foreground",
-                        )}
-                      >
-                        {tab.label}
-                      </Text>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-              <Card className="box-border h-full w-full rounded-[20px] rounded-b-none p-5 pb-0 pt-10 ">
-                <CommunityContext.Provider value={{ community, loading }}>
-                  <Stack
-                    initialRouteName={initialRouteName}
-                    screenOptions={{
-                      header: () => null,
-                      contentStyle: { backgroundColor: "white" },
-                    }}
-                  />
-                </CommunityContext.Provider>
-              </Card>
+                <Tab.Navigator
+                  screenOptions={{
+                    lazy: true,
+                    lazyPreloadDistance: 1,
+                  }}
+                  initialRouteName={initialRouteName}
+                  tabBar={(props) => <ScrollTabBar {...props} />}
+                  sceneContainerStyle={{
+                    backgroundColor: "transparent",
+                    paddingTop: 15,
+                  }}
+                >
+                  {routes.map((route) => {
+                    return (
+                      <Tab.Screen
+                        key={route.key}
+                        name={route.key}
+                        component={route.component}
+                        {...(route.initParams
+                          ? { initialParams: route.initParams }
+                          : {})}
+                        options={{
+                          title: route.title,
+                        }}
+                      />
+                    );
+                  })}
+                </Tab.Navigator>
+              </CommunityContext.Provider>
             </View>
           </>
+        ) : loading ? (
+          <View className="flex flex-1 items-center justify-center">
+            <ScreenLoading />
+          </View>
+        ) : (
+          <NotFoundChannel />
         )}
       </View>
     </SafeAreaView>

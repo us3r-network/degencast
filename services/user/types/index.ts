@@ -20,6 +20,7 @@ export enum UserActionName {
   Invite = "Invite",
   SwapToken = "SwapToken",
   MintCast = "MintCast",
+  ViewChannel = "ViewChannel",
 }
 
 export type UserActionData = {
@@ -41,3 +42,21 @@ export type TipsInfo = {
   logo?: string;
   amount: number;
 };
+
+export type UserAccount = {
+  type: UserAccountType;
+  thirdpartyId?: string;
+  thirdPartyName?: string;
+  data?: any;
+};
+
+export enum UserAccountType {
+  PRIVY = "PRIVY",
+  TWITTER = "TWITTER",
+  DISCORD = "DISCORD",
+  SOLANA = "SOLANA",
+  EVM = "EVM",
+  APTOS = "APTOS",
+  EMAIL = "EMAIL",
+  FARCASTER = "FARCASTER",
+}

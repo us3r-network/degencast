@@ -184,7 +184,12 @@ export type WarpcastChannel = {
   url: string;
   name: string;
   imageUrl: string;
+  description: string;
   createdAt: number;
+  leadFid: number;
+  moderatorFid: number;
+  followerCount: number;
+  tokenSymbol?: string;
 };
 export function fetchWarpcastChannels(): RequestPromise<
   ApiResp<WarpcastChannel[]>
@@ -288,6 +293,25 @@ export function getExploreHostingChannels(
     url: `/topics/channels/hosting`,
     method: "get",
     params,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export type DegencastChannel = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  description?: string;
+};
+export function createDegencastChannel(
+  params: DegencastChannel,
+): RequestPromise<ApiResp<any>> {
+  return request({
+    url: `/topics/channels`,
+    method: "post",
+    data: params,
     headers: {
       needToken: true,
     },

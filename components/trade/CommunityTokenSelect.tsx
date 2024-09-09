@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
-import { base } from "viem/chains";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Text } from "~/components/ui/text";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
@@ -9,21 +8,34 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 
-export default function CommunityToeknSelect({
+export default function CommunityTokenSelect({
+  chainId,
   defaultToken,
   selectToken,
   showBalance = false,
 }: {
+  chainId: number;
   defaultToken?: TokenWithTradeInfo;
   selectToken?: (token: TokenWithTradeInfo) => void;
   showBalance?: boolean;
 }) {
   const { items: communityTokens } = useCommunityTokens();
 
-  const tokens: TokenWithTradeInfo[] = useMemo(
-    () => communityTokens.filter((token) => token.chainId === base.id),
-    [communityTokens],
-  );
+  const tokens: TokenWithTradeInfo[] = useMemo(() => {
+    // console.log("communityTokens", communityTokens, chainId, defaultToken);
+    if (
+      defaultToken &&
+      communityTokens.findIndex(
+        (token) => token.address === defaultToken.address,
+      ) < 0
+    ) {
+      return [defaultToken, ...communityTokens].filter(
+        (token) => Number(token?.chainId) === chainId,
+      );
+    } else {
+      return communityTokens.filter((token) => token?.chainId === chainId);
+    }
+  }, [communityTokens, defaultToken]);
 
   const [value, setValue] = useState<string>();
 
@@ -44,6 +56,13 @@ export default function CommunityToeknSelect({
     }
   }, [tokens]);
 
+  if (!tokens || tokens.length === 0) {
+    return (
+      <View>
+        <Text>No Community Token!</Text>
+      </View>
+    );
+  }
   const selectedToken =
     tokens?.find((token) => token?.address === value) || tokens[0];
 

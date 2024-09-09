@@ -19,9 +19,12 @@ export default function useLoadCommunityTipsRank(channelId: string) {
   const loading = status === AsyncRequestStatus.PENDING;
 
   const loadTipsRank = useCallback(async () => {
-    if (loading) return;
+    if (
+      [AsyncRequestStatus.PENDING, AsyncRequestStatus.REJECTED].includes(status)
+    )
+      return;
     dispatch(fetchItems({ channelId }));
-  }, [channelId, loading]);
+  }, [channelId, status]);
 
   return {
     loading,

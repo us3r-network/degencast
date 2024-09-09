@@ -61,7 +61,7 @@ export async function fetchCastWithHashFid({
   return resp.data;
 }
 
-export async function fetchUserChannels({
+export async function fetchUserFollowingChannels({
   fid,
   limit,
   cursor,
@@ -69,7 +69,7 @@ export async function fetchUserChannels({
   fid: number;
   limit: number;
   cursor?: string | null;
-}) {
+}): Promise<NeynarChannelsResp> {
   const resp = await axios({
     url: `${NEYNAR_API_HOST}/v2/farcaster/user/channels?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
     method: "get",
@@ -91,7 +91,7 @@ export async function fetchUserActiveChannels({
     url: `${NEYNAR_API_HOST}/v2/farcaster/channel/user?fid=${fid}&limit=${limit}&cursor=${cursor || ""}`,
     method: "get",
   });
-  // console.log("Retrieve all channels that a given fid follows", resp.data);
+  // console.log("Retrieve all channels that a given fid active", resp.data);
   return resp.data;
 }
 
