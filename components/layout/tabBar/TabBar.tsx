@@ -15,7 +15,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { SquarePen } from "~/components/common/Icons";
+import { Plus, SquarePen } from "~/components/common/Icons";
 import CreateChannelDialog from "~/components/rank/CreateChannelModal";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -229,7 +229,8 @@ const CreateTabBarItem = () => {
             showActions ? "bg-secondary" : "bg-white/80",
           )}
         >
-          <SquarePen stroke={showActions ? "white" : SECONDARY_COLOR} />
+          {/* <SquarePen stroke={showActions ? "white" : SECONDARY_COLOR} /> */}
+          <Plus size={32} color={showActions ? "white" : SECONDARY_COLOR} />
         </View>
         <Text
           className={cn(
