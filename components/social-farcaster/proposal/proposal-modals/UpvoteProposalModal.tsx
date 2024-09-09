@@ -9,14 +9,12 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import ProposalCastCard from "../ProposalCastCard";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
-import PriceRow from "./PriceRow";
-import { formatUnits, TransactionReceipt } from "viem";
+import { parseUnits, TransactionReceipt } from "viem";
 import Toast from "react-native-toast-message";
 import { ProposeProposalWriteButton } from "../proposal-write-buttons/ProposalWriteButton";
-import { Slider } from "~/components/ui/slider";
-import { PriceRangeRow } from "./ChallengeProposalModal";
 import useAppModals from "~/hooks/useAppModals";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { ProposalPaymentSelector } from "./PaymentSelector";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -108,30 +106,22 @@ export function UpvoteProposalModalContentBody({
     castHash: cast.hash,
   });
 
-  const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
+  const [selectedPaymentToken, setSelectedPaymentToken] =
+    useState(paymentTokenInfo);
+
+  const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
+
   useEffect(() => {
     if (!isLoading && price) {
       console.log("price", price);
-      setSelectPrice(price);
+      setSelectedPayAmount(price);
     }
   }, [price, isLoading]);
-
-  const priceNumber =
-    price && paymentTokenInfo?.decimals
-      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
-      : 0;
-  const selectPriceNumber =
-    selectPrice && paymentTokenInfo?.decimals
-      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
-      : 0;
-  const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance
-      ? tokenInfo?.bondingCurve?.basePrice || 0
-      : 0,
-    step: priceNumber / 100,
-  };
+  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minAmount = parseUnits(
+    minPayAmountNumber.toString(),
+    paymentTokenInfo?.decimals!,
+  );
   return (
     <>
       {/* <DialogHeader
@@ -144,37 +134,24 @@ export function UpvoteProposalModalContentBody({
         <UserWalletSelect />
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-      <PriceRow
+      <ProposalPaymentSelector
         title="Upvote Cost"
-        paymentTokenInfo={paymentTokenInfo}
-        price={price}
-        isLoading={isLoading || paymentTokenInfoLoading}
-        onClickPriceValue={() => {
-          if (price) {
-            setSelectPrice(price);
-          }
+        defaultPaymentInfo={{
+          tokenInfo: paymentTokenInfo!,
+          recommendedAmount: price,
+          minAmount: minAmount,
         }}
+        selectedPaymentToken={selectedPaymentToken!}
+        setSelectedPaymentToken={setSelectedPaymentToken}
+        selectedPayAmount={selectedPayAmount!}
+        setSelectedPayAmount={setSelectedPayAmount}
       />
-      <Slider
-        {...priceSliderConfig}
-        onValueChange={(v) => {
-          if (!isNaN(Number(v))) {
-            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-            const vInt = Math.ceil(Number(v));
-            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
-          }
-        }}
-      />
-      <PriceRangeRow {...priceSliderConfig} />
-      <Text className="text-center text-xs text-secondary">
-        Stake DEGEN, get funds back and earn minting fee rewards upon success!
-      </Text>
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
-        price={price!}
+        price={selectedPayAmount}
         onProposeSuccess={onProposeSuccess}
         onProposeError={onProposeError}
       />

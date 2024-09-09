@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import Toast from "react-native-toast-message";
-import { formatUnits, TransactionReceipt } from "viem";
+import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import { PercentPrograssText } from "~/components/common/PercentPrograssText";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
@@ -23,6 +23,8 @@ import { AboutProposalChallenge } from "./AboutProposal";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import PriceRow from "./PriceRow";
 import useAppModals from "~/hooks/useAppModals";
+import { ProposalPaymentSelector } from "./PaymentSelector";
+import { Loading } from "~/components/common/Loading";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -202,41 +204,39 @@ function CreateProposalModalContentBody({
   onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
   onCreateProposalError?: (error: any) => void;
 }) {
+  const { danContract } = tokenInfo!;
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
     });
+  console.log("paymentTokenInfo", paymentTokenInfo);
 
-  const [selectPrice, setSelectPrice] = useState<bigint | undefined>();
   const price = useMemo(
     () => getProposalMinPrice(tokenInfo, paymentTokenInfo),
     [paymentTokenInfo],
   );
+  const [selectedPaymentToken, setSelectedPaymentToken] =
+    useState(paymentTokenInfo);
+
+  const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
+
+  useEffect(() => {
+    if (!paymentTokenInfoLoading && paymentTokenInfo) {
+      console.log("price", price);
+      setSelectedPaymentToken(paymentTokenInfo);
+    }
+  }, [paymentTokenInfoLoading, paymentTokenInfo]);
   useEffect(() => {
     if (price) {
-      setSelectPrice(price);
+      console.log("price", price);
+      setSelectedPayAmount(price);
     }
   }, [price]);
-
-  const priceSliderConfig = useMemo(() => {
-    // console.log("priceSliderConfig", price, paymentTokenInfo, selectPrice);
-    const priceNumber =
-      price && paymentTokenInfo?.decimals
-        ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
-        : 0;
-    const selectPriceNumber =
-      selectPrice && paymentTokenInfo?.decimals
-        ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
-        : 0;
-    return {
-      value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
-      max: Number(paymentTokenInfo?.balance || 0),
-      min: paymentTokenInfo?.balance
-        ? tokenInfo?.bondingCurve?.basePrice || 0
-        : 0,
-      step: priceNumber / 100,
-    };
-  }, [price, paymentTokenInfo, selectPrice]);
+  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minAmount = parseUnits(
+    minPayAmountNumber.toString(),
+    paymentTokenInfo?.decimals!,
+  );
 
   return (
     <>
@@ -245,36 +245,35 @@ function CreateProposalModalContentBody({
         <UserWalletSelect />
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-      <PriceRow
-        paymentTokenInfo={paymentTokenInfo}
-        price={price}
-        isLoading={paymentTokenInfoLoading}
-        onClickPriceValue={() => {
-          if (price) {
-            setSelectPrice(price);
-          }
-        }}
-      />
-      <Slider
-        {...priceSliderConfig}
-        onValueChange={(v) => {
-          if (!isNaN(Number(v))) {
-            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-            const vInt = Math.ceil(Number(v));
-            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
-          }
-        }}
-      />
-      <PriceRangeRow {...priceSliderConfig} />
-      <ProposeWriteButton
-        cast={cast}
-        channel={channel}
-        // proposal={proposal}
-        tokenInfo={tokenInfo}
-        price={selectPrice!}
-        onCreateProposalSuccess={onCreateProposalSuccess}
-        onCreateProposalError={onCreateProposalError}
-      />
+      {paymentTokenInfoLoading ? (
+        <Loading />
+      ) : selectedPaymentToken ? (
+        <>
+          <ProposalPaymentSelector
+            title="Upvote Cost"
+            defaultPaymentInfo={{
+              tokenInfo: paymentTokenInfo!,
+              recommendedAmount: price,
+              minAmount: minAmount,
+            }}
+            selectedPaymentToken={selectedPaymentToken!}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            selectedPayAmount={selectedPayAmount!}
+            setSelectedPayAmount={setSelectedPayAmount}
+          />
+          <ProposeWriteButton
+            cast={cast}
+            channel={channel}
+            // proposal={proposal}
+            tokenInfo={tokenInfo}
+            paymentTokenInfo={selectedPaymentToken!}
+            paymentTokenInfoLoading={paymentTokenInfoLoading}
+            paymentAmount={selectedPayAmount!}
+            onCreateProposalSuccess={onCreateProposalSuccess}
+            onCreateProposalError={onCreateProposalError}
+          />
+        </>
+      ) : null}
     </>
   );
 }
