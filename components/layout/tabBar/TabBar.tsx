@@ -15,7 +15,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { SquarePen } from "~/components/common/Icons";
+import { Plus, SquarePen } from "~/components/common/Icons";
 import CreateChannelDialog from "~/components/rank/CreateChannelModal";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -162,7 +162,7 @@ const CreateTabBarItem = () => {
   useEffect(() => {
     Animated.timing(toggleBtnAnimation, {
       toValue: showActions ? 1 : 0,
-      duration: 150,
+      duration: 100,
       easing: Easing.ease,
       useNativeDriver: true,
     }).start();
@@ -216,7 +216,7 @@ const CreateTabBarItem = () => {
       </ActionMenuCtx.Provider>
       <Pressable
         key={"create"}
-        className="absolute bottom-0 flex h-fit w-fit min-w-[60px] items-center justify-center gap-1"
+        className="absolute bottom-0 flex h-fit w-fit min-w-[60px] items-center justify-center gap-1 z-10"
         accessibilityRole={Platform.OS === "web" ? "link" : "button"}
         accessibilityState={isFocused ? { selected: true } : {}}
         onPress={() => {
@@ -229,7 +229,8 @@ const CreateTabBarItem = () => {
             showActions ? "bg-secondary" : "bg-white/80",
           )}
         >
-          <SquarePen stroke={showActions ? "white" : SECONDARY_COLOR} />
+          {/* <SquarePen stroke={showActions ? "white" : SECONDARY_COLOR} /> */}
+          <Plus size={32} color={showActions ? "white" : SECONDARY_COLOR} />
         </View>
         <Text
           className={cn(
@@ -262,17 +263,17 @@ function ActionMenuItem({
   useEffect(() => {
     Animated.timing(scaleAnimatedValue, {
       toValue: showMenu ? 1 : 0,
-      duration: 200 * index,
+      duration: 100,
       useNativeDriver: true,
     }).start();
     Animated.timing(translateXAnimatedValue, {
       toValue: showMenu ? 1 : 0,
-      duration: 200,
+      duration: 100,
       useNativeDriver: true,
     }).start();
     Animated.timing(translateYAnimatedValue, {
       toValue: showMenu ? 1 : 0,
-      duration: 200,
+      duration: 100,
       useNativeDriver: true,
     }).start();
   }, [showMenu]);
