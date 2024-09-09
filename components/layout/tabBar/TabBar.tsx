@@ -1,11 +1,22 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useRouter } from "expo-router";
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Animated, Easing, Platform, Pressable, View } from "react-native";
-import { SquarePen } from "~/components/common/Icons";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
-  CreateChannelDialog,
-} from "~/components/rank/CreateChannelButton";
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import { SquarePen } from "~/components/common/Icons";
+import { CreateChannelDialog } from "~/components/rank/CreateChannelButton";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_TABBAR_HEIGHT, SECONDARY_COLOR } from "~/constants";
@@ -143,11 +154,11 @@ function useActionMenuCtx() {
 const CreateTabBarItem = () => {
   const router = useRouter();
   const isFocused = false;
-  const [showActions, showActionsChange] = useState(false);
+  const [showActions, setShowActions] = useState(false);
   const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
-    showActionsChange(!showActions);
-  }, [showActions, showActionsChange]);
+    setShowActions((prev) => !prev);
+  }, [showActions, setShowActions]);
   useEffect(() => {
     Animated.timing(toggleBtnAnimation, {
       toValue: showActions ? 1 : 0,
@@ -162,7 +173,12 @@ const CreateTabBarItem = () => {
 
   const [showDialog, setShowDialog] = useState(false);
   return (
-    <View className="reletive h-16 w-16 flex items-center justify-center">
+    <View className="flex h-16 w-16 items-center justify-center z-50">
+      {showActions && (
+        <TouchableWithoutFeedback
+          onPress={() => setShowActions(false)}
+        ><View className="absolute w-screen h-screen bottom-0"/></TouchableWithoutFeedback>
+      )}
       <ActionMenuCtx.Provider
         value={{
           showMenu: showActions,
@@ -177,7 +193,7 @@ const CreateTabBarItem = () => {
             size="sm"
             className="w-16"
             onPress={() => {
-              showActionsChange(false);
+              setShowActions(false);
               router.push("/create");
             }}
           >
@@ -191,7 +207,7 @@ const CreateTabBarItem = () => {
             className="w-16"
             onPress={() => {
               setShowDialog(true);
-              showActionsChange(false);
+              setShowActions(false);
             }}
           >
             <Text>Channel</Text>
