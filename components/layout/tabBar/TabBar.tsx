@@ -16,7 +16,7 @@ import {
   View,
 } from "react-native";
 import { SquarePen } from "~/components/common/Icons";
-import { CreateChannelDialog } from "~/components/rank/CreateChannelButton";
+import CreateChannelDialog from "~/components/rank/CreateChannelModal";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_TABBAR_HEIGHT, SECONDARY_COLOR } from "~/constants";
