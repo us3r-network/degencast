@@ -48,7 +48,7 @@ export default function useLoadOnchainActivities(props?: {
       if (resp.data?.code !== ApiRespCode.SUCCESS) {
         throw new Error(resp.data.msg);
       }
-      if (resp.data?.data?.length > 0) {
+      if (resp.data?.data?.length >= 0) {
         setItems((prev) => [...prev, ...resp.data.data]);
         pageInfoRef.current = {
           hasNextPage: resp.data.data.length >= PAGE_SIZE,
