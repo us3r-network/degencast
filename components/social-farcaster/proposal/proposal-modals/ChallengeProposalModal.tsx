@@ -17,7 +17,7 @@ import {
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 import PriceRow from "./PriceRow";
 import Toast from "react-native-toast-message";
-import { formatUnits, TransactionReceipt } from "viem";
+import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import { Slider } from "~/components/ui/slider";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 import { DialogCastActivitiesList } from "~/components/activity/Activities";
@@ -25,6 +25,8 @@ import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { AboutProposalChallenge } from "./AboutProposal";
 import useAppModals from "~/hooks/useAppModals";
+import { Loading } from "~/components/common/Loading";
+import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -238,61 +240,55 @@ export function DisputeProposalWrite({
   });
   const {
     price,
-    isLoading,
+    isLoading: priceLoading,
     error: priceError,
   } = useDisputePrice({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
 
-  const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
-  useEffect(() => {
-    if (!isLoading && price) {
-      console.log("price", price);
-      setSelectPrice(price);
-    }
-  }, [price, isLoading]);
+  const [selectedPaymentToken, setSelectedPaymentToken] =
+    useState(paymentTokenInfo);
 
-  const priceNumber =
-    price && paymentTokenInfo?.decimals
-      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
-      : 0;
-  const selectPriceNumber =
-    selectPrice && paymentTokenInfo?.decimals
-      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
-      : 0;
-  const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance
-      ? tokenInfo?.bondingCurve?.basePrice || 0
-      : 0,
-    step: priceNumber / 100,
-  };
+  const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
+
+  useEffect(() => {
+    if (!paymentTokenInfoLoading && paymentTokenInfo) {
+      console.log("price", price);
+      setSelectedPaymentToken(paymentTokenInfo);
+    }
+  }, [paymentTokenInfoLoading, paymentTokenInfo]);
+
+  useEffect(() => {
+    if (!priceLoading && price) {
+      console.log("price", price);
+      setSelectedPayAmount(price);
+    }
+  }, [price, priceLoading]);
+
+  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minAmount = parseUnits(
+    minPayAmountNumber.toString(),
+    paymentTokenInfo?.decimals!,
+  );
   return (
     <>
-      <PriceRow
-        title={"The cost for a successful challenge:"}
-        paymentTokenInfo={paymentTokenInfo}
-        price={price}
-        isLoading={isLoading || paymentTokenInfoLoading}
-        onClickPriceValue={() => {
-          if (price) {
-            setSelectPrice(price);
-          }
-        }}
-      />
-      <Slider
-        {...priceSliderConfig}
-        onValueChange={(v) => {
-          if (!isNaN(Number(v))) {
-            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-            const vInt = Math.ceil(Number(v));
-            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
-          }
-        }}
-      />
-      <PriceRangeRow {...priceSliderConfig} />
+      {paymentTokenInfoLoading ? (
+        <Loading />
+      ) : selectedPaymentToken ? (
+        <ProposalPaymentSelector
+          paymentInfoType={PaymentInfoType.Challenge}
+          defaultPaymentInfo={{
+            tokenInfo: paymentTokenInfo!,
+            recommendedAmount: price,
+            minAmount: minAmount,
+          }}
+          selectedPaymentToken={selectedPaymentToken!}
+          setSelectedPaymentToken={setSelectedPaymentToken}
+          selectedPayAmount={selectedPayAmount!}
+          setSelectedPayAmount={setSelectedPayAmount}
+        />
+      ) : null}
       <Text className="text-center text-xs text-secondary">
         Downvote spam casts, if you win, you can share the staked funds from
         upvoters.
@@ -302,7 +298,10 @@ export function DisputeProposalWrite({
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
-        price={selectPrice!}
+        paymentTokenInfo={paymentTokenInfo!}
+        usedPaymentTokenInfo={selectedPaymentToken}
+        paymentTokenInfoLoading={paymentTokenInfoLoading}
+        paymentAmount={selectedPayAmount!}
         onDisputeSuccess={onDisputeSuccess}
         onDisputeError={onDisputeError}
       />
@@ -327,68 +326,63 @@ export function ProposeProposalWrite({
   });
   const {
     price,
-    isLoading,
+    isLoading: priceLoading,
     error: priceError,
   } = useProposePrice({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
-  const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
-  useEffect(() => {
-    if (!isLoading && price) {
-      setSelectPrice(price);
-    }
-  }, [price, isLoading]);
+  const [selectedPaymentToken, setSelectedPaymentToken] =
+    useState(paymentTokenInfo);
 
-  const priceNumber =
-    price && paymentTokenInfo?.decimals
-      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
-      : 0;
-  const selectPriceNumber =
-    selectPrice && paymentTokenInfo?.decimals
-      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
-      : 0;
-  const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance
-      ? tokenInfo?.bondingCurve?.basePrice || 0
-      : 0,
-    step: priceNumber / 100,
-  };
+  const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
+
+  useEffect(() => {
+    if (!paymentTokenInfoLoading && paymentTokenInfo) {
+      console.log("price", price);
+      setSelectedPaymentToken(paymentTokenInfo);
+    }
+  }, [paymentTokenInfoLoading, paymentTokenInfo]);
+
+  useEffect(() => {
+    if (!priceLoading && price) {
+      console.log("price", price);
+      setSelectedPayAmount(price);
+    }
+  }, [price, priceLoading]);
+
+  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minAmount = parseUnits(
+    minPayAmountNumber.toString(),
+    paymentTokenInfo?.decimals!,
+  );
   return (
     <>
-      <PriceRow
-        title={"The cost for a successful challenge:"}
-        paymentTokenInfo={paymentTokenInfo}
-        price={price}
-        isLoading={isLoading || paymentTokenInfoLoading}
-        onClickPriceValue={() => {
-          if (price) {
-            setSelectPrice(price);
-          }
-        }}
-      />
-      <Slider
-        {...priceSliderConfig}
-        onValueChange={(v) => {
-          if (!isNaN(Number(v))) {
-            const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-            const vInt = Math.ceil(Number(v));
-            setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
-          }
-        }}
-      />
-      <PriceRangeRow {...priceSliderConfig} />
-      <Text className="text-center text-xs text-secondary">
-        Stake DEGEN, get funds back and earn minting fee rewards upon success!
-      </Text>
+      {paymentTokenInfoLoading ? (
+        <Loading />
+      ) : selectedPaymentToken ? (
+        <ProposalPaymentSelector
+          paymentInfoType={PaymentInfoType.Upvote}
+          defaultPaymentInfo={{
+            tokenInfo: paymentTokenInfo!,
+            recommendedAmount: price,
+            minAmount: minAmount,
+          }}
+          selectedPaymentToken={selectedPaymentToken!}
+          setSelectedPaymentToken={setSelectedPaymentToken}
+          selectedPayAmount={selectedPayAmount!}
+          setSelectedPayAmount={setSelectedPayAmount}
+        />
+      ) : null}
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
-        price={selectPrice!}
+        paymentTokenInfo={paymentTokenInfo!}
+        usedPaymentTokenInfo={selectedPaymentToken}
+        paymentTokenInfoLoading={paymentTokenInfoLoading}
+        paymentAmount={selectedPayAmount!}
         onProposeSuccess={onProposeSuccess}
         onProposeError={onProposeError}
       />
@@ -396,23 +390,33 @@ export function ProposeProposalWrite({
   );
 }
 
-const displayValue = (value: number) => {
-  return new Intl.NumberFormat("en-US", {}).format(Number(value));
+const displayValue = (value: number, maximumFractionDigits: number) => {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits,
+  }).format(Number(value));
 };
 export function PriceRangeRow({
   max,
   min,
   value,
+  maximumFractionDigits = 2,
 }: {
   max: number;
   min: number;
   value: number;
+  maximumFractionDigits?: number;
 }) {
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="text-xs font-normal">{displayValue(min)}(minimum)</Text>
-      <Text className="text-xs font-normal">{displayValue(value)}</Text>
-      <Text className="text-xs font-normal">{displayValue(max)}</Text>
+      <Text className="text-xs font-normal">
+        {displayValue(min, maximumFractionDigits)}(minimum)
+      </Text>
+      <Text className="text-xs font-normal">
+        {displayValue(value, maximumFractionDigits)}
+      </Text>
+      <Text className="text-xs font-normal">
+        {displayValue(max, maximumFractionDigits)}
+      </Text>
     </View>
   );
 }
