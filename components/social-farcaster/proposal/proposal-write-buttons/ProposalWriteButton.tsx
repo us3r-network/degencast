@@ -12,12 +12,16 @@ import { Loading } from "~/components/common/Loading";
 import useRoundProposals from "~/hooks/social-farcaster/proposal/useRoundProposals";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export function ProposeProposalWriteButton({
   cast,
   tokenInfo,
   proposal,
-  price,
+  paymentTokenInfo,
+  usedPaymentTokenInfo,
+  paymentTokenInfoLoading,
+  paymentAmount,
   approveText,
   upvoteText,
   onProposeSuccess,
@@ -25,7 +29,10 @@ export function ProposeProposalWriteButton({
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
-    price: bigint;
+    paymentTokenInfo: TokenWithTradeInfo;
+    usedPaymentTokenInfo?: TokenWithTradeInfo;
+    paymentTokenInfoLoading?: boolean;
+    paymentAmount: bigint;
     approveText?: string;
     upvoteText?: string;
     onProposeSuccess?: (proposal: TransactionReceipt) => void;
@@ -48,10 +55,6 @@ export function ProposeProposalWriteButton({
   });
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
-  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
-    usePaymentTokenInfo({
-      contractAddress: tokenInfo?.danContract!,
-    });
   const isLoading =
     proposeLoading || proposalsLoading || paymentTokenInfoLoading;
   const disabled =
@@ -63,14 +66,14 @@ export function ProposeProposalWriteButton({
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     isLoading ||
-    !price;
+    !paymentAmount;
   const allowanceParams =
     !disabled && !!address && isConnected
       ? {
           owner: address,
           tokenAddress: paymentTokenInfo?.address,
           spender: tokenInfo?.danContract,
-          value: price,
+          value: paymentAmount,
         }
       : undefined;
   const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
@@ -94,12 +97,14 @@ export function ProposeProposalWriteButton({
               return;
             }
             propose({
-              paymentPrice: price!,
+              paymentTokenAddress: paymentTokenInfo?.address,
+              paymentAmount: paymentAmount!,
               ...(isSupportAtomicBatch
                 ? {
                     enableApprovePaymentStep: true,
-                    paymentTokenAddress: paymentTokenInfo?.address,
                     capabilities,
+                    paymentToken: paymentTokenInfo,
+                    usedPaymentToken: usedPaymentTokenInfo,
                   }
                 : {}),
             });
@@ -139,7 +144,10 @@ export function DisputeProposalWriteButton({
   cast,
   tokenInfo,
   proposal,
-  price,
+  paymentTokenInfo,
+  usedPaymentTokenInfo,
+  paymentTokenInfoLoading,
+  paymentAmount,
   approveText,
   downvoteText,
   onDisputeSuccess,
@@ -147,7 +155,10 @@ export function DisputeProposalWriteButton({
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
-    price: bigint;
+    paymentTokenInfo: TokenWithTradeInfo;
+    usedPaymentTokenInfo?: TokenWithTradeInfo;
+    paymentTokenInfoLoading?: boolean;
+    paymentAmount: bigint;
     approveText?: string;
     downvoteText?: string;
     onDisputeSuccess?: (proposal: TransactionReceipt) => void;
@@ -174,10 +185,6 @@ export function DisputeProposalWriteButton({
   });
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
-  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
-    usePaymentTokenInfo({
-      contractAddress: tokenInfo?.danContract!,
-    });
   const isLoading =
     disputeLoading || proposalsLoading || paymentTokenInfoLoading;
   const disabled =
@@ -188,14 +195,14 @@ export function DisputeProposalWriteButton({
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     isLoading ||
-    !price;
+    !paymentAmount;
   const allowanceParams =
     !disabled && !!address && isConnected
       ? {
           owner: address,
           tokenAddress: paymentTokenInfo?.address,
           spender: tokenInfo?.danContract,
-          value: price,
+          value: paymentAmount,
         }
       : undefined;
 
@@ -220,12 +227,14 @@ export function DisputeProposalWriteButton({
               return;
             }
             dispute({
-              paymentPrice: price!,
+              paymentTokenAddress: paymentTokenInfo?.address,
+              paymentAmount: paymentAmount!,
               ...(isSupportAtomicBatch
                 ? {
                     enableApprovePaymentStep: true,
-                    paymentTokenAddress: paymentTokenInfo?.address,
                     capabilities,
+                    paymentToken: paymentTokenInfo,
+                    usedPaymentToken: usedPaymentTokenInfo,
                   }
                 : {}),
             });

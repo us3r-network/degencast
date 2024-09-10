@@ -14,13 +14,19 @@ import { useAccount } from "wagmi";
 import { useUserNativeToken } from "~/hooks/user/useUserTokens";
 import { NATIVE_TOKEN_ADDRESS } from "~/constants/chain";
 
+export enum PaymentInfoType {
+  Create,
+  Proposed,
+  Upvote,
+  Challenge,
+}
 export function ProposalPaymentSelector({
   defaultPaymentInfo,
   selectedPaymentToken,
   setSelectedPaymentToken,
   selectedPayAmount,
   setSelectedPayAmount,
-  title,
+  paymentInfoType,
 }: {
   defaultPaymentInfo: {
     tokenInfo: TokenWithTradeInfo;
@@ -33,7 +39,7 @@ export function ProposalPaymentSelector({
   setSelectedPaymentToken: (token: TokenWithTradeInfo) => void;
   selectedPayAmount: bigint;
   setSelectedPayAmount: (amount: bigint) => void;
-  title: string;
+  paymentInfoType: PaymentInfoType;
 }) {
   const { supportAtomicBatch } = useWalletAccount();
   const account = useAccount();
@@ -130,6 +136,7 @@ export function ProposalPaymentSelector({
       setSelectedPayAmount(amount);
     }
   };
+
   return (
     <View className="flex flex-col gap-4">
       {supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
@@ -140,14 +147,43 @@ export function ProposalPaymentSelector({
         />
       )}
 
-      <PaymentInfo
-        paymentTokenInfo={selectedPaymentToken}
-        recommendedPayAmount={recommendedPayAmount || 0n}
-        minPayAmount={minPayAmount || 0n}
-        selectedPayAmount={selectedPayAmount}
-        setSelectedPayAmount={setSelectedPayAmount}
-        title={title}
-      />
+      {paymentInfoType === PaymentInfoType.Create ? (
+        <PaymentInfo
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+          amountLabel={"Upvote Cost"}
+        />
+      ) : paymentInfoType === PaymentInfoType.Proposed ? (
+        <PaymentInfoWithProposed
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+        />
+      ) : paymentInfoType === PaymentInfoType.Upvote ? (
+        <PaymentInfo
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+          amountLabel={"The cost for a successful challenge:"}
+        />
+      ) : paymentInfoType === PaymentInfoType.Challenge ? (
+        <PaymentInfo
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+          amountLabel={"The cost for a successful challenge:"}
+          description="Downvote spam casts, if you win, you can share the staked funds from upvoters."
+        />
+      ) : null}
     </View>
   );
 }
@@ -160,7 +196,8 @@ export function PaymentInfo({
   setSelectedPayAmount,
   amountLoading,
   sliderStep,
-  title,
+  amountLabel,
+  description,
 }: {
   paymentTokenInfo: TokenWithTradeInfo;
   recommendedPayAmount?: bigint;
@@ -169,7 +206,8 @@ export function PaymentInfo({
   setSelectedPayAmount: (amount: bigint) => void;
   amountLoading?: boolean;
   sliderStep?: number;
-  title: string;
+  amountLabel: string;
+  description?: string;
 }) {
   const recommendedPayAmountNumber =
     recommendedPayAmount && paymentTokenInfo?.decimals
@@ -200,7 +238,7 @@ export function PaymentInfo({
   return (
     <View className="flex flex-col gap-4">
       <PriceRow
-        title={title}
+        title={amountLabel}
         paymentTokenInfo={paymentTokenInfo}
         price={recommendedPayAmount}
         isLoading={amountLoading}
@@ -224,9 +262,103 @@ export function PaymentInfo({
       />
       <PriceRangeRow {...priceSliderConfig} />
       <Text className="text-center text-xs text-secondary">
-        Stake {paymentTokenInfo.symbol}, get funds back and earn minting fee
-        rewards upon success!
+        {description ||
+          `Stake ${paymentTokenInfo.symbol}, get funds back and earn minting fee rewards upon success!`}
       </Text>
+    </View>
+  );
+}
+
+export function PaymentInfoWithProposed({
+  paymentTokenInfo,
+  recommendedPayAmount,
+  minPayAmount,
+  selectedPayAmount,
+  setSelectedPayAmount,
+  amountLoading,
+  sliderStep,
+}: {
+  paymentTokenInfo: TokenWithTradeInfo;
+  recommendedPayAmount?: bigint;
+  minPayAmount: bigint;
+  selectedPayAmount: bigint;
+  setSelectedPayAmount: (amount: bigint) => void;
+  amountLoading?: boolean;
+  sliderStep?: number;
+}) {
+  const recommendedPayAmountNumber =
+    recommendedPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(recommendedPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
+  const minPayAmountNumber =
+    minPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(minPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
+  const selectedPayAmountNumber =
+    selectedPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
+
+  console.log("selectedPaymentTokenInfo", paymentTokenInfo);
+  console.log("selectedPayAmountNumber", selectedPayAmountNumber);
+  console.log("minPayAmountNumber", minPayAmountNumber);
+
+  const priceSliderConfig = {
+    value: paymentTokenInfo?.balance ? selectedPayAmountNumber : 0,
+    max: Number(paymentTokenInfo?.balance || 0),
+    min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
+    step: sliderStep || recommendedPayAmountNumber / 100,
+    maximumFractionDigits:
+      paymentTokenInfo.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
+  };
+
+  return (
+    <View className="flex flex-col gap-4">
+      <PriceRow
+        title="Minimum Cost"
+        paymentTokenInfo={paymentTokenInfo}
+        price={minPayAmount}
+        isLoading={amountLoading}
+        onClickPriceValue={() => {
+          if (minPayAmount) {
+            setSelectedPayAmount(minPayAmount);
+          }
+        }}
+      />
+      <PriceRow
+        title="Successfully Challenge"
+        paymentTokenInfo={paymentTokenInfo}
+        price={recommendedPayAmount}
+        isLoading={amountLoading}
+        onClickPriceValue={() => {
+          if (recommendedPayAmount) {
+            setSelectedPayAmount(recommendedPayAmount);
+          }
+        }}
+      />
+      <View className="flex flex-col items-center gap-2">
+        <Text className="text-center text-xs text-secondary">
+          Upvote and earn minting fee rewards upon success!
+        </Text>
+        <Text className="text-center text-xs text-secondary">or</Text>
+        <Text className="text-center text-xs text-secondary">
+          Downvote spam casts, if you win, you can share the staked funds from
+          upvoters.
+        </Text>
+      </View>
+      <Slider
+        {...priceSliderConfig}
+        disabled={!paymentTokenInfo?.balance}
+        onValueChange={(v) => {
+          if (!isNaN(Number(v))) {
+            const vInt = Number(v);
+            setSelectedPayAmount(
+              parseUnits(vInt.toString(), paymentTokenInfo?.decimals!),
+            );
+          }
+        }}
+      />
+      <PriceRangeRow {...priceSliderConfig} />
     </View>
   );
 }

@@ -23,7 +23,7 @@ import { AboutProposalChallenge } from "./AboutProposal";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import PriceRow from "./PriceRow";
 import useAppModals from "~/hooks/useAppModals";
-import { ProposalPaymentSelector } from "./PaymentSelector";
+import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import { Loading } from "~/components/common/Loading";
 
 export type CastProposeStatusProps = {
@@ -204,7 +204,6 @@ function CreateProposalModalContentBody({
   onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
   onCreateProposalError?: (error: any) => void;
 }) {
-  const { danContract } = tokenInfo!;
   const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
@@ -250,7 +249,7 @@ function CreateProposalModalContentBody({
       ) : selectedPaymentToken ? (
         <>
           <ProposalPaymentSelector
-            title="Upvote Cost"
+            paymentInfoType={PaymentInfoType.Create}
             defaultPaymentInfo={{
               tokenInfo: paymentTokenInfo!,
               recommendedAmount: price,

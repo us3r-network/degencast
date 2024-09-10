@@ -1,7 +1,11 @@
 import { useCallback, useState } from "react";
 import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { getProposals, proposeProposal } from "./proposal-helper";
+import {
+  getProposals,
+  PaymentConfig,
+  proposeProposal,
+} from "./proposal-helper";
 import useCacheCastProposal from "./useCacheCastProposal";
 import { walletActionsEip5792 } from "viem/experimental";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
@@ -34,11 +38,7 @@ export default function useProposeProposal({
 
   const { upsertOneToProposals } = useCacheCastProposal();
   const propose = useCallback(
-    async (paymentConfig: {
-      paymentPrice: bigint;
-      enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
-      paymentTokenAddress?: `0x${string}`;
-    }) => {
+    async (paymentConfig: PaymentConfig) => {
       try {
         setStatus("pending");
         const { receipt } = await proposeProposal({

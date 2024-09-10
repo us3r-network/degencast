@@ -1,5 +1,6 @@
 import { FeeAmount } from "@uniswap/v3-sdk";
 import {
+  Account,
   Address,
   erc20Abi,
   PublicClient,
@@ -241,6 +242,47 @@ type WalletClientExperimental = WalletClient & {
   }) => Promise<any>;
   getCallsStatus?: (opts: any) => Promise<any>;
 };
+
+const getEthPaymentInfo = async ({
+  usedPaymentToken,
+  paymentToken,
+  paymentAmount,
+  account,
+}: {
+  usedPaymentToken: TokenWithTradeInfo;
+  paymentToken: TokenWithTradeInfo;
+  paymentAmount: bigint;
+  account: Account;
+}) => {
+  const contracts = [];
+  const tradeContractMethodData = await getTradeCallDataWithInput({
+    tokenIn: convertToken(usedPaymentToken),
+    tokenOut: convertToken(paymentToken),
+    amountIn: paymentAmount,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
+    walletAddress: account.address,
+  });
+  if (usedPaymentToken.address === NATIVE_TOKEN_ADDRESS) {
+    contracts.push({
+      address: WRAP_NATIVE_TOKEN_ADDRESS,
+      abi: WETH_ABI.abi,
+      functionName: "deposit",
+      value: paymentAmount,
+    });
+  }
+  contracts.push({
+    address: tradeContractMethodData.args[0].tokenIn,
+    abi: erc20Abi,
+    functionName: "approve",
+    args: [tradeContractMethodData.address, paymentAmount],
+  });
+  contracts.push(tradeContractMethodData);
+  const txPaymentAmount = tradeContractMethodData.args[0].amountOutMinimum;
+  return {
+    contracts,
+    txPaymentAmount,
+  };
+};
 export const createProposal = async ({
   publicClient,
   walletClient,
@@ -319,7 +361,7 @@ export const createProposal = async ({
       );
     }
 
-    const contracts = [];
+    let contracts: any[] = [];
     let txPaymentAmount = paymentAmount;
     if (
       usedPaymentToken &&
@@ -331,36 +373,14 @@ export const createProposal = async ({
       if (!account.address) {
         throw new Error("Account address is required");
       }
-      console.log("tradeContractMethodData before", {
+      const info = await getEthPaymentInfo({
         usedPaymentToken,
         paymentToken,
         paymentAmount,
-        accountAddress: account.address,
+        account,
       });
-      const tradeContractMethodData = await getTradeCallDataWithInput({
-        tokenIn: convertToken(usedPaymentToken),
-        tokenOut: convertToken(paymentToken),
-        amountIn: paymentAmount,
-        poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
-        walletAddress: account.address,
-      });
-      console.log("tradeContractMethodData", tradeContractMethodData);
-      txPaymentAmount = tradeContractMethodData.args[0].amountOutMinimum;
-      if (usedPaymentToken.address === NATIVE_TOKEN_ADDRESS) {
-        contracts.push({
-          address: WRAP_NATIVE_TOKEN_ADDRESS,
-          abi: WETH_ABI.abi,
-          functionName: "deposit",
-          value: paymentAmount,
-        });
-      }
-      contracts.push({
-        address: tradeContractMethodData.args[0].tokenIn,
-        abi: erc20Abi,
-        functionName: "approve",
-        args: [tradeContractMethodData.address, paymentAmount],
-      });
-      contracts.push(tradeContractMethodData);
+      contracts = info.contracts;
+      txPaymentAmount = info.txPaymentAmount;
     }
 
     const approveConfig = {
@@ -373,8 +393,7 @@ export const createProposal = async ({
       ...txBaseConfig,
       args: [proposelConfig, txPaymentAmount],
     };
-    contracts.push(approveConfig);
-    contracts.push(txConfig);
+    contracts = [...contracts, approveConfig, txConfig];
     console.log("contracts", contracts);
 
     const id = await walletClient.writeContracts({
@@ -428,27 +447,10 @@ export const createProposal = async ({
 
 type HandleProposalCommonOpts = {
   publicClient: PublicClient;
-  walletClient: WalletClient & {
-    writeContracts?: ({
-      chain,
-      account,
-      contracts,
-    }: {
-      chain: any;
-      account: any;
-      contracts: any[];
-      capabilities?: WriteContractsCapabilities;
-    }) => Promise<any>;
-    getCallsStatus?: (opts: any) => Promise<any>;
-  };
+  walletClient: WalletClientExperimental;
   contractAddress: `0x${string}`;
   castHash: string;
-  paymentConfig: {
-    paymentPrice: bigint;
-    enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
-    paymentTokenAddress?: `0x${string}`;
-    capabilities?: WriteContractsCapabilities;
-  };
+  paymentConfig: PaymentConfig;
 };
 const challengeProposal = async ({
   publicClient,
@@ -480,36 +482,20 @@ const challengeProposal = async ({
   }
 
   const {
-    paymentPrice: inputPrice,
-    enableApprovePaymentStep,
     paymentTokenAddress,
+    paymentAmount,
+    enableApprovePaymentStep,
     capabilities,
-  } = paymentConfig;
-  let paymentPrice = inputPrice;
-  if (!inputPrice) {
-    if (functionName === "proposeProposal") {
-      paymentPrice = await getProposePrice({
-        publicClient,
-        contractAddress,
-        castHash: castHash,
-      });
-    }
-    if (functionName === "disputeProposal") {
-      paymentPrice = await getDisputePrice({
-        publicClient,
-        contractAddress,
-        castHash: castHash,
-      });
-    }
-  }
+    usedPaymentToken,
+    paymentToken,
+  } = paymentConfig || {};
 
-  const challengeProposalStepConfig = {
+  const txBaseConfig = {
     abi: DanAbi,
     address: contractAddress,
     chain: ATT_CONTRACT_CHAIN,
     account,
     functionName,
-    args: [castHash, paymentPrice],
   };
   let receipt: TransactionReceipt;
   if (enableApprovePaymentStep) {
@@ -517,22 +503,46 @@ const challengeProposal = async ({
       throw new Error("walletClient does not have writeContracts method");
     }
 
-    if (!paymentTokenAddress) {
+    if (!paymentToken?.address) {
       throw new Error(
         "Payment token address is required when enable approve payment step",
       );
     }
-    const approvePaymentStepConfig = {
-      address: paymentTokenAddress,
+
+    let contracts: any[] = [];
+    let txPaymentAmount = paymentAmount;
+
+    if (
+      usedPaymentToken &&
+      usedPaymentToken.address !== paymentToken?.address
+    ) {
+      if (!paymentAmount) {
+        throw new Error("Payment amount is required");
+      }
+      if (!account.address) {
+        throw new Error("Account address is required");
+      }
+      const info = await getEthPaymentInfo({
+        usedPaymentToken,
+        paymentToken,
+        paymentAmount,
+        account,
+      });
+      contracts = info.contracts;
+      txPaymentAmount = info.txPaymentAmount;
+    }
+
+    const approveConfig = {
+      address: paymentToken.address || paymentTokenAddress,
       abi: erc20Abi,
       functionName: "approve",
-      args: [contractAddress, paymentPrice],
+      args: [contractAddress, txPaymentAmount],
     };
-
-    const contracts = [
-      approvePaymentStepConfig,
-      challengeProposalStepConfig,
-    ] as any[];
+    const txConfig = {
+      ...txBaseConfig,
+      args: [castHash, txPaymentAmount],
+    };
+    contracts = [...contracts, approveConfig, txConfig];
 
     const id = await walletClient.writeContracts({
       chain,
@@ -563,9 +573,12 @@ const challengeProposal = async ({
     receipt = (receipts?.[receipts?.length - 1] ||
       undefined) as TransactionReceipt;
   } else {
-    const { request: simulateRequest } = await publicClient.simulateContract(
-      challengeProposalStepConfig,
-    );
+    const txConfig = {
+      ...txBaseConfig,
+      args: [castHash, paymentAmount],
+    };
+    const { request: simulateRequest } =
+      await publicClient.simulateContract(txConfig);
     const hash = await walletClient.writeContract(simulateRequest);
     receipt = await publicClient.waitForTransactionReceipt({ hash });
   }

@@ -14,7 +14,8 @@ import Toast from "react-native-toast-message";
 import { ProposeProposalWriteButton } from "../proposal-write-buttons/ProposalWriteButton";
 import useAppModals from "~/hooks/useAppModals";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import { ProposalPaymentSelector } from "./PaymentSelector";
+import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
+import { Loading } from "~/components/common/Loading";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -134,24 +135,33 @@ export function UpvoteProposalModalContentBody({
         <UserWalletSelect />
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-      <ProposalPaymentSelector
-        title="Upvote Cost"
-        defaultPaymentInfo={{
-          tokenInfo: paymentTokenInfo!,
-          recommendedAmount: price,
-          minAmount: minAmount,
-        }}
-        selectedPaymentToken={selectedPaymentToken!}
-        setSelectedPaymentToken={setSelectedPaymentToken}
-        selectedPayAmount={selectedPayAmount!}
-        setSelectedPayAmount={setSelectedPayAmount}
-      />
+
+      {paymentTokenInfoLoading ? (
+        <Loading />
+      ) : selectedPaymentToken ? (
+        <ProposalPaymentSelector
+          // title="Upvote Cost"
+          paymentInfoType={PaymentInfoType.Upvote}
+          defaultPaymentInfo={{
+            tokenInfo: paymentTokenInfo!,
+            recommendedAmount: price,
+            minAmount: minAmount,
+          }}
+          selectedPaymentToken={selectedPaymentToken!}
+          setSelectedPaymentToken={setSelectedPaymentToken}
+          selectedPayAmount={selectedPayAmount!}
+          setSelectedPayAmount={setSelectedPayAmount}
+        />
+      ) : null}
       <ProposeProposalWriteButton
         cast={cast}
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
-        price={selectedPayAmount}
+        paymentTokenInfo={paymentTokenInfo!}
+        usedPaymentTokenInfo={selectedPaymentToken}
+        paymentTokenInfoLoading={paymentTokenInfoLoading}
+        paymentAmount={selectedPayAmount!}
         onProposeSuccess={onProposeSuccess}
         onProposeError={onProposeError}
       />
