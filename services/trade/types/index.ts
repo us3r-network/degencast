@@ -63,4 +63,7 @@ export type CurationTokenInfo = {
   cast: NeynarCast;
   channel: NeynarChannel;
   curators: Author[];
+  bondingCurve?: {
+    graduationNftNumber: number;
+  };
 };

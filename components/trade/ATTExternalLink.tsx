@@ -17,7 +17,7 @@ export default function ATTExternalLink({
 }) {
   return (
     <ExternalLink
-      href={`https://${ATT_CONTRACT_CHAIN.testnet && "testnets."}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${contractAddress}/${tokenId === undefined ? "" : tokenId}`}
+      href={`https://${ATT_CONTRACT_CHAIN.testnet ? "testnets.":""}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${contractAddress}/${tokenId === undefined ? "" : tokenId}`}
       target="_blank"
     >
       <Button

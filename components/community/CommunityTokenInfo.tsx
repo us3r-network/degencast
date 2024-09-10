@@ -60,7 +60,7 @@ export default function CommunityTokenInfo({
         name={tradeInfo.name}
         img={tradeInfo.imageURL}
         prices={prices}
-        price={Number(tradeInfo?.stats.token_price_usd)}
+        price={Number(tradeInfo?.stats?.token_price_usd)}
         priceChange={Number(tradeInfo?.stats.price_change_percentage.h24)}
       />
       <TokenInfo tokenInfo={tokenInfo} tradeInfo={tradeInfo} />
