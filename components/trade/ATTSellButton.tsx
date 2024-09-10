@@ -35,13 +35,17 @@ import {
   TransactionInfo,
   TransationData,
 } from "./TranasactionResult";
+import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
   const [error, setError] = useState("");
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
-
+  const { tokenInfo } = useCurationTokenInfo(
+    token.contractAddress,
+    token.tokenId,
+  );
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "nft", title: "NFT" },
@@ -124,6 +128,7 @@ export function SellButton({ token }: { token: ERC42069Token }) {
             <TransactionInfo
               type={ONCHAIN_ACTION_TYPE.BURN_NFT}
               data={transationData}
+              cast={tokenInfo?.cast}
               buttonText="Sell more"
               buttonAction={() => setTransationData(undefined)}
             />

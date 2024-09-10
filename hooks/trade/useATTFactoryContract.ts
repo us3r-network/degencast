@@ -1,4 +1,3 @@
-import { FeeAmount } from "@uniswap/v3-sdk";
 import { useCallback } from "react";
 import { Address, erc20Abi } from "viem";
 import {
@@ -8,7 +7,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useCallsStatus, useWriteContracts } from "wagmi/experimental";
-import { NATIVE_TOKEN_ADDRESS, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
+import { NATIVE_TOKEN_ADDRESS, UNISWAP_V3_DEGEN_ETH_POOL_FEES, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -18,9 +17,9 @@ import WETH_ABI from "~/services/trade/abi/weth.json";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import { convertToken } from "~/services/uniswapV3";
 import { getTradeCallData } from "~/services/uniswapV3/trading";
+import useWalletAccount from "../user/useWalletAccount";
 import { useATTContractBurn } from "./useATTContract";
 import useATTNftInfo from "./useATTNftInfo";
-import useWalletAccount from "../user/useWalletAccount";
 
 const contract = {
   abi: ATT_FACTORY_CONTRACT_ABI_JSON.abi,
@@ -219,7 +218,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
           tokenIn: convertToken(userSelectedToken),
           tokenOut: convertToken(paymentToken),
           amountOut: BigInt(maxPayment),
-          poolFee: FeeAmount.HIGH,
+          poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
           walletAddress: account.address,
         });
         // console.log("tradeCallData", tradeContractMethodData);

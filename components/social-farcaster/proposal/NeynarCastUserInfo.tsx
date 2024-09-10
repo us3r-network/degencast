@@ -18,7 +18,7 @@ export default function NeynarCastUserInfo({
 }) {
   return (
     <Link
-      href={`/u/${userData.fid}`}
+      href={`/u/${userData?.fid}`}
       onPress={(e) => {
         e.stopPropagation();
       }}

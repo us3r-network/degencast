@@ -79,7 +79,7 @@ export default function ChannelsScreen() {
             </View>
           )}
         </CardWarper>
-        <CreateChannelButton />
+        {/* <CreateChannelButton /> */}
       </View>
     </PageContent>
   );
