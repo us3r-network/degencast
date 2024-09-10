@@ -171,13 +171,13 @@ export const DetailsScene = () => {
             <Text>Chain</Text>
             <Text>{ATT_CONTRACT_CHAIN.name}</Text>
           </View>
-          {tokenInfo?.channel && (
+          {tokenInfo?.channel?.lead && (
             <View className="flex-row items-center justify-between gap-2">
               <Text>Channel Host</Text>
-              <NeynarCastUserInfo userData={tokenInfo.channel?.lead} />
+              <NeynarCastUserInfo userData={tokenInfo.channel.lead} />
             </View>
           )}
-          {tokenInfo?.cast && (
+          {tokenInfo?.cast?.author && (
             <View className="flex-row items-center justify-between gap-2">
               <Text>Cast Author</Text>
               <NeynarCastUserInfo userData={tokenInfo.cast.author} />
