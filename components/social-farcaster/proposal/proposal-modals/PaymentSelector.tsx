@@ -12,6 +12,7 @@ import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import { FeeAmount } from "@uniswap/v3-sdk";
 import { useAccount } from "wagmi";
 import { useUserNativeToken } from "~/hooks/user/useUserTokens";
+import { NATIVE_TOKEN_ADDRESS } from "~/constants/chain";
 
 export function ProposalPaymentSelector({
   defaultPaymentInfo,
@@ -77,15 +78,15 @@ export function ProposalPaymentSelector({
     poolFee: FeeAmount.HIGH,
   });
 
-  const recommendedPayAmount =
-    selectedPaymentToken?.address === ethTokenInfo?.address
-      ? fetchedEthRecommendedAmount
-      : defaultRecommendedAmount;
+  const isSelectedEthToken =
+    selectedPaymentToken?.address === ethTokenInfo?.address;
+  const recommendedPayAmount = isSelectedEthToken
+    ? fetchedEthRecommendedAmount
+    : defaultRecommendedAmount;
 
-  const minPayAmount =
-    selectedPaymentToken?.address === ethTokenInfo?.address
-      ? fetchedEthMinAmount
-      : defaultMinAmount;
+  const minPayAmount = isSelectedEthToken
+    ? fetchedEthMinAmount
+    : defaultMinAmount;
 
   const handleTokenChange = async (token: TokenWithTradeInfo) => {
     if (token.address === selectedPaymentToken.address) {
@@ -183,6 +184,7 @@ export function PaymentInfo({
       ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
       : 0;
 
+  console.log("selectedPaymentTokenInfo", paymentTokenInfo);
   console.log("selectedPayAmountNumber", selectedPayAmountNumber);
   console.log("minPayAmountNumber", minPayAmountNumber);
 
@@ -191,7 +193,10 @@ export function PaymentInfo({
     max: Number(paymentTokenInfo?.balance || 0),
     min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
     step: sliderStep || recommendedPayAmountNumber / 100,
+    maximumFractionDigits:
+      paymentTokenInfo.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
+
   return (
     <View className="flex flex-col gap-4">
       <PriceRow

@@ -396,23 +396,33 @@ export function ProposeProposalWrite({
   );
 }
 
-const displayValue = (value: number) => {
-  return new Intl.NumberFormat("en-US", {}).format(Number(value));
+const displayValue = (value: number, maximumFractionDigits: number) => {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits,
+  }).format(Number(value));
 };
 export function PriceRangeRow({
   max,
   min,
   value,
+  maximumFractionDigits = 2,
 }: {
   max: number;
   min: number;
   value: number;
+  maximumFractionDigits?: number;
 }) {
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="text-xs font-normal">{displayValue(min)}(minimum)</Text>
-      <Text className="text-xs font-normal">{displayValue(value)}</Text>
-      <Text className="text-xs font-normal">{displayValue(max)}</Text>
+      <Text className="text-xs font-normal">
+        {displayValue(min, maximumFractionDigits)}(minimum)
+      </Text>
+      <Text className="text-xs font-normal">
+        {displayValue(value, maximumFractionDigits)}
+      </Text>
+      <Text className="text-xs font-normal">
+        {displayValue(max, maximumFractionDigits)}
+      </Text>
     </View>
   );
 }

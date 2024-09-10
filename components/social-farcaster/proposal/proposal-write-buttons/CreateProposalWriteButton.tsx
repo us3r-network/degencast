@@ -18,6 +18,7 @@ export default function CreateProposalWriteButton({
   channel,
   tokenInfo,
   paymentTokenInfo,
+  usedPaymentTokenInfo,
   paymentTokenInfoLoading,
   paymentAmount,
   onCreateProposalSuccess,
@@ -26,6 +27,7 @@ export default function CreateProposalWriteButton({
 }: ButtonProps &
   CastProposeStatusProps & {
     paymentTokenInfo: TokenWithTradeInfo;
+    usedPaymentTokenInfo?: TokenWithTradeInfo;
     paymentTokenInfoLoading?: boolean;
     paymentAmount: bigint;
     onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
@@ -91,12 +93,14 @@ export default function CreateProposalWriteButton({
                 ) as `0x${string}`,
               },
               {
-                paymentPrice: paymentAmount!,
+                paymentTokenAddress: paymentTokenInfo?.address,
+                paymentAmount: paymentAmount!,
                 ...(isSupportAtomicBatch
                   ? {
                       enableApprovePaymentStep: true,
-                      paymentTokenAddress: paymentTokenInfo?.address,
                       capabilities,
+                      paymentToken: paymentTokenInfo,
+                      usedPaymentToken: usedPaymentTokenInfo,
                     }
                   : {}),
               },

@@ -266,7 +266,8 @@ function CreateProposalModalContentBody({
             channel={channel}
             // proposal={proposal}
             tokenInfo={tokenInfo}
-            paymentTokenInfo={selectedPaymentToken!}
+            paymentTokenInfo={paymentTokenInfo!}
+            usedPaymentTokenInfo={selectedPaymentToken}
             paymentTokenInfoLoading={paymentTokenInfoLoading}
             paymentAmount={selectedPayAmount!}
             onCreateProposalSuccess={onCreateProposalSuccess}

@@ -2,8 +2,14 @@ import { Pressable, View } from "react-native";
 import { Image } from "react-native";
 import { formatUnits } from "viem";
 import { Text } from "~/components/ui/text";
+import { NATIVE_TOKEN_ADDRESS } from "~/constants/chain";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 
+const formatAmount = (token: TokenWithTradeInfo, amount: bigint) => {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: token.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
+  }).format(Number(formatUnits(amount, token.decimals!)));
+};
 export default function PriceRow({
   title,
   paymentTokenInfo,
@@ -30,9 +36,7 @@ export default function PriceRow({
           <Text className="font-normal">
             {isLoading || !price || !paymentTokenInfo?.decimals
               ? "--"
-              : Number(formatUnits(price, paymentTokenInfo.decimals)).toFixed(
-                  2,
-                )}{" "}
+              : formatAmount(paymentTokenInfo, price)}{" "}
             {paymentTokenInfo?.symbol}
           </Text>
         </Pressable>
