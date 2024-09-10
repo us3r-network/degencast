@@ -304,8 +304,8 @@ function SwapToken({
   useEffect(() => {
     const usdAmount =
       Number(fromAmount) *
-        Number(fromToken?.tradeInfo?.stats.token_price_usd) ||
-      Number(toAmount) * Number(toToken?.tradeInfo?.stats.token_price_usd);
+        Number(fromToken?.tradeInfo?.stats?.token_price_usd) ||
+      Number(toAmount) * Number(toToken?.tradeInfo?.stats?.token_price_usd);
     const enoughAmount = usdAmount > 30;
     if (isSuccess && enoughAmount && transactionReceipt?.transactionHash)
       submitUserAction({
