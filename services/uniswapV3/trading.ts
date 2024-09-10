@@ -77,7 +77,7 @@ export async function getTradeCallDataWithInput({
   amountIn: bigint;
   poolFee?: FeeAmount;
   walletAddress: Address;
-}): Promise<any> {
+}) {
   if (!tokenIn || !tokenOut) {
     throw new Error("Token is not defined");
   }
@@ -108,7 +108,7 @@ export async function getTradeCallDataWithInput({
     fee: poolFee,
     recipient: walletAddress,
     amountIn,
-    amountOutMaximum: amountOut,
+    amountOutMinimum: amountOut,
     sqrtPriceLimitX96: 0,
   };
   return {

@@ -9,6 +9,7 @@ import {
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import {
   NATIVE_TOKEN_ADDRESS,
+  UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   WRAP_NATIVE_TOKEN_ADDRESS,
 } from "~/constants/chain";
 import DanAbi from "~/services/proposal/abi/DanAbi.json";
@@ -340,11 +341,11 @@ export const createProposal = async ({
         tokenIn: convertToken(usedPaymentToken),
         tokenOut: convertToken(paymentToken),
         amountIn: paymentAmount,
-        poolFee: FeeAmount.HIGH,
+        poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
         walletAddress: account.address,
       });
       console.log("tradeContractMethodData", tradeContractMethodData);
-      txPaymentAmount = tradeContractMethodData.args[0].amountOutMaximum;
+      txPaymentAmount = tradeContractMethodData.args[0].amountOutMinimum;
       if (usedPaymentToken.address === NATIVE_TOKEN_ADDRESS) {
         contracts.push({
           address: WRAP_NATIVE_TOKEN_ADDRESS,
