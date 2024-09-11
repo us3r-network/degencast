@@ -36,6 +36,10 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
+import { fetchItems as fetchUserCommunityNFTs } from "~/features/user/communityNFTsSlice";
+import { fetchItems as fetchUserCommunityTokens } from "~/features/user/communityTokensSlice";
+import { useDispatch } from "react-redux";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();
@@ -163,6 +167,7 @@ const BurnNFT = forwardRef<
     onError?: (error: string) => void;
   }
 >(({ className, nft, onSuccess, onError, ...props }, ref) => {
+  const dispatch = useDispatch();
   const account = useAccount();
   const [amount, setAmount] = useState(1);
 
@@ -197,6 +202,19 @@ const BurnNFT = forwardRef<
         ),
       };
       onSuccess?.(transationData);
+      setTimeout(() => {
+        if (account?.address) {
+          dispatch(
+            fetchUserCommunityNFTs(account.address) as unknown as UnknownAction,
+          );
+          if (graduated)
+            dispatch(
+              fetchUserCommunityTokens(
+                account.address,
+              ) as unknown as UnknownAction,
+            );
+        }
+      }, 5000);
     }
   }, [isSuccess]);
 

@@ -1,13 +1,14 @@
+import { UnknownAction } from "@reduxjs/toolkit";
 import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { useDispatch } from "react-redux";
 import { Address, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,12 +20,16 @@ import {
   DEGEN_TOKEN_METADATA,
   NATIVE_TOKEN_METADATA,
 } from "~/constants";
+import { fetchItems as fetchUserCommunityNFTs } from "~/features/user/communityNFTsSlice";
+import { fetchItems as fetchUserCommunityTokens } from "~/features/user/communityTokensSlice";
 import { useFetchPrice, useSwapToken } from "~/hooks/trade/use0xSwap";
+import useAppModals from "~/hooks/useAppModals";
 import useUserAction from "~/hooks/user/useUserAction";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { UserActionName } from "~/services/user/types";
-import About from "../common/About";
+import { eventBus, EventTypes } from "~/utils/eventBus";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { ArrowUpDown } from "../common/Icons";
 import { Loading } from "../common/Loading";
 import { TokenWithValue } from "../common/TokenInfo";
@@ -40,9 +45,6 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import { eventBus, EventTypes } from "~/utils/eventBus";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import useAppModals from "~/hooks/useAppModals";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
@@ -170,6 +172,7 @@ function SwapToken({
   setSwaping?: (swaping: boolean) => void;
   setClose?: () => void;
 }) {
+  const dispatch = useDispatch();
   const account = useAccount();
   const chainId = useChainId();
   const [fromTokenSet, setFromTokenSet] = useState<TokenSetInfo>();
@@ -298,6 +301,18 @@ function SwapToken({
       };
       setTransationData(transationData);
       setSwaping?.(swaping);
+      setTimeout(() => {
+        if (isSuccess && account?.address) {
+          dispatch(
+            fetchUserCommunityNFTs(account.address) as unknown as UnknownAction,
+          );
+          dispatch(
+            fetchUserCommunityTokens(
+              account.address,
+            ) as unknown as UnknownAction,
+          );
+        }
+      }, 5000);
     }
   }, [isSuccess, waitingUserSign, transactionReceipt, transationLoading]);
 
