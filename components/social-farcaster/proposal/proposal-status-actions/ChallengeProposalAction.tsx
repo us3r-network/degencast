@@ -32,7 +32,7 @@ export function ChallengeProposalButton({
       tokenInfo={tokenInfo}
     />
   );
-  if (!isConnected) {
+  if (!address || !isConnected) {
     return (
       <ProposalButton variant={buttonVariant} onPress={() => connectWallet()}>
         {buttonBody}
