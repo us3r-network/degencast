@@ -36,12 +36,12 @@ export default function DialogTabBar(
             <>
               {index > 0 && (
                 <Separator
-                  key={index}
+                  key={"separator-" + index}
                   className="mx-4 my-0 h-[12px] w-[1px] bg-white"
                 />
               )}
               <Pressable
-                key={index}
+                key={"tabbar-" + index}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 onPress={onPress}

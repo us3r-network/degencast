@@ -11,18 +11,25 @@ import { getProposalMinPrice } from "../utils";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { Loading } from "~/components/common/Loading";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { TokenWithTradeInfo } from "~/services/trade/types";
 
 export default function CreateProposalWriteButton({
   cast,
   channel,
   tokenInfo,
-  price,
+  paymentTokenInfo,
+  usedPaymentTokenInfo,
+  paymentTokenInfoLoading,
+  paymentAmount,
   onCreateProposalSuccess,
   onCreateProposalError,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
-    price: bigint;
+    paymentTokenInfo: TokenWithTradeInfo;
+    usedPaymentTokenInfo?: TokenWithTradeInfo;
+    paymentTokenInfoLoading?: boolean;
+    paymentAmount: bigint;
     onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
     onCreateProposalError?: (error: any) => void;
   }) {
@@ -37,11 +44,7 @@ export default function CreateProposalWriteButton({
   });
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
-  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
-    usePaymentTokenInfo({
-      contractAddress: tokenInfo?.danContract!,
-    });
-  // const price = getProposalMinPrice(tokenInfo, paymentTokenInfo);
+  // const paymentAmount = getProposalMinPrice(tokenInfo, paymentTokenInfo);
   const isCreated = Number(proposals?.roundIndex) > 0;
   const isLoading =
     createLoading || proposalsLoading || paymentTokenInfoLoading;
@@ -50,18 +53,19 @@ export default function CreateProposalWriteButton({
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     isLoading ||
-    !price;
+    !paymentAmount;
   const allowanceParams =
     !disabled && address && isConnected
       ? {
           owner: address,
           tokenAddress: paymentTokenInfo?.address,
           spender: tokenInfo?.danContract!,
-          value: price,
+          value: paymentAmount,
         }
       : undefined;
 
-  const { supportAtomicBatch } = useWalletAccount();
+  const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(paymentTokenInfo?.chainId!);
   const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
 
   return (
@@ -89,11 +93,14 @@ export default function CreateProposalWriteButton({
                 ) as `0x${string}`,
               },
               {
-                paymentPrice: price!,
+                paymentTokenAddress: paymentTokenInfo?.address,
+                paymentAmount: paymentAmount!,
                 ...(isSupportAtomicBatch
                   ? {
                       enableApprovePaymentStep: true,
-                      paymentTokenAddress: paymentTokenInfo?.address,
+                      capabilities,
+                      paymentToken: paymentTokenInfo,
+                      usedPaymentToken: usedPaymentTokenInfo,
                     }
                   : {}),
               },

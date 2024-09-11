@@ -1,4 +1,5 @@
 import { UnknownAction } from "@reduxjs/toolkit";
+import { has } from "lodash";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -14,6 +15,7 @@ export default function useUserCurationCasts(
   const dispatch = useDispatch();
   const {
     items,
+    pageNumber,
     status,
     error,
     fid: currentFid,
@@ -34,5 +36,6 @@ export default function useUserCurationCasts(
     loading: status === AsyncRequestStatus.PENDING,
     error,
     loadItems,
+    hasMore: pageNumber > 0,
   };
 }

@@ -9,8 +9,8 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalStatusActions from "../proposal-status-actions/ProposalStatusActions";
 import { CardWrapper } from "../ProposalStyled";
-import { FCastMenuButton } from "../../FCastActions";
 import FCastWithEmbed from "../FCastWithEmbed";
+import FCastMenuButton from "../../FCastMenuButton";
 
 type ChannelCastCardProps = ViewProps & {
   channel: CommunityEntity;

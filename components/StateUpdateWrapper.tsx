@@ -14,6 +14,7 @@ import InviteCodeModal from "./portfolio/onboarding/InviteCodeModal";
 import useUserInvitationCodes from "~/hooks/user/useUserInvitationCodes";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import ProposalShareGlobalModal from "./social-farcaster/proposal/proposal-modals/ProposalShareGlobalModal";
+import { TradeTokenGlobalModal } from "./trade/TradeModal";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { currFid } = useFarcasterAccount();
@@ -102,6 +103,7 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
       <OnboardingModal />
       <InviteCodeModal />
       <ProposalShareGlobalModal />
+      <TradeTokenGlobalModal />
     </>
   );
 }

@@ -31,18 +31,13 @@ export const fetchItems = createAsyncThunk(
     const { userCurationCasts } = thunkAPI.getState() as {
       userCurationCasts: UserCurationCastsState;
     };
-    if (userCurationCasts.fid !== fid) userCurationCasts.pageNumber = 1;
-    if (userCurationCasts.pageNumber) {
-      const response = await getUserCurationCasts({
-        fid,
-        viewer_fid,
-        pageSize: MAX_PAGE_SIZE,
-        pageNumber: userCurationCasts.pageNumber,
-      });
-      return response;
-    } else {
-      return null;
-    }
+    const response = await getUserCurationCasts({
+      fid,
+      viewer_fid,
+      pageSize: MAX_PAGE_SIZE,
+      pageNumber: userCurationCasts.pageNumber,
+    });
+    return response;
   },
 );
 
@@ -57,6 +52,7 @@ export const userCurationCastsSlice = createSlice({
         if (state.fid !== action.meta.arg.fid) {
           state.fid = action.meta.arg.fid;
           state.items = [];
+          state.pageNumber = 1;
         }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {

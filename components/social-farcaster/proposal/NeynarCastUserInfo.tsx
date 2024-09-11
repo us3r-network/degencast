@@ -18,7 +18,7 @@ export default function NeynarCastUserInfo({
 }) {
   return (
     <Link
-      href={`/u/${userData.fid}`}
+      href={`/u/${userData?.fid}`}
       onPress={(e) => {
         e.stopPropagation();
       }}
@@ -36,6 +36,12 @@ export default function NeynarCastUserInfo({
         <Text className=" text-xs text-[#9BA1AD] hover:underline">
           @{userData?.username}
         </Text>
+        {/* {userData.power_badge && (
+          <Image
+            source={require("~/assets/images/active-badge.webp")}
+            style={{ width: 12, height: 12 }}
+          />
+        )} */}
         {timestamp && (
           <>
             <Separator

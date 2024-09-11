@@ -46,7 +46,7 @@ export default function useLoadSelectionFeeds(props?: { type?: string }) {
       }
       const { data } = resp.data;
 
-      setItems([...items, ...data]);
+      setItems((prev) => [...prev, ...data]);
 
       pageInfoRef.current = {
         hasNextPage: data.length >= PAGE_SIZE,

@@ -55,6 +55,7 @@ export const userCastsSlice = createSlice({
         if (state.fid !== action.meta.arg.fid) {
           state.fid = action.meta.arg.fid;
           state.items = [];
+          state.next.cursor = null;
         }
       })
       .addCase(fetchItems.fulfilled, (state, action) => {

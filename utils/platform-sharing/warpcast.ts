@@ -17,10 +17,14 @@ export const embedsToQueryParams = (embeds?: string[]) => {
 
 export const openWarpcastCreateCast = async (
   text: string,
+  channelId: string,
   embeds?: string[],
 ) => {
   const embedsString = embedsToQueryParams(embeds);
-  const params = `text=${text}${embedsString ? `&${embedsString}` : ""}`;
+  let params = `text=${text}${embedsString ? `&${embedsString}` : ""}`;
+  if (channelId && channelId !== "home") {
+    params += `&channelKey=${channelId}`;
+  }
   const warpcastAppUrl = encodeURI(`${WARPCAST_APP_HOST}/~/compose?${params}`);
   const webUrl = encodeURI(`${WARPCAST_WEB_HOST}/~/compose?${params}`);
 

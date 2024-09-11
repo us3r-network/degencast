@@ -6,13 +6,14 @@ import { CommunityInfo } from "~/components/common/CommunityInfo";
 import { Loading } from "~/components/common/Loading";
 import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
+import CreateChannelButton from "~/components/rank/CreateChannelButton";
+import RankFilter from "~/components/rank/Filter";
 import { Text } from "~/components/ui/text";
 import { DEGEN_TOKEN_METADATA } from "~/constants";
 import { DEFAULT_ORDER_PARAMS } from "~/features/rank/channelRankSlice";
 import useChannelRank from "~/hooks/rank/useChannelRank";
 import { Channel } from "~/services/farcaster/types";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
-import { OrderSelect } from ".";
 
 const RankOrderByList = [
   { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
@@ -35,7 +36,7 @@ export default function ChannelsScreen() {
   return (
     <PageContent>
       <View className="flex h-full gap-4">
-        <OrderSelect
+        <RankFilter
           setOrderParams={setOrderParams}
           rankOrderByList={RankOrderByList}
           defaultOrder={DEFAULT_ORDER_PARAMS}
@@ -78,6 +79,7 @@ export default function ChannelsScreen() {
             </View>
           )}
         </CardWarper>
+        {/* <CreateChannelButton /> */}
       </View>
     </PageContent>
   );

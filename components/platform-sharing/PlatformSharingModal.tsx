@@ -51,19 +51,21 @@ export default function PlatformSharingModal({
   const onCreateCast = async () => {
     const createText = warpcastText || text || "";
     if (!signerPublicKey) {
-      openWarpcastCreateCast(createText, warpcastEmbeds);
+      openWarpcastCreateCast(
+        createText,
+        warpcastChannelId || "",
+        warpcastEmbeds,
+      );
     } else {
       onOpenChange(false);
-      navigation.navigate(
-        ...([
-          "create",
-          {
-            text: createText,
-            embeds: warpcastEmbeds,
-            channelId: warpcastChannelId || "",
-          },
-        ] as never),
-      );
+      const params = {
+        text: createText,
+        embeds: warpcastEmbeds,
+      };
+      if (warpcastChannelId && warpcastChannelId !== "home") {
+        Object.assign(params, { channelId: warpcastChannelId });
+      }
+      navigation.navigate(...(["create", params] as never));
       navigateToCreatePageAfter?.();
     }
   };

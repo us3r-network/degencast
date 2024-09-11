@@ -191,7 +191,13 @@ function RuleItem({
   );
 }
 
-function InviteCodeCopy({ inviteCode }: { inviteCode: string | number }) {
+export function InviteCodeCopy({
+  inviteCode,
+  onCopyAfter,
+}: {
+  inviteCode: string | number;
+  onCopyAfter?: () => void;
+}) {
   return (
     <Button
       variant="outline"
@@ -205,6 +211,7 @@ function InviteCodeCopy({ inviteCode }: { inviteCode: string | number }) {
           type: "success",
           text1: "Invitation code copied to clipboard!",
         });
+        onCopyAfter?.();
       }}
     >
       <Text className=" text-xs text-secondary active:text-secondary web:hover:text-secondary">

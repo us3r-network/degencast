@@ -42,31 +42,37 @@ import {
 import UserTokenSelect from "./UserTokenSelect";
 import { eventBus, EventTypes } from "~/utils/eventBus";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
+import useAppModals from "~/hooks/useAppModals";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,
   token2 = NATIVE_TOKEN_METADATA,
   triggerButton,
+  onOpenBefore,
 }: {
   token1?: TokenWithTradeInfo;
   token2?: TokenWithTradeInfo;
   triggerButton: React.ReactNode;
+  onOpenBefore?: () => void;
 }) {
   const [swaping, setSwaping] = useState(false);
   const [open, setOpen] = useState(false);
   return (
     <Dialog
       onOpenChange={(open) => {
+        if (open && onOpenBefore) onOpenBefore();
         setOpen(open);
         setSwaping(false);
       }}
       open={open}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="w-screen"
-          onInteractOutside={(e) => {
-            e.preventDefault();
-          }}>
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader
           className={cn("mr-4 flex-row items-center justify-between gap-2")}
         >
@@ -83,6 +89,59 @@ export default function TradeModal({
           token2={token2}
           setSwaping={setSwaping}
           setClose={() => setOpen(false)}
+        />
+        {/* {!swaping && (
+          <DialogFooter>
+            <About title="Swap & Earn" info={TRADE_INFO} />
+          </DialogFooter>
+        )} */}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function TradeTokenGlobalModal() {
+  const [swaping, setSwaping] = useState(false);
+  const { tradeTokenModal, setTradeTokenModal } = useAppModals();
+  const { open } = tradeTokenModal;
+  const token1 = tradeTokenModal.token1 || NATIVE_TOKEN_METADATA;
+  const token2 = tradeTokenModal.token2 || NATIVE_TOKEN_METADATA;
+  return (
+    <Dialog
+      onOpenChange={(open) => {
+        setSwaping(false);
+        setTradeTokenModal({ open, token1, token2 });
+      }}
+      open={open}
+    >
+      <DialogContent
+        className="w-screen"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogHeader
+          className={cn("mr-4 flex-row items-center justify-between gap-2")}
+        >
+          <DialogTitle>{!swaping ? "Trade" : "Transaction"}</DialogTitle>
+        </DialogHeader>
+        {!swaping && (
+          <View className="flex-row items-center justify-between gap-2">
+            <Text>Active Wallet</Text>
+            <UserWalletSelect />
+          </View>
+        )}
+        <SwapToken
+          token1={token1}
+          token2={token2}
+          setSwaping={setSwaping}
+          setClose={() => {
+            setTradeTokenModal({
+              open: false,
+              token1: NATIVE_TOKEN_METADATA,
+              token2: NATIVE_TOKEN_METADATA,
+            });
+          }}
         />
         {/* {!swaping && (
           <DialogFooter>
@@ -245,8 +304,8 @@ function SwapToken({
   useEffect(() => {
     const usdAmount =
       Number(fromAmount) *
-        Number(fromToken?.tradeInfo?.stats.token_price_usd) ||
-      Number(toAmount) * Number(toToken?.tradeInfo?.stats.token_price_usd);
+        Number(fromToken?.tradeInfo?.stats?.token_price_usd) ||
+      Number(toAmount) * Number(toToken?.tradeInfo?.stats?.token_price_usd);
     const enoughAmount = usdAmount > 30;
     if (isSuccess && enoughAmount && transactionReceipt?.transactionHash)
       submitUserAction({
@@ -432,7 +491,7 @@ function TokenWithAmount({
   setBalance?: (balance: number) => void;
 }) {
   const account = useAccount();
-  // console.log("Token", token, amount);
+  // console.log("TokenWithAmount", tokenSet, amount);
   const [token, setToken] = useState(
     tokenSet.defaultToken || NATIVE_TOKEN_METADATA,
   );
@@ -444,7 +503,7 @@ function TokenWithAmount({
     }
   }, [token]);
 
-  const price = Number(token?.tradeInfo?.stats.token_price_usd) || 0;
+  const price = Number(token?.tradeInfo?.stats?.token_price_usd) || 0;
 
   return (
     <View className="flex gap-2">

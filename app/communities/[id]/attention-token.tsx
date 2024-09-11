@@ -33,7 +33,7 @@ export default function AttentionTokenScreen() {
     <Card className="box-border h-full w-full flex-1 flex-col rounded-[20px] rounded-b-none p-4 pb-0">
       {attentionTokenAddress ? (
         <>
-          <ScrollView className="flex-1" showsHorizontalScrollIndicator={false}>
+          <View className="h-full">
             <CommunityAttentionTokenInfo
               channelId={id}
               attentionTokenInfo={{
@@ -44,7 +44,7 @@ export default function AttentionTokenScreen() {
                 chain: ATT_CONTRACT_CHAIN.name,
               }}
             />
-          </ScrollView>
+          </View>
         </>
       ) : (
         <>

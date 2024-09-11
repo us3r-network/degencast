@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
+import { getActivities } from "~/services/community/api/activity";
 import {
-  getActivities,
-} from "~/services/community/api/activity";
-import { ActivityEntity, ActivityFilterType, ActivityOperationCatagery } from "~/services/community/types/activity";
+  ActivityEntity,
+  ActivityFilterType,
+  ActivityOperationCatagery,
+} from "~/services/community/types/activity";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 
 const PAGE_SIZE = 20;
@@ -43,16 +45,17 @@ export default function useLoadOnchainActivities(props?: {
         Object.assign(params, { type });
       }
       const resp = await getActivities(params);
-      if (resp.data.code !== ApiRespCode.SUCCESS) {
+      if (resp.data?.code !== ApiRespCode.SUCCESS) {
         throw new Error(resp.data.msg);
       }
-      const { data } = resp.data;
-      setItems((prev) => [...prev, ...data]);
-      pageInfoRef.current = {
-        hasNextPage: data.length >= PAGE_SIZE,
-        nextPageNumber: nextPageNumber + 1,
-      };
-      setStatus(AsyncRequestStatus.FULFILLED);
+      if (resp.data?.data?.length >= 0) {
+        setItems((prev) => [...prev, ...resp.data.data]);
+        pageInfoRef.current = {
+          hasNextPage: resp.data.data.length >= PAGE_SIZE,
+          nextPageNumber: nextPageNumber + 1,
+        };
+        setStatus(AsyncRequestStatus.FULFILLED);
+      }
     } catch (err) {
       console.error(err);
       setStatus(AsyncRequestStatus.REJECTED);

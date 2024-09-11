@@ -7,13 +7,12 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Image, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 // import About from "~/components/common/About";
-import { FeeAmount } from "@uniswap/v3-sdk";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
@@ -27,7 +26,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { DEGEN_TOKEN_METADATA, NATIVE_TOKEN_ADDRESS } from "~/constants";
+import { DEGEN_TOKEN_METADATA, NATIVE_TOKEN_ADDRESS, UNISWAP_V3_DEGEN_ETH_POOL_FEES } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -40,6 +39,7 @@ import {
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useSwap } from "~/hooks/trade/useUniSwapV3";
+import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
@@ -47,9 +47,10 @@ import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenActivitieList } from "../activity/Activities";
-import { ExternalLink } from "../common/ExternalLink";
 import { Copy } from "../common/Icons";
 import DialogTabBar from "../layout/tab-view/DialogTabBar";
+import NeynarCastUserInfo from "../social-farcaster/proposal/NeynarCastUserInfo";
+import ATTExternalLink from "./ATTExternalLink";
 import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
 import {
   ErrorInfo,
@@ -57,9 +58,6 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import { kebabCase } from "lodash";
-import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
-import NeynarCastUserInfo from "../social-farcaster/proposal/NeynarCastUserInfo";
 
 export type NFTProps = {
   cast?: NeynarCast;
@@ -173,13 +171,13 @@ export const DetailsScene = () => {
             <Text>Chain</Text>
             <Text>{ATT_CONTRACT_CHAIN.name}</Text>
           </View>
-          {tokenInfo?.channel && (
+          {tokenInfo?.channel?.lead && (
             <View className="flex-row items-center justify-between gap-2">
               <Text>Channel Host</Text>
-              <NeynarCastUserInfo userData={tokenInfo.channel?.lead} />
+              <NeynarCastUserInfo userData={tokenInfo.channel.lead} />
             </View>
           )}
-          {tokenInfo?.cast && (
+          {tokenInfo?.cast?.author && (
             <View className="flex-row items-center justify-between gap-2">
               <Text>Cast Author</Text>
               <NeynarCastUserInfo userData={tokenInfo.cast.author} />
@@ -197,28 +195,10 @@ export const DetailsScene = () => {
           )}
         </View>
       </ScrollView>
-      <ExternalLink
-        href={`https://${ATT_CONTRACT_CHAIN.testnet && "testnets."}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${token.contractAddress}/${token.tokenId}`}
-        target="_blank"
-      >
-        <Button
-          variant={"secondary"}
-          className="absolute bottom-0 w-full flex-row items-center gap-2"
-        >
-          <Text>View</Text>
-          <Image
-            source={{
-              uri: "https://storage.googleapis.com/opensea-static/Logomark/Logomark-Blue.png",
-            }}
-            style={{
-              width: 24,
-              height: 24,
-              resizeMode: "contain",
-            }}
-          />
-          <Text>Opensea</Text>
-        </Button>
-      </ExternalLink>
+      <ATTExternalLink
+        contractAddress={token.contractAddress}
+        tokenId={token.tokenId}
+      />
     </View>
   );
 };
@@ -370,6 +350,10 @@ const MintNFT = forwardRef<
     });
   const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: nftBalance } = nftBalanceOf(account?.address);
+  const { tokenInfo } = useCurationTokenInfo(
+    nft.contractAddress,
+    nft.tokenId,
+  );
   // console.log(
   //   "nft info",
   //   graduated,
@@ -393,9 +377,9 @@ const MintNFT = forwardRef<
 
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
   const availableAmount = useMemo(() => {
-    if (!account || !maxTokensPerIdPerUser) return 0;
+    if (!account || !maxTokensPerIdPerUser || !tokenInfo?.bondingCurve?.graduationNftNumber) return 0;
     const nftLeftBeforeGraduation: number =
-      GRADUATION_NFT_NUM - Number(totalNFTSupply || 0);
+    tokenInfo.bondingCurve.graduationNftNumber - Number(totalNFTSupply || 0);
     const nftLeftForPerson: number =
       Number(maxTokensPerIdPerUser) - Number(nftBalance || 0);
 
@@ -532,7 +516,7 @@ function MintPriceBeforeGraduated({
   } = useSwap({
     sellToken: userSelectedToken!,
     buyToken: { address: paymentToken.address, chainId: ATT_CONTRACT_CHAIN.id },
-    poolFee: FeeAmount.HIGH,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
   const { getMintNFTPriceAfterFee } = useATTFactoryContractInfo({
     contractAddress: tokenContract,
@@ -625,7 +609,7 @@ function MintPriceAfterGraduated({
   } = useSwap({
     sellToken: userSelectedToken,
     buyToken: paymentToken,
-    poolFee: FeeAmount.HIGH,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
 
   useEffect(() => {

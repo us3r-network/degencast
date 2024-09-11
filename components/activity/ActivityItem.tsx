@@ -1,7 +1,13 @@
 import dayjs from "dayjs";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { Pressable, View, ViewProps } from "react-native";
 import { formatUnits } from "viem";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible";
 import { cn } from "~/lib/utils";
 import { WarpcastChannel } from "~/services/community/api/community";
 import {
@@ -11,17 +17,11 @@ import {
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
 import { CommunityInfo } from "../common/CommunityInfo";
+import { ChevronDown, ChevronUp } from "../common/Icons";
+import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent } from "../ui/card";
 import { Text } from "../ui/text";
-import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@radix-ui/react-collapsible";
-import { ChevronUp, ChevronDown } from "lucide-react-native";
-import { useState } from "react";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
@@ -219,18 +219,16 @@ export function ActivityItemChannel({ channel }: { channel: WarpcastChannel }) {
 function ActivityCast({ cast }: { cast: NeynarCast }) {
   const [open, setOpen] = useState(false);
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="mt-[-30px]">
-      <CollapsibleTrigger>
-        <View className="absolute right-0 top-[72px]">
-          {open ? <ChevronUp /> : <ChevronDown />}
-        </View>
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      style={{ position: "relative", top: -30 }}
+    >
+      <CollapsibleTrigger style={{ position: "absolute", right: 0 }}>
+        {open ? <ChevronUp color={"black"} /> : <ChevronDown color={"black"} />}
       </CollapsibleTrigger>
-      <CollapsibleContent>
-        <FCastWithNftImage
-          className="mb-[-24px] mt-4 overflow-hidden"
-          cast={cast}
-          hideUserInfo
-        />
+      <CollapsibleContent style={{ marginBottom: -8, top: 40 }}>
+        <FCastWithNftImage cast={cast} hideUserInfo />
       </CollapsibleContent>
     </Collapsible>
   );

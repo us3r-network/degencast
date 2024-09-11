@@ -17,8 +17,8 @@ export default function HelpButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button  className="p-0 m-0">
-          <CircleHelp color="white" />
+        <Button className="m-0 p-0">
+          <CircleHelp className="stroke-secondary" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen">

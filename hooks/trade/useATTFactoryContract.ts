@@ -1,4 +1,3 @@
-import { FeeAmount } from "@uniswap/v3-sdk";
 import { useCallback } from "react";
 import { Address, erc20Abi } from "viem";
 import {
@@ -8,7 +7,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useCallsStatus, useWriteContracts } from "wagmi/experimental";
-import { NATIVE_TOKEN_ADDRESS, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
+import { NATIVE_TOKEN_ADDRESS, UNISWAP_V3_DEGEN_ETH_POOL_FEES, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -18,6 +17,7 @@ import WETH_ABI from "~/services/trade/abi/weth.json";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import { convertToken } from "~/services/uniswapV3";
 import { getTradeCallData } from "~/services/uniswapV3/trading";
+import useWalletAccount from "../user/useWalletAccount";
 import { useATTContractBurn } from "./useATTContract";
 import useATTNftInfo from "./useATTNftInfo";
 
@@ -182,13 +182,15 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
     query: {
       enabled: !!id,
       // Poll every second until the calls are confirmed
-      refetchInterval: (data) =>
+      refetchInterval: (data:any) =>
         data.state.data?.status === "CONFIRMED" ? false : 1000,
     },
   });
   const account = useAccount();
   const { getGraduated } = useATTFactoryContractInfo(token);
   const { graduated } = getGraduated();
+  const { getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(account.chainId);
   const mint = useCallback(
     async (
       amount: number,
@@ -203,6 +205,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       //   maxPayment,
       //   paymentToken,
       //   userSelectedToken,
+      //   capabilities,
       // );
       const contracts: any[] = [];
       if (
@@ -215,7 +218,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
           tokenIn: convertToken(userSelectedToken),
           tokenOut: convertToken(paymentToken),
           amountOut: BigInt(maxPayment),
-          poolFee: FeeAmount.HIGH,
+          poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
           walletAddress: account.address,
         });
         // console.log("tradeCallData", tradeContractMethodData);
@@ -260,6 +263,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
       });
       writeContracts({
         contracts,
+        capabilities,
       });
     },
     [graduated],

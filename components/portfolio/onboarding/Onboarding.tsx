@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
 import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
 import { DepositDialog } from "~/components/trade/DepositButton";
@@ -26,7 +26,7 @@ const OnboardingModal = React.forwardRef<
       )
         setOpen(true);
     };
-    goOnboarding();
+    if (Platform.OS === "web") goOnboarding();
   }, [ready, authenticated]);
   const [showDeposit, setShowDeposit] = useState(false);
   const { activeWallet, activeOneWallet, coinBaseWallet } = useWalletAccount();

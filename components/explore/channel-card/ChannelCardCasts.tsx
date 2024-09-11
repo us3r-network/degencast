@@ -14,7 +14,7 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import ProposalStatusActions, {
   ProposalStatusActionsHeight,
 } from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
-import { FCastMenuButton } from "~/components/social-farcaster/FCastActions";
+import FCastMenuButton from "~/components/social-farcaster/FCastMenuButton";
 
 const itemHeight = FCastHeight + ProposalStatusActionsHeight + 15;
 const ChannelCardCasts = forwardRef(function (

@@ -298,3 +298,22 @@ export function getExploreHostingChannels(
     },
   });
 }
+
+export type DegencastChannel = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  description?: string;
+};
+export function createDegencastChannel(
+  params: DegencastChannel,
+): RequestPromise<ApiResp<any>> {
+  return request({
+    url: `/topics/channels`,
+    method: "post",
+    data: params,
+    headers: {
+      needToken: true,
+    },
+  });
+}

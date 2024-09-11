@@ -6,7 +6,7 @@ import {
   createPublicClient,
   decodeAbiParameters,
   decodeFunctionData,
-  http
+  http,
 } from "viem";
 import { UNISWAP_V3_QUOTER_CONTRACT_ADDRESS } from "~/constants";
 import { getChain } from "~/utils/chain/getChain";
@@ -47,8 +47,50 @@ export async function getInputQuote(
 
   const outputAbi = QuoterV2ABI.abi.find((abi) => {
     return abi.name === callDataDecoded.functionName;
-  }
+  });
+  console.log("quoteCallReturnData", quoteCallReturnData, outputAbi);
+  const data = decodeAbiParameters(
+    outputAbi?.outputs as any,
+    quoteCallReturnData.data!,
   );
+  return data;
+}
+
+export async function getOutputQuote(
+  route: Route<Currency, Currency>,
+  tokenIn: Token,
+  amountIn: bigint,
+) {
+  if (!UNISWAP_V3_QUOTER_CONTRACT_ADDRESS) {
+    throw new Error("UNISWAP_V3_QUOTERV2_CONTRACT_ADDRESS is not defined");
+  }
+
+  const { calldata } = await SwapQuoter.quoteCallParameters(
+    route,
+    CurrencyAmount.fromRawAmount(tokenIn, amountIn.toString()),
+    TradeType.EXACT_INPUT,
+    {
+      useQuoterV2: true,
+    },
+  );
+  console.log("callData", calldata);
+  const callDataDecoded = decodeFunctionData({
+    abi: QuoterV2ABI.abi,
+    data: calldata as `0x${string}`,
+  });
+  console.log("callDataDecoded", callDataDecoded);
+  const publicClient = createPublicClient({
+    chain: getChain(route.chainId),
+    transport: http(),
+  });
+  const quoteCallReturnData = await publicClient.call({
+    to: UNISWAP_V3_QUOTER_CONTRACT_ADDRESS as Address,
+    data: calldata as `0x${string}`,
+  });
+
+  const outputAbi = QuoterV2ABI.abi.find((abi) => {
+    return abi.name === callDataDecoded.functionName;
+  });
   console.log("quoteCallReturnData", quoteCallReturnData, outputAbi);
   const data = decodeAbiParameters(
     outputAbi?.outputs as any,
