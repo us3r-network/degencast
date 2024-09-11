@@ -333,7 +333,7 @@ export const createProposal = async ({
     paymentToken,
   } = paymentConfig || {};
 
-  const proposelConfig = {
+  const proposalData = {
     contentHash: proposalConfig.castHash,
     contentCreator: proposalConfig.castCreator,
     contentURI: proposalConfig.contentURI,
@@ -391,7 +391,7 @@ export const createProposal = async ({
     };
     const txConfig = {
       ...txBaseConfig,
-      args: [proposelConfig, txPaymentAmount],
+      args: [proposalData, txPaymentAmount],
     };
     contracts = [...contracts, approveConfig, txConfig];
     console.log("contracts", contracts);
@@ -427,8 +427,9 @@ export const createProposal = async ({
   } else {
     const txConfig = {
       ...txBaseConfig,
-      args: [proposalConfig, paymentAmount],
+      args: [proposalData, paymentAmount],
     };
+
     const { request: simulateRequest } =
       await publicClient.simulateContract(txConfig);
     const hash = await walletClient.writeContract(simulateRequest);
