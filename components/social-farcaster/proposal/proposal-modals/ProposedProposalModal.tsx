@@ -39,6 +39,7 @@ import {
   PaymentInfoWithProposed,
   ProposalPaymentSelector,
 } from "./PaymentSelector";
+import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -136,11 +137,19 @@ function ProposedProposalModalContentBodyScene() {
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
+  // const {
+  //   price,
+  //   isLoading: priceLoading,
+  //   error: priceError,
+  // } = useProposePrice({
+  //   contractAddress: tokenInfo?.danContract!,
+  //   castHash: cast.hash,
+  // });
   const {
     price,
     isLoading: priceLoading,
     error: priceError,
-  } = useProposePrice({
+  } = useDisputePrice({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
