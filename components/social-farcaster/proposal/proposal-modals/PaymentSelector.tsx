@@ -30,7 +30,7 @@ export function ProposalPaymentSelector({
   paymentInfoType,
 }: {
   defaultPaymentInfo: {
-    tokenInfo: TokenWithTradeInfo;
+    tokenInfo?: TokenWithTradeInfo;
     tokenInfoLoading?: boolean;
     recommendedAmount?: bigint;
     recommendedAmountLoading?: boolean;
@@ -54,7 +54,7 @@ export function ProposalPaymentSelector({
 
   const { token: ethTokenInfo } = useUserNativeToken(
     account.address,
-    defaultTokenInfo.chainId,
+    defaultTokenInfo?.chainId,
   );
 
   const [fetchedEthRecommendedAmount, setFetchedEthRecommendedAmount] =
@@ -73,20 +73,22 @@ export function ProposalPaymentSelector({
 
   return (
     <View className="flex flex-col gap-4">
-      {!!ethTokenInfo && supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
-        <UserTokenSelectWrapper
-          ethTokenInfo={ethTokenInfo}
-          defaultTokenInfo={defaultTokenInfo}
-          selectedPaymentToken={selectedPaymentToken}
-          setSelectedPaymentToken={setSelectedPaymentToken}
-          defaultRecommendedAmount={defaultRecommendedAmount}
-          defaultMinAmount={defaultMinAmount}
-          selectedPayAmount={selectedPayAmount}
-          setSelectedPayAmount={setSelectedPayAmount}
-          setFetchedEthRecommendedAmount={setFetchedEthRecommendedAmount}
-          setFetchedEthMinAmount={setFetchedEthMinAmount}
-        />
-      )}
+      {!!ethTokenInfo &&
+        defaultTokenInfo &&
+        supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
+          <UserTokenSelectWrapper
+            ethTokenInfo={ethTokenInfo}
+            defaultTokenInfo={defaultTokenInfo}
+            selectedPaymentToken={selectedPaymentToken}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            defaultRecommendedAmount={defaultRecommendedAmount}
+            defaultMinAmount={defaultMinAmount}
+            selectedPayAmount={selectedPayAmount}
+            setSelectedPayAmount={setSelectedPayAmount}
+            setFetchedEthRecommendedAmount={setFetchedEthRecommendedAmount}
+            setFetchedEthMinAmount={setFetchedEthMinAmount}
+          />
+        )}
 
       {paymentInfoType === PaymentInfoType.Create ? (
         <PaymentInfo
@@ -280,7 +282,7 @@ export function PaymentInfo({
     min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
     step: sliderStep || recommendedPayAmountNumber / 100,
     maximumFractionDigits:
-      paymentTokenInfo.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
+      paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
 
   return (
@@ -311,7 +313,7 @@ export function PaymentInfo({
       <PriceRangeRow {...priceSliderConfig} />
       <Text className="text-center text-xs text-secondary">
         {description ||
-          `Stake ${paymentTokenInfo.symbol}, get funds back and earn minting fee rewards upon success!`}
+          `Stake ${paymentTokenInfo?.symbol || "DEGEN"}, get funds back and earn minting fee rewards upon success!`}
       </Text>
     </View>
   );

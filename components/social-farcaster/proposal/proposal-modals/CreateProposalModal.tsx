@@ -246,7 +246,7 @@ function CreateProposalModalContentBody({
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       {paymentTokenInfoLoading ? (
         <Loading />
-      ) : selectedPaymentToken ? (
+      ) : (
         <>
           <ProposalPaymentSelector
             paymentInfoType={PaymentInfoType.Create}
@@ -273,7 +273,7 @@ function CreateProposalModalContentBody({
             onCreateProposalError={onCreateProposalError}
           />
         </>
-      ) : null}
+      )}
     </>
   );
 }
