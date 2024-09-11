@@ -53,11 +53,11 @@ export default function useWalletAccount() {
       unlinkedConnectedWallets.forEach((wallet) => {
         if (!isReportedUserAccount(wallet.address, UserAccountType.EVM)) {
           storeReportedUserAccount(wallet.address, UserAccountType.EVM);
-          linkUserWallet(wallet.address as Address);
+          if (authenticated) linkUserWallet(wallet.address as Address);
         }
       });
     }
-  }, [connectedWallets]);
+  }, [connectedWallets, authenticated]);
 
   const unconnectedLinkedWallets = useMemo(() => {
     return linkedWallets.filter(
