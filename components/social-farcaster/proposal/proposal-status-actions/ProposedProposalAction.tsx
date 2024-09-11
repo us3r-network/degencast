@@ -25,7 +25,7 @@ export function ProposedProposalButton({
       tokenInfo={tokenInfo}
     />
   );
-  if (!isConnected) {
+  if (!address || !isConnected) {
     return (
       <ProposalButton variant={"proposed"} onPress={() => connectWallet()}>
         {buttonBody}

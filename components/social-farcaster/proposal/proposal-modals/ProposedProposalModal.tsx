@@ -16,7 +16,7 @@ import { Text } from "~/components/ui/text";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { AboutProposalChallenge } from "./AboutProposal";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { formatUnits, TransactionReceipt } from "viem";
+import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
@@ -34,6 +34,12 @@ import { Button, ButtonProps } from "~/components/ui/button";
 import { useAccount } from "wagmi";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import useAppModals from "~/hooks/useAppModals";
+import {
+  PaymentInfoType,
+  PaymentInfoWithProposed,
+  ProposalPaymentSelector,
+} from "./PaymentSelector";
+import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -131,20 +137,39 @@ function ProposedProposalModalContentBodyScene() {
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
+  // const {
+  //   price,
+  //   isLoading: priceLoading,
+  //   error: priceError,
+  // } = useProposePrice({
+  //   contractAddress: tokenInfo?.danContract!,
+  //   castHash: cast.hash,
+  // });
   const {
     price,
     isLoading: priceLoading,
     error: priceError,
-  } = useProposePrice({
+  } = useDisputePrice({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
 
-  const [selectPrice, setSelectPrice] = useState<bigint | undefined>(undefined);
+  const [selectedPaymentToken, setSelectedPaymentToken] =
+    useState(paymentTokenInfo);
+
+  const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
+
+  useEffect(() => {
+    if (!paymentTokenInfoLoading && paymentTokenInfo) {
+      console.log("price", price);
+      setSelectedPaymentToken(paymentTokenInfo);
+    }
+  }, [paymentTokenInfoLoading, paymentTokenInfo]);
+
   useEffect(() => {
     if (!priceLoading && price) {
       console.log("price", price);
-      setSelectPrice(price);
+      setSelectedPayAmount(price);
     }
   }, [price, priceLoading]);
 
@@ -161,26 +186,10 @@ function ProposedProposalModalContentBodyScene() {
     isLoading ||
     !price;
 
-  const priceNumber =
-    price && paymentTokenInfo?.decimals
-      ? Number(formatUnits(price, paymentTokenInfo?.decimals!))
-      : 0;
-  const selectPriceNumber =
-    selectPrice && paymentTokenInfo?.decimals
-      ? Number(formatUnits(selectPrice, paymentTokenInfo?.decimals!))
-      : 0;
-  const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectPriceNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance
-      ? tokenInfo?.bondingCurve?.basePrice || 0
-      : 0,
-    step: priceNumber / 100,
-  };
-
-  const minPrice = getProposalPriceWithAmount(
-    priceSliderConfig.min,
-    paymentTokenInfo!,
+  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minAmount = parseUnits(
+    minPayAmountNumber.toString(),
+    paymentTokenInfo?.decimals!,
   );
 
   const { upsertProposalShareModal } = useAppModals();
@@ -195,50 +204,23 @@ function ProposedProposalModalContentBodyScene() {
           <UserWalletSelect />
         </View>
         <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-        <PriceRow
-          title="Minimum Cost"
-          paymentTokenInfo={paymentTokenInfo}
-          price={minPrice}
-          isLoading={isLoading || paymentTokenInfoLoading}
-          onClickPriceValue={() => {
-            if (minPrice) {
-              setSelectPrice(minPrice);
-            }
-          }}
-        />
-        <PriceRow
-          title="Successfully Challenge"
-          paymentTokenInfo={paymentTokenInfo}
-          price={price}
-          isLoading={isLoading || paymentTokenInfoLoading}
-          onClickPriceValue={() => {
-            if (price) {
-              setSelectPrice(price);
-            }
-          }}
-        />
-        <View className="flex flex-col items-center gap-2">
-          <Text className="text-center text-xs text-secondary">
-            Upvote and earn minting fee rewards upon success!
-          </Text>
-          <Text className="text-center text-xs text-secondary">or</Text>
-          <Text className="text-center text-xs text-secondary">
-            Downvote spam casts, if you win, you can share the staked funds from
-            upvoters.
-          </Text>
-        </View>
+        {paymentTokenInfoLoading ? (
+          <Loading />
+        ) : selectedPaymentToken ? (
+          <ProposalPaymentSelector
+            paymentInfoType={PaymentInfoType.Proposed}
+            defaultPaymentInfo={{
+              tokenInfo: paymentTokenInfo!,
+              recommendedAmount: price,
+              minAmount: minAmount,
+            }}
+            selectedPaymentToken={selectedPaymentToken!}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            selectedPayAmount={selectedPayAmount!}
+            setSelectedPayAmount={setSelectedPayAmount}
+          />
+        ) : null}
 
-        <Slider
-          {...priceSliderConfig}
-          onValueChange={(v) => {
-            if (!isNaN(Number(v))) {
-              const decimalsStr = "0".repeat(paymentTokenInfo?.decimals!);
-              const vInt = Math.ceil(Number(v));
-              setSelectPrice(BigInt(`${vInt}${decimalsStr}`));
-            }
-          }}
-        />
-        <PriceRangeRow {...priceSliderConfig} />
         {isLoading ? (
           <View>
             <Loading />
@@ -276,7 +258,10 @@ function ProposedProposalModalContentBodyScene() {
                 channel={channel}
                 proposal={{ ...proposal, status: ProposalState.Accepted }}
                 tokenInfo={tokenInfo}
-                price={selectPrice!}
+                paymentTokenInfo={paymentTokenInfo!}
+                usedPaymentTokenInfo={selectedPaymentToken}
+                paymentTokenInfoLoading={paymentTokenInfoLoading}
+                paymentAmount={selectedPayAmount!}
                 onDisputeSuccess={() => {
                   setOpen(false);
                   Toast.show({
@@ -307,7 +292,10 @@ function ProposedProposalModalContentBodyScene() {
                 channel={channel}
                 proposal={{ ...proposal, status: ProposalState.Proposed }}
                 tokenInfo={tokenInfo}
-                price={price!}
+                paymentTokenInfo={paymentTokenInfo!}
+                usedPaymentTokenInfo={selectedPaymentToken}
+                paymentTokenInfoLoading={paymentTokenInfoLoading}
+                paymentAmount={selectedPayAmount!}
                 onProposeSuccess={() => {
                   Toast.show({
                     type: "success",

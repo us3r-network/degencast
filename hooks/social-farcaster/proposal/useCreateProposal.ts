@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { createProposal, getProposals } from "./proposal-helper";
+import { createProposal, getProposals, PaymentConfig } from "./proposal-helper";
 import { arCheckCastProposalMetadata } from "~/services/upload";
 import { ApiRespCode } from "~/services/shared/types";
 import useCacheCastProposal from "./useCacheCastProposal";
@@ -35,13 +35,9 @@ export default function useCreateProposal({
         castHash: string;
         castCreator: `0x${string}`;
       },
-      paymentConfig: {
-        paymentPrice: bigint;
-        enableApprovePaymentStep?: boolean; // 开启后，尝试在create前先批准支付
-        paymentTokenAddress?: `0x${string}`;
-        capabilities?: any;
-      },
+      paymentConfig: PaymentConfig,
     ) => {
+      console.log("createProposal", proposalConfig, paymentConfig);
       try {
         setStatus("pending");
         if (!publicClient || !walletClient) {
