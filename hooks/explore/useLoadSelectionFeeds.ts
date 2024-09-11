@@ -6,7 +6,7 @@ import { getExploreSelectionFeeds } from "~/services/feeds/api";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 export type SelectionFeedsItem = {
   channel: CommunityEntity;
   tokenInfo: AttentionTokenEntity;
