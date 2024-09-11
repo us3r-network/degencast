@@ -26,7 +26,11 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
-import { DEGEN_TOKEN_METADATA, NATIVE_TOKEN_ADDRESS, UNISWAP_V3_DEGEN_ETH_POOL_FEES } from "~/constants";
+import {
+  DEGEN_TOKEN_METADATA,
+  NATIVE_TOKEN_ADDRESS,
+  UNISWAP_V3_DEGEN_ETH_POOL_FEES,
+} from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -58,6 +62,10 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
+import { fetchItems as fetchUserCommunityNFTs } from "~/features/user/communityNFTsSlice";
+import { fetchItems as fetchUserCommunityTokens } from "~/features/user/communityTokensSlice";
+import { useDispatch } from "react-redux";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 export type NFTProps = {
   cast?: NeynarCast;
@@ -341,6 +349,7 @@ const MintNFT = forwardRef<
     onError?: (error: string) => void;
   }
 >(({ className, nft, onSuccess, onError, ...props }, ref) => {
+  const dispatch = useDispatch();
   const account = useAccount();
   const { supportAtomicBatch } = useWalletAccount();
   const [amount, setAmount] = useState(1);
@@ -350,10 +359,7 @@ const MintNFT = forwardRef<
     });
   const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: nftBalance } = nftBalanceOf(account?.address);
-  const { tokenInfo } = useCurationTokenInfo(
-    nft.contractAddress,
-    nft.tokenId,
-  );
+  const { tokenInfo } = useCurationTokenInfo(nft.contractAddress, nft.tokenId);
   // console.log(
   //   "nft info",
   //   graduated,
@@ -377,9 +383,14 @@ const MintNFT = forwardRef<
 
   // console.log("fetchedPrice", fetchedPrice, nftPrice, amount, token);
   const availableAmount = useMemo(() => {
-    if (!account || !maxTokensPerIdPerUser || !tokenInfo?.bondingCurve?.graduationNftNumber) return 0;
+    if (
+      !account ||
+      !maxTokensPerIdPerUser ||
+      !tokenInfo?.bondingCurve?.graduationNftNumber
+    )
+      return 0;
     const nftLeftBeforeGraduation: number =
-    tokenInfo.bondingCurve.graduationNftNumber - Number(totalNFTSupply || 0);
+      tokenInfo.bondingCurve.graduationNftNumber - Number(totalNFTSupply || 0);
     const nftLeftForPerson: number =
       Number(maxTokensPerIdPerUser) - Number(nftBalance || 0);
 
@@ -397,6 +408,24 @@ const MintNFT = forwardRef<
           value: nftPrice,
         }
       : undefined;
+
+  const onMintSuccess = (data: TransationData) => {
+    onSuccess?.(data);
+    setTimeout(() => {
+      if (account?.address) {
+        dispatch(
+          fetchUserCommunityNFTs(account.address) as unknown as UnknownAction,
+        );
+        if (graduated)
+          dispatch(
+            fetchUserCommunityTokens(
+              account.address,
+            ) as unknown as UnknownAction,
+          );
+      }
+    }, 5000);
+  };
+
   return (
     <View className="flex gap-4">
       <NFTImage nft={nft} />
@@ -465,7 +494,7 @@ const MintNFT = forwardRef<
                 amount={amount}
                 nftPrice={nftPrice}
                 nftPriceEth={nftPriceEth}
-                onSuccess={onSuccess}
+                onSuccess={onMintSuccess}
                 onError={onError}
               />
             }
@@ -483,7 +512,7 @@ const MintNFT = forwardRef<
                 userSelectedToken={selectedToken}
                 amount={amount}
                 nftPrice={nftPrice}
-                onSuccess={onSuccess}
+                onSuccess={onMintSuccess}
                 onError={onError}
               />
             }
