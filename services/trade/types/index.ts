@@ -45,6 +45,7 @@ export type TokenWithTradeInfo = {
   rawBalance?: bigint | string;
   balance?: number | string | undefined;
   channel?: NeynarChannel;
+  usdPrice?: number;
 };
 
 export type ERC42069Token = {
