@@ -5,6 +5,7 @@ import CreateProposalModal, {
 } from "../proposal-modals/CreateProposalModal";
 import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
+import useAuth from "~/hooks/user/useAuth";
 
 export function CreateProposalButton({
   cast,
@@ -15,6 +16,7 @@ export function CreateProposalButton({
 }: ProposalButtonProps & CastProposeStatusProps) {
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
+  const { ready, authenticated, login } = useAuth();
   if (!proposal) return null;
   const buttonBody = (
     <ProposalButtonBody
@@ -25,6 +27,21 @@ export function CreateProposalButton({
       tokenInfo={tokenInfo}
     />
   );
+
+  if (!authenticated) {
+    return (
+      <ProposalButton
+        variant={"not-proposed"}
+        onPress={() => {
+          if (ready) {
+            login();
+          }
+        }}
+      >
+        {buttonBody}
+      </ProposalButton>
+    );
+  }
 
   if (!address || !isConnected) {
     return (

@@ -10,6 +10,7 @@ import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 import { View } from "react-native";
 import { Deadline } from "../ProposalStyled";
+import useAuth from "~/hooks/user/useAuth";
 
 export function ChallengeProposalButton({
   cast,
@@ -20,6 +21,8 @@ export function ChallengeProposalButton({
 }: ProposalButtonProps & CastProposeStatusProps) {
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
+  const { ready, authenticated, login } = useAuth();
+
   if (!proposal) return null;
   const { status } = proposal;
   const buttonVariant =
@@ -32,6 +35,22 @@ export function ChallengeProposalButton({
       tokenInfo={tokenInfo}
     />
   );
+
+  if (!authenticated) {
+    return (
+      <ProposalButton
+        variant={buttonVariant}
+        onPress={() => {
+          if (ready) {
+            login();
+          }
+        }}
+      >
+        {buttonBody}
+      </ProposalButton>
+    );
+  }
+
   if (!address || !isConnected) {
     return (
       <ProposalButton variant={buttonVariant} onPress={() => connectWallet()}>
