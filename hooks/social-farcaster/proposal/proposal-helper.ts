@@ -22,6 +22,8 @@ import {
 } from "~/services/uniswapV3/trading";
 import WETH_ABI from "~/services/trade/abi/weth.json";
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
 type WriteContractsCapabilities =
   | {
       paymasterService: {
@@ -337,7 +339,7 @@ export const createProposal = async ({
     contentHash: proposalConfig.castHash,
     contentCreator: proposalConfig.castCreator,
     contentURI: proposalConfig.contentURI,
-    beneficiary: account.address,
+    beneficiary: ZERO_ADDRESS,
   };
 
   const txBaseConfig = {
@@ -543,7 +545,7 @@ const challengeProposal = async ({
     };
     const txConfig = {
       ...txBaseConfig,
-      args: [castHash, txPaymentAmount],
+      args: [castHash, txPaymentAmount, ZERO_ADDRESS],
     };
     contracts = [...contracts, approveConfig, txConfig];
 
@@ -571,14 +573,13 @@ const challengeProposal = async ({
         } catch (error) {}
       }, 1000);
     });
-
     const { status, receipts } = res;
     receipt = (receipts?.[receipts?.length - 1] ||
       undefined) as TransactionReceipt;
   } else {
     const txConfig = {
       ...txBaseConfig,
-      args: [castHash, paymentAmount],
+      args: [castHash, paymentAmount, ZERO_ADDRESS],
     };
     const { request: simulateRequest } =
       await publicClient.simulateContract(txConfig);
