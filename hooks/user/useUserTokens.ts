@@ -23,20 +23,20 @@ export function useUserNativeToken(
     address,
     chainId,
   });
-  const {
-    fetchSellAmount,
-    sellAmount: usdPrice,
-    ready: swapReady,
-  } = useSwap({
-    buyToken: { address: WRAP_NATIVE_TOKEN_ADDRESS, chainId }!,
-    sellToken: { address: USDT_TOKEN_ADDRESS, chainId },
-    poolFee: FeeAmount.MEDIUM,
-  });
-  useEffect(() => {
-    if (swapReady) {
-      fetchSellAmount(parseUnits("1", WRAP_NATIVE_TOKEN_METADATA.decimals!));
-    }
-  }, [swapReady]);
+  // const {
+  //   fetchSellAmount,
+  //   sellAmount: usdPrice,
+  //   ready: swapReady,
+  // } = useSwap({
+  //   buyToken: { address: WRAP_NATIVE_TOKEN_ADDRESS, chainId }!,
+  //   sellToken: { address: USDT_TOKEN_ADDRESS, chainId },
+  //   poolFee: FeeAmount.MEDIUM,
+  // });
+  // useEffect(() => {
+  //   if (swapReady) {
+  //     fetchSellAmount(parseUnits("1", WRAP_NATIVE_TOKEN_METADATA.decimals!));
+  //   }
+  // }, [swapReady]);
 
   const token: TokenWithTradeInfo | undefined = useMemo(
     () =>
@@ -48,9 +48,9 @@ export function useUserNativeToken(
         rawBalance: data.value,
         balance: formatUnits(data.value, data.decimals),
         logoURI: NATIVE_TOKEN_METADATA.logoURI,
-        usdPrice: usdPrice
-          ? Number(formatUnits(usdPrice, USDT_TOKEN_METADATA.decimals!))
-          : undefined,
+        // usdPrice: usdPrice
+        //   ? Number(formatUnits(usdPrice, USDT_TOKEN_METADATA.decimals!))
+        //   : undefined,
       },
     [data],
   );
