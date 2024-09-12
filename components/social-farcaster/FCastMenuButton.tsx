@@ -1,4 +1,4 @@
-import { forwardRef, LegacyRef, useState } from "react";
+import { useState } from "react";
 import { View, ViewProps } from "react-native";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
@@ -9,22 +9,24 @@ import { CommunityInfo } from "~/services/community/types/community";
 import { PostMenuButton } from "../post/PostActions";
 import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
-import FCastShareModal from "./FCastShareModal";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import useAuth from "~/hooks/user/useAuth";
 import useCastReply from "~/hooks/social-farcaster/useCastReply";
 import useAppModals from "~/hooks/useAppModals";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 
 export default function FCastMenuButton({
   direction,
   cast,
   communityInfo,
+  proposal,
   ...props
 }: ViewProps & {
   direction?: "top" | "left" | "right";
   cast: NeynarCast;
   communityInfo: CommunityInfo;
+  proposal?: ProposalEntity;
 }) {
   const channelId = communityInfo?.channelId || "";
   const { navigateToCastReply } = useCastReply();
@@ -36,7 +38,6 @@ export default function FCastMenuButton({
   const { recast, removeRecast, recasted, recastCount, recastPending } =
     useFarcasterRecastAction({ cast });
   const [openGiftModal, setOpenGiftModal] = useState(false);
-  const [openShareModal, setOpenShareModal] = useState(false);
   const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
@@ -84,8 +85,12 @@ export default function FCastMenuButton({
 
   const { upsertProposalShareModal } = useAppModals();
   const onShare = () => {
-    setOpenShareModal(true);
-    upsertProposalShareModal({ open: true, cast, channel: communityInfo });
+    upsertProposalShareModal({
+      open: true,
+      cast,
+      channel: communityInfo,
+      proposal,
+    });
   };
   return (
     <View className="z-20">

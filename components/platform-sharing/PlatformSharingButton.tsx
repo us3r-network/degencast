@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import { cn } from "~/lib/utils";
 import {
   getAppFrameLink,
   getAppWebsiteLink,
-  getCommunityFrameLink,
-  getCommunityWebsiteLink,
   getMintNFTFrameLink,
   getPortfolioFrameLink,
   getPortfolioWebsiteLink,
@@ -17,8 +15,6 @@ import {
 import {
   getAppShareTextWithTwitter,
   getAppShareTextWithWarpcast,
-  getCommunityShareTextWithTwitter,
-  getCommunityShareTextWithWarpcast,
   getPortfolioTextWithTwitter,
   getPortfolioTextWithWarpcast,
   getTransactionShareTextWithTwitter,
@@ -28,6 +24,7 @@ import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { Share2 } from "../common/Icons";
 import { Button, ButtonProps } from "../ui/button";
 import PlatformSharingModal, { ShareProps } from "./PlatformSharingModal";
+import useAppModals from "~/hooks/useAppModals";
 
 export default function PlatformSharingButton({
   text,
@@ -71,17 +68,18 @@ export default function PlatformSharingButton({
   );
 }
 
-export function ExploreSharingButton({ fid }: { fid: string | number }) {
+export function AppSharingButton() {
+  const { currFid } = useFarcasterAccount();
   return (
     <PlatformSharingButton
       twitterText={getAppShareTextWithTwitter()}
       warpcastText={getAppShareTextWithWarpcast()}
       websiteLink={getAppWebsiteLink({
-        fid,
+        fid: currFid,
       })}
       warpcastEmbeds={[
         getAppFrameLink({
-          fid,
+          fid: currFid,
         }),
       ]}
     />
@@ -134,26 +132,60 @@ export function PortfolioSharingButton({
 export function CommunitySharingButton({
   name,
   channelId,
-  currFid,
+  onShareBefore,
 }: {
   name: string;
   channelId: string;
-  currFid: string | number;
+  onShareBefore?: () => void;
 }) {
+  const { setChannelShareModal } = useAppModals();
   return (
-    <PlatformSharingButton
-      twitterText={getCommunityShareTextWithTwitter(name || "")}
-      warpcastText={getCommunityShareTextWithWarpcast(name || "")}
-      websiteLink={getCommunityWebsiteLink(channelId, {
-        fid: currFid,
-      })}
-      warpcastEmbeds={[
-        getCommunityFrameLink(channelId, {
-          fid: currFid,
-        }),
-      ]}
-      warpcastChannelId={channelId}
-    />
+    <Button
+      variant={"secondary"}
+      className="h-8"
+      onPress={(e) => {
+        e.stopPropagation();
+        onShareBefore?.();
+        setChannelShareModal({
+          open: true,
+          channelId,
+          name,
+        });
+      }}
+    >
+      <Text>Share</Text>
+    </Button>
+  );
+}
+
+export function CommunitySharingIconBtn({
+  name,
+  channelId,
+  onShareBefore,
+}: {
+  name: string;
+  channelId: string;
+  onShareBefore?: () => void;
+}) {
+  const { setChannelShareModal } = useAppModals();
+  return (
+    <Pressable
+      onPress={(e) => {
+        e.stopPropagation();
+        onShareBefore?.();
+        setChannelShareModal({
+          open: true,
+          channelId,
+          name,
+        });
+      }}
+    >
+      <Share2
+        className={cn(
+          " size-5 fill-primary-foreground stroke-primary-foreground",
+        )}
+      />
+    </Pressable>
   );
 }
 

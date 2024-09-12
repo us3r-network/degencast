@@ -133,6 +133,7 @@ function CreateProposalModalContentBodyScene() {
                 open: true,
                 cast,
                 channel,
+                proposal,
               });
             }}
             onCreateProposalError={(error) => {

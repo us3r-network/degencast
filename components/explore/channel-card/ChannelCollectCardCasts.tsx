@@ -116,6 +116,7 @@ const ChannelCollectCardCasts = forwardRef(function (
                     <FCastMenuButton
                       cast={cast}
                       communityInfo={channel as any}
+                      proposal={proposal}
                     />
                     <View className="ml-auto">
                       <ProposalStatusActions

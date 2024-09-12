@@ -272,6 +272,7 @@ function ProposedProposalModalContentBodyScene() {
                     open: true,
                     cast,
                     channel,
+                    proposal,
                   });
                 }}
                 onDisputeError={(error) => {
@@ -306,6 +307,7 @@ function ProposedProposalModalContentBodyScene() {
                     open: true,
                     cast,
                     channel,
+                    proposal,
                   });
                 }}
                 onProposeError={(error) => {

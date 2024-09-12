@@ -25,6 +25,7 @@ import { formatUnits } from "viem";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { TradeButton } from "../trade/TradeButton";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
+import { CommunitySharingButton } from "../platform-sharing/PlatformSharingButton";
 
 const displayValue = (value: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -118,11 +119,13 @@ export function CommunityDetailMetaInfoMobile({
   className,
   navigateBefore,
   openTradeBefore,
+  openShareChannelBefore,
   ...props
 }: ViewProps & {
   communityInfo: CommunityData;
   navigateBefore?: () => void;
   openTradeBefore?: () => void;
+  openShareChannelBefore?: () => void;
 }) {
   const {
     name,
@@ -166,6 +169,11 @@ export function CommunityDetailMetaInfoMobile({
             {channelId && `/${channelId}`}
           </Text>
         </View>
+        <CommunitySharingButton
+          name={name}
+          channelId={channelId!}
+          onShareBefore={openShareChannelBefore}
+        />
       </View>
       <Text className="text-sm font-normal leading-6 text-primary-foreground">
         {description}
@@ -295,22 +303,23 @@ export function CommunityDetailMetaInfoMobile({
       <View className="flex-row gap-4">
         <CommunityJoinButton
           channelId={communityInfo?.channelId || ""}
-          variant="default"
-          className="h-10 flex-1 rounded-md border-none bg-primary-foreground"
+          variant="secondary"
+          className="h-8 flex-1 rounded-md border-none"
           textProps={{
-            className: "text-base font-normal text-secondary",
+            className: "text-base font-normal",
           }}
         />
         <Link href={`/create?channelId=${channelId || ""}`} asChild>
           <Button
-            className=" h-10 flex-1 rounded-md border-none bg-primary-foreground p-0"
+            variant="secondary"
+            className=" h-8 flex-1 rounded-md border-none p-0"
             onPress={() => {
               if (navigateBefore) {
                 navigateBefore();
               }
             }}
           >
-            <Text className=" text-base font-normal text-secondary">Cast</Text>
+            <Text className=" text-base font-normal">Cast</Text>
           </Button>
         </Link>
       </View>
@@ -359,6 +368,9 @@ export function CommunityDetailMetaInfoDropdown({
             setOpen(false);
           }}
           openTradeBefore={() => {
+            setOpen(false);
+          }}
+          openShareChannelBefore={() => {
             setOpen(false);
           }}
         />

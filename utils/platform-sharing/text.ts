@@ -3,7 +3,7 @@ import { ONCHAIN_ACTION_TYPE } from "./types";
 import { WARPCAST_CHANNEL_NAME } from "./warpcast";
 
 export const getCommunityShareTextWithWarpcast = (communityName: string) => {
-  return `Check your stats by /${WARPCAST_CHANNEL_NAME}\n Buy early, win early.`;
+  return `Hot channel in /${WARPCAST_CHANNEL_NAME}\n Buy early, win early.`;
 };
 
 export const getCommunityShareTextWithTwitter = (communityName: string) => {
@@ -47,7 +47,7 @@ export const getMintCastTextWithTwitter = () => {
 
 export const getTransactionShareTextWithWarpcast = (
   type: ONCHAIN_ACTION_TYPE,
-  transactionDetailURL: string,
+  transactionDetailURL?: string,
   frameLink?: string,
 ) => {
   let text = "";
@@ -69,22 +69,22 @@ export const getTransactionShareTextWithWarpcast = (
       return text;
   }
   // console.log("transactionDetailURL", text, transactionDetailURL, frameLink);
-  return `${text} /${WARPCAST_CHANNEL_NAME}\n${transactionDetailURL}\n${frameLink}\n`;
+  return `${text} /${WARPCAST_CHANNEL_NAME}\n${transactionDetailURL || ""}\n${frameLink || ""}\n`;
 };
 
 export const getTransactionShareTextWithTwitter = (
   type: ONCHAIN_ACTION_TYPE,
-  transactionDetailURL: string,
+  transactionDetailURL?: string,
 ) => {
   switch (type) {
     case ONCHAIN_ACTION_TYPE.SWAP_TOKEN:
-      return `Swap tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+      return `Swap tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL || ""}\n`;
     case ONCHAIN_ACTION_TYPE.SEND_TOKEN:
-      return `Send tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+      return `Send tokens in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL || ""}\n`;
     case ONCHAIN_ACTION_TYPE.MINT_NFT:
-      return `Mint NFT in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+      return `Mint NFT in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL || ""}\n`;
     case ONCHAIN_ACTION_TYPE.BURN_NFT:
-      return `Burn NFT in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL}\n`;
+      return `Burn NFT in @${TWITTER_SCREEN_NAME}.\n${transactionDetailURL || ""}\n`;
     default:
       return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
   }

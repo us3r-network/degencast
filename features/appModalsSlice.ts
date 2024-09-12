@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
+import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { RootState } from "~/store/store";
 
@@ -8,6 +9,13 @@ export type ProposalShareModal = {
   open: boolean;
   cast?: NeynarCast | null;
   channel?: CommunityEntity | null;
+  proposal?: ProposalEntity | null;
+};
+
+export type ChannelShareModal = {
+  open: boolean;
+  channelId?: string;
+  name?: string;
 };
 
 export type TradeTokenModal = {
@@ -18,6 +26,7 @@ export type TradeTokenModal = {
 
 export type AppModalsState = {
   proposalShareModal: ProposalShareModal;
+  channelShareModal: ChannelShareModal;
   tradeTokenModal: TradeTokenModal;
 };
 
@@ -26,6 +35,11 @@ export const appModalsStateDefalut: AppModalsState = {
     open: false,
     cast: null,
     channel: null,
+  },
+  channelShareModal: {
+    open: false,
+    channelId: "",
+    name: "",
   },
   tradeTokenModal: {
     open: false,
@@ -52,10 +66,19 @@ export const appModalsSlice = createSlice({
         ...action.payload,
       };
     },
+    setChannelShareModal: (state, action: PayloadAction<ChannelShareModal>) => {
+      state.channelShareModal = {
+        ...action.payload,
+      };
+    },
   },
 });
 
 const { actions, reducer } = appModalsSlice;
-export const { upsertProposalShareModal, setTradeTokenModal } = actions;
+export const {
+  upsertProposalShareModal,
+  setTradeTokenModal,
+  setChannelShareModal,
+} = actions;
 export const selectAppModals = (state: RootState) => state.appModals;
 export default reducer;
