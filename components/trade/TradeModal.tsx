@@ -92,11 +92,6 @@ export default function TradeModal({
           setSwaping={setSwaping}
           setClose={() => setOpen(false)}
         />
-        {/* {!swaping && (
-          <DialogFooter>
-            <About title="Swap & Earn" info={TRADE_INFO} />
-          </DialogFooter>
-        )} */}
       </DialogContent>
     </Dialog>
   );
@@ -145,20 +140,10 @@ export function TradeTokenGlobalModal() {
             });
           }}
         />
-        {/* {!swaping && (
-          <DialogFooter>
-            <About title="Swap & Earn" info={TRADE_INFO} />
-          </DialogFooter>
-        )} */}
       </DialogContent>
     </Dialog>
   );
 }
-
-const TRADE_INFO = [
-  "For a one-time swap of token worth 30 USD, earn 500 $CAST.",
-  "0.3% swap fee",
-];
 
 const DEFAULT_AMOUNT = "0";
 function SwapToken({

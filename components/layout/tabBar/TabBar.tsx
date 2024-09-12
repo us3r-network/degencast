@@ -226,7 +226,7 @@ const CreateTabBarItem = () => {
         <View
           className={cn(
             "flex size-12 items-center justify-center rounded-full bg-white/80",
-            showActions ? "bg-secondary" : "bg-white/80",
+            showActions ? "bg-secondary" : "bg-white",
           )}
         >
           {/* <SquarePen stroke={showActions ? "white" : SECONDARY_COLOR} /> */}

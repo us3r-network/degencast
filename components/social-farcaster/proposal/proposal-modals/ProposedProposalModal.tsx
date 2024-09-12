@@ -14,7 +14,7 @@ import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper
 import { ScrollView, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { SceneMap, TabView } from "react-native-tab-view";
-import { AboutProposalChallenge } from "./AboutProposal";
+import { AboutContents } from "~/components/help/HelpButton";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
@@ -79,7 +79,7 @@ export default function ProposedProposalModal({
 
   const renderScene = SceneMap({
     upvote: ProposedProposalModalContentBodyScene,
-    about: AboutProposalChallenge,
+    about: AboutContents,
   });
   return (
     <Dialog

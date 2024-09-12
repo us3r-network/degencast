@@ -19,7 +19,7 @@ import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposeWriteButton from "../proposal-write-buttons/CreateProposalWriteButton";
 import ProposalCastCard from "../ProposalCastCard";
 import { getProposalMinPrice } from "../utils";
-import { AboutProposalChallenge } from "./AboutProposal";
+import { AboutContents } from "~/components/help/HelpButton";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import PriceRow from "./PriceRow";
 import useAppModals from "~/hooks/useAppModals";
@@ -65,7 +65,7 @@ export default function CreateProposalModal({
 
   const renderScene = SceneMap({
     vote: CreateProposalModalContentBodyScene,
-    about: AboutProposalChallenge,
+    about: AboutContents,
   });
   return (
     <Dialog

@@ -266,7 +266,7 @@ function RequestFarcasterSignerButton() {
       disabled={requesting}
       onPress={() => requestSigner()}
     >
-      <Text>Connect & Earn</Text>
+      <Text>Connect</Text>
     </Button>
   );
 }

@@ -172,13 +172,13 @@ export function ActivityItemOperation({
       className={cn(
         " inline-block align-baseline text-base font-medium",
         operation === ActivityOperation.BURN ||
-          operation === ActivityOperation.BUY ||
-          operation === ActivityOperation.REWARD ||
+          operation === ActivityOperation.SELL ||
           operation === ActivityOperation.DISPUTE
           ? "text-[#F41F4C]"
           : operation === ActivityOperation.MINT ||
-              operation === ActivityOperation.SELL ||
-              operation === ActivityOperation.PROPOSE
+              operation === ActivityOperation.BUY ||
+              operation === ActivityOperation.PROPOSE ||
+              operation === ActivityOperation.REWARD
             ? "text-[#00D1A7]"
             : "",
       )}
