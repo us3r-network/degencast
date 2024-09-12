@@ -53,9 +53,9 @@ export const DEGEN_TOKEN_METADATA: TokenWithTradeInfo = {
 export const USDT_TOKEN_METADATA: TokenWithTradeInfo = {
   chainId: DEFAULT_CHAINID,
   address: USDT_TOKEN_ADDRESS,
-  name: "USDT",
-  decimals: 18,
-  symbol: "USDT",
+  name: "USD Coin",
+  decimals: 6,
+  symbol: "USDC",
   logoURI:
     "https://assets.coingecko.com/coins/images/325/small/Tether.png",
 };
