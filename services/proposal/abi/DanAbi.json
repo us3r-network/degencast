@@ -548,6 +548,11 @@
             "name": "contentCreator",
             "type": "address"
           },
+          {
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
           { "internalType": "string", "name": "contentURI", "type": "string" }
         ],
         "internalType": "struct Dan.ProposalConfig",
@@ -571,7 +576,8 @@
   {
     "inputs": [
       { "internalType": "string", "name": "_contentHash", "type": "string" },
-      { "internalType": "uint256", "name": "_payment", "type": "uint256" }
+      { "internalType": "uint256", "name": "_payment", "type": "uint256" },
+      { "internalType": "address", "name": "_beneficiary", "type": "address" }
     ],
     "name": "disputeProposal",
     "outputs": [],
@@ -907,7 +913,8 @@
   {
     "inputs": [
       { "internalType": "string", "name": "_contentHash", "type": "string" },
-      { "internalType": "uint256", "name": "_payment", "type": "uint256" }
+      { "internalType": "uint256", "name": "_payment", "type": "uint256" },
+      { "internalType": "address", "name": "_beneficiary", "type": "address" }
     ],
     "name": "proposeProposal",
     "outputs": [],

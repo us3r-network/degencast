@@ -337,7 +337,9 @@ export const createProposal = async ({
     contentHash: proposalConfig.castHash,
     contentCreator: proposalConfig.castCreator,
     contentURI: proposalConfig.contentURI,
+    beneficiary: account.address,
   };
+
   const txBaseConfig = {
     abi: DanAbi,
     address: contractAddress,
