@@ -61,7 +61,6 @@ function NativeTokenBalance({
   const chains = useChains();
   const chain = chains.find((chain) => chain.id === chainId);
   const symbol = chain?.nativeCurrency.symbol || "";
-  const usdPrice = nativeTokenInfo?.usdPrice || 0;
 
   useEffect(() => {
     const subscription = refetch
@@ -82,7 +81,6 @@ function NativeTokenBalance({
 
   useEffect(() => {
     if (balance) setBalance?.(Number(balance));
-    console.log("balance and price", balance, usdPrice);
   }, [balance, setBalance]);
 
   const Component = asChild ? Slot.View : TokenBalance;
