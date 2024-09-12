@@ -65,7 +65,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Feeds",
+            title: "Casts",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <ExploreIcon fill={color} />,
           }}
@@ -73,7 +73,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="ranks"
           options={{
-            title: "Ranks",
+            title: "Channels",
             tabBarLabelPosition: "below-icon",
             tabBarIcon: ({ color }) => <TradeIcon fill={color} />,
           }}
