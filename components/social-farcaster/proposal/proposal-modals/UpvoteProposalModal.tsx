@@ -64,7 +64,7 @@ export default function UpvoteProposalModal({
                 text1: "Voting speeds up success",
               });
               setOpen(false);
-              upsertProposalShareModal({ open: true, cast, channel });
+              upsertProposalShareModal({ open: true, cast, channel, proposal });
             }}
             onProposeError={(error) => {
               Toast.show({

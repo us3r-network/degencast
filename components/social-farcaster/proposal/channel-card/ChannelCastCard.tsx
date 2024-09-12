@@ -40,7 +40,11 @@ const ChannelCastCard = React.forwardRef<
         isVisible={isVisible}
       />
       <View className="flex flex-row items-center justify-between">
-        <FCastMenuButton cast={cast} communityInfo={channel as any} />
+        <FCastMenuButton
+          cast={cast}
+          communityInfo={channel as any}
+          proposal={proposal}
+        />
         <View className="ml-auto">
           <ProposalStatusActions
             cast={cast}

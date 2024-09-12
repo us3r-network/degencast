@@ -1,19 +1,57 @@
+import { useMemo } from "react";
 import PlatformSharingModal from "~/components/platform-sharing/PlatformSharingModal";
 import { appModalsStateDefalut } from "~/features/appModalsSlice";
+import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAppModals from "~/hooks/useAppModals";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
 import {
   getCastDetailWebsiteLink,
-  getVoteProposalFrameLink,
+  getCastDetailFrameLink,
+  getMintNFTFrameLink,
+  getMintNFTWebsiteLink,
 } from "~/utils/platform-sharing/link";
 import {
   getCastProposalShareTextWithTwitter,
   getCastProposalShareTextWithWarpcast,
+  getTransactionShareTextWithTwitter,
+  getTransactionShareTextWithWarpcast,
 } from "~/utils/platform-sharing/text";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 
 export default function ProposalShareGlobalModal() {
+  const { currFid } = useFarcasterAccount();
   const { proposalShareModal, upsertProposalShareModal } = useAppModals();
-  const { cast, channel } = proposalShareModal;
+  const { cast, channel, proposal } = proposalShareModal;
+  const castHash = getCastHex(cast!);
+  const config = useMemo(() => {
+    if (proposal && proposal.status === ProposalState.ReadyToMint) {
+      return {
+        warpcastText: getTransactionShareTextWithWarpcast(
+          ONCHAIN_ACTION_TYPE.MINT_NFT,
+        ),
+        twitterText: getTransactionShareTextWithTwitter(
+          ONCHAIN_ACTION_TYPE.MINT_NFT,
+        ),
+        websiteLink: getMintNFTWebsiteLink({
+          fid: currFid,
+          castHash,
+        }),
+        warpcastEmbeds: [
+          getMintNFTFrameLink({
+            fid: currFid,
+            castHash,
+          }),
+        ],
+      };
+    }
+    return {
+      warpcastText: getCastProposalShareTextWithWarpcast(),
+      twitterText: getCastProposalShareTextWithTwitter(),
+      websiteLink: getCastDetailWebsiteLink(castHash),
+      warpcastEmbeds: [getCastDetailFrameLink(castHash)],
+    };
+  }, [castHash, proposal, currFid]);
   return (
     <PlatformSharingModal
       modalTitle="Share"
@@ -21,16 +59,13 @@ export default function ProposalShareGlobalModal() {
       onOpenChange={(open) => {
         upsertProposalShareModal({ open });
       }}
-      warpcastText={getCastProposalShareTextWithWarpcast()}
-      twitterText={getCastProposalShareTextWithTwitter()}
-      websiteLink={getCastDetailWebsiteLink(getCastHex(cast!))}
-      warpcastEmbeds={[getVoteProposalFrameLink(getCastHex(cast!))]}
       warpcastChannelId={channel?.channelId}
       hideWarpcastPoints
       hideTwitterPoints
       navigateToCreatePageAfter={() => {
         upsertProposalShareModal(appModalsStateDefalut.proposalShareModal);
       }}
+      {...config}
     />
   );
 }

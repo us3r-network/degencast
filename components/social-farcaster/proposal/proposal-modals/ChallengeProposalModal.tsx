@@ -171,7 +171,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
-          upsertProposalShareModal({ open: true, cast, channel });
+          upsertProposalShareModal({ open: true, cast, channel, proposal });
         }}
         onDisputeError={(error) => {
           onClose();
@@ -187,7 +187,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
-          upsertProposalShareModal({ open: true, cast, channel });
+          upsertProposalShareModal({ open: true, cast, channel, proposal });
         }}
         onProposeError={(error) => {
           onClose();

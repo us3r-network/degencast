@@ -30,11 +30,10 @@ import ActivitiesScreen from "./activities";
 import AttentionTokenScreen from "./attention-token";
 import TokensScreen from "./tokens/[contract]";
 import LaunchProgress from "~/components/community/LaunchProgress";
-import { isDesktop } from "react-device-detect";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
-import { ChannelTokens } from "~/components/social-farcaster/proposal/channel-card/ChannelMetaInfo";
+import { CommunitySharingIconBtn } from "~/components/platform-sharing/PlatformSharingButton";
 
 const initialRouteName = "selection";
 
@@ -166,6 +165,10 @@ export default function CommunityDetail() {
                     <EditIcon className=" h-6 w-6 cursor-pointer stroke-white" />
                   </Button>
                 </Link>
+                <CommunitySharingIconBtn
+                  channelId={channelId}
+                  name={community?.name}
+                />
               </View>
               {tokenInfo ? (
                 <View className="sm:hidden">

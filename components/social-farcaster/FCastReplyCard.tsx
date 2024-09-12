@@ -45,7 +45,11 @@ const FCastReplyCard = React.forwardRef<
       </Pressable>
       <View className="flex flex-row items-center justify-between">
         {cast && channel && (
-          <FCastMenuButton cast={cast} communityInfo={channel as any} />
+          <FCastMenuButton
+            cast={cast}
+            communityInfo={channel as any}
+            proposal={proposal}
+          />
         )}
 
         {!!cast && !!channel && !!channelId && !!tokenInfo && !!proposal && (
