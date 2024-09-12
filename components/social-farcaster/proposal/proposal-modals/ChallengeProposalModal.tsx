@@ -23,7 +23,7 @@ import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper
 import { DialogCastActivitiesList } from "~/components/activity/Activities";
 import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { AboutProposalChallenge } from "./AboutProposal";
+import { AboutContents } from "~/components/help/HelpButton";
 import useAppModals from "~/hooks/useAppModals";
 import { Loading } from "~/components/common/Loading";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
@@ -68,7 +68,7 @@ export default function ChallengeProposalModal({
   const renderScene = SceneMap({
     challenge: ChallengeProposalContentBodyScene,
     activity: CastActivitiesListScene,
-    about: AboutProposalChallenge,
+    about: AboutContents,
   });
 
   return (

@@ -92,7 +92,7 @@ export default function PlatformSharingModal({
           {warpcastText && (
             <ShareButton
               iconSource={require("~/assets/images/warpcast.png")}
-              text="Share & Earn"
+              text="Share"
               points={!hideWarpcastPoints ? inviteUnit : 0}
               onPress={onCreateCast}
             />
@@ -100,7 +100,7 @@ export default function PlatformSharingModal({
           {twitterText && (
             <ShareButton
               iconSource={require("~/assets/images/x.png")}
-              text="Share & Earn"
+              text="Share"
               points={!hideTwitterPoints ? inviteUnit : 0}
               onPress={onTwitterShare}
             />

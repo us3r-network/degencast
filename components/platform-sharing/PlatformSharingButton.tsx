@@ -221,7 +221,7 @@ export function TransactionResultSharingButton({
         }}
         {...props}
       >
-        <Text>Share & Earn $CAST</Text>
+        <Text>Share</Text>
       </Button>
       <PlatformSharingModal
         open={open}
