@@ -42,7 +42,7 @@ export const displayProposalActions = ({
   return !!(
     !!channel?.channelId &&
     !!tokenInfo?.danContract &&
-    !!tokenInfo?.bondingCurve?.basePrice &&
+    !!tokenInfo?.danConfig?.proposalStake &&
     !!proposal &&
     cast.author?.verified_addresses?.eth_addresses.length > 0 &&
     cast.author?.verified_addresses?.eth_addresses?.[0]

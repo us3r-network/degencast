@@ -4,7 +4,6 @@ import { Address } from "viem";
 import { ApiResp } from "~/services/shared/types";
 import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import request, { RequestPromise } from "../../shared/api/request";
-import { mockMyNFTs } from "../mocks/mynfts";
 import {
   InvitationCodeRespEntity,
   LoginRespEntity,
@@ -179,18 +178,6 @@ export function myTokens(
     },
   });
 }
-
-const mockMyNFTRequest = async ({ pubkey }: any) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  return {
-    data: {
-      code: 0,
-      msg: "",
-      data: mockMyNFTs,
-    },
-  } as unknown as RequestPromise<ApiResp<ERC42069Token[]>>;
-};
 
 export function myNFTs(
   pubkey: `0x${string}`,

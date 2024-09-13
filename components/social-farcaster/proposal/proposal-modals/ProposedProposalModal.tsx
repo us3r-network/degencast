@@ -73,7 +73,7 @@ export default function ProposedProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "upvote", title: "Upvote" },
+    { key: "upvote", title: "Vote" },
     { key: "about", title: "About" },
   ]);
 
@@ -184,7 +184,7 @@ function ProposedProposalModalContentBodyScene() {
     isLoading ||
     !price;
 
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,

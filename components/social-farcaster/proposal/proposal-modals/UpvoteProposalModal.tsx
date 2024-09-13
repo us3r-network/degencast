@@ -117,7 +117,7 @@ export function UpvoteProposalModalContentBody({
       setSelectedPayAmount(price);
     }
   }, [price, isLoading]);
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,

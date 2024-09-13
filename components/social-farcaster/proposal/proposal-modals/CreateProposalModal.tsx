@@ -171,6 +171,10 @@ function CreateTokenModalContentBody({
         <Text>Active Wallet</Text>
         <UserWalletSelect />
       </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Cast Status:</Text>
+        <Text className="text-sm">Pending activation</Text>
+      </View>
       <ProposalCastCard channel={channel} cast={cast} />
       <Text className="text-sm text-secondary">
         This channel hasn't activated Curation Token yet. Please activate first.
@@ -210,10 +214,6 @@ function CreateProposalModalContentBody({
       contractAddress: tokenInfo?.danContract!,
     });
 
-  const price = useMemo(
-    () => getProposalMinPrice(tokenInfo, paymentTokenInfo),
-    [paymentTokenInfo],
-  );
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -224,22 +224,28 @@ function CreateProposalModalContentBody({
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
-  useEffect(() => {
-    if (price) {
-      setSelectedPayAmount(price);
-    }
-  }, [price]);
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
+
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
 
   return (
     <>
       <View className="flex-row items-center justify-between gap-2">
         <Text>Active Wallet</Text>
         <UserWalletSelect />
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Cast Status:</Text>
+        <Text className="text-sm">Voteable</Text>
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       {paymentTokenInfoLoading ? (
@@ -250,7 +256,7 @@ function CreateProposalModalContentBody({
             paymentInfoType={PaymentInfoType.Create}
             defaultPaymentInfo={{
               tokenInfo: paymentTokenInfo!,
-              recommendedAmount: price,
+              recommendedAmount: minAmount,
               minAmount: minAmount,
             }}
             selectedPaymentToken={selectedPaymentToken!}
