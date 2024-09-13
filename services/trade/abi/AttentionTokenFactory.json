@@ -42,30 +42,54 @@
             "type": "constructor"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "target",
-                    "type": "address"
-                }
-            ],
-            "name": "AddressEmptyCode",
+            "inputs": [],
+            "name": "AlreadyInitialized",
             "type": "error"
         },
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
+                    "internalType": "string",
+                    "name": "baseURI",
+                    "type": "string"
                 }
             ],
-            "name": "AddressInsufficientBalance",
+            "name": "CommunityCuration__BaseURIExists",
             "type": "error"
         },
         {
             "inputs": [],
-            "name": "AlreadyInitialized",
+            "name": "CommunityCuration__HasGraduated",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__HasNotGraduated",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__InsufficientLeftForCurrentPriceRange",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__InsufficientPayment",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__InvalidAmount",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__InvalidFeeBip",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__InvalidTokenId",
             "type": "error"
         },
         {
@@ -86,12 +110,53 @@
         },
         {
             "inputs": [],
-            "name": "ERC1167FailedCreateClone",
+            "name": "CommunityCuration__MintAmountIsZero",
             "type": "error"
         },
         {
             "inputs": [],
-            "name": "FailedInnerCall",
+            "name": "CommunityCuration__NotReachedGraduationPoint",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__OnlyCreatorAllowed",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__OnlyTokenCreatorAllowed",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__ProposalStakeZero",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "CommunityCuration__TokenNotExists",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "FailedDeployment",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "balance",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "needed",
+                    "type": "uint256"
+                }
+            ],
+            "name": "InsufficientBalance",
             "type": "error"
         },
         {
@@ -244,6 +309,18 @@
                     "internalType": "uint256",
                     "name": "totalNftSupply",
                     "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "nftPrice",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "string",
+                    "name": "contentHash",
+                    "type": "string"
                 }
             ],
             "name": "NFTBurned",
@@ -287,6 +364,18 @@
                     "internalType": "uint256",
                     "name": "totalNftSupply",
                     "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "nftPrice",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "string",
+                    "name": "contentHash",
+                    "type": "string"
                 }
             ],
             "name": "NFTMinted",
@@ -540,7 +629,7 @@
                     "type": "uint256"
                 }
             ],
-            "stateMutability": "pure",
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -1039,7 +1128,30 @@
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_account",
+                    "type": "address"
+                }
+            ],
+            "name": "grantDanSignerRole",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "_tokenAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_to",
                     "type": "address"
                 },
                 {
@@ -1071,6 +1183,11 @@
                     "type": "address"
                 },
                 {
+                    "internalType": "address",
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
                     "internalType": "uint256",
                     "name": "_tokenId",
                     "type": "uint256"
@@ -1087,7 +1204,13 @@
                 }
             ],
             "name": "mintNFTFromUniV3",
-            "outputs": [],
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenAmountOut",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -1148,6 +1271,76 @@
             "name": "requestOwnershipHandover",
             "outputs": [],
             "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_account",
+                    "type": "address"
+                }
+            ],
+            "name": "revokeDanSignerRole",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "degencastLiquidityFeeBip",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "degencastFeeBip",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "channelHostFeeBip",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "creatorFeeBip",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "curatorFeeBip",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setFeeBip",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "tokenCreators",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -1241,6 +1434,68 @@
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_danTemplate",
+                    "type": "address"
+                }
+            ],
+            "name": "updateDanTemplate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_maxTokensPerIdPerUser",
+                    "type": "uint256"
+                }
+            ],
+            "name": "updateMaxTokensPerIdPerUser",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_account",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "_allowed",
+                    "type": "bool"
+                }
+            ],
+            "name": "updateTokenCreator",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_tokenTemplate",
+                    "type": "address"
+                }
+            ],
+            "name": "updateTokenTemplate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
