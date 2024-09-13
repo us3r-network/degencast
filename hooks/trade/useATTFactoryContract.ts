@@ -7,7 +7,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useCallsStatus, useWriteContracts } from "wagmi/experimental";
-import { NATIVE_TOKEN_ADDRESS, UNISWAP_V3_DEGEN_ETH_POOL_FEES, WRAP_NATIVE_TOKEN_ADDRESS } from "~/constants";
+import { NATIVE_TOKEN_ADDRESS, UNISWAP_V3_DEGEN_ETH_POOL_FEES, WRAP_NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from "~/constants";
 import {
   ATT_CONTRACT_CHAIN,
   ATT_FACTORY_CONTRACT_ADDRESS,
@@ -146,6 +146,7 @@ export function useATTFactoryContractMint(token: ERC42069Token) {
         functionName: graduated ? "mintNFTFromUniV3" : "mintNFT",
         args: [
           token.contractAddress,
+          ZERO_ADDRESS,
           BigInt(token.tokenId),
           BigInt(amount),
           maxPayment,
@@ -256,6 +257,7 @@ export function useATTFactoryContractMintAA(token: ERC42069Token) {
         functionName: graduated ? "mintNFTFromUniV3" : "mintNFT",
         args: [
           token.contractAddress,
+          ZERO_ADDRESS,
           BigInt(token.tokenId),
           BigInt(amount),
           maxPayment,

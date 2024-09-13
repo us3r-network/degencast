@@ -17,7 +17,7 @@ import {
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
 import { CommunityInfo } from "../common/CommunityInfo";
-import { ChevronDown, ChevronUp } from "../common/Icons";
+import { ChevronDown, ChevronUp, SquareArrowDownRight } from "../common/Icons";
 import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent } from "../ui/card";
@@ -58,17 +58,29 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               userData={data.user}
               hideHandle
             />
-            <ExternalLink href={eventLogUrl}>
+            {eventLogUrl ? (
+              <ExternalLink href={eventLogUrl}>
+                <View className="flex-row items-center gap-1">
+                  <ActivityItemOperation operation={data.operation} />
+                  <SquareArrowDownRight size={16}/>
+                </View>
+              </ExternalLink>
+            ) : (
               <ActivityItemOperation operation={data.operation} />
-            </ExternalLink>
+            )}
           </View>
-          {data.timestamp && (
-            <ExternalLink href={transcationUrl}>
+          {data.timestamp &&
+            (transcationUrl ? (
+              <ExternalLink href={transcationUrl}>
+                <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
+                  {dayjs(data.timestamp).fromNow(true)}
+                </Text>
+              </ExternalLink>
+            ) : (
               <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
                 {dayjs(data.timestamp).fromNow(true)}
               </Text>
-            </ExternalLink>
-          )}
+            ))}
         </View>
 
         {data.operation === ActivityOperation.REWARD ? (
@@ -107,9 +119,13 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
           {data.paymentTokenAmount && data.paymentTokenInfo && (
             <View className="flex-row items-center gap-2">
               <Text>for</Text>
-              <ExternalLink href={eventLogUrl}>
+              {eventLogUrl ? (
+                <ExternalLink href={eventLogUrl}>
+                  <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+                </ExternalLink>
+              ) : (
                 <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
-              </ExternalLink>
+              )}
             </View>
           )}
         </View>

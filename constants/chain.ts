@@ -8,6 +8,7 @@ export const DEFAULT_CHAINID: number =
   Number(process.env.EXPO_PUBLIC_DEFAULT_CHAIN_ID) || base.id;
 export const DEFAULT_CHAIN = getChain(DEFAULT_CHAINID);
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export const NATIVE_TOKEN_ADDRESS: Address =
   (process.env.EXPO_PUBLIC_NATIVE_TOKEN_ADDRESS as Address) ||
   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"; //ETH
@@ -17,6 +18,9 @@ export const WRAP_NATIVE_TOKEN_ADDRESS: Address =
 export const DEGEN_TOKEN_ADDRESS: Address =
   (process.env.EXPO_PUBLIC_DEGEN_TOKEN_ADDRESS as Address) ||
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
+  export const USDC_TOKEN_ADDRESS: Address =
+  (process.env.EXPO_PUBLIC_USDC_TOKEN_ADDRESS as Address) ||
+  "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"; // USDC
 
 export const NATIVE_TOKEN_METADATA: TokenWithTradeInfo = {
   chainId: DEFAULT_CHAINID,
@@ -45,6 +49,16 @@ export const DEGEN_TOKEN_METADATA: TokenWithTradeInfo = {
   symbol: "DEGEN",
   logoURI:
     "https://assets.coingecko.com/coins/images/34515/standard/android-chrome-512x512.png",
+};
+
+export const USDC_TOKEN_METADATA: TokenWithTradeInfo = {
+  chainId: DEFAULT_CHAINID,
+  address: USDC_TOKEN_ADDRESS,
+  name: "USD Coin",
+  decimals: 6,
+  symbol: "USDC",
+  logoURI:
+    "https://assets.coingecko.com/coins/images/325/small/Tether.png",
 };
 
 export const UNISWAP_V3_DEGEN_ETH_POOL_FEES =

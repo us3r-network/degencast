@@ -1,11 +1,17 @@
-import { useMemo } from "react";
-import { erc20Abi, formatUnits } from "viem";
+// import { FeeAmount } from "@uniswap/v3-sdk";
+import { useEffect, useMemo } from "react";
+import { erc20Abi, formatUnits, parseUnits } from "viem";
 import { useBalance, useReadContracts } from "wagmi";
 import {
   DEFAULT_CHAINID,
-  NATIVE_TOKEN_METADATA
+  NATIVE_TOKEN_METADATA,
+  // USDC_TOKEN_ADDRESS,
+  // USDC_TOKEN_METADATA,
+  // WRAP_NATIVE_TOKEN_ADDRESS,
+  // WRAP_NATIVE_TOKEN_METADATA
 } from "~/constants";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+// import { useSwap } from "../trade/useUniSwapV3";
 
 export function useUserNativeToken(
   address: `0x${string}` | undefined,
@@ -17,6 +23,21 @@ export function useUserNativeToken(
     address,
     chainId,
   });
+  // const {
+  //   fetchSellAmount,
+  //   sellAmount: usdPrice,
+  //   ready: swapReady,
+  // } = useSwap({
+  //   buyToken: { address: WRAP_NATIVE_TOKEN_ADDRESS, chainId }!,
+  //   sellToken: { address: USDC_TOKEN_ADDRESS, chainId },
+  //   poolFee: FeeAmount.MEDIUM,
+  // });
+  // useEffect(() => {
+  //   if (swapReady) {
+  //     fetchSellAmount(parseUnits("1", WRAP_NATIVE_TOKEN_METADATA.decimals!));
+  //   }
+  // }, [swapReady]);
+
   const token: TokenWithTradeInfo | undefined = useMemo(
     () =>
       data && {
@@ -27,6 +48,9 @@ export function useUserNativeToken(
         rawBalance: data.value,
         balance: formatUnits(data.value, data.decimals),
         logoURI: NATIVE_TOKEN_METADATA.logoURI,
+        // usdPrice: usdPrice
+        //   ? Number(formatUnits(usdPrice, USDC_TOKEN_METADATA.decimals!))
+        //   : undefined,
       },
     [data],
   );
@@ -77,6 +101,20 @@ export function useUserToken(
       },
     ],
   });
+  // const {
+  //   fetchSellAmount,
+  //   sellAmount: usdPrice,
+  //   ready: swapReady,
+  // } = useSwap({
+  //   buyToken: { address, chainId }!,
+  //   sellToken: { address: USDC_TOKEN_ADDRESS, chainId },
+  //   poolFee: FeeAmount.MEDIUM,
+  // });
+  // useEffect(() => {
+  //   if (swapReady) {
+  //     fetchSellAmount(parseUnits("1", USDC_TOKEN_METADATA.decimals!));
+  //   }
+  // }, [swapReady]);
   const token: TokenWithTradeInfo | undefined = useMemo(
     () =>
       data && data?.length >= 4
@@ -88,6 +126,9 @@ export function useUserToken(
             decimals: data[2],
             balance: formatUnits(data[1], data[2]),
             symbol: data[3],
+            // usdPrice: usdPrice
+            //   ? Number(formatUnits(usdPrice, USDC_TOKEN_METADATA.decimals!))
+            //   : undefined,
           }
         : undefined,
     [data],
