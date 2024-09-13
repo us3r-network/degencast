@@ -22,6 +22,8 @@ import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent } from "../ui/card";
 import { Text } from "../ui/text";
+import { ATT_CONTRACT_CHAIN } from "~/constants";
+import { ExternalLink } from "../common/ExternalLink";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
@@ -39,6 +41,13 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
   const paymentText = new Intl.NumberFormat("en-US", {
     notation: "compact",
   }).format(Number(paymentAmount));
+  const transcationUrl = data.txHash
+    ? `${ATT_CONTRACT_CHAIN.blockExplorers?.default.url}/tx/${data.txHash}`
+    : undefined;
+  const eventLogUrl =
+    data.blockNumber && data.logIndex
+      ? `https://ethreceipts.org/l/${ATT_CONTRACT_CHAIN.id}/${data.blockNumber}/${data.logIndex}`
+      : undefined;
   return (
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
@@ -49,12 +58,16 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               userData={data.user}
               hideHandle
             />
-            <ActivityItemOperation operation={data.operation} />
+            <ExternalLink href={eventLogUrl}>
+              <ActivityItemOperation operation={data.operation} />
+            </ExternalLink>
           </View>
           {data.timestamp && (
-            <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
-              {dayjs(data.timestamp).fromNow(true)}
-            </Text>
+            <ExternalLink href={transcationUrl}>
+              <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
+                {dayjs(data.timestamp).fromNow(true)}
+              </Text>
+            </ExternalLink>
           )}
         </View>
 
@@ -92,7 +105,12 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
           <Text>From</Text>
           <ActivityItemUser userData={data?.cast?.author} hideHandle />
           {data.paymentTokenAmount && data.paymentTokenInfo && (
-            <Text>{`for ${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+            <View className="flex-row items-center gap-2">
+              <Text>for</Text>
+              <ExternalLink href={eventLogUrl}>
+                <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+              </ExternalLink>
+            </View>
           )}
         </View>
         {data?.cast && <ActivityCast cast={data?.cast} />}

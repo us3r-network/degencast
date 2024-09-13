@@ -49,6 +49,9 @@ export type ActivityEntity = {
   channel: WarpcastChannel;
   cast: NeynarCast;
 	proposal: ProposalEntity;
+  txHash: string;
+  blockNumber?: number;
+  logIndex?: number;
 };
 
 export type TokenEntity = {
