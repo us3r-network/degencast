@@ -141,14 +141,14 @@ export function ProposeProposalWriteButton({
             <Text>The proposal has been abandoned</Text>
           ) : proposals?.state === ProposalState.Accepted ? (
             Number(proposals?.roundIndex) <= 1 ? (
-              <Text>{upvoteText || "Upvote & Accelerate Countdown"}</Text>
+              <Text>{upvoteText || "Upvote"}</Text>
             ) : (
               <Text>The proposal has been accepted</Text>
             )
           ) : !isConnected ? (
-            <Text>Connect your wallet first</Text>
+            <Text>Connect Wallet</Text>
           ) : (
-            <Text>{upvoteText || "Upvote & Accelerate Countdown"}</Text>
+            <Text>{upvoteText || "Upvote"}</Text>
           )}
         </Button>
       }
@@ -290,7 +290,7 @@ export function DisputeProposalWriteButton({
           ) : !isConnected ? (
             <Text>Connect Wallet</Text>
           ) : (
-            <Text>{downvoteText || "Challenge"}</Text>
+            <Text>{downvoteText || "Downvote"}</Text>
           )}
         </Button>
       }

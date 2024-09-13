@@ -60,7 +60,7 @@ export default function ChallengeProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "challenge", title: "Challenge" },
+    { key: "challenge", title: "Vote" },
     { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
@@ -152,9 +152,11 @@ function ChallengeProposalContentBody({
         <UserWalletSelect />
       </View>
       <View className="flex-row items-center justify-between gap-2">
-        <Text>The current stance on the proposal is:</Text>
+        <Text>Cast Status:</Text>
         <Text className="text-sm">
-          {proposal.status === ProposalState.Disputed ? "👎" : "👍"}
+          {proposal.status === ProposalState.Disputed
+            ? "👎Downvoted"
+            : "👍Upvoted"}
         </Text>
       </View>
 
@@ -264,7 +266,7 @@ export function DisputeProposalWrite({
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
@@ -343,7 +345,7 @@ export function ProposeProposalWrite({
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,

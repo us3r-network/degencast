@@ -2,7 +2,6 @@ import { Channel } from "~/services/farcaster/types";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 import { CuratorEntity, RankOrderBy } from "../types";
-import { mockCurators } from "../mocks/curators";
 
 type RankParams = {
   orderBy?: RankOrderBy;
@@ -30,18 +29,6 @@ export function fetchRankTokens(
     params,
   });
 }
-
-const mockCuratorsRequest = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  return {
-    data: {
-      code: 0,
-      msg: "",
-      data: mockCurators,
-    },
-  } as unknown as RequestPromise<ApiResp<CuratorEntity[]>>;
-};
 
 export function fetchRankCurators(
   params: RankParams,
