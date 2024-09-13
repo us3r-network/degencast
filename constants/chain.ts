@@ -18,9 +18,9 @@ export const WRAP_NATIVE_TOKEN_ADDRESS: Address =
 export const DEGEN_TOKEN_ADDRESS: Address =
   (process.env.EXPO_PUBLIC_DEGEN_TOKEN_ADDRESS as Address) ||
   "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; // Degen
-  export const USDT_TOKEN_ADDRESS: Address =
-  (process.env.EXPO_PUBLIC_USDT_TOKEN_ADDRESS as Address) ||
-  "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"; // USDT
+  export const USDC_TOKEN_ADDRESS: Address =
+  (process.env.EXPO_PUBLIC_USDC_TOKEN_ADDRESS as Address) ||
+  "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"; // USDC
 
 export const NATIVE_TOKEN_METADATA: TokenWithTradeInfo = {
   chainId: DEFAULT_CHAINID,
@@ -51,9 +51,9 @@ export const DEGEN_TOKEN_METADATA: TokenWithTradeInfo = {
     "https://assets.coingecko.com/coins/images/34515/standard/android-chrome-512x512.png",
 };
 
-export const USDT_TOKEN_METADATA: TokenWithTradeInfo = {
+export const USDC_TOKEN_METADATA: TokenWithTradeInfo = {
   chainId: DEFAULT_CHAINID,
-  address: USDT_TOKEN_ADDRESS,
+  address: USDC_TOKEN_ADDRESS,
   name: "USD Coin",
   decimals: 6,
   symbol: "USDC",

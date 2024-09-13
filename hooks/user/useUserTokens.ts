@@ -1,17 +1,17 @@
-import { FeeAmount } from "@uniswap/v3-sdk";
+// import { FeeAmount } from "@uniswap/v3-sdk";
 import { useEffect, useMemo } from "react";
 import { erc20Abi, formatUnits, parseUnits } from "viem";
 import { useBalance, useReadContracts } from "wagmi";
 import {
   DEFAULT_CHAINID,
   NATIVE_TOKEN_METADATA,
-  USDT_TOKEN_ADDRESS,
-  USDT_TOKEN_METADATA,
-  WRAP_NATIVE_TOKEN_ADDRESS,
-  WRAP_NATIVE_TOKEN_METADATA
+  // USDC_TOKEN_ADDRESS,
+  // USDC_TOKEN_METADATA,
+  // WRAP_NATIVE_TOKEN_ADDRESS,
+  // WRAP_NATIVE_TOKEN_METADATA
 } from "~/constants";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { useSwap } from "../trade/useUniSwapV3";
+// import { useSwap } from "../trade/useUniSwapV3";
 
 export function useUserNativeToken(
   address: `0x${string}` | undefined,
@@ -29,7 +29,7 @@ export function useUserNativeToken(
   //   ready: swapReady,
   // } = useSwap({
   //   buyToken: { address: WRAP_NATIVE_TOKEN_ADDRESS, chainId }!,
-  //   sellToken: { address: USDT_TOKEN_ADDRESS, chainId },
+  //   sellToken: { address: USDC_TOKEN_ADDRESS, chainId },
   //   poolFee: FeeAmount.MEDIUM,
   // });
   // useEffect(() => {
@@ -49,7 +49,7 @@ export function useUserNativeToken(
         balance: formatUnits(data.value, data.decimals),
         logoURI: NATIVE_TOKEN_METADATA.logoURI,
         // usdPrice: usdPrice
-        //   ? Number(formatUnits(usdPrice, USDT_TOKEN_METADATA.decimals!))
+        //   ? Number(formatUnits(usdPrice, USDC_TOKEN_METADATA.decimals!))
         //   : undefined,
       },
     [data],
@@ -107,12 +107,12 @@ export function useUserToken(
   //   ready: swapReady,
   // } = useSwap({
   //   buyToken: { address, chainId }!,
-  //   sellToken: { address: USDT_TOKEN_ADDRESS, chainId },
+  //   sellToken: { address: USDC_TOKEN_ADDRESS, chainId },
   //   poolFee: FeeAmount.MEDIUM,
   // });
   // useEffect(() => {
   //   if (swapReady) {
-  //     fetchSellAmount(parseUnits("1", USDT_TOKEN_METADATA.decimals!));
+  //     fetchSellAmount(parseUnits("1", USDC_TOKEN_METADATA.decimals!));
   //   }
   // }, [swapReady]);
   const token: TokenWithTradeInfo | undefined = useMemo(
@@ -127,7 +127,7 @@ export function useUserToken(
             balance: formatUnits(data[1], data[2]),
             symbol: data[3],
             // usdPrice: usdPrice
-            //   ? Number(formatUnits(usdPrice, USDT_TOKEN_METADATA.decimals!))
+            //   ? Number(formatUnits(usdPrice, USDC_TOKEN_METADATA.decimals!))
             //   : undefined,
           }
         : undefined,
