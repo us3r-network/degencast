@@ -8,6 +8,7 @@ export const DEFAULT_CHAINID: number =
   Number(process.env.EXPO_PUBLIC_DEFAULT_CHAIN_ID) || base.id;
 export const DEFAULT_CHAIN = getChain(DEFAULT_CHAINID);
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export const NATIVE_TOKEN_ADDRESS: Address =
   (process.env.EXPO_PUBLIC_NATIVE_TOKEN_ADDRESS as Address) ||
   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"; //ETH

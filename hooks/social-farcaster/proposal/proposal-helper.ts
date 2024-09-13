@@ -12,6 +12,7 @@ import {
   NATIVE_TOKEN_ADDRESS,
   UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   WRAP_NATIVE_TOKEN_ADDRESS,
+  ZERO_ADDRESS,
 } from "~/constants/chain";
 import DanAbi from "~/services/proposal/abi/DanAbi.json";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -21,8 +22,6 @@ import {
   getTradeCallDataWithInput,
 } from "~/services/uniswapV3/trading";
 import WETH_ABI from "~/services/trade/abi/weth.json";
-
-export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 type WriteContractsCapabilities =
   | {
