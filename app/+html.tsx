@@ -1,6 +1,5 @@
 import { ScrollViewStyleReset } from "expo-router/html";
 import { Asset } from "expo-asset";
-import { DEGENCAST_FRAME_HOST } from "~/constants";
 const degencastLoadingGif = Asset.fromModule(
   require("assets/images/degencast-loading.gif"),
 );
@@ -19,19 +18,6 @@ export default function Root({ children }: { children: React.ReactNode }) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        {/* <!-- join waitlist frame --> */}
-        <meta name="fc:frame" content="vNext" />
-        <meta
-          name="fc:frame:image"
-          content={`${DEGENCAST_FRAME_HOST}/images/waitlist/join-waitlist.png`}
-        />
-        <meta
-          name="fc:frame:post_url"
-          content={`${DEGENCAST_FRAME_HOST}/waitlist/frames`}
-        />
-        <meta name="fc:frame:button:1" content="Join Waitlist" />
-        {/* <!-- join waitlist frame --> */}
-
         {/* Link the PWA manifest file. */}
         <link rel="manifest" href="/manifest.json" />
         {/* 
