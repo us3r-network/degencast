@@ -12,7 +12,10 @@ import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import { FeeAmount } from "@uniswap/v3-sdk";
 import { useAccount } from "wagmi";
 import { useUserNativeToken } from "~/hooks/user/useUserTokens";
-import { NATIVE_TOKEN_ADDRESS } from "~/constants/chain";
+import {
+  NATIVE_TOKEN_ADDRESS,
+  UNISWAP_V3_DEGEN_ETH_POOL_FEES,
+} from "~/constants/chain";
 import { useEffect, useState } from "react";
 
 export enum PaymentInfoType {
@@ -75,7 +78,7 @@ export function ProposalPaymentSelector({
     <View className="flex flex-col gap-4">
       {!!ethTokenInfo &&
         defaultTokenInfo &&
-        supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
+        supportAtomicBatch(defaultTokenInfo.chainId) && (
           <UserTokenSelectWrapper
             ethTokenInfo={ethTokenInfo}
             defaultTokenInfo={defaultTokenInfo}
@@ -169,7 +172,7 @@ function UserTokenSelectWrapper({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
-    poolFee: FeeAmount.HIGH,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
   useEffect(() => {
     setFetchedEthRecommendedAmount(fetchedEthRecommendedAmount || 0n);
@@ -182,20 +185,20 @@ function UserTokenSelectWrapper({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
-    poolFee: FeeAmount.HIGH,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
   useEffect(() => {
     setFetchedEthMinAmount(fetchedEthMinAmount || 0n);
   }, [fetchedEthMinAmount]);
   const handleTokenChange = async (token: TokenWithTradeInfo) => {
-    if (token.address === selectedPaymentToken.address) {
+    if (token?.address === selectedPaymentToken?.address) {
       return;
     }
     if (!ethTokenInfo?.address) {
       return;
     }
     setSelectedPaymentToken(token);
-    if (token.address === ethTokenInfo.address) {
+    if (token?.address === ethTokenInfo?.address) {
       if (
         swapRecommendedReady &&
         defaultRecommendedAmount &&
@@ -213,19 +216,9 @@ function UserTokenSelectWrapper({
     }
     if (token.address === ethTokenInfo.address) {
       const amount = await fetchEthAmountAsync(selectedPayAmount);
-      console.log("fetchEthAmountAsync", {
-        selectedPayAmount,
-        token,
-        amount,
-      });
       setSelectedPayAmount(amount);
     } else {
       const amount = await fetchDefaultTokenAmountAsync(selectedPayAmount);
-      console.log("fetchDefaultTokenAmountAsync", {
-        selectedPayAmount,
-        token,
-        amount,
-      });
       setSelectedPayAmount(amount);
     }
   };
@@ -271,19 +264,25 @@ export function PaymentInfo({
     selectedPayAmount && paymentTokenInfo?.decimals
       ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
       : 0;
-
-  console.log("selectedPaymentTokenInfo", paymentTokenInfo);
-  console.log("selectedPayAmountNumber", selectedPayAmountNumber);
-  console.log("minPayAmountNumber", minPayAmountNumber);
+  const maxAmountNumber = paymentTokenInfo?.rawBalance
+    ? Number(
+        formatUnits(
+          paymentTokenInfo?.rawBalance as any,
+          paymentTokenInfo?.decimals!,
+        ),
+      )
+    : 0;
 
   const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectedPayAmountNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
+    value: maxAmountNumber ? selectedPayAmountNumber : 0,
+    max: maxAmountNumber,
+    min: maxAmountNumber ? minPayAmountNumber || 0 : 0,
     step: sliderStep || recommendedPayAmountNumber / 100,
     maximumFractionDigits:
       paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
+
+  console.log("priceSliderConfig", priceSliderConfig);
 
   return (
     <View className="flex flex-col gap-4">
@@ -300,7 +299,7 @@ export function PaymentInfo({
       />
       <Slider
         {...priceSliderConfig}
-        disabled={!paymentTokenInfo?.balance}
+        disabled={priceSliderConfig.max <= priceSliderConfig.min}
         onValueChange={(v) => {
           if (!isNaN(Number(v))) {
             const vInt = Number(v);
@@ -348,10 +347,6 @@ export function PaymentInfoWithProposed({
     selectedPayAmount && paymentTokenInfo?.decimals
       ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
       : 0;
-
-  console.log("selectedPaymentTokenInfo", paymentTokenInfo);
-  console.log("selectedPayAmountNumber", selectedPayAmountNumber);
-  console.log("minPayAmountNumber", minPayAmountNumber);
 
   const priceSliderConfig = {
     value: paymentTokenInfo?.balance ? selectedPayAmountNumber : 0,
