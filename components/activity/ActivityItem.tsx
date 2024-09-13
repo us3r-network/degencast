@@ -60,9 +60,9 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             />
             {eventLogUrl ? (
               <ExternalLink href={eventLogUrl}>
-                <View>
+                <View className="flex-row items-center gap-1">
                   <ActivityItemOperation operation={data.operation} />
-                  <SquareArrowDownRight />
+                  <SquareArrowDownRight size={16}/>
                 </View>
               </ExternalLink>
             ) : (
