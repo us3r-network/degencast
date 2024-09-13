@@ -100,7 +100,6 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
-          amountLabel={"Upvote Cost"}
         />
       ) : paymentInfoType === PaymentInfoType.Proposed ? (
         <PaymentInfoWithProposed
@@ -117,7 +116,7 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
-          amountLabel={"The cost for a successful challenge:"}
+          description="Upvote spam casts, share the staked funds after success."
         />
       ) : paymentInfoType === PaymentInfoType.Challenge ? (
         <PaymentInfo
@@ -126,8 +125,7 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
-          amountLabel={"The cost for a successful challenge:"}
-          description="Downvote spam casts, if you win, you can share the staked funds from upvoters."
+          description="Downvote spam casts, share the staked funds after success."
         />
       ) : null}
     </View>
@@ -239,31 +237,17 @@ export function PaymentInfo({
   setSelectedPayAmount,
   amountLoading,
   sliderStep,
-  amountLabel,
   description,
 }: {
   paymentTokenInfo: TokenWithTradeInfo;
-  recommendedPayAmount?: bigint;
+  recommendedPayAmount: bigint;
   minPayAmount: bigint;
   selectedPayAmount: bigint;
   setSelectedPayAmount: (amount: bigint) => void;
   amountLoading?: boolean;
   sliderStep?: number;
-  amountLabel: string;
   description?: string;
 }) {
-  const recommendedPayAmountNumber =
-    recommendedPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(recommendedPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
-  const minPayAmountNumber =
-    minPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(minPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
-  const selectedPayAmountNumber =
-    selectedPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
   const maxAmountNumber = paymentTokenInfo?.rawBalance
     ? Number(
         formatUnits(
@@ -272,34 +256,65 @@ export function PaymentInfo({
         ),
       )
     : 0;
+  const minPayAmountNumber =
+    minPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(minPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
+  const selectedPayAmountNumber =
+    selectedPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
+  const recommendedPayAmountNumber =
+    recommendedPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(recommendedPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
 
   const priceSliderConfig = {
-    value: maxAmountNumber ? selectedPayAmountNumber : 0,
+    value: selectedPayAmountNumber,
     max: maxAmountNumber,
-    min: maxAmountNumber ? minPayAmountNumber || 0 : 0,
+    min: minPayAmountNumber,
     step: sliderStep || recommendedPayAmountNumber / 100,
     maximumFractionDigits:
       paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
 
-  console.log("priceSliderConfig", priceSliderConfig);
-
   return (
     <View className="flex flex-col gap-4">
       <PriceRow
-        title={amountLabel}
+        title={"Minimum Cost"}
         paymentTokenInfo={paymentTokenInfo}
-        price={recommendedPayAmount}
-        isLoading={amountLoading}
+        price={minPayAmount}
         onClickPriceValue={() => {
-          if (recommendedPayAmount) {
-            setSelectedPayAmount(recommendedPayAmount);
+          if (minPayAmount) {
+            setSelectedPayAmount(minPayAmount);
           }
         }}
       />
+
+      {!!recommendedPayAmount && (
+        <PriceRow
+          title={"Successfully Challenge"}
+          paymentTokenInfo={paymentTokenInfo}
+          price={recommendedPayAmount}
+          isLoading={amountLoading}
+          onClickPriceValue={() => {
+            if (recommendedPayAmount) {
+              setSelectedPayAmount(recommendedPayAmount);
+            }
+          }}
+        />
+      )}
+      <Text className="text-center text-xs text-secondary">
+        Risk DEGEN to vote and get rewarded for every mint.
+      </Text>
+      {description && (
+        <Text className="text-center text-xs text-secondary">
+          {description}
+        </Text>
+      )}
       <Slider
         {...priceSliderConfig}
-        disabled={priceSliderConfig.max <= priceSliderConfig.min}
+        disabled={maxAmountNumber <= minPayAmountNumber}
         onValueChange={(v) => {
           if (!isNaN(Number(v))) {
             const vInt = Number(v);
@@ -310,10 +325,6 @@ export function PaymentInfo({
         }}
       />
       <PriceRangeRow {...priceSliderConfig} />
-      <Text className="text-center text-xs text-secondary">
-        {description ||
-          `Stake ${paymentTokenInfo?.symbol || "DEGEN"}, get funds back and earn minting fee rewards upon success!`}
-      </Text>
     </View>
   );
 }
