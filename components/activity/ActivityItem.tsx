@@ -17,7 +17,7 @@ import {
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
 import { CommunityInfo } from "../common/CommunityInfo";
-import { ChevronDown, ChevronUp } from "../common/Icons";
+import { ChevronDown, ChevronUp, Link as LinkIcon } from "../common/Icons";
 import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent } from "../ui/card";
@@ -59,7 +59,10 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               hideHandle
             />
             <ExternalLink href={eventLogUrl}>
-              <ActivityItemOperation operation={data.operation} />
+              <View className="flex-row items-center gap-1">
+                {eventLogUrl && <LinkIcon size={16} />}
+                <ActivityItemOperation operation={data.operation} />
+              </View>
             </ExternalLink>
           </View>
           {data.timestamp && (

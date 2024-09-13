@@ -86,6 +86,7 @@ import {
   Triangle,
   DiamondPlus,
   CircleHelp,
+  Link,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -187,7 +188,7 @@ interopIcon(ArrowUpNarrowWide);
 interopIcon(Triangle);
 interopIcon(DiamondPlus);
 interopIcon(CircleHelp);
-
+interopIcon(Link);
 export {
   Activity,
   Airplay,
@@ -275,4 +276,5 @@ export {
   Triangle,
   DiamondPlus,
   CircleHelp,
+  Link,
 };
