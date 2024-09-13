@@ -254,14 +254,12 @@ export function DisputeProposalWrite({
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
 
   useEffect(() => {
     if (!priceLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, priceLoading]);
@@ -289,10 +287,6 @@ export function DisputeProposalWrite({
           setSelectedPayAmount={setSelectedPayAmount}
         />
       ) : null}
-      <Text className="text-center text-xs text-secondary">
-        Downvote spam casts, if you win, you can share the staked funds from
-        upvoters.
-      </Text>
       <DisputeProposalWriteButton
         cast={cast}
         channel={channel}
@@ -339,14 +333,12 @@ export function ProposeProposalWrite({
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
 
   useEffect(() => {
     if (!priceLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, priceLoading]);

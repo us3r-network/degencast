@@ -6,7 +6,7 @@ import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useCreateProposal from "~/hooks/social-farcaster/proposal/useCreateProposal";
 import { useAccount } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
-import { TransactionReceipt } from "viem";
+import { formatUnits, TransactionReceipt } from "viem";
 import { getProposalMinPrice } from "../utils";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { Loading } from "~/components/common/Loading";
@@ -48,12 +48,28 @@ export default function CreateProposalWriteButton({
   const isCreated = Number(proposals?.roundIndex) > 0;
   const isLoading =
     createLoading || proposalsLoading || paymentTokenInfoLoading;
+
+  const payAmountNumber =
+    usedPaymentTokenInfo && usedPaymentTokenInfo?.decimals
+      ? Number(formatUnits(paymentAmount, usedPaymentTokenInfo?.decimals!))
+      : 0;
+  const maxAmountNumber = usedPaymentTokenInfo?.rawBalance
+    ? Number(
+        formatUnits(
+          usedPaymentTokenInfo?.rawBalance as any,
+          usedPaymentTokenInfo?.decimals!,
+        ),
+      )
+    : 0;
+
   const disabled =
     isCreated ||
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     isLoading ||
-    !paymentAmount;
+    !paymentAmount ||
+    payAmountNumber > maxAmountNumber;
+
   const allowanceParams =
     !disabled && address && isConnected
       ? {

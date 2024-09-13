@@ -114,7 +114,6 @@ export function UpvoteProposalModalContentBody({
 
   useEffect(() => {
     if (!isLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, isLoading]);

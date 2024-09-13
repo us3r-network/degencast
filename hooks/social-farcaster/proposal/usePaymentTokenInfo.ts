@@ -31,14 +31,11 @@ export default function usePaymentTokenInfo({
           contractAddress,
         });
         if (!paymentTokenAddress) return;
-        console.log("paymentTokenAddress", paymentTokenAddress);
-        console.log("account address", accountAddress);
         const tokenInfo = await getTokenInfo({
           address: paymentTokenAddress,
           chainId: ATT_CONTRACT_CHAIN.id,
           account: accountAddress,
         });
-        console.log("paymentTokenInfo", tokenInfo);
         setPaymentTokenInfo(tokenInfo);
         setStatus("success");
       } catch (error) {

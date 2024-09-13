@@ -209,7 +209,6 @@ function CreateProposalModalContentBody({
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
     });
-  console.log("paymentTokenInfo", paymentTokenInfo);
 
   const price = useMemo(
     () => getProposalMinPrice(tokenInfo, paymentTokenInfo),
@@ -222,13 +221,11 @@ function CreateProposalModalContentBody({
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
   useEffect(() => {
     if (price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price]);
