@@ -73,7 +73,7 @@ export default function useWalletAccount() {
   const linkedInjectedWallet = linkedWallets.find(
     (wallet) => wallet.connectorType === "injected",
   );
-  const connectedInjectedBaseWallet = connectedWallets.find(
+  const connectedInjectedWallet = connectedWallets.find(
     (wallet) => wallet.connectorType === "injected",
   );
 
@@ -92,7 +92,7 @@ export default function useWalletAccount() {
 
   useEffect(() => {
     if (freezeAutoSwitchActiveWallet) return;
-    console.log("setActiveWalletAddress", walletAddress);
+    // console.log("setActiveWalletAddress", walletAddress);
     setActiveWalletAddress(walletAddress);
   }, [walletAddress, freezeAutoSwitchActiveWallet]);
 
@@ -105,17 +105,17 @@ export default function useWalletAccount() {
   }, [connectedWallets, activeWalletAddress]);
 
   const activeOneWallet = useCallback(() => {
-    console.log("activeOneWallet");
+    // console.log("activeOneWallet");
     if (connectedCoinBaseWallet) setActiveWallet(connectedCoinBaseWallet);
-    else if (connectedInjectedBaseWallet)
-      setActiveWallet(connectedInjectedBaseWallet);
+    else if (connectedInjectedWallet)
+      setActiveWallet(connectedInjectedWallet);
     else if (linkedCoinBaseWallet)
       connectWallet({ suggestedAddress: linkedCoinBaseWallet.address });
     else if (linkedInjectedWallet)
       connectWallet({ suggestedAddress: linkedInjectedWallet.address });
   }, [
     connectedCoinBaseWallet,
-    connectedInjectedBaseWallet,
+    connectedInjectedWallet,
     linkedCoinBaseWallet,
     linkedInjectedWallet,
   ]);
@@ -179,7 +179,8 @@ export default function useWalletAccount() {
     linkedWallets,
     unconnectedLinkedWallets,
     coinBaseWallet: linkedCoinBaseWallet || connectedCoinBaseWallet,
-    injectedWallet: linkedInjectedWallet || connectedInjectedBaseWallet,
+    injectedWallet: linkedInjectedWallet,
+    connectedInjectedWallet,
     activeWallet,
     isConnected: !!activeWallet && activeWallet.connectorType !== "embedded",
     connectWallet,

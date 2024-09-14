@@ -245,20 +245,25 @@ export function BuyDialog({
   ]);
 
   const MintNFTScene = () => (
-    <View className="gap-4">
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Active Wallet</Text>
-        <UserWalletSelect />
+    <ScrollView
+      className="max-h-[70vh] w-full"
+      showsHorizontalScrollIndicator={false}
+    >
+      <View className="gap-4">
+        <View className="flex-row items-center justify-between gap-2">
+          <Text>Active Wallet</Text>
+          <UserWalletSelect />
+        </View>
+        <MintNFT
+          nft={token}
+          onSuccess={(data) => {
+            setTransationData(data);
+            onSuccess?.(data.amount || 0);
+          }}
+          onError={setError}
+        />
       </View>
-      <MintNFT
-        nft={token}
-        onSuccess={(data) => {
-          setTransationData(data);
-          onSuccess?.(data.amount || 0);
-        }}
-        onError={setError}
-      />
-    </View>
+    </ScrollView>
   );
 
   const renderScene = SceneMap({
