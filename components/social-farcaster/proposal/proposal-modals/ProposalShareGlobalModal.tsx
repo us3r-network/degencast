@@ -22,7 +22,7 @@ import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 export default function ProposalShareGlobalModal() {
   const { currFid } = useFarcasterAccount();
   const { proposalShareModal, upsertProposalShareModal } = useAppModals();
-  const { cast, channel, proposal } = proposalShareModal;
+  const { cast, channel, proposal, description } = proposalShareModal;
   const castHash = getCastHex(cast!);
   const config = useMemo(() => {
     if (proposal && proposal.status === ProposalState.ReadyToMint) {
@@ -55,6 +55,7 @@ export default function ProposalShareGlobalModal() {
   return (
     <PlatformSharingModal
       modalTitle="Share"
+      modalDescription={description}
       open={proposalShareModal.open}
       onOpenChange={(open) => {
         upsertProposalShareModal({ open });

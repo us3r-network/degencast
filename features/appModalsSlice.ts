@@ -10,6 +10,7 @@ export type ProposalShareModal = {
   cast?: NeynarCast | null;
   channel?: CommunityEntity | null;
   proposal?: ProposalEntity | null;
+  description?: string;
 };
 
 export type ChannelShareModal = {
