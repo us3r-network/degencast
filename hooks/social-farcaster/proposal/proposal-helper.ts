@@ -12,6 +12,7 @@ import {
   NATIVE_TOKEN_ADDRESS,
   UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   WRAP_NATIVE_TOKEN_ADDRESS,
+  ZERO_ADDRESS,
 } from "~/constants/chain";
 import DanAbi from "~/services/proposal/abi/DanAbi.json";
 import { TokenWithTradeInfo } from "~/services/trade/types";
@@ -337,7 +338,9 @@ export const createProposal = async ({
     contentHash: proposalConfig.castHash,
     contentCreator: proposalConfig.castCreator,
     contentURI: proposalConfig.contentURI,
+    beneficiary: ZERO_ADDRESS,
   };
+
   const txBaseConfig = {
     abi: DanAbi,
     address: contractAddress,
@@ -541,7 +544,7 @@ const challengeProposal = async ({
     };
     const txConfig = {
       ...txBaseConfig,
-      args: [castHash, txPaymentAmount],
+      args: [castHash, txPaymentAmount, ZERO_ADDRESS],
     };
     contracts = [...contracts, approveConfig, txConfig];
 
@@ -569,14 +572,13 @@ const challengeProposal = async ({
         } catch (error) {}
       }, 1000);
     });
-
     const { status, receipts } = res;
     receipt = (receipts?.[receipts?.length - 1] ||
       undefined) as TransactionReceipt;
   } else {
     const txConfig = {
       ...txBaseConfig,
-      args: [castHash, paymentAmount],
+      args: [castHash, paymentAmount, ZERO_ADDRESS],
     };
     const { request: simulateRequest } =
       await publicClient.simulateContract(txConfig);

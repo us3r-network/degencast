@@ -14,6 +14,7 @@ import Toast from "react-native-toast-message";
 
 export type ShareProps = {
   modalTitle?: string;
+  modalDescription?: string;
   text?: string;
   twitterText?: string;
   warpcastText?: string;
@@ -25,6 +26,7 @@ export type ShareProps = {
 
 export default function PlatformSharingModal({
   modalTitle,
+  modalDescription,
   text,
   twitterText,
   warpcastText,
@@ -92,7 +94,7 @@ export default function PlatformSharingModal({
           {warpcastText && (
             <ShareButton
               iconSource={require("~/assets/images/warpcast.png")}
-              text="Share & Earn"
+              text="Share"
               points={!hideWarpcastPoints ? inviteUnit : 0}
               onPress={onCreateCast}
             />
@@ -100,7 +102,7 @@ export default function PlatformSharingModal({
           {twitterText && (
             <ShareButton
               iconSource={require("~/assets/images/x.png")}
-              text="Share & Earn"
+              text="Share"
               points={!hideTwitterPoints ? inviteUnit : 0}
               onPress={onTwitterShare}
             />
@@ -113,6 +115,11 @@ export default function PlatformSharingModal({
             />
           )}
         </View>
+        {modalDescription && (
+          <Text className="text-center text-xs text-secondary">
+            {modalDescription}
+          </Text>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -44,16 +44,11 @@ export default function CastListWithChannel({
             <>
               <View
                 className={cn(
-                  "ios:pb-0 flex flex-row items-center justify-center py-3",
+                  "ios:pb-0 mb-5 flex flex-row items-center justify-center",
                   items.length === 0 ? "h-[70vh]" : "",
                 )}
               >
-                <Text
-                  nativeID="invoice-table"
-                  className="items-center text-sm text-muted-foreground"
-                >
-                  <Loading />
-                </Text>
+                <Loading />
               </View>
             </>
           );

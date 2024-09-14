@@ -23,10 +23,11 @@ import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper
 import { DialogCastActivitiesList } from "~/components/activity/Activities";
 import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { AboutProposalChallenge } from "./AboutProposal";
+import { AboutContents } from "~/components/help/HelpButton";
 import useAppModals from "~/hooks/useAppModals";
 import { Loading } from "~/components/common/Loading";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
+import { Button } from "~/components/ui/button";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -60,7 +61,7 @@ export default function ChallengeProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "challenge", title: "Challenge" },
+    { key: "challenge", title: "Vote" },
     { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
@@ -68,7 +69,7 @@ export default function ChallengeProposalModal({
   const renderScene = SceneMap({
     challenge: ChallengeProposalContentBodyScene,
     activity: CastActivitiesListScene,
-    about: AboutProposalChallenge,
+    about: AboutContents,
   });
 
   return (
@@ -152,9 +153,11 @@ function ChallengeProposalContentBody({
         <UserWalletSelect />
       </View>
       <View className="flex-row items-center justify-between gap-2">
-        <Text>The current stance on the proposal is:</Text>
+        <Text>Cast Status:</Text>
         <Text className="text-sm">
-          {proposal.status === ProposalState.Disputed ? "👎" : "👍"}
+          {proposal.status === ProposalState.Disputed
+            ? "👎Downvoted"
+            : "👍Upvoted"}
         </Text>
       </View>
 
@@ -171,7 +174,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
-          upsertProposalShareModal({ open: true, cast, channel });
+          upsertProposalShareModal({ open: true, cast, channel, proposal });
         }}
         onDisputeError={(error) => {
           onClose();
@@ -187,7 +190,7 @@ function ChallengeProposalContentBody({
             type: "success",
             text1: "Submitted",
           });
-          upsertProposalShareModal({ open: true, cast, channel });
+          upsertProposalShareModal({ open: true, cast, channel, proposal });
         }}
         onProposeError={(error) => {
           onClose();
@@ -195,6 +198,16 @@ function ChallengeProposalContentBody({
             type: "error",
             // text1: "Challenges cannot be repeated this round",
             text1: error.message,
+          });
+        }}
+        onShare={() => {
+          onClose();
+          upsertProposalShareModal({
+            open: true,
+            cast,
+            channel,
+            proposal,
+            description: "Share with more people to accelerate the challenge.",
           });
         }}
       />
@@ -207,6 +220,7 @@ export type DisputeProposalWrite = CastProposeStatusProps & {
   onDisputeError?: (error: any) => void;
   onProposeSuccess?: (proposal: TransactionReceipt) => void;
   onProposeError?: (error: any) => void;
+  onShare?: () => void;
 };
 export function ChallengeProposalWriteForm(
   props: CastProposeStatusProps & {
@@ -214,6 +228,7 @@ export function ChallengeProposalWriteForm(
     onDisputeError?: (error: any) => void;
     onProposeSuccess?: (proposal: TransactionReceipt) => void;
     onProposeError?: (error: any) => void;
+    onShare?: () => void;
   },
 ) {
   return props.proposal.status === ProposalState.Accepted ? (
@@ -230,6 +245,7 @@ export function DisputeProposalWrite({
   tokenInfo,
   onDisputeSuccess,
   onDisputeError,
+  onShare,
 }: DisputeProposalWrite) {
   const {
     paymentTokenInfo,
@@ -254,19 +270,17 @@ export function DisputeProposalWrite({
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
 
   useEffect(() => {
     if (!priceLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
@@ -290,21 +304,27 @@ export function DisputeProposalWrite({
         />
       ) : null}
       <Text className="text-center text-xs text-secondary">
-        Downvote spam casts, if you win, you can share the staked funds from
-        upvoters.
+        Share with more people to accelerate the challenge.
       </Text>
-      <DisputeProposalWriteButton
-        cast={cast}
-        channel={channel}
-        proposal={proposal}
-        tokenInfo={tokenInfo}
-        paymentTokenInfo={paymentTokenInfo!}
-        usedPaymentTokenInfo={selectedPaymentToken}
-        paymentTokenInfoLoading={paymentTokenInfoLoading}
-        paymentAmount={selectedPayAmount!}
-        onDisputeSuccess={onDisputeSuccess}
-        onDisputeError={onDisputeError}
-      />
+      <View className="flex-row items-center justify-between gap-4">
+        <Button className="h-8 w-20 bg-white" onPress={onShare}>
+          <Text className="text-xs text-primary">Share</Text>
+        </Button>
+        <View className="flex-1">
+          <DisputeProposalWriteButton
+            cast={cast}
+            channel={channel}
+            proposal={proposal}
+            tokenInfo={tokenInfo}
+            paymentTokenInfo={paymentTokenInfo!}
+            usedPaymentTokenInfo={selectedPaymentToken}
+            paymentTokenInfoLoading={paymentTokenInfoLoading}
+            paymentAmount={selectedPayAmount!}
+            onDisputeSuccess={onDisputeSuccess}
+            onDisputeError={onDisputeError}
+          />
+        </View>
+      </View>
     </>
   );
 }
@@ -316,6 +336,7 @@ export function ProposeProposalWrite({
   tokenInfo,
   onProposeSuccess,
   onProposeError,
+  onShare,
 }: DisputeProposalWrite) {
   const {
     paymentTokenInfo,
@@ -339,19 +360,17 @@ export function ProposeProposalWrite({
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
 
   useEffect(() => {
     if (!priceLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
@@ -374,18 +393,28 @@ export function ProposeProposalWrite({
           setSelectedPayAmount={setSelectedPayAmount}
         />
       ) : null}
-      <ProposeProposalWriteButton
-        cast={cast}
-        channel={channel}
-        proposal={proposal}
-        tokenInfo={tokenInfo}
-        paymentTokenInfo={paymentTokenInfo!}
-        usedPaymentTokenInfo={selectedPaymentToken}
-        paymentTokenInfoLoading={paymentTokenInfoLoading}
-        paymentAmount={selectedPayAmount!}
-        onProposeSuccess={onProposeSuccess}
-        onProposeError={onProposeError}
-      />
+      <Text className="text-center text-xs text-secondary">
+        Share with more people to accelerate the challenge.
+      </Text>
+      <View className="flex-row items-center justify-between gap-4">
+        <Button className="h-8 w-20 bg-white" onPress={onShare}>
+          <Text className="text-xs text-primary">Share</Text>
+        </Button>
+        <View className="flex-1">
+          <ProposeProposalWriteButton
+            cast={cast}
+            channel={channel}
+            proposal={proposal}
+            tokenInfo={tokenInfo}
+            paymentTokenInfo={paymentTokenInfo!}
+            usedPaymentTokenInfo={selectedPaymentToken}
+            paymentTokenInfoLoading={paymentTokenInfoLoading}
+            paymentAmount={selectedPayAmount!}
+            onProposeSuccess={onProposeSuccess}
+            onProposeError={onProposeError}
+          />
+        </View>
+      </View>
     </>
   );
 }

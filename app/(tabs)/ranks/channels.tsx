@@ -8,6 +8,7 @@ import CommunityJoinButton from "~/components/community/CommunityJoinButton";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import CreateChannelButton from "~/components/rank/CreateChannelButton";
 import RankFilter from "~/components/rank/Filter";
+import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { DEGEN_TOKEN_METADATA } from "~/constants";
 import { DEFAULT_ORDER_PARAMS } from "~/features/rank/channelRankSlice";
@@ -124,6 +125,19 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
+      case RankOrderBy.LAUNCH_PROGRESS:
+      case RankOrderBy.NFT_PRICE:
+        return (
+          <Link
+            className="flex-1"
+            href={`/communities/${item.id}/casts`}
+            asChild
+          >
+            <Button variant={"secondary"} size="sm" className="min-w-14 px-0">
+              <Text>Curate</Text>
+            </Button>
+          </Link>
+        );
       // case RankOrderBy.CREATED_DATE: // remove this later
       //   if (item.attentionTokenAddress) {
       //     return (

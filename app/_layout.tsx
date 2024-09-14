@@ -23,6 +23,7 @@ import { getInstallPrompter } from "~/utils/pwa";
 // Import global CSS file
 import "../global.css";
 import { Buffer } from "buffer";
+import GlobalModals from "~/components/GlobalModals";
 // TODO 运行app模式可能会报错，注意处理兼容性问题
 global.Buffer = Buffer;
 
@@ -106,6 +107,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <WagmiProvider config={wagmiConfig}>
             <StateUpdateWrapper />
+            <GlobalModals />
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack>

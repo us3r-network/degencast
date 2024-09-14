@@ -22,26 +22,21 @@ import { UserAccountType } from "~/services/user/types";
 export default function useWalletAccount() {
   const { user, linkWallet, unlinkWallet, ready, authenticated } = usePrivy();
   const { connectWallet } = useConnectWallet();
-  const { wallets } = useWallets();
 
-  const connectedWallets = wallets.filter(
-    (wallet) => wallet.connectorType !== "embedded",
+  //connencted wallets
+  const { wallets: connectedWallets } = useWallets();
+  const connectedExternalWallet = useMemo(
+    () =>
+      connectedWallets.filter((wallet) => wallet.connectorType !== "embedded"),
+    [connectedWallets],
   );
+
+  // linked wallets
   const linkedWallets: PrivyWalletWithMetadata[] =
     (user?.linkedAccounts?.filter(
       (account) =>
         account.type === "wallet" && account.connectorType !== "embedded",
     ) as PrivyWalletWithMetadata[]) || [];
-
-  const connectedExternalWallet = useMemo(() => {
-    if (!connectedWallets?.length) return undefined;
-    const currentWallet = connectedWallets.find(
-      (wallet) =>
-        wallet.connectorType !== "embedded" &&
-        wallet.connectorType !== "coinbase_wallet",
-    );
-    if (currentWallet) return currentWallet;
-  }, [connectedWallets]);
 
   // link connected wallets to degencast user
   useEffect(() => {
@@ -59,27 +54,27 @@ export default function useWalletAccount() {
     }
   }, [connectedWallets, authenticated]);
 
-  const unconnectedLinkedWallets = useMemo(() => {
-    return linkedWallets.filter(
-      (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
-    );
-  }, [linkedWallets, connectedWallets]);
-
-  const coinBaseWallet =
-    linkedWallets.find(
-      (wallet) => wallet.connectorType === "coinbase_wallet",
-    ) ||
-    connectedWallets.find(
-      (wallet) => wallet.connectorType === "coinbase_wallet",
-    );
-
-  const injectedWallet = useMemo(
+  const unconnectedLinkedWallets = useMemo(
     () =>
-      user?.linkedAccounts.find(
-        (account) =>
-          account.type === "wallet" && account.connectorType === "injected",
-      ) as unknown as ConnectedWallet,
-    [user],
+      linkedWallets.filter(
+        (wallet) => !connectedWallets.find((w) => w.address === wallet.address),
+      ),
+    [linkedWallets, connectedWallets],
+  );
+
+  // specific wallet
+  const linkedCoinBaseWallet = linkedWallets.find(
+    (wallet) => wallet.connectorType === "coinbase_wallet",
+  );
+  const connectedCoinBaseWallet = connectedWallets.find(
+    (wallet) => wallet.connectorType === "coinbase_wallet",
+  );
+
+  const linkedInjectedWallet = linkedWallets.find(
+    (wallet) => wallet.connectorType === "injected",
+  );
+  const connectedInjectedWallet = connectedWallets.find(
+    (wallet) => wallet.connectorType === "injected",
   );
 
   const linkAccountNum =
@@ -97,6 +92,7 @@ export default function useWalletAccount() {
 
   useEffect(() => {
     if (freezeAutoSwitchActiveWallet) return;
+    // console.log("setActiveWalletAddress", walletAddress);
     setActiveWalletAddress(walletAddress);
   }, [walletAddress, freezeAutoSwitchActiveWallet]);
 
@@ -109,36 +105,28 @@ export default function useWalletAccount() {
   }, [connectedWallets, activeWalletAddress]);
 
   const activeOneWallet = useCallback(() => {
-    if (coinBaseWallet) {
-      if (
-        connectedWallets.find(
-          (wallet) => wallet.address === coinBaseWallet.address,
-        )
-      )
-        setActiveWallet(coinBaseWallet as PrivyConnectedWalletType);
-      else connectWallet({ suggestedAddress: coinBaseWallet.address });
-    } else {
-      if (connectedWallets.length > 0) {
-        setActiveWallet(connectedWallets[0]);
-      } else {
-        if (linkedWallets.length > 0) {
-          connectWallet({
-            suggestedAddress: linkedWallets[0].address,
-          });
-        }
-      }
-    }
-  }, [connectedWallets, linkedWallets]);
+    // console.log("activeOneWallet");
+    if (connectedCoinBaseWallet) setActiveWallet(connectedCoinBaseWallet);
+    else if (connectedInjectedWallet)
+      setActiveWallet(connectedInjectedWallet);
+    else if (linkedCoinBaseWallet)
+      connectWallet({ suggestedAddress: linkedCoinBaseWallet.address });
+    else if (linkedInjectedWallet)
+      connectWallet({ suggestedAddress: linkedInjectedWallet.address });
+  }, [
+    connectedCoinBaseWallet,
+    connectedInjectedWallet,
+    linkedCoinBaseWallet,
+    linkedInjectedWallet,
+  ]);
   // avoid active wallet is embedded wallet
-  useEffect(() => {
-    if (
-      ready &&
-      authenticated &&
-      activeWallet &&
-      activeWallet?.connectorType === "embedded"
-    )
-      activeOneWallet();
-  }, [activeWallet, ready, authenticated]);
+  // useEffect(() => {
+  //   if (!ready || !authenticated) return;
+  //   console.log("activeWallet", activeWallet);
+  //   if (activeWallet && activeWallet.connectorType === "embedded") {
+  //     activeOneWallet();
+  //   }
+  // }, [activeWallet, ready, authenticated]);
 
   //AA
   const { data: availableCapabilities } = useCapabilities({
@@ -185,23 +173,25 @@ export default function useWalletAccount() {
     [availableCapabilities],
   );
   return {
+    linkAccountNum,
+    connectedWallets,
+    connectedExternalWallet,
+    linkedWallets,
+    unconnectedLinkedWallets,
+    coinBaseWallet: linkedCoinBaseWallet || connectedCoinBaseWallet,
+    injectedWallet: linkedInjectedWallet,
+    connectedInjectedWallet,
+    activeWallet,
+    isConnected: !!activeWallet && activeWallet.connectorType !== "embedded",
     connectWallet,
     linkWallet,
     unlinkWallet,
     setActiveWallet,
-    linkAccountNum,
-    connectedWallets,
-    linkedWallets,
-    activeWallet,
-    connectedExternalWallet,
-    unconnectedLinkedWallets,
+    activeOneWallet,
+    setFreezeAutoSwitchActiveWallet,
     supportAtomicBatch,
     supportAuxiliaryFunds,
     getPaymasterService,
-    coinBaseWallet,
-    injectedWallet,
-    activeOneWallet,
-    setFreezeAutoSwitchActiveWallet,
   };
 }
 

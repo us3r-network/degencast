@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
 import {
   Address,
@@ -83,7 +83,7 @@ export function DepositDialog({
   const {
     connectWallet,
     activeWallet,
-    connectedExternalWallet,
+    connectedInjectedWallet,
     setFreezeAutoSwitchActiveWallet,
   } = useWalletAccount();
 
@@ -114,44 +114,49 @@ export function DepositDialog({
           <DialogHeader className={cn("flex gap-2")}>
             <DialogTitle>Deposit</DialogTitle>
           </DialogHeader>
-          <View className="flex gap-6">
-            <UserTokens address={activeWallet.address as Address} />
-            <View className=" w-full flex-row items-center justify-between gap-2 rounded-lg border-2 border-secondary/50">
-              <Text className="ml-2 line-clamp-1 flex-1 text-secondary/50">
-                {activeWallet.address as Address}
+          <ScrollView
+            className="max-h-[70vh] w-full"
+            showsHorizontalScrollIndicator={false}
+          >
+            <View className="flex gap-6">
+              <UserTokens address={activeWallet.address as Address} />
+              <View className=" w-full flex-row items-center justify-between gap-2 rounded-lg border-2 border-secondary/50">
+                <Text className="ml-2 line-clamp-1 flex-1 text-secondary/50">
+                  {activeWallet.address as Address}
+                </Text>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onPress={async (event) => {
+                    await Clipboard.setStringAsync(
+                      activeWallet.address as Address,
+                    );
+                    Toast.show({
+                      type: "info",
+                      text1: "Wallet Address Copied!",
+                    });
+                  }}
+                >
+                  <Copy className="size-4 text-white" />
+                </Button>
+              </View>
+              <Text className="text-sm">
+                Copy the wallet address and paste it into your crypto wallet to
+                transfer. Only sending on Base.
               </Text>
-              <Button
-                size="icon"
-                variant="ghost"
-                onPress={async (event) => {
-                  await Clipboard.setStringAsync(
-                    activeWallet.address as Address,
-                  );
-                  Toast.show({
-                    type: "info",
-                    text1: "Wallet Address Copied!",
-                  });
-                }}
-              >
-                <Copy className="size-4 text-white" />
-              </Button>
+              <FundButton variant="text" />
+              {!!connectedInjectedWallet ? (
+                <TransferFromExternalWallet
+                  fromWallet={connectedInjectedWallet}
+                  toWallet={activeWallet}
+                />
+              ) : (
+                <Button variant="secondary" onPress={() => connectWallet()}>
+                  <Text>Connect your wallet & transfer</Text>
+                </Button>
+              )}
             </View>
-            <Text className="text-sm">
-              Copy the wallet address and paste it into your crypto wallet to
-              transfer. Only sending on Base.
-            </Text>
-            <FundButton variant="text" />
-            {!!connectedExternalWallet ? (
-              <TransferFromExternalWallet
-                fromWallet={connectedExternalWallet}
-                toWallet={activeWallet}
-              />
-            ) : (
-              <Button variant="secondary" onPress={() => connectWallet()}>
-                <Text>Connect your wallet & transfer</Text>
-              </Button>
-            )}
-          </View>
+          </ScrollView>
         </DialogContent>
       </Dialog>
     );

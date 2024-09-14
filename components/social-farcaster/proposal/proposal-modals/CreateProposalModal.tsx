@@ -19,7 +19,7 @@ import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposeWriteButton from "../proposal-write-buttons/CreateProposalWriteButton";
 import ProposalCastCard from "../ProposalCastCard";
 import { getProposalMinPrice } from "../utils";
-import { AboutProposalChallenge } from "./AboutProposal";
+import { AboutContents } from "~/components/help/HelpButton";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import PriceRow from "./PriceRow";
 import useAppModals from "~/hooks/useAppModals";
@@ -65,7 +65,7 @@ export default function CreateProposalModal({
 
   const renderScene = SceneMap({
     vote: CreateProposalModalContentBodyScene,
-    about: AboutProposalChallenge,
+    about: AboutContents,
   });
   return (
     <Dialog
@@ -133,6 +133,7 @@ function CreateProposalModalContentBodyScene() {
                 open: true,
                 cast,
                 channel,
+                proposal,
               });
             }}
             onCreateProposalError={(error) => {
@@ -169,6 +170,10 @@ function CreateTokenModalContentBody({
       <View className="flex-row items-center justify-between gap-2">
         <Text>Active Wallet</Text>
         <UserWalletSelect />
+      </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Cast Status:</Text>
+        <Text className="text-sm">Pending activation</Text>
       </View>
       <ProposalCastCard channel={channel} cast={cast} />
       <Text className="text-sm text-secondary">
@@ -208,12 +213,7 @@ function CreateProposalModalContentBody({
     usePaymentTokenInfo({
       contractAddress: tokenInfo?.danContract!,
     });
-  console.log("paymentTokenInfo", paymentTokenInfo);
 
-  const price = useMemo(
-    () => getProposalMinPrice(tokenInfo, paymentTokenInfo),
-    [paymentTokenInfo],
-  );
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -221,21 +221,21 @@ function CreateProposalModalContentBody({
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
-  useEffect(() => {
-    if (price) {
-      console.log("price", price);
-      setSelectedPayAmount(price);
-    }
-  }, [price]);
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
+
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
 
   return (
     <>
@@ -243,16 +243,20 @@ function CreateProposalModalContentBody({
         <Text>Active Wallet</Text>
         <UserWalletSelect />
       </View>
+      <View className="flex-row items-center justify-between gap-2">
+        <Text>Cast Status:</Text>
+        <Text className="text-sm">Voteable</Text>
+      </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       {paymentTokenInfoLoading ? (
         <Loading />
-      ) : selectedPaymentToken ? (
+      ) : (
         <>
           <ProposalPaymentSelector
             paymentInfoType={PaymentInfoType.Create}
             defaultPaymentInfo={{
               tokenInfo: paymentTokenInfo!,
-              recommendedAmount: price,
+              recommendedAmount: minAmount,
               minAmount: minAmount,
             }}
             selectedPaymentToken={selectedPaymentToken!}
@@ -273,7 +277,7 @@ function CreateProposalModalContentBody({
             onCreateProposalError={onCreateProposalError}
           />
         </>
-      ) : null}
+      )}
     </>
   );
 }

@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import useProposeProposal from "~/hooks/social-farcaster/proposal/useProposeProposal";
 import useDisputeProposal from "~/hooks/social-farcaster/proposal/useDisputeProposal";
-import { TransactionReceipt } from "viem";
+import { formatUnits, TransactionReceipt } from "viem";
 import { Loading } from "~/components/common/Loading";
 import useRoundProposals from "~/hooks/social-farcaster/proposal/useRoundProposals";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
@@ -57,6 +57,20 @@ export function ProposeProposalWriteButton({
   const { connectWallet } = useWalletAccount();
   const isLoading =
     proposeLoading || proposalsLoading || paymentTokenInfoLoading;
+
+  const payAmountNumber =
+    usedPaymentTokenInfo && usedPaymentTokenInfo?.decimals
+      ? Number(formatUnits(paymentAmount, usedPaymentTokenInfo?.decimals!))
+      : 0;
+  const maxAmountNumber = usedPaymentTokenInfo?.rawBalance
+    ? Number(
+        formatUnits(
+          usedPaymentTokenInfo?.rawBalance as any,
+          usedPaymentTokenInfo?.decimals!,
+        ),
+      )
+    : 0;
+
   const disabled =
     participated ||
     proposals?.state === ProposalState.Abandoned ||
@@ -66,7 +80,9 @@ export function ProposeProposalWriteButton({
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     isLoading ||
-    !paymentAmount;
+    !paymentAmount ||
+    payAmountNumber > maxAmountNumber;
+
   const allowanceParams =
     !disabled && !!address && isConnected
       ? {
@@ -125,14 +141,14 @@ export function ProposeProposalWriteButton({
             <Text>The proposal has been abandoned</Text>
           ) : proposals?.state === ProposalState.Accepted ? (
             Number(proposals?.roundIndex) <= 1 ? (
-              <Text>{upvoteText || "Upvote & Accelerate Countdown"}</Text>
+              <Text>{upvoteText || "Upvote"}</Text>
             ) : (
               <Text>The proposal has been accepted</Text>
             )
           ) : !isConnected ? (
-            <Text>Connect your wallet first</Text>
+            <Text>Connect Wallet</Text>
           ) : (
-            <Text>{upvoteText || "Upvote & Accelerate Countdown"}</Text>
+            <Text>{upvoteText || "Upvote"}</Text>
           )}
         </Button>
       }
@@ -187,6 +203,20 @@ export function DisputeProposalWriteButton({
   const { connectWallet } = useWalletAccount();
   const isLoading =
     disputeLoading || proposalsLoading || paymentTokenInfoLoading;
+
+  const payAmountNumber =
+    usedPaymentTokenInfo && usedPaymentTokenInfo?.decimals
+      ? Number(formatUnits(paymentAmount, usedPaymentTokenInfo?.decimals!))
+      : 0;
+  const maxAmountNumber = usedPaymentTokenInfo?.rawBalance
+    ? Number(
+        formatUnits(
+          usedPaymentTokenInfo?.rawBalance as any,
+          usedPaymentTokenInfo?.decimals!,
+        ),
+      )
+    : 0;
+
   const disabled =
     participated ||
     proposals?.state === ProposalState.Abandoned ||
@@ -195,7 +225,9 @@ export function DisputeProposalWriteButton({
     !tokenInfo?.danContract ||
     !paymentTokenInfo?.address ||
     isLoading ||
-    !paymentAmount;
+    !paymentAmount ||
+    payAmountNumber > maxAmountNumber;
+
   const allowanceParams =
     !disabled && !!address && isConnected
       ? {
@@ -258,7 +290,7 @@ export function DisputeProposalWriteButton({
           ) : !isConnected ? (
             <Text>Connect Wallet</Text>
           ) : (
-            <Text>{downvoteText || "Challenge"}</Text>
+            <Text>{downvoteText || "Downvote"}</Text>
           )}
         </Button>
       }

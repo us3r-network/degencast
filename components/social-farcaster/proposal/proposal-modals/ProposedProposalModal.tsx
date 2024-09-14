@@ -14,7 +14,7 @@ import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper
 import { ScrollView, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { SceneMap, TabView } from "react-native-tab-view";
-import { AboutProposalChallenge } from "./AboutProposal";
+import { AboutContents } from "~/components/help/HelpButton";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
@@ -73,13 +73,13 @@ export default function ProposedProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "upvote", title: "Upvote" },
+    { key: "upvote", title: "Vote" },
     { key: "about", title: "About" },
   ]);
 
   const renderScene = SceneMap({
     upvote: ProposedProposalModalContentBodyScene,
-    about: AboutProposalChallenge,
+    about: AboutContents,
   });
   return (
     <Dialog
@@ -161,14 +161,12 @@ function ProposedProposalModalContentBodyScene() {
 
   useEffect(() => {
     if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      console.log("price", price);
       setSelectedPaymentToken(paymentTokenInfo);
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
 
   useEffect(() => {
     if (!priceLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, priceLoading]);
@@ -186,7 +184,7 @@ function ProposedProposalModalContentBodyScene() {
     isLoading ||
     !price;
 
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
@@ -272,6 +270,7 @@ function ProposedProposalModalContentBodyScene() {
                     open: true,
                     cast,
                     channel,
+                    proposal,
                   });
                 }}
                 onDisputeError={(error) => {
@@ -306,6 +305,7 @@ function ProposedProposalModalContentBodyScene() {
                     open: true,
                     cast,
                     channel,
+                    proposal,
                   });
                 }}
                 onProposeError={(error) => {

@@ -33,23 +33,17 @@ export default function HelpButton() {
 }
 
 export const CurationInfo = [
-  "Upvote: Turn a cast into a Curation NFT.",
-  "Downvote: Reject the curation decision.",
-  "Vote cost: Minimum cost = NFT price.",
-  "Weight: Vote weight = √spent.",
-  "Challenge: Disagree with current stance. Challenge extends countdown by 1 hour. One challenge per account per phase.",
-  "Win: Stance must have 2x the weight to win.",
-  "Result: Final stance after countdown.",
-  "Funds: Winner gets principal back, loser’s funds go to the winner based on weight.",
-  "Curators: After curation is approved, top 10 upvoters = curators. The earlier the more revenue.",
+  "Upvote/Downvote: Create or reject a Curation NFT.",
+  "Vote Cost & Weight: Costs the NFT price; weight depends on spending.",
+  "Challenge: Extend countdown; need double the weight to win.",
+  "Curators: Top 10 early upvoters earn more.",
 ];
 
 export const CurationNFTInfo = [
-  "Curation NFT = 1000 Curation Token.",
-  "NFT transaction fee: Degencast 1%, Channel host 2%, Creator 3%, ,Curators 4%.",
-  "All Curation NFTs share a same bonding curve.",
-  "When bounding curve reaches a market cap of 4,206,900 DEGEN, all the liquidity will be deposited into Uniswap v3.",
-  "After token launch, Curation NFT = 1000 Curation Token.",
+  "Token Value: Each NFT equals 100,000 Curation Tokens.",
+  "Fees Distribution: 1% to Degencast, 2% to host, 3% to creators, 4% to curators.",
+  "Bonding Curve: Shared curve; liquidity moves to Uniswap at 42069 DEGEN cap.",
+  "After Launch: NFT still equals 100,000 Tokens.",
 ];
 
 export function AboutContents() {
@@ -59,7 +53,7 @@ export function AboutContents() {
       showsHorizontalScrollIndicator={false}
     >
       <View className="flex gap-4">
-        <Text className="text-base font-bold">Curation</Text>
+        <Text className="text-base font-bold">Curate</Text>
         <UnorderedList texts={CurationInfo} />
         <Text className="text-base">Curation NFT</Text>
         <UnorderedList texts={CurationNFTInfo} />

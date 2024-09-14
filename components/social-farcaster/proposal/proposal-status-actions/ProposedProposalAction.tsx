@@ -6,6 +6,7 @@ import { ProposalButtonBody } from "./ProposalButtonBody";
 import ProposedProposalModal from "../proposal-modals/ProposedProposalModal";
 import { View } from "react-native";
 import { Deadline } from "../ProposalStyled";
+import useAuth from "~/hooks/user/useAuth";
 
 export function ProposedProposalButton({
   cast,
@@ -16,6 +17,8 @@ export function ProposedProposalButton({
 }: ProposalButtonProps & CastProposeStatusProps) {
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
+  const { ready, authenticated, login } = useAuth();
+
   if (!proposal) return null;
   const buttonBody = (
     <ProposalButtonBody
@@ -25,7 +28,23 @@ export function ProposedProposalButton({
       tokenInfo={tokenInfo}
     />
   );
-  if (!isConnected) {
+
+  if (!authenticated) {
+    return (
+      <ProposalButton
+        variant={"proposed"}
+        onPress={() => {
+          if (ready) {
+            login();
+          }
+        }}
+      >
+        {buttonBody}
+      </ProposalButton>
+    );
+  }
+
+  if (!address || !isConnected) {
     return (
       <ProposalButton variant={"proposed"} onPress={() => connectWallet()}>
         {buttonBody}

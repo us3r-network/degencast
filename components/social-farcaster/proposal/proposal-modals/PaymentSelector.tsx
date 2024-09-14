@@ -12,7 +12,11 @@ import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import { FeeAmount } from "@uniswap/v3-sdk";
 import { useAccount } from "wagmi";
 import { useUserNativeToken } from "~/hooks/user/useUserTokens";
-import { NATIVE_TOKEN_ADDRESS } from "~/constants/chain";
+import {
+  NATIVE_TOKEN_ADDRESS,
+  UNISWAP_V3_DEGEN_ETH_POOL_FEES,
+} from "~/constants/chain";
+import { useEffect, useState } from "react";
 
 export enum PaymentInfoType {
   Create,
@@ -29,7 +33,7 @@ export function ProposalPaymentSelector({
   paymentInfoType,
 }: {
   defaultPaymentInfo: {
-    tokenInfo: TokenWithTradeInfo;
+    tokenInfo?: TokenWithTradeInfo;
     tokenInfoLoading?: boolean;
     recommendedAmount?: bigint;
     recommendedAmountLoading?: boolean;
@@ -53,9 +57,104 @@ export function ProposalPaymentSelector({
 
   const { token: ethTokenInfo } = useUserNativeToken(
     account.address,
-    defaultTokenInfo.chainId,
+    defaultTokenInfo?.chainId,
   );
 
+  const [fetchedEthRecommendedAmount, setFetchedEthRecommendedAmount] =
+    useState<bigint>();
+  const [fetchedEthMinAmount, setFetchedEthMinAmount] = useState<bigint>();
+
+  const isSelectedEthToken =
+    selectedPaymentToken?.address === ethTokenInfo?.address;
+  const recommendedPayAmount = isSelectedEthToken
+    ? fetchedEthRecommendedAmount
+    : defaultRecommendedAmount;
+
+  const minPayAmount = isSelectedEthToken
+    ? fetchedEthMinAmount
+    : defaultMinAmount;
+
+  return (
+    <View className="flex flex-col gap-4">
+      {!!ethTokenInfo &&
+        defaultTokenInfo &&
+        supportAtomicBatch(defaultTokenInfo.chainId) && (
+          <UserTokenSelectWrapper
+            ethTokenInfo={ethTokenInfo}
+            defaultTokenInfo={defaultTokenInfo}
+            selectedPaymentToken={selectedPaymentToken}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            defaultRecommendedAmount={defaultRecommendedAmount}
+            defaultMinAmount={defaultMinAmount}
+            selectedPayAmount={selectedPayAmount}
+            setSelectedPayAmount={setSelectedPayAmount}
+            setFetchedEthRecommendedAmount={setFetchedEthRecommendedAmount}
+            setFetchedEthMinAmount={setFetchedEthMinAmount}
+          />
+        )}
+
+      {paymentInfoType === PaymentInfoType.Create ? (
+        <PaymentInfo
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+        />
+      ) : paymentInfoType === PaymentInfoType.Proposed ? (
+        <PaymentInfoWithProposed
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+        />
+      ) : paymentInfoType === PaymentInfoType.Upvote ? (
+        <PaymentInfo
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+          description="Upvote spam casts, share the staked funds after success."
+        />
+      ) : paymentInfoType === PaymentInfoType.Challenge ? (
+        <PaymentInfo
+          paymentTokenInfo={selectedPaymentToken}
+          recommendedPayAmount={recommendedPayAmount || 0n}
+          minPayAmount={minPayAmount || 0n}
+          selectedPayAmount={selectedPayAmount}
+          setSelectedPayAmount={setSelectedPayAmount}
+          description="Downvote spam casts, share the staked funds after success."
+        />
+      ) : null}
+    </View>
+  );
+}
+
+function UserTokenSelectWrapper({
+  ethTokenInfo,
+  defaultTokenInfo,
+  selectedPaymentToken,
+  setSelectedPaymentToken,
+  defaultRecommendedAmount,
+  defaultMinAmount,
+  selectedPayAmount,
+  setSelectedPayAmount,
+  setFetchedEthRecommendedAmount,
+  setFetchedEthMinAmount,
+}: {
+  ethTokenInfo: TokenWithTradeInfo;
+  defaultTokenInfo: TokenWithTradeInfo;
+  selectedPaymentToken: TokenWithTradeInfo;
+  setSelectedPaymentToken: (token: TokenWithTradeInfo) => void;
+  defaultRecommendedAmount?: bigint;
+  defaultMinAmount?: bigint;
+  selectedPayAmount: bigint;
+  setSelectedPayAmount: (amount: bigint) => void;
+  setFetchedEthRecommendedAmount: (amount: bigint) => void;
+  setFetchedEthMinAmount: (amount: bigint) => void;
+}) {
   const {
     fetchSellAmountAsync: fetchEthAmountAsync,
     fetchBuyAmountAsync: fetchDefaultTokenAmountAsync,
@@ -71,8 +170,11 @@ export function ProposalPaymentSelector({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
-    poolFee: FeeAmount.HIGH,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
+  useEffect(() => {
+    setFetchedEthRecommendedAmount(fetchedEthRecommendedAmount || 0n);
+  }, [fetchedEthRecommendedAmount]);
 
   const {
     fetchSellAmount: fetchEthMinAmount,
@@ -81,28 +183,20 @@ export function ProposalPaymentSelector({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
-    poolFee: FeeAmount.HIGH,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
-
-  const isSelectedEthToken =
-    selectedPaymentToken?.address === ethTokenInfo?.address;
-  const recommendedPayAmount = isSelectedEthToken
-    ? fetchedEthRecommendedAmount
-    : defaultRecommendedAmount;
-
-  const minPayAmount = isSelectedEthToken
-    ? fetchedEthMinAmount
-    : defaultMinAmount;
-
+  useEffect(() => {
+    setFetchedEthMinAmount(fetchedEthMinAmount || 0n);
+  }, [fetchedEthMinAmount]);
   const handleTokenChange = async (token: TokenWithTradeInfo) => {
-    if (token.address === selectedPaymentToken.address) {
+    if (token?.address === selectedPaymentToken?.address) {
       return;
     }
     if (!ethTokenInfo?.address) {
       return;
     }
     setSelectedPaymentToken(token);
-    if (token.address === ethTokenInfo.address) {
+    if (token?.address === ethTokenInfo?.address) {
       if (
         swapRecommendedReady &&
         defaultRecommendedAmount &&
@@ -120,71 +214,18 @@ export function ProposalPaymentSelector({
     }
     if (token.address === ethTokenInfo.address) {
       const amount = await fetchEthAmountAsync(selectedPayAmount);
-      console.log("fetchEthAmountAsync", {
-        selectedPayAmount,
-        token,
-        amount,
-      });
       setSelectedPayAmount(amount);
     } else {
       const amount = await fetchDefaultTokenAmountAsync(selectedPayAmount);
-      console.log("fetchDefaultTokenAmountAsync", {
-        selectedPayAmount,
-        token,
-        amount,
-      });
       setSelectedPayAmount(amount);
     }
   };
-
   return (
-    <View className="flex flex-col gap-4">
-      {supportAtomicBatch(ATT_CONTRACT_CHAIN.id) && (
-        <UserTokenSelect
-          selectToken={handleTokenChange}
-          chain={ATT_CONTRACT_CHAIN}
-          defaultToken={defaultTokenInfo}
-        />
-      )}
-
-      {paymentInfoType === PaymentInfoType.Create ? (
-        <PaymentInfo
-          paymentTokenInfo={selectedPaymentToken}
-          recommendedPayAmount={recommendedPayAmount || 0n}
-          minPayAmount={minPayAmount || 0n}
-          selectedPayAmount={selectedPayAmount}
-          setSelectedPayAmount={setSelectedPayAmount}
-          amountLabel={"Upvote Cost"}
-        />
-      ) : paymentInfoType === PaymentInfoType.Proposed ? (
-        <PaymentInfoWithProposed
-          paymentTokenInfo={selectedPaymentToken}
-          recommendedPayAmount={recommendedPayAmount || 0n}
-          minPayAmount={minPayAmount || 0n}
-          selectedPayAmount={selectedPayAmount}
-          setSelectedPayAmount={setSelectedPayAmount}
-        />
-      ) : paymentInfoType === PaymentInfoType.Upvote ? (
-        <PaymentInfo
-          paymentTokenInfo={selectedPaymentToken}
-          recommendedPayAmount={recommendedPayAmount || 0n}
-          minPayAmount={minPayAmount || 0n}
-          selectedPayAmount={selectedPayAmount}
-          setSelectedPayAmount={setSelectedPayAmount}
-          amountLabel={"The cost for a successful challenge:"}
-        />
-      ) : paymentInfoType === PaymentInfoType.Challenge ? (
-        <PaymentInfo
-          paymentTokenInfo={selectedPaymentToken}
-          recommendedPayAmount={recommendedPayAmount || 0n}
-          minPayAmount={minPayAmount || 0n}
-          selectedPayAmount={selectedPayAmount}
-          setSelectedPayAmount={setSelectedPayAmount}
-          amountLabel={"The cost for a successful challenge:"}
-          description="Downvote spam casts, if you win, you can share the staked funds from upvoters."
-        />
-      ) : null}
-    </View>
+    <UserTokenSelect
+      selectToken={handleTokenChange}
+      chain={ATT_CONTRACT_CHAIN}
+      defaultToken={defaultTokenInfo}
+    />
   );
 }
 
@@ -196,23 +237,25 @@ export function PaymentInfo({
   setSelectedPayAmount,
   amountLoading,
   sliderStep,
-  amountLabel,
   description,
 }: {
   paymentTokenInfo: TokenWithTradeInfo;
-  recommendedPayAmount?: bigint;
+  recommendedPayAmount: bigint;
   minPayAmount: bigint;
   selectedPayAmount: bigint;
   setSelectedPayAmount: (amount: bigint) => void;
   amountLoading?: boolean;
   sliderStep?: number;
-  amountLabel: string;
   description?: string;
 }) {
-  const recommendedPayAmountNumber =
-    recommendedPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(recommendedPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
+  const maxAmountNumber = paymentTokenInfo?.rawBalance
+    ? Number(
+        formatUnits(
+          paymentTokenInfo?.rawBalance as any,
+          paymentTokenInfo?.decimals!,
+        ),
+      )
+    : 0;
   const minPayAmountNumber =
     minPayAmount && paymentTokenInfo?.decimals
       ? Number(formatUnits(minPayAmount, paymentTokenInfo?.decimals!))
@@ -221,36 +264,57 @@ export function PaymentInfo({
     selectedPayAmount && paymentTokenInfo?.decimals
       ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
       : 0;
-
-  console.log("selectedPaymentTokenInfo", paymentTokenInfo);
-  console.log("selectedPayAmountNumber", selectedPayAmountNumber);
-  console.log("minPayAmountNumber", minPayAmountNumber);
+  const recommendedPayAmountNumber =
+    recommendedPayAmount && paymentTokenInfo?.decimals
+      ? Number(formatUnits(recommendedPayAmount, paymentTokenInfo?.decimals!))
+      : 0;
 
   const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectedPayAmountNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
+    value: selectedPayAmountNumber,
+    max: maxAmountNumber,
+    min: minPayAmountNumber,
     step: sliderStep || recommendedPayAmountNumber / 100,
     maximumFractionDigits:
-      paymentTokenInfo.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
+      paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
 
   return (
     <View className="flex flex-col gap-4">
       <PriceRow
-        title={amountLabel}
+        title={"Minimum Cost"}
         paymentTokenInfo={paymentTokenInfo}
-        price={recommendedPayAmount}
-        isLoading={amountLoading}
+        price={minPayAmount}
         onClickPriceValue={() => {
-          if (recommendedPayAmount) {
-            setSelectedPayAmount(recommendedPayAmount);
+          if (minPayAmount) {
+            setSelectedPayAmount(minPayAmount);
           }
         }}
       />
+
+      {!!recommendedPayAmount && (
+        <PriceRow
+          title={"Successfully Challenge"}
+          paymentTokenInfo={paymentTokenInfo}
+          price={recommendedPayAmount}
+          isLoading={amountLoading}
+          onClickPriceValue={() => {
+            if (recommendedPayAmount) {
+              setSelectedPayAmount(recommendedPayAmount);
+            }
+          }}
+        />
+      )}
+      <Text className="text-center text-xs text-secondary">
+        Risk DEGEN to vote and get rewarded for every mint.
+      </Text>
+      {description && (
+        <Text className="text-center text-xs text-secondary">
+          {description}
+        </Text>
+      )}
       <Slider
         {...priceSliderConfig}
-        disabled={!paymentTokenInfo?.balance}
+        disabled={maxAmountNumber <= minPayAmountNumber}
         onValueChange={(v) => {
           if (!isNaN(Number(v))) {
             const vInt = Number(v);
@@ -261,10 +325,6 @@ export function PaymentInfo({
         }}
       />
       <PriceRangeRow {...priceSliderConfig} />
-      <Text className="text-center text-xs text-secondary">
-        {description ||
-          `Stake ${paymentTokenInfo.symbol}, get funds back and earn minting fee rewards upon success!`}
-      </Text>
     </View>
   );
 }
@@ -298,10 +358,6 @@ export function PaymentInfoWithProposed({
     selectedPayAmount && paymentTokenInfo?.decimals
       ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
       : 0;
-
-  console.log("selectedPaymentTokenInfo", paymentTokenInfo);
-  console.log("selectedPayAmountNumber", selectedPayAmountNumber);
-  console.log("minPayAmountNumber", minPayAmountNumber);
 
   const priceSliderConfig = {
     value: paymentTokenInfo?.balance ? selectedPayAmountNumber : 0,

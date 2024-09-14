@@ -64,7 +64,7 @@ export default function UpvoteProposalModal({
                 text1: "Voting speeds up success",
               });
               setOpen(false);
-              upsertProposalShareModal({ open: true, cast, channel });
+              upsertProposalShareModal({ open: true, cast, channel, proposal });
             }}
             onProposeError={(error) => {
               Toast.show({
@@ -114,11 +114,10 @@ export function UpvoteProposalModalContentBody({
 
   useEffect(() => {
     if (!isLoading && price) {
-      console.log("price", price);
       setSelectedPayAmount(price);
     }
   }, [price, isLoading]);
-  const minPayAmountNumber = tokenInfo?.bondingCurve?.basePrice || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,

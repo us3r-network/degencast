@@ -1,56 +1,8 @@
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp } from "~/services/shared/types";
-import { mockCasts } from "../mocks/casts";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "../types/proposal";
-import { mockProposals } from "../mocks/proposal";
 import { getExploreCastFeeds } from ".";
-
-const mockFeedRequest = async (props: any) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return {
-    data: {
-      code: 0,
-      msg: "",
-      data: [
-        ...mockProposals,
-        mockProposals[mockProposals.length - 1],
-        mockProposals[mockProposals.length - 1],
-        mockProposals[mockProposals.length - 1],
-      ].map((proposal, idx) => ({
-        proposal,
-        cast: mockCasts[
-          idx > mockCasts.length - 1 ? mockCasts.length - 1 : idx
-        ],
-      })),
-    },
-  } as unknown as RequestPromise<ApiResp<ChannelSelectionFeedsData>>;
-};
-
-const mockCastsFeedRequest = async ({ limit, cursor }: any) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  return {
-    data: {
-      code: 0,
-      msg: "",
-      data: {
-        casts: [
-          ...mockProposals,
-          mockProposals[mockProposals.length - 1],
-          mockProposals[mockProposals.length - 1],
-          mockProposals[mockProposals.length - 1],
-        ].map((proposal, idx) => ({
-          proposal,
-          cast: mockCasts[Number(cursor)],
-        })),
-        next: {
-          cursor: Number(cursor) + 1,
-        },
-      },
-    },
-  } as unknown as RequestPromise<ApiResp<ChannelCastFeedsData>>;
-};
 
 export type ProposalCast = {
   cast: NeynarCast;

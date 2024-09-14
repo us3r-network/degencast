@@ -17,11 +17,13 @@ import {
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
 import { CommunityInfo } from "../common/CommunityInfo";
-import { ChevronDown, ChevronUp } from "../common/Icons";
+import { ChevronDown, ChevronUp, SquareArrowOutUpRight } from "../common/Icons";
 import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent } from "../ui/card";
 import { Text } from "../ui/text";
+import { ATT_CONTRACT_CHAIN } from "~/constants";
+import { ExternalLink } from "../common/ExternalLink";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
@@ -39,6 +41,13 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
   const paymentText = new Intl.NumberFormat("en-US", {
     notation: "compact",
   }).format(Number(paymentAmount));
+  const transcationUrl = data.txHash
+    ? `${ATT_CONTRACT_CHAIN.blockExplorers?.default.url}/tx/${data.txHash}`
+    : undefined;
+  const eventLogUrl =
+    data.blockNumber && data.logIndex
+      ? `https://ethreceipts.org/l/${ATT_CONTRACT_CHAIN.id}/${data.blockNumber}/${data.logIndex}`
+      : undefined;
   return (
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
@@ -49,13 +58,29 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               userData={data.user}
               hideHandle
             />
-            <ActivityItemOperation operation={data.operation} />
+            {eventLogUrl ? (
+              <ExternalLink href={eventLogUrl}>
+                <View className="flex-row items-center gap-1">
+                  <ActivityItemOperation operation={data.operation} />
+                  <SquareArrowOutUpRight size={16} color={"grey"}/>
+                </View>
+              </ExternalLink>
+            ) : (
+              <ActivityItemOperation operation={data.operation} />
+            )}
           </View>
-          {data.timestamp && (
-            <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
-              {dayjs(data.timestamp).fromNow(true)}
-            </Text>
-          )}
+          {data.timestamp &&
+            (transcationUrl ? (
+              <ExternalLink href={transcationUrl}>
+                <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
+                  {dayjs(data.timestamp).fromNow(true)}
+                </Text>
+              </ExternalLink>
+            ) : (
+              <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
+                {dayjs(data.timestamp).fromNow(true)}
+              </Text>
+            ))}
         </View>
 
         {data.operation === ActivityOperation.REWARD ? (
@@ -92,7 +117,16 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
           <Text>From</Text>
           <ActivityItemUser userData={data?.cast?.author} hideHandle />
           {data.paymentTokenAmount && data.paymentTokenInfo && (
-            <Text>{`for ${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+            <View className="flex-row items-center gap-2">
+              <Text>for</Text>
+              {eventLogUrl ? (
+                <ExternalLink href={eventLogUrl}>
+                  <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+                </ExternalLink>
+              ) : (
+                <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+              )}
+            </View>
           )}
         </View>
         {data?.cast && <ActivityCast cast={data?.cast} />}
@@ -172,13 +206,13 @@ export function ActivityItemOperation({
       className={cn(
         " inline-block align-baseline text-base font-medium",
         operation === ActivityOperation.BURN ||
-          operation === ActivityOperation.BUY ||
-          operation === ActivityOperation.REWARD ||
+          operation === ActivityOperation.SELL ||
           operation === ActivityOperation.DISPUTE
           ? "text-[#F41F4C]"
           : operation === ActivityOperation.MINT ||
-              operation === ActivityOperation.SELL ||
-              operation === ActivityOperation.PROPOSE
+              operation === ActivityOperation.BUY ||
+              operation === ActivityOperation.PROPOSE ||
+              operation === ActivityOperation.REWARD
             ? "text-[#00D1A7]"
             : "",
       )}

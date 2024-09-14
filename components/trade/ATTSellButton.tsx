@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -58,13 +58,18 @@ export function SellButton({ token }: { token: ERC42069Token }) {
   ]);
 
   const BurnNFTScene = () => (
-    <View className="gap-4">
-      <View className="flex-row items-center justify-between gap-2">
-        <Text>Active Wallet</Text>
-        <UserWalletSelect />
+    <ScrollView
+      className="max-h-[70vh] w-full"
+      showsHorizontalScrollIndicator={false}
+    >
+      <View className="gap-4">
+        <View className="flex-row items-center justify-between gap-2">
+          <Text>Active Wallet</Text>
+          <UserWalletSelect />
+        </View>
+        <BurnNFT nft={token} onSuccess={setTransationData} onError={setError} />
       </View>
-      <BurnNFT nft={token} onSuccess={setTransationData} onError={setError} />
-    </View>
+    </ScrollView>
   );
 
   const renderScene = SceneMap({

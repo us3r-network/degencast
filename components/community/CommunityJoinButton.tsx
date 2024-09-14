@@ -21,7 +21,7 @@ export default function CommunityJoinButton({
     <Button
       variant={joined ? "outline" : "secondary"}
       className={cn(
-        "min-w-14 rounded-[0.625rem] px-0 text-xs font-medium",
+        "min-w-14 px-0",
         className,
       )}
       size="sm"
