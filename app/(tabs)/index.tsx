@@ -14,10 +14,14 @@ function CollectPage() {
   );
 }
 
-function VotePage() {
+function VotePage({ jumpTo }: { jumpTo: (key: string) => void }) {
   return (
     <PageContent>
-      <ProposalFeeds />
+      <ProposalFeeds
+        navigateToCasts={() => {
+          jumpTo("cast");
+        }}
+      />
     </PageContent>
   );
 }
