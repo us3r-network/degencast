@@ -100,6 +100,7 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
+          hideChallengeAmount={true}
         />
       ) : paymentInfoType === PaymentInfoType.Proposed ? (
         <PaymentInfoWithProposed
@@ -158,6 +159,7 @@ function UserTokenSelectWrapper({
   const {
     fetchSellAmountAsync: fetchEthAmountAsync,
     fetchBuyAmountAsync: fetchDefaultTokenAmountAsync,
+    ready: swapReady,
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
@@ -189,6 +191,9 @@ function UserTokenSelectWrapper({
     setFetchedEthMinAmount(fetchedEthMinAmount || 0n);
   }, [fetchedEthMinAmount]);
   const handleTokenChange = async (token: TokenWithTradeInfo) => {
+    if (!swapReady) {
+      return;
+    }
     if (token?.address === selectedPaymentToken?.address) {
       return;
     }
@@ -238,6 +243,7 @@ export function PaymentInfo({
   amountLoading,
   sliderStep,
   description,
+  hideChallengeAmount,
 }: {
   paymentTokenInfo: TokenWithTradeInfo;
   recommendedPayAmount: bigint;
@@ -247,6 +253,7 @@ export function PaymentInfo({
   amountLoading?: boolean;
   sliderStep?: number;
   description?: string;
+  hideChallengeAmount?: boolean;
 }) {
   const maxAmountNumber = paymentTokenInfo?.rawBalance
     ? Number(
@@ -291,7 +298,7 @@ export function PaymentInfo({
         }}
       />
 
-      {!!recommendedPayAmount && (
+      {!hideChallengeAmount && !!recommendedPayAmount && (
         <PriceRow
           title={"Successfully Challenge"}
           paymentTokenInfo={paymentTokenInfo}

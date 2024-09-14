@@ -46,7 +46,10 @@ export default function ProposalShareGlobalModal() {
       };
     }
     return {
-      warpcastText: getCastProposalShareTextWithWarpcast(),
+      warpcastText: getCastProposalShareTextWithWarpcast(
+        cast?.author?.username || "",
+        channel?.channelId || "",
+      ),
       twitterText: getCastProposalShareTextWithTwitter(),
       websiteLink: getCastDetailWebsiteLink(castHash),
       warpcastEmbeds: [getCastDetailFrameLink(castHash)],

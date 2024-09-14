@@ -53,10 +53,14 @@ export default function usePaymentTokenInfo({
     setError(undefined);
     setStatus("idle");
   };
+  const refetch = () => {
+    setStatus("idle");
+  };
   return {
     paymentTokenInfo,
     error,
     isLoading,
     reset,
+    refetch,
   };
 }

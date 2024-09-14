@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
@@ -28,6 +28,8 @@ import useAppModals from "~/hooks/useAppModals";
 import { Loading } from "~/components/common/Loading";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import { Button } from "~/components/ui/button";
+import { useAccount } from "wagmi";
+import { SECONDARY_COLOR } from "~/constants";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -251,6 +253,7 @@ export function DisputeProposalWrite({
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
     error: paymentTokenInfoError,
+    refetch,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
@@ -280,29 +283,45 @@ export function DisputeProposalWrite({
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig?.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
+
+  const { address } = useAccount();
+  const preAddress = useRef(address);
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
+  useEffect(() => {
+    if (preAddress.current !== address) {
+      refetch();
+      preAddress.current = address;
+    }
+  }, [address]);
   return (
     <>
       {paymentTokenInfoLoading ? (
-        <Loading />
-      ) : selectedPaymentToken ? (
-        <ProposalPaymentSelector
-          paymentInfoType={PaymentInfoType.Challenge}
-          defaultPaymentInfo={{
-            tokenInfo: paymentTokenInfo!,
-            recommendedAmount: price,
-            minAmount: minAmount,
-          }}
-          selectedPaymentToken={selectedPaymentToken!}
-          setSelectedPaymentToken={setSelectedPaymentToken}
-          selectedPayAmount={selectedPayAmount!}
-          setSelectedPayAmount={setSelectedPayAmount}
-        />
-      ) : null}
+        <ActivityIndicator color={SECONDARY_COLOR} />
+      ) : (
+        <>
+          <ProposalPaymentSelector
+            paymentInfoType={PaymentInfoType.Challenge}
+            defaultPaymentInfo={{
+              tokenInfo: paymentTokenInfo!,
+              recommendedAmount: price,
+              minAmount: minAmount,
+            }}
+            selectedPaymentToken={selectedPaymentToken!}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            selectedPayAmount={selectedPayAmount!}
+            setSelectedPayAmount={setSelectedPayAmount}
+          />{" "}
+        </>
+      )}
       <Text className="text-center text-xs text-secondary">
         Share with more people to accelerate the challenge.
       </Text>
@@ -342,6 +361,7 @@ export function ProposeProposalWrite({
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
     error: paymentTokenInfoError,
+    refetch,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
@@ -370,29 +390,45 @@ export function ProposeProposalWrite({
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig?.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
+
+  const { address } = useAccount();
+  const preAddress = useRef(address);
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
+  useEffect(() => {
+    if (preAddress.current !== address) {
+      refetch();
+      preAddress.current = address;
+    }
+  }, [address]);
   return (
     <>
       {paymentTokenInfoLoading ? (
-        <Loading />
-      ) : selectedPaymentToken ? (
-        <ProposalPaymentSelector
-          paymentInfoType={PaymentInfoType.Upvote}
-          defaultPaymentInfo={{
-            tokenInfo: paymentTokenInfo!,
-            recommendedAmount: price,
-            minAmount: minAmount,
-          }}
-          selectedPaymentToken={selectedPaymentToken!}
-          setSelectedPaymentToken={setSelectedPaymentToken}
-          selectedPayAmount={selectedPayAmount!}
-          setSelectedPayAmount={setSelectedPayAmount}
-        />
-      ) : null}
+        <ActivityIndicator color={SECONDARY_COLOR} />
+      ) : (
+        <>
+          <ProposalPaymentSelector
+            paymentInfoType={PaymentInfoType.Upvote}
+            defaultPaymentInfo={{
+              tokenInfo: paymentTokenInfo!,
+              recommendedAmount: price,
+              minAmount: minAmount,
+            }}
+            selectedPaymentToken={selectedPaymentToken!}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            selectedPayAmount={selectedPayAmount!}
+            setSelectedPayAmount={setSelectedPayAmount}
+          />{" "}
+        </>
+      )}
       <Text className="text-center text-xs text-secondary">
         Share with more people to accelerate the challenge.
       </Text>
