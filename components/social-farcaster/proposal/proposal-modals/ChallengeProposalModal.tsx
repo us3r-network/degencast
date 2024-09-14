@@ -27,6 +27,7 @@ import { AboutContents } from "~/components/help/HelpButton";
 import useAppModals from "~/hooks/useAppModals";
 import { Loading } from "~/components/common/Loading";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
+import { Button } from "~/components/ui/button";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -199,6 +200,16 @@ function ChallengeProposalContentBody({
             text1: error.message,
           });
         }}
+        onShare={() => {
+          onClose();
+          upsertProposalShareModal({
+            open: true,
+            cast,
+            channel,
+            proposal,
+            description: "Share with more people to accelerate the challenge.",
+          });
+        }}
       />
     </View>
   );
@@ -209,6 +220,7 @@ export type DisputeProposalWrite = CastProposeStatusProps & {
   onDisputeError?: (error: any) => void;
   onProposeSuccess?: (proposal: TransactionReceipt) => void;
   onProposeError?: (error: any) => void;
+  onShare?: () => void;
 };
 export function ChallengeProposalWriteForm(
   props: CastProposeStatusProps & {
@@ -216,6 +228,7 @@ export function ChallengeProposalWriteForm(
     onDisputeError?: (error: any) => void;
     onProposeSuccess?: (proposal: TransactionReceipt) => void;
     onProposeError?: (error: any) => void;
+    onShare?: () => void;
   },
 ) {
   return props.proposal.status === ProposalState.Accepted ? (
@@ -232,6 +245,7 @@ export function DisputeProposalWrite({
   tokenInfo,
   onDisputeSuccess,
   onDisputeError,
+  onShare,
 }: DisputeProposalWrite) {
   const {
     paymentTokenInfo,
@@ -289,18 +303,28 @@ export function DisputeProposalWrite({
           setSelectedPayAmount={setSelectedPayAmount}
         />
       ) : null}
-      <DisputeProposalWriteButton
-        cast={cast}
-        channel={channel}
-        proposal={proposal}
-        tokenInfo={tokenInfo}
-        paymentTokenInfo={paymentTokenInfo!}
-        usedPaymentTokenInfo={selectedPaymentToken}
-        paymentTokenInfoLoading={paymentTokenInfoLoading}
-        paymentAmount={selectedPayAmount!}
-        onDisputeSuccess={onDisputeSuccess}
-        onDisputeError={onDisputeError}
-      />
+      <Text className="text-center text-xs text-secondary">
+        Share with more people to accelerate the challenge.
+      </Text>
+      <View className="flex-row items-center justify-between gap-4">
+        <Button className="h-8 w-20 bg-white" onPress={onShare}>
+          <Text className="text-xs text-primary">Share</Text>
+        </Button>
+        <View className="flex-1">
+          <DisputeProposalWriteButton
+            cast={cast}
+            channel={channel}
+            proposal={proposal}
+            tokenInfo={tokenInfo}
+            paymentTokenInfo={paymentTokenInfo!}
+            usedPaymentTokenInfo={selectedPaymentToken}
+            paymentTokenInfoLoading={paymentTokenInfoLoading}
+            paymentAmount={selectedPayAmount!}
+            onDisputeSuccess={onDisputeSuccess}
+            onDisputeError={onDisputeError}
+          />
+        </View>
+      </View>
     </>
   );
 }
@@ -312,6 +336,7 @@ export function ProposeProposalWrite({
   tokenInfo,
   onProposeSuccess,
   onProposeError,
+  onShare,
 }: DisputeProposalWrite) {
   const {
     paymentTokenInfo,
@@ -368,18 +393,28 @@ export function ProposeProposalWrite({
           setSelectedPayAmount={setSelectedPayAmount}
         />
       ) : null}
-      <ProposeProposalWriteButton
-        cast={cast}
-        channel={channel}
-        proposal={proposal}
-        tokenInfo={tokenInfo}
-        paymentTokenInfo={paymentTokenInfo!}
-        usedPaymentTokenInfo={selectedPaymentToken}
-        paymentTokenInfoLoading={paymentTokenInfoLoading}
-        paymentAmount={selectedPayAmount!}
-        onProposeSuccess={onProposeSuccess}
-        onProposeError={onProposeError}
-      />
+      <Text className="text-center text-xs text-secondary">
+        Share with more people to accelerate the challenge.
+      </Text>
+      <View className="flex-row items-center justify-between gap-4">
+        <Button className="h-8 w-20 bg-white" onPress={onShare}>
+          <Text className="text-xs text-primary">Share</Text>
+        </Button>
+        <View className="flex-1">
+          <ProposeProposalWriteButton
+            cast={cast}
+            channel={channel}
+            proposal={proposal}
+            tokenInfo={tokenInfo}
+            paymentTokenInfo={paymentTokenInfo!}
+            usedPaymentTokenInfo={selectedPaymentToken}
+            paymentTokenInfoLoading={paymentTokenInfoLoading}
+            paymentAmount={selectedPayAmount!}
+            onProposeSuccess={onProposeSuccess}
+            onProposeError={onProposeError}
+          />
+        </View>
+      </View>
     </>
   );
 }
