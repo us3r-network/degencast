@@ -100,14 +100,15 @@ function SwitchChainButtonWarper({
   targetChainId,
   ...props
 }: OnChainActionButtonWarperProps & SwitchChainButtonProps) {
-  const { connectWallet } = useWalletAccount();
-  const { address, isConnected } = useAccount();
+  const { connectWallet, isConnected } = useWalletAccount();
   const { switchChain, status: switchChainStatus } = useSwitchChain();
   const chainId = useChainId();
   const chains = useChains();
   const targetChain = chains.find((c) => c.id === targetChainId);
   if (targetChainId && targetChain && targetChainId !== chainId) {
-    if (!isConnected) {
+    if (
+      !isConnected
+    ) {
       return (
         <Button
           disabled={switchChainStatus === "pending"}

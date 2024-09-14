@@ -48,7 +48,7 @@ export default function SendTokenButton({
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
-  const { connectWallet, connectedWallets, activeWallet, injectedWallet } =
+  const { connectWallet, activeWallet, injectedWallet } =
     useWalletAccount();
 
   if (!activeWallet?.address)

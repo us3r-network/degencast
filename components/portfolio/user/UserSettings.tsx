@@ -54,7 +54,7 @@ export default function UserSettings({
   showFarcasterAccount?: boolean;
 }) {
   const { ready, authenticated } = useAuth();
-  const { connectedWallets, setActiveWallet } = useWalletAccount();
+  const { connectedExternalWallet, setActiveWallet } = useWalletAccount();
   const [open, setOpen] = React.useState(false);
 
   if (!ready || !authenticated) {
@@ -80,7 +80,7 @@ export default function UserSettings({
               icon={<Wallet className="size-4" />}
             >
               <DropdownMenuGroup className={cn("flex gap-2")}>
-                {connectedWallets.map((wallet) => (
+                {connectedExternalWallet.map((wallet) => (
                   <DropdownMenuItem
                     asChild
                     className={cn("p-0")}
