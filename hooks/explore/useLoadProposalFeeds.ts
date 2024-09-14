@@ -24,6 +24,7 @@ export default function useLoadProposalFeeds(props?: { type?: string }) {
     nextPageNumber: 1,
   });
 
+  const idle = status === AsyncRequestStatus.IDLE;
   const loading = status === AsyncRequestStatus.PENDING;
 
   const loadItems = async () => {
@@ -60,6 +61,7 @@ export default function useLoadProposalFeeds(props?: { type?: string }) {
   };
 
   return {
+    idle,
     loading,
     items,
     loadItems,
