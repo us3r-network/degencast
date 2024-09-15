@@ -100,6 +100,7 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
+          hideChallengeAmount={true}
         />
       ) : paymentInfoType === PaymentInfoType.Proposed ? (
         <PaymentInfoWithProposed
@@ -158,6 +159,7 @@ function UserTokenSelectWrapper({
   const {
     fetchSellAmountAsync: fetchEthAmountAsync,
     fetchBuyAmountAsync: fetchDefaultTokenAmountAsync,
+    ready: swapReady,
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
@@ -212,12 +214,19 @@ function UserTokenSelectWrapper({
       setSelectedPayAmount(0n);
       return;
     }
-    if (token.address === ethTokenInfo.address) {
-      const amount = await fetchEthAmountAsync(selectedPayAmount);
-      setSelectedPayAmount(amount);
-    } else {
-      const amount = await fetchDefaultTokenAmountAsync(selectedPayAmount);
-      setSelectedPayAmount(amount);
+    if (!swapReady) {
+      return;
+    }
+    try {
+      if (token?.address === ethTokenInfo?.address) {
+        const amount = await fetchEthAmountAsync(selectedPayAmount);
+        setSelectedPayAmount(amount);
+      } else {
+        const amount = await fetchDefaultTokenAmountAsync(selectedPayAmount);
+        setSelectedPayAmount(amount);
+      }
+    } catch (error) {
+      console.log("fetch amount error", error);
     }
   };
   return (
@@ -238,6 +247,7 @@ export function PaymentInfo({
   amountLoading,
   sliderStep,
   description,
+  hideChallengeAmount,
 }: {
   paymentTokenInfo: TokenWithTradeInfo;
   recommendedPayAmount: bigint;
@@ -247,6 +257,7 @@ export function PaymentInfo({
   amountLoading?: boolean;
   sliderStep?: number;
   description?: string;
+  hideChallengeAmount?: boolean;
 }) {
   const maxAmountNumber = paymentTokenInfo?.rawBalance
     ? Number(
@@ -291,7 +302,7 @@ export function PaymentInfo({
         }}
       />
 
-      {!!recommendedPayAmount && (
+      {!hideChallengeAmount && !!recommendedPayAmount && (
         <PriceRow
           title={"Successfully Challenge"}
           paymentTokenInfo={paymentTokenInfo}
@@ -365,7 +376,7 @@ export function PaymentInfoWithProposed({
     min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
     step: sliderStep || recommendedPayAmountNumber / 100,
     maximumFractionDigits:
-      paymentTokenInfo.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
+      paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
 
   return (

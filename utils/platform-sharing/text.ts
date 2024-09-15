@@ -22,8 +22,12 @@ export const getCastShareTextWithTwitter = () => {
   return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
 };
 
-export const getCastProposalShareTextWithWarpcast = () => {
-  return `Use frame to vote the proposal in /${WARPCAST_CHANNEL_NAME}`;
+export const getCastProposalShareTextWithWarpcast = (
+  fname: string,
+  channelId: string,
+) => {
+  return `Propose to permanently archive on Arweave for @${fname} in /${channelId}`;
+  // return `Use frame to vote the proposal in /${WARPCAST_CHANNEL_NAME}`;
 };
 export const getCastProposalShareTextWithTwitter = () => {
   return `Vote the proposal in @${TWITTER_SCREEN_NAME}`;
