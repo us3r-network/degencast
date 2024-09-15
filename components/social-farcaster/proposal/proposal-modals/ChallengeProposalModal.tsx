@@ -266,6 +266,8 @@ export function DisputeProposalWrite({
     castHash: cast.hash,
   });
 
+  const isLoading = priceLoading || paymentTokenInfoLoading;
+
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -304,7 +306,7 @@ export function DisputeProposalWrite({
   }, [address]);
   return (
     <>
-      {paymentTokenInfoLoading ? (
+      {isLoading ? (
         <ActivityIndicator color={SECONDARY_COLOR} />
       ) : (
         <>
@@ -319,31 +321,31 @@ export function DisputeProposalWrite({
             setSelectedPaymentToken={setSelectedPaymentToken}
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
-          />{" "}
+          />
+          <Text className="text-center text-xs text-secondary">
+            Share with more people to accelerate the challenge.
+          </Text>
+          <View className="flex-row items-center justify-between gap-4">
+            <Button className="h-8 w-20 bg-white" onPress={onShare}>
+              <Text className="text-xs text-primary">Share</Text>
+            </Button>
+            <View className="flex-1">
+              <DisputeProposalWriteButton
+                cast={cast}
+                channel={channel}
+                proposal={proposal}
+                tokenInfo={tokenInfo}
+                paymentTokenInfo={paymentTokenInfo!}
+                usedPaymentTokenInfo={selectedPaymentToken}
+                paymentTokenInfoLoading={paymentTokenInfoLoading}
+                paymentAmount={selectedPayAmount!}
+                onDisputeSuccess={onDisputeSuccess}
+                onDisputeError={onDisputeError}
+              />
+            </View>
+          </View>
         </>
       )}
-      <Text className="text-center text-xs text-secondary">
-        Share with more people to accelerate the challenge.
-      </Text>
-      <View className="flex-row items-center justify-between gap-4">
-        <Button className="h-8 w-20 bg-white" onPress={onShare}>
-          <Text className="text-xs text-primary">Share</Text>
-        </Button>
-        <View className="flex-1">
-          <DisputeProposalWriteButton
-            cast={cast}
-            channel={channel}
-            proposal={proposal}
-            tokenInfo={tokenInfo}
-            paymentTokenInfo={paymentTokenInfo!}
-            usedPaymentTokenInfo={selectedPaymentToken}
-            paymentTokenInfoLoading={paymentTokenInfoLoading}
-            paymentAmount={selectedPayAmount!}
-            onDisputeSuccess={onDisputeSuccess}
-            onDisputeError={onDisputeError}
-          />
-        </View>
-      </View>
     </>
   );
 }
@@ -373,6 +375,8 @@ export function ProposeProposalWrite({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+
+  const isLoading = priceLoading || paymentTokenInfoLoading;
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -411,7 +415,7 @@ export function ProposeProposalWrite({
   }, [address]);
   return (
     <>
-      {paymentTokenInfoLoading ? (
+      {isLoading ? (
         <ActivityIndicator color={SECONDARY_COLOR} />
       ) : (
         <>
@@ -426,31 +430,31 @@ export function ProposeProposalWrite({
             setSelectedPaymentToken={setSelectedPaymentToken}
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
-          />{" "}
+          />
+          <Text className="text-center text-xs text-secondary">
+            Share with more people to accelerate the challenge.
+          </Text>
+          <View className="flex-row items-center justify-between gap-4">
+            <Button className="h-8 w-20 bg-white" onPress={onShare}>
+              <Text className="text-xs text-primary">Share</Text>
+            </Button>
+            <View className="flex-1">
+              <ProposeProposalWriteButton
+                cast={cast}
+                channel={channel}
+                proposal={proposal}
+                tokenInfo={tokenInfo}
+                paymentTokenInfo={paymentTokenInfo!}
+                usedPaymentTokenInfo={selectedPaymentToken}
+                paymentTokenInfoLoading={paymentTokenInfoLoading}
+                paymentAmount={selectedPayAmount!}
+                onProposeSuccess={onProposeSuccess}
+                onProposeError={onProposeError}
+              />
+            </View>
+          </View>
         </>
       )}
-      <Text className="text-center text-xs text-secondary">
-        Share with more people to accelerate the challenge.
-      </Text>
-      <View className="flex-row items-center justify-between gap-4">
-        <Button className="h-8 w-20 bg-white" onPress={onShare}>
-          <Text className="text-xs text-primary">Share</Text>
-        </Button>
-        <View className="flex-1">
-          <ProposeProposalWriteButton
-            cast={cast}
-            channel={channel}
-            proposal={proposal}
-            tokenInfo={tokenInfo}
-            paymentTokenInfo={paymentTokenInfo!}
-            usedPaymentTokenInfo={selectedPaymentToken}
-            paymentTokenInfoLoading={paymentTokenInfoLoading}
-            paymentAmount={selectedPayAmount!}
-            onProposeSuccess={onProposeSuccess}
-            onProposeError={onProposeError}
-          />
-        </View>
-      </View>
     </>
   );
 }

@@ -191,9 +191,6 @@ function UserTokenSelectWrapper({
     setFetchedEthMinAmount(fetchedEthMinAmount || 0n);
   }, [fetchedEthMinAmount]);
   const handleTokenChange = async (token: TokenWithTradeInfo) => {
-    if (!swapReady) {
-      return;
-    }
     if (token?.address === selectedPaymentToken?.address) {
       return;
     }
@@ -217,12 +214,19 @@ function UserTokenSelectWrapper({
       setSelectedPayAmount(0n);
       return;
     }
-    if (token.address === ethTokenInfo.address) {
-      const amount = await fetchEthAmountAsync(selectedPayAmount);
-      setSelectedPayAmount(amount);
-    } else {
-      const amount = await fetchDefaultTokenAmountAsync(selectedPayAmount);
-      setSelectedPayAmount(amount);
+    if (!swapReady) {
+      return;
+    }
+    try {
+      if (token?.address === ethTokenInfo?.address) {
+        const amount = await fetchEthAmountAsync(selectedPayAmount);
+        setSelectedPayAmount(amount);
+      } else {
+        const amount = await fetchDefaultTokenAmountAsync(selectedPayAmount);
+        setSelectedPayAmount(amount);
+      }
+    } catch (error) {
+      console.log("fetch amount error", error);
     }
   };
   return (
@@ -372,7 +376,7 @@ export function PaymentInfoWithProposed({
     min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
     step: sliderStep || recommendedPayAmountNumber / 100,
     maximumFractionDigits:
-      paymentTokenInfo.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
+      paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
   };
 
   return (

@@ -161,18 +161,6 @@ function ProposedProposalModalContentBodyScene() {
 
   const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
 
-  useEffect(() => {
-    if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      setSelectedPaymentToken(paymentTokenInfo);
-    }
-  }, [paymentTokenInfoLoading, paymentTokenInfo]);
-
-  useEffect(() => {
-    if (!priceLoading && price) {
-      setSelectedPayAmount(price);
-    }
-  }, [price, priceLoading]);
-
   const isLoading = proposalsLoading || priceLoading || paymentTokenInfoLoading;
 
   const disabled =
@@ -193,6 +181,22 @@ function ProposedProposalModalContentBodyScene() {
   );
 
   const { upsertProposalShareModal } = useAppModals();
+
+  useEffect(() => {
+    if (!paymentTokenInfoLoading && paymentTokenInfo) {
+      setSelectedPaymentToken(paymentTokenInfo);
+    }
+  }, [paymentTokenInfoLoading, paymentTokenInfo]);
+
+  useEffect(() => {
+    if (Number(proposal?.upvoteCount) === 1) {
+      setSelectedPayAmount(minAmount);
+    } else {
+      if (!priceLoading && price) {
+        setSelectedPayAmount(price);
+      }
+    }
+  }, [price, priceLoading, proposal, minAmount]);
 
   const preAddress = useRef(address);
   useEffect(() => {
@@ -218,7 +222,7 @@ function ProposedProposalModalContentBodyScene() {
           <UserWalletSelect />
         </View>
         <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-        {paymentTokenInfoLoading ? (
+        {isLoading ? (
           <ActivityIndicator color={SECONDARY_COLOR} />
         ) : (
           <ProposalPaymentSelector
@@ -235,11 +239,7 @@ function ProposedProposalModalContentBodyScene() {
           />
         )}
 
-        {isLoading ? (
-          <View>
-            <Loading />
-          </View>
-        ) : participated ? (
+        {isLoading ? null : participated ? (
           <StatusButton disabled={disabled}>
             {proposals?.state === ProposalState.Accepted ? (
               <Text>You have already voted.</Text>

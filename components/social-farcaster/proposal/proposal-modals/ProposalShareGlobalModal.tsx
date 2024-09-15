@@ -23,7 +23,7 @@ export default function ProposalShareGlobalModal() {
   const { currFid } = useFarcasterAccount();
   const { proposalShareModal, upsertProposalShareModal } = useAppModals();
   const { cast, channel, proposal, description } = proposalShareModal;
-  const castHash = getCastHex(cast!);
+  const castHash = cast?.hash || "";
   const config = useMemo(() => {
     if (proposal && proposal.status === ProposalState.ReadyToMint) {
       return {
