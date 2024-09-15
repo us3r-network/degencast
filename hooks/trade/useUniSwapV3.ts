@@ -28,11 +28,16 @@ export function useSwap({
 
   useEffect(() => {
     if (!tokenIn || !tokenOut) return;
+
     const getRoute = async () => {
-      const swapRoute = await getSwapRoute(tokenIn, tokenOut, poolFee);
-      setSwapRoute(swapRoute);
-      setReady(true);
-      console.log("swapRoute done", swapRoute);
+      try {
+        const swapRoute = await getSwapRoute(tokenIn, tokenOut, poolFee);
+        setSwapRoute(swapRoute);
+        setReady(true);
+        console.log("swapRoute done", swapRoute);
+      } catch (error) {
+        console.log("swapRoute error", error);
+      }
     };
     if (tokenIn && tokenOut) {
       reset();

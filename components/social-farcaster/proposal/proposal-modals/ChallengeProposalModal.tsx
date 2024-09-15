@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
@@ -28,6 +28,8 @@ import useAppModals from "~/hooks/useAppModals";
 import { Loading } from "~/components/common/Loading";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import { Button } from "~/components/ui/button";
+import { useAccount } from "wagmi";
+import { SECONDARY_COLOR } from "~/constants";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -251,6 +253,7 @@ export function DisputeProposalWrite({
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
     error: paymentTokenInfoError,
+    refetch,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
@@ -262,6 +265,8 @@ export function DisputeProposalWrite({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+
+  const isLoading = priceLoading || paymentTokenInfoLoading;
 
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
@@ -280,51 +285,67 @@ export function DisputeProposalWrite({
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig?.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
+
+  const { address } = useAccount();
+  const preAddress = useRef(address);
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
+  useEffect(() => {
+    if (preAddress.current !== address) {
+      refetch();
+      preAddress.current = address;
+    }
+  }, [address]);
   return (
     <>
-      {paymentTokenInfoLoading ? (
-        <Loading />
-      ) : selectedPaymentToken ? (
-        <ProposalPaymentSelector
-          paymentInfoType={PaymentInfoType.Challenge}
-          defaultPaymentInfo={{
-            tokenInfo: paymentTokenInfo!,
-            recommendedAmount: price,
-            minAmount: minAmount,
-          }}
-          selectedPaymentToken={selectedPaymentToken!}
-          setSelectedPaymentToken={setSelectedPaymentToken}
-          selectedPayAmount={selectedPayAmount!}
-          setSelectedPayAmount={setSelectedPayAmount}
-        />
-      ) : null}
-      <Text className="text-center text-xs text-secondary">
-        Share with more people to accelerate the challenge.
-      </Text>
-      <View className="flex-row items-center justify-between gap-4">
-        <Button className="h-8 w-20 bg-white" onPress={onShare}>
-          <Text className="text-xs text-primary">Share</Text>
-        </Button>
-        <View className="flex-1">
-          <DisputeProposalWriteButton
-            cast={cast}
-            channel={channel}
-            proposal={proposal}
-            tokenInfo={tokenInfo}
-            paymentTokenInfo={paymentTokenInfo!}
-            usedPaymentTokenInfo={selectedPaymentToken}
-            paymentTokenInfoLoading={paymentTokenInfoLoading}
-            paymentAmount={selectedPayAmount!}
-            onDisputeSuccess={onDisputeSuccess}
-            onDisputeError={onDisputeError}
+      {isLoading ? (
+        <ActivityIndicator color={SECONDARY_COLOR} />
+      ) : (
+        <>
+          <ProposalPaymentSelector
+            paymentInfoType={PaymentInfoType.Challenge}
+            defaultPaymentInfo={{
+              tokenInfo: paymentTokenInfo!,
+              recommendedAmount: price,
+              minAmount: minAmount,
+            }}
+            selectedPaymentToken={selectedPaymentToken!}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            selectedPayAmount={selectedPayAmount!}
+            setSelectedPayAmount={setSelectedPayAmount}
           />
-        </View>
-      </View>
+          <Text className="text-center text-xs text-secondary">
+            Share with more people to accelerate the challenge.
+          </Text>
+          <View className="flex-row items-center justify-between gap-4">
+            <Button className="h-8 w-20 bg-white" onPress={onShare}>
+              <Text className="text-xs text-primary">Share</Text>
+            </Button>
+            <View className="flex-1">
+              <DisputeProposalWriteButton
+                cast={cast}
+                channel={channel}
+                proposal={proposal}
+                tokenInfo={tokenInfo}
+                paymentTokenInfo={paymentTokenInfo!}
+                usedPaymentTokenInfo={selectedPaymentToken}
+                paymentTokenInfoLoading={paymentTokenInfoLoading}
+                paymentAmount={selectedPayAmount!}
+                onDisputeSuccess={onDisputeSuccess}
+                onDisputeError={onDisputeError}
+              />
+            </View>
+          </View>
+        </>
+      )}
     </>
   );
 }
@@ -342,6 +363,7 @@ export function ProposeProposalWrite({
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
     error: paymentTokenInfoError,
+    refetch,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
@@ -353,6 +375,8 @@ export function ProposeProposalWrite({
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+
+  const isLoading = priceLoading || paymentTokenInfoLoading;
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -370,51 +394,67 @@ export function ProposeProposalWrite({
     }
   }, [price, priceLoading]);
 
-  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig?.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
+
+  const { address } = useAccount();
+  const preAddress = useRef(address);
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
+  useEffect(() => {
+    if (preAddress.current !== address) {
+      refetch();
+      preAddress.current = address;
+    }
+  }, [address]);
   return (
     <>
-      {paymentTokenInfoLoading ? (
-        <Loading />
-      ) : selectedPaymentToken ? (
-        <ProposalPaymentSelector
-          paymentInfoType={PaymentInfoType.Upvote}
-          defaultPaymentInfo={{
-            tokenInfo: paymentTokenInfo!,
-            recommendedAmount: price,
-            minAmount: minAmount,
-          }}
-          selectedPaymentToken={selectedPaymentToken!}
-          setSelectedPaymentToken={setSelectedPaymentToken}
-          selectedPayAmount={selectedPayAmount!}
-          setSelectedPayAmount={setSelectedPayAmount}
-        />
-      ) : null}
-      <Text className="text-center text-xs text-secondary">
-        Share with more people to accelerate the challenge.
-      </Text>
-      <View className="flex-row items-center justify-between gap-4">
-        <Button className="h-8 w-20 bg-white" onPress={onShare}>
-          <Text className="text-xs text-primary">Share</Text>
-        </Button>
-        <View className="flex-1">
-          <ProposeProposalWriteButton
-            cast={cast}
-            channel={channel}
-            proposal={proposal}
-            tokenInfo={tokenInfo}
-            paymentTokenInfo={paymentTokenInfo!}
-            usedPaymentTokenInfo={selectedPaymentToken}
-            paymentTokenInfoLoading={paymentTokenInfoLoading}
-            paymentAmount={selectedPayAmount!}
-            onProposeSuccess={onProposeSuccess}
-            onProposeError={onProposeError}
+      {isLoading ? (
+        <ActivityIndicator color={SECONDARY_COLOR} />
+      ) : (
+        <>
+          <ProposalPaymentSelector
+            paymentInfoType={PaymentInfoType.Upvote}
+            defaultPaymentInfo={{
+              tokenInfo: paymentTokenInfo!,
+              recommendedAmount: price,
+              minAmount: minAmount,
+            }}
+            selectedPaymentToken={selectedPaymentToken!}
+            setSelectedPaymentToken={setSelectedPaymentToken}
+            selectedPayAmount={selectedPayAmount!}
+            setSelectedPayAmount={setSelectedPayAmount}
           />
-        </View>
-      </View>
+          <Text className="text-center text-xs text-secondary">
+            Share with more people to accelerate the challenge.
+          </Text>
+          <View className="flex-row items-center justify-between gap-4">
+            <Button className="h-8 w-20 bg-white" onPress={onShare}>
+              <Text className="text-xs text-primary">Share</Text>
+            </Button>
+            <View className="flex-1">
+              <ProposeProposalWriteButton
+                cast={cast}
+                channel={channel}
+                proposal={proposal}
+                tokenInfo={tokenInfo}
+                paymentTokenInfo={paymentTokenInfo!}
+                usedPaymentTokenInfo={selectedPaymentToken}
+                paymentTokenInfoLoading={paymentTokenInfoLoading}
+                paymentAmount={selectedPayAmount!}
+                onProposeSuccess={onProposeSuccess}
+                onProposeError={onProposeError}
+              />
+            </View>
+          </View>
+        </>
+      )}
     </>
   );
 }

@@ -4,7 +4,7 @@ import { Button, ButtonProps } from "~/components/ui/button";
 import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useCreateProposal from "~/hooks/social-farcaster/proposal/useCreateProposal";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import { formatUnits, TransactionReceipt } from "viem";
 import { getProposalMinPrice } from "../utils";
@@ -70,8 +70,16 @@ export default function CreateProposalWriteButton({
     !paymentAmount ||
     payAmountNumber > maxAmountNumber;
 
+  const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
+  const capabilities = getPaymasterService(paymentTokenInfo?.chainId!);
+  const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
+
+  const chainId = useChainId();
   const allowanceParams =
-    !disabled && address && isConnected
+    !isSupportAtomicBatch &&
+    address &&
+    isConnected &&
+    ATT_CONTRACT_CHAIN.id === chainId
       ? {
           owner: address,
           tokenAddress: paymentTokenInfo?.address,
@@ -80,16 +88,12 @@ export default function CreateProposalWriteButton({
         }
       : undefined;
 
-  const { supportAtomicBatch, getPaymasterService } = useWalletAccount();
-  const capabilities = getPaymasterService(paymentTokenInfo?.chainId!);
-  const isSupportAtomicBatch = supportAtomicBatch(paymentTokenInfo?.chainId!);
-
   return (
     <OnChainActionButtonWarper
       variant="secondary"
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
-      allowanceParams={isSupportAtomicBatch ? undefined : allowanceParams}
+      allowanceParams={allowanceParams}
       warpedButton={
         <Button
           variant={"secondary"}

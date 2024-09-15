@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
@@ -11,7 +11,7 @@ import {
   PriceRangeRow,
 } from "./ChallengeProposalModal";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
-import { ScrollView, View } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { AboutContents } from "~/components/help/HelpButton";
@@ -40,6 +40,7 @@ import {
   ProposalPaymentSelector,
 } from "./PaymentSelector";
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
+import { SECONDARY_COLOR } from "~/constants";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -134,6 +135,7 @@ function ProposedProposalModalContentBodyScene() {
     paymentTokenInfo,
     isLoading: paymentTokenInfoLoading,
     error: paymentTokenInfoError,
+    refetch,
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
@@ -159,18 +161,6 @@ function ProposedProposalModalContentBodyScene() {
 
   const [selectedPayAmount, setSelectedPayAmount] = useState(0n);
 
-  useEffect(() => {
-    if (!paymentTokenInfoLoading && paymentTokenInfo) {
-      setSelectedPaymentToken(paymentTokenInfo);
-    }
-  }, [paymentTokenInfoLoading, paymentTokenInfo]);
-
-  useEffect(() => {
-    if (!priceLoading && price) {
-      setSelectedPayAmount(price);
-    }
-  }, [price, priceLoading]);
-
   const isLoading = proposalsLoading || priceLoading || paymentTokenInfoLoading;
 
   const disabled =
@@ -184,13 +174,43 @@ function ProposedProposalModalContentBodyScene() {
     isLoading ||
     !price;
 
-  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig?.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
 
   const { upsertProposalShareModal } = useAppModals();
+
+  useEffect(() => {
+    if (!paymentTokenInfoLoading && paymentTokenInfo) {
+      setSelectedPaymentToken(paymentTokenInfo);
+    }
+  }, [paymentTokenInfoLoading, paymentTokenInfo]);
+
+  useEffect(() => {
+    if (Number(proposal?.upvoteCount) === 1) {
+      setSelectedPayAmount(minAmount);
+    } else {
+      if (!priceLoading && price) {
+        setSelectedPayAmount(price);
+      }
+    }
+  }, [price, priceLoading, proposal, minAmount]);
+
+  const preAddress = useRef(address);
+  useEffect(() => {
+    if (minAmount) {
+      setSelectedPayAmount(minAmount);
+    }
+  }, [minAmount]);
+  useEffect(() => {
+    if (preAddress.current !== address) {
+      refetch();
+      preAddress.current = address;
+    }
+  }, [address]);
+
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -202,9 +222,9 @@ function ProposedProposalModalContentBodyScene() {
           <UserWalletSelect />
         </View>
         <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
-        {paymentTokenInfoLoading ? (
-          <Loading />
-        ) : selectedPaymentToken ? (
+        {isLoading ? (
+          <ActivityIndicator color={SECONDARY_COLOR} />
+        ) : (
           <ProposalPaymentSelector
             paymentInfoType={PaymentInfoType.Proposed}
             defaultPaymentInfo={{
@@ -217,13 +237,9 @@ function ProposedProposalModalContentBodyScene() {
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
           />
-        ) : null}
+        )}
 
-        {isLoading ? (
-          <View>
-            <Loading />
-          </View>
-        ) : participated ? (
+        {isLoading ? null : participated ? (
           <StatusButton disabled={disabled}>
             {proposals?.state === ProposalState.Accepted ? (
               <Text>You have already voted.</Text>

@@ -1,5 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import Toast from "react-native-toast-message";
 import { formatUnits, parseUnits, TransactionReceipt } from "viem";
@@ -25,6 +32,9 @@ import PriceRow from "./PriceRow";
 import useAppModals from "~/hooks/useAppModals";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import { Loading } from "~/components/common/Loading";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { useAccount } from "wagmi";
+import { SECONDARY_COLOR } from "~/constants";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -209,10 +219,13 @@ function CreateProposalModalContentBody({
   onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
   onCreateProposalError?: (error: any) => void;
 }) {
-  const { paymentTokenInfo, isLoading: paymentTokenInfoLoading } =
-    usePaymentTokenInfo({
-      contractAddress: tokenInfo?.danContract!,
-    });
+  const {
+    paymentTokenInfo,
+    isLoading: paymentTokenInfoLoading,
+    refetch,
+  } = usePaymentTokenInfo({
+    contractAddress: tokenInfo?.danContract!,
+  });
 
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
@@ -225,17 +238,25 @@ function CreateProposalModalContentBody({
     }
   }, [paymentTokenInfoLoading, paymentTokenInfo]);
 
-  const minPayAmountNumber = tokenInfo?.danConfig.proposalStake || 0;
+  const minPayAmountNumber = tokenInfo?.danConfig?.proposalStake || 0;
   const minAmount = parseUnits(
     minPayAmountNumber.toString(),
     paymentTokenInfo?.decimals!,
   );
 
+  const { address } = useAccount();
+  const preAddress = useRef(address);
   useEffect(() => {
     if (minAmount) {
       setSelectedPayAmount(minAmount);
     }
   }, [minAmount]);
+  useEffect(() => {
+    if (preAddress.current !== address) {
+      refetch();
+      preAddress.current = address;
+    }
+  }, [address]);
 
   return (
     <>
@@ -249,7 +270,7 @@ function CreateProposalModalContentBody({
       </View>
       <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
       {paymentTokenInfoLoading ? (
-        <Loading />
+        <ActivityIndicator color={SECONDARY_COLOR} />
       ) : (
         <>
           <ProposalPaymentSelector
