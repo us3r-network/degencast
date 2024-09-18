@@ -13,7 +13,7 @@ import { Platform, View } from "react-native";
 import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { Provider as ReduxProvider } from "react-redux";
 import StateUpdateWrapper from "~/components/StateUpdateWrapper";
-import { PortalHost } from "~/components/primitives/portal";
+import { PortalHost } from '@rn-primitives/portal';
 import { Text } from "~/components/ui/text";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
