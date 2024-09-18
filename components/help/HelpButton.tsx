@@ -11,7 +11,7 @@ import {
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { UnorderedList } from "../common/UnorderedList";
-import { Separator } from "../primitives/dropdown-menu";
+import { Separator } from "../ui/separator";
 
 export default function HelpButton() {
   return (
