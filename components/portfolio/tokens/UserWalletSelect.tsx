@@ -17,7 +17,11 @@ import { shortPubKey } from "~/utils/shortPubKey";
 import { LinkWallets, WalletItem } from "../user/UserSettings";
 import { ZERO_ADDRESS } from "~/constants";
 
-export default function UserWalletSelect() {
+export default function UserWalletSelect({
+  disabled = false,
+}: {
+  disabled?: boolean;
+}) {
   const { ready, authenticated } = useAuth();
   const { connectedExternalWallet, activeWallet, setActiveWallet } =
     useWalletAccount();
@@ -26,6 +30,24 @@ export default function UserWalletSelect() {
     return null;
   }
 
+  if (disabled) {
+    if (activeWallet && connectedExternalWallet.includes(activeWallet))
+      return (
+        <View className="mr-2 flex-row items-center gap-1">
+          <WalletIcon type={activeWallet.walletClientType || ""} />
+          <Text className="text-white/80">
+            {shortPubKey(activeWallet.address || "")}
+          </Text>
+        </View>
+      );
+    else
+      return (
+        <View className="mr-2 flex-row items-center gap-1">
+          <WalletIcon type="" />
+          <Text className="text-primery">No Wallet Connected!</Text>
+        </View>
+      );
+  }
   return (
     <TextClassContext.Provider value="text-sm font-medium">
       <Select
@@ -67,7 +89,7 @@ export default function UserWalletSelect() {
             </View>
           )}
         </SelectTrigger>
-        <SelectContent className="flex items-start gap-4 divide-solid" portalHost="selectPortalHost">
+        <SelectContent className="flex items-start gap-4 divide-solid">
           <View className="flex items-start gap-4 divide-solid">
             <SelectGroup className={cn("flex gap-2")}>
               {connectedExternalWallet.map((wallet) => (

@@ -1,6 +1,6 @@
 import * as SelectPrimitive from "@rn-primitives/select";
 import * as React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Check, ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { cn } from "~/lib/utils";
@@ -16,24 +16,30 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "native:h-12 flex h-10 flex-row items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground web:ring-offset-background web:focus:outline-none web:focus:ring-2 web:focus:ring-ring web:focus:ring-offset-2 [&>span]:line-clamp-1",
-      props.disabled && "opacity-50 web:cursor-not-allowed",
-      className,
-    )}
-    {...props}
-  >
-    <>{children}</>
-    <ChevronDown
-      size={16}
-      aria-hidden={true}
-      className="text-foreground opacity-50"
-    />
-  </SelectPrimitive.Trigger>
-));
+>(({ className, children, ...props }, ref) => {
+  const { open, onOpenChange } = SelectPrimitive.useRootContext();
+  return (
+    <SelectPrimitive.Trigger
+      ref={ref}
+      className={cn(
+        "native:h-12 flex h-10 flex-row items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground web:ring-offset-background web:focus:outline-none web:focus:ring-2 web:focus:ring-ring web:focus:ring-offset-2 [&>span]:line-clamp-1",
+        props.disabled && "opacity-50 web:cursor-not-allowed",
+        className,
+      )}
+      {...props}
+      onPointerDown={() => {
+        if (open) onOpenChange(false);
+      }}
+    >
+      <>{children}</>
+      <ChevronDown
+        size={16}
+        aria-hidden={true}
+        className="text-foreground opacity-50"
+      />
+    </SelectPrimitive.Trigger>
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 /**
@@ -88,13 +94,21 @@ const SelectContent = React.forwardRef<
     portalHost?: string;
   }
 >(({ className, children, position = "popper", portalHost, ...props }, ref) => {
-  const { open } = SelectPrimitive.useRootContext();
-  console.log("SelectContent", Platform.OS, open);
+  const { open, onOpenChange } = SelectPrimitive.useRootContext();
   return (
     <SelectPrimitive.Portal hostName={portalHost}>
       <SelectPrimitive.Overlay
-        style={Platform.OS !== "web" ? StyleSheet.absoluteFill : StyleSheet.absoluteFill}
+        style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
       >
+        {/* {open && (
+          <TouchableOpacity
+            className="absolute bottom-0 left-0 right-0 top-0 bg-black/50"
+            onPress={(e) => {
+              console.log("SelectContent", Platform.OS, open);
+              onOpenChange(false);
+            }}
+          />
+        )} */}
         <Animated.View entering={FadeIn} exiting={FadeOut}>
           <SelectPrimitive.Content
             ref={ref}
