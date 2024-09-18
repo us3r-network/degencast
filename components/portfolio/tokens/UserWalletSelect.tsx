@@ -67,7 +67,7 @@ export default function UserWalletSelect() {
             </View>
           )}
         </SelectTrigger>
-        <SelectContent className="flex items-start gap-4 divide-solid">
+        <SelectContent className="flex items-start gap-4 divide-solid" portalHost="selectPortalHost">
           <View className="flex items-start gap-4 divide-solid">
             <SelectGroup className={cn("flex gap-2")}>
               {connectedExternalWallet.map((wallet) => (
