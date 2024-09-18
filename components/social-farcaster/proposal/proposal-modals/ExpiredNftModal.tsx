@@ -15,6 +15,8 @@ import {
 import { SceneMap, TabView } from "react-native-tab-view";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { AboutContents } from "~/components/help/HelpButton";
+import { NftDetails } from "~/components/trade/ATTBuyButton";
+import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -49,12 +51,14 @@ export default function ExpiredNftModalModal({
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "challenge", title: "Nft" },
+    { key: "details", title: "Details" },
     { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
 
   const renderScene = SceneMap({
     challenge: ExpiredNftModalContentBodyScene,
+    details: DetailsScene,
     activity: ActivitiesListScene,
     about: AboutContents,
   });
@@ -115,6 +119,23 @@ function ExpiredNftModalContentBodyScene() {
     </ScrollView>
   );
 }
+
+export const DetailsScene = () => {
+  const { tokenInfo, proposal } = useExpiredNftModalCtx();
+  const token = {
+    contractAddress: tokenInfo!.tokenContract,
+    tokenId: Number(proposal.tokenId),
+  };
+  const { tokenInfo: nftInfo } = useCurationTokenInfo(
+    token.contractAddress,
+    token.tokenId,
+  );
+  if (!proposal.tokenId) {
+    return null;
+  }
+  // console.log("DetailsScene", token, cast);
+  return <NftDetails token={token} tokenInfo={nftInfo} />;
+};
 function ActivitiesListScene() {
   const { tokenInfo, proposal } = useExpiredNftModalCtx();
   const token = {

@@ -47,7 +47,11 @@ import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
+import {
+  CurationTokenInfo,
+  ERC42069Token,
+  TokenWithTradeInfo,
+} from "~/services/trade/types";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenActivitieList } from "../activity/Activities";
@@ -135,6 +139,17 @@ export const DetailsScene = () => {
     token.contractAddress,
     token.tokenId,
   );
+  // console.log("DetailsScene", token, cast);
+  return <NftDetails token={token} tokenInfo={tokenInfo} />;
+};
+
+export const NftDetails = ({
+  token,
+  tokenInfo,
+}: {
+  token: ERC42069Token;
+  tokenInfo: CurationTokenInfo | undefined;
+}) => {
   // console.log("DetailsScene", token, cast);
   return (
     <View className="relative h-full max-h-[80vh] gap-4 pt-4">
