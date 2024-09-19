@@ -9,6 +9,7 @@ import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
+import useCreateCastPreview from "~/hooks/social-farcaster/useCreateCastPreview";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useAuth from "~/hooks/user/useAuth";
@@ -64,6 +65,7 @@ export default function CreateScreen() {
   const { currFid, farcasterAccount } = useFarcasterAccount();
   const { login, ready } = useAuth();
 
+  const { upsertCreateCastPreviewData } = useCreateCastPreview();
   return (
     <SafeAreaView id="ss" style={{ flex: 1 }} className="h-full bg-white">
       <Stack.Screen
@@ -97,7 +99,9 @@ export default function CreateScreen() {
                       variant={"ghost"}
                       onPress={async () => {
                         if (posting) return;
+
                         setPosting(true);
+
                         const data = {
                           text: value,
                           embeds: [
@@ -109,20 +113,32 @@ export default function CreateScreen() {
                           parentUrl: channel.url,
                         };
 
+                        // 乐观发布
+                        setTimeout(() => {
+                          upsertCreateCastPreviewData({
+                            posting: true,
+                            cast: data as any,
+                            castHash: "",
+                          });
+                          Toast.show({
+                            type: "postPreviewToast",
+                          });
+                          navigation.goBack();
+                        }, 300);
+
                         const result = await submitCast(data);
 
                         if (result?.hash) {
+                          // 真实发布完，更新乐观发布数据
+                          upsertCreateCastPreviewData({
+                            posting: false,
+                            cast: data as any,
+                            castHash: result?.hash,
+                          });
+
                           setValue("");
                           setImages([]);
                           setChannel(HomeChanel);
-                          Toast.show({
-                            type: "postToast",
-                            props: {
-                              hash: result?.hash,
-                              fid: currFid,
-                            },
-                            // position: "bottom",
-                          });
                           setPosting(false);
 
                           const { castHex, url, mintInfo } =
@@ -141,7 +157,14 @@ export default function CreateScreen() {
                             });
                             clearSharingCastMint();
                           }
-                          navigation.goBack();
+                          // navigation.goBack();
+                        } else {
+                          upsertCreateCastPreviewData({
+                            posting: false,
+                            cast: data as any,
+                            castHash: "",
+                          });
+                          setPosting(false);
                         }
                       }}
                     >

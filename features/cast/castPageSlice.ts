@@ -28,18 +28,26 @@ export type CastReplayData = {
   community?: CommunityEntity;
 };
 
+export type CreateCastPreviewData = {
+  posting: boolean;
+  castHash?: string;
+  cast?: NeynarCast;
+};
+
 type castPageState = {
   castDetailData: CastDetailData | null;
   castReplyData: CastReplayData | null;
   castReplyRecordData: {
     [key: string]: Array<CastReplayData>;
   };
+  createCastPreviewData: CreateCastPreviewData | null;
 };
 
 const castPageState: castPageState = {
   castDetailData: null,
   castReplyData: null,
   castReplyRecordData: {},
+  createCastPreviewData: null,
 };
 
 export const castPageSlice = createSlice({
@@ -92,6 +100,16 @@ export const castPageSlice = createSlice({
         action.payload.params,
       );
     },
+    upsertCreateCastPreviewData: (
+      state: castPageState,
+      action: PayloadAction<CreateCastPreviewData>,
+    ) => {
+      const oldData = state.createCastPreviewData;
+      state.createCastPreviewData = {
+        ...oldData,
+        ...action.payload,
+      };
+    },
   },
 });
 
@@ -101,6 +119,7 @@ export const {
   updateCastDetailData,
   setCastReplyData,
   addCastReplyRecordData,
+  upsertCreateCastPreviewData,
 } = actions;
 export const selectCastPage = (state: RootState) => state.castPage;
 export default reducer;
