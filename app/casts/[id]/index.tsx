@@ -15,8 +15,7 @@ import { getCastRepliesCount } from "~/utils/farcaster/cast-utils";
 export default function CastDetail() {
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-  const { id } = params as { id: string; fid?: string };
-  const castHash = id.startsWith("0x") ? id.slice(2) : id;
+  const { id: castHash } = params as { id: string; fid?: string };
 
   const {
     castDetailData,

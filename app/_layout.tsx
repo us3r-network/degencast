@@ -13,7 +13,7 @@ import { Platform, View } from "react-native";
 import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { Provider as ReduxProvider } from "react-redux";
 import StateUpdateWrapper from "~/components/StateUpdateWrapper";
-import { PortalHost } from '@rn-primitives/portal';
+import { PortalHost } from "@rn-primitives/portal";
 import { Text } from "~/components/ui/text";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
@@ -58,6 +58,14 @@ const toastConfig = {
     <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">Cast created successfully!</Text>
       <Link href={`/casts/${props.hash}?fid=${props.fid}`}>
+        <Text className="font-bold text-primary">View</Text>
+      </Link>
+    </View>
+  ),
+  postPreviewToast: ({ props }: ToastConfigParams<{}>) => (
+    <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="font-bold text-white">Cast created successfully!</Text>
+      <Link href={`/casts/preview`}>
         <Text className="font-bold text-primary">View</Text>
       </Link>
     </View>
