@@ -69,6 +69,7 @@ export default function UserWalletSelect({
           if (newActiveWallet) await setActiveWallet(newActiveWallet);
           await Clipboard.setStringAsync(newActiveWallet?.address || "");
         }}
+        className="m-1"
       >
         <SelectTrigger
           className={cn(
