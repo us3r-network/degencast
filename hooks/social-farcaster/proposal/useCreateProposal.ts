@@ -84,11 +84,12 @@ export default function useCreateProposal({
         } else {
           throw new Error("Cast proposal metadata not found");
         }
-      } catch (error) {
-        setError(error);
+      } catch (e) {
+        let err = e as any;
+        setError(err);
         setStatus("error");
-        onCreateProposalError?.(error);
-        console.error("createProposal error", error);
+        onCreateProposalError?.(err);
+        console.error("createProposal error", err);
       }
     },
     [
