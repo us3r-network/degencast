@@ -2,7 +2,7 @@ import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
 import { ExploreCard } from "../../explore/ExploreStyled";
 import React from "react";
-import { ViewRef } from "~/components/primitives/types";
+import { ViewRef } from "@rn-primitives/types";
 import { Separator } from "~/components/ui/separator";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { CommunityEntity } from "~/services/community/types/community";

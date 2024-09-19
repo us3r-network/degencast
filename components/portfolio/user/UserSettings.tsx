@@ -19,7 +19,7 @@ import {
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
 import { WalletIcon } from "~/components/common/WalletIcon";
-import { SlottableViewProps, ViewRef } from "~/components/primitives/types";
+import { SlottableViewProps, ViewRef } from "@rn-primitives/types";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -62,7 +62,7 @@ export default function UserSettings({
   }
   return (
     <TextClassContext.Provider value="text-sm font-medium">
-      <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenu>
         <DropdownMenuTrigger>
           <Button
             size={"icon"}
