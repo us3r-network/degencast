@@ -151,7 +151,12 @@ export function DepositDialog({
                   toWallet={activeWallet}
                 />
               ) : (
-                <Button variant="secondary" onPress={() => connectWallet()}>
+                <Button
+                  variant="secondary"
+                  onPress={() =>
+                    connectWallet({ walletList: ["detected_wallets"] })
+                  }
+                >
                   <Text>Connect your wallet & transfer</Text>
                 </Button>
               )}
