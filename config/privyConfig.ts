@@ -26,19 +26,19 @@ export const privyConfig: PrivyClientConfig = {
       connectionOptions: "all",
     },
   },
-  fiatOnRamp: {
-    useSandbox: true,
+  fundingMethodConfig: {
+    moonpay: { useSandbox: true },
   },
-  loginMethods: ["wallet", "farcaster"],
-  // loginMethodsAndOrder: {
-  //   primary: [
-  //     "farcaster",
-  //     // "twitter",
-  //     "metamask",
-  //     "coinbase_wallet",
-  //     "wallet_connect",
-  //     "detected_wallets",
-  //     "rainbow",
-  //   ],
-  // },
+  // loginMethods: ["wallet", "farcaster"],
+  loginMethodsAndOrder: {
+    primary: [
+      // "farcaster",
+      // "twitter",
+      // "metamask",
+      "coinbase_wallet",
+      // "wallet_connect",
+      // "detected_wallets",
+      // "rainbow",
+    ],
+  },
 };

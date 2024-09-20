@@ -1,7 +1,7 @@
 import { useConnectCoinbaseSmartWallet } from "@privy-io/react-auth";
+import { SlottableViewProps, ViewRef } from "@rn-primitives/types";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
-import { get } from "lodash";
 import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -19,7 +19,6 @@ import {
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
 import { WalletIcon } from "~/components/common/WalletIcon";
-import { SlottableViewProps, ViewRef } from "@rn-primitives/types";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -38,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Text, TextClassContext } from "~/components/ui/text";
+import { privyConfig } from "~/config/privyConfig";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
@@ -140,7 +140,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
 
 export function LinkWallets() {
   const { ready, authenticated } = useAuth();
-  const { unconnectedLinkedWallets, connectWallet, linkWallet } =
+  const { unconnectedLinkedWallets, connectWallet } =
     useWalletAccount();
 
   if (!ready || !authenticated) return null;
@@ -150,14 +150,23 @@ export function LinkWallets() {
         <WalletItem
           key={wallet.address}
           wallet={wallet}
-          action={() => connectWallet()}
+          action={() =>
+            connectWallet({
+              suggestedAddress: wallet.address,
+              walletList: privyConfig.appearance?.walletList?.filter((w)=>wallet.walletClientType === w),
+            })
+          }
         />
       ))}
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         // onPress={() => linkWallet()}
-        onPointerUp={() => linkWallet()}
+        onPointerUp={() =>
+          connectWallet({
+            walletList: privyConfig.appearance?.walletList,
+          })
+        }
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
@@ -203,7 +212,7 @@ export const WalletItem = React.forwardRef<
 >(({ wallet, action }, ref) => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { connectedWallets, unlinkWallet, connectWallet } = useWalletAccount();
+  const { connectedWallets, connectWallet } = useWalletAccount();
   return (
     <View className="w-full flex-row items-center justify-between gap-6">
       <Pressable
@@ -250,7 +259,7 @@ export const WalletItem = React.forwardRef<
               <Plug className="size-4" />
             </Pressable>
           )}
-          {(get(wallet, "linked") || get(wallet, "type") === "wallet") && (
+          {/* {(get(wallet, "linked") || get(wallet, "type") === "wallet") && (
             <UnlinkButton
               action={() => {
                 console.log("unlinking wallet", wallet.address);
@@ -258,7 +267,7 @@ export const WalletItem = React.forwardRef<
                 unlinkWallet(wallet.address);
               }}
             />
-          )}
+          )} */}
         </View>
       )}
     </View>
