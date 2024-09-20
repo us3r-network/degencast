@@ -9,13 +9,15 @@ import { useATTContractInfo } from "./useATTContract";
 
 export default function useATTNftInfo({
   tokenContract,
+  tokenId,
 }: {
   tokenContract: `0x${string}`;
+  tokenId?: number;
 }) {
   const account = useAccount();
   const { getPaymentToken, getGraduated } = useATTFactoryContractInfo({
     contractAddress: tokenContract,
-    tokenId: 0,
+    tokenId: tokenId || 0,
   });
   const {
     tokenUnit: getTokenUnit,
@@ -31,8 +33,10 @@ export default function useATTNftInfo({
   const { data: totalNFTSupply } = getTotalNFTSupply();
   const { paymentToken } = getPaymentToken();
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>(undefined);
-  
-  const [nftTokenInfo, setNftTokenInfo] = useState<TokenWithTradeInfo | undefined>(undefined);
+
+  const [nftTokenInfo, setNftTokenInfo] = useState<
+    TokenWithTradeInfo | undefined
+  >(undefined);
 
   useEffect(() => {
     if (paymentToken && account?.address)
