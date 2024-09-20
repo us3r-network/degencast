@@ -140,8 +140,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
 
 export function LinkWallets() {
   const { ready, authenticated } = useAuth();
-  const { unconnectedLinkedWallets, connectWallet } =
-    useWalletAccount();
+  const { unconnectedLinkedWallets, connectWallet } = useWalletAccount();
 
   if (!ready || !authenticated) return null;
   return (
@@ -153,7 +152,9 @@ export function LinkWallets() {
           action={() =>
             connectWallet({
               suggestedAddress: wallet.address,
-              walletList: privyConfig.appearance?.walletList?.filter((w)=>wallet.walletClientType === w),
+              walletList: privyConfig.appearance?.walletList?.filter(
+                (w) =>  w ===wallet.walletClientType,
+              ),
             })
           }
         />
