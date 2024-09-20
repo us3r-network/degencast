@@ -25,7 +25,7 @@ import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposeWriteButton from "../proposal-write-buttons/CreateProposalWriteButton";
 import ProposalCastCard from "../ProposalCastCard";
-import { getProposalMinPrice } from "../utils";
+import { getProposalErrorInfo, getProposalMinPrice } from "../utils";
 import { AboutContents } from "~/components/help/HelpButton";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import PriceRow from "./PriceRow";
@@ -35,6 +35,7 @@ import { Loading } from "~/components/common/Loading";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { useAccount } from "wagmi";
 import { SECONDARY_COLOR } from "~/constants";
+import ProposalErrorModal from "./ProposalErrorModal";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -121,6 +122,11 @@ function CreateProposalModalContentBodyScene() {
   >(tokenInfo);
   const { upsertOneToAttTokens } = useCacheCastAttToken();
   const { upsertProposalShareModal } = useAppModals();
+
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -147,10 +153,16 @@ function CreateProposalModalContentBodyScene() {
               });
             }}
             onCreateProposalError={(error) => {
-              Toast.show({
-                type: "error",
-                text1: error.message,
-              });
+              const errInfo = getProposalErrorInfo(error);
+              const { shortMessage, message } = errInfo;
+              if (message) {
+                setErrorModal({ open: true, message });
+              } else {
+                Toast.show({
+                  type: "error",
+                  text1: shortMessage,
+                });
+              }
             }}
           />
         ) : (
@@ -164,6 +176,13 @@ function CreateProposalModalContentBodyScene() {
           />
         )}
       </View>
+      <ProposalErrorModal
+        open={errorModal.open}
+        onOpenChange={(o) => {
+          setErrorModal((pre) => ({ ...pre, open: o }));
+        }}
+        message={errorModal.message}
+      />
     </ScrollView>
   );
 }

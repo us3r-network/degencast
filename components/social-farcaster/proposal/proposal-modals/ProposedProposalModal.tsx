@@ -28,6 +28,8 @@ import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 import { SECONDARY_COLOR } from "~/constants";
 import { DialogCastActivitiesList } from "~/components/activity/Activities";
+import ProposalErrorModal from "./ProposalErrorModal";
+import { getProposalErrorInfo } from "../utils";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -209,6 +211,10 @@ function ProposedProposalModalContentBodyScene() {
     }
   }, [address]);
 
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -288,12 +294,16 @@ function ProposedProposalModalContentBodyScene() {
                   });
                 }}
                 onDisputeError={(error) => {
-                  setOpen(false);
-                  Toast.show({
-                    type: "error",
-                    // text1: "Challenges cannot be repeated this round",
-                    text1: error.message,
-                  });
+                  const errInfo = getProposalErrorInfo(error);
+                  const { shortMessage, message } = errInfo;
+                  if (message) {
+                    setErrorModal({ open: true, message });
+                  } else {
+                    Toast.show({
+                      type: "error",
+                      text1: shortMessage,
+                    });
+                  }
                 }}
               />
             </View>
@@ -323,17 +333,29 @@ function ProposedProposalModalContentBodyScene() {
                   });
                 }}
                 onProposeError={(error) => {
-                  Toast.show({
-                    type: "error",
-                    text1: error.message,
-                  });
-                  setOpen(false);
+                  const errInfo = getProposalErrorInfo(error);
+                  const { shortMessage, message } = errInfo;
+                  if (message) {
+                    setErrorModal({ open: true, message });
+                  } else {
+                    Toast.show({
+                      type: "error",
+                      text1: shortMessage,
+                    });
+                  }
                 }}
               />
             </View>
           </View>
         )}
       </View>
+      <ProposalErrorModal
+        open={errorModal.open}
+        onOpenChange={(o) => {
+          setErrorModal((pre) => ({ ...pre, open: o }));
+        }}
+        message={errorModal.message}
+      />
     </ScrollView>
   );
 }
