@@ -20,7 +20,7 @@ import {
 import { UserAccountType } from "~/services/user/types";
 
 export default function useWalletAccount() {
-  const { user, linkWallet, unlinkWallet, ready, authenticated } = usePrivy();
+  const { user, ready, authenticated } = usePrivy();
   const { connectWallet } = useConnectWallet();
 
   //connencted wallets
@@ -107,8 +107,7 @@ export default function useWalletAccount() {
   const activeOneWallet = useCallback(() => {
     // console.log("activeOneWallet");
     if (connectedCoinBaseWallet) setActiveWallet(connectedCoinBaseWallet);
-    else if (connectedInjectedWallet)
-      setActiveWallet(connectedInjectedWallet);
+    else if (connectedInjectedWallet) setActiveWallet(connectedInjectedWallet);
     else if (linkedCoinBaseWallet)
       connectWallet({ suggestedAddress: linkedCoinBaseWallet.address });
     else if (linkedInjectedWallet)
@@ -184,8 +183,6 @@ export default function useWalletAccount() {
     activeWallet,
     isConnected: !!activeWallet && activeWallet.connectorType !== "embedded",
     connectWallet,
-    linkWallet,
-    unlinkWallet,
     setActiveWallet,
     activeOneWallet,
     setFreezeAutoSwitchActiveWallet,
