@@ -1,7 +1,7 @@
 import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
 import React from "react";
-import { ViewRef } from "~/components/primitives/types";
+import { ViewRef } from "@rn-primitives/types";
 import { CommunityEntity } from "~/services/community/types/community";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
