@@ -7,11 +7,10 @@ import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper
 import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
 import { ProposedProposalActionLayout } from "./ProposedProposalAction";
 import { ChallengeProposalActionLayout } from "./ChallengeProposalAction";
-import { ProposalButton } from "../ui/proposal-button";
-import { ProposalButtonBody } from "./ProposalButtonBody";
 import { ReadyToMintActionLayout } from "./MintAction";
 import { CreateProposalButton } from "./CreateProposalAction";
 import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
+import { AbandonedProposalActionLayout } from "./AbandonedProposalAction";
 
 export type ProposalStatusActionsProps = {
   cast: NeynarCast;
@@ -37,8 +36,8 @@ export default function ProposalStatusActions({
   const { getCachedAttToken } = useCacheCastAttToken();
   const cachedTokenInfo = getCachedAttToken(channel?.channelId!);
   const updatedTokenInfo = cachedTokenInfo
-  ? { ...tokenInfo, ...cachedTokenInfo }
-  : tokenInfo;
+    ? { ...tokenInfo, ...cachedTokenInfo }
+    : tokenInfo;
 
   const display = displayProposalActions({
     channel,
@@ -106,7 +105,7 @@ export default function ProposalStatusActions({
       );
     case ProposalState.Abandoned:
       return (
-        <Abandoned
+        <AbandonedProposalActionLayout
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
@@ -116,23 +115,4 @@ export default function ProposalStatusActions({
     default:
       return null;
   }
-}
-
-function Abandoned({
-  cast,
-  channel,
-  proposal,
-  tokenInfo,
-}: ProposalStatusActionsProps) {
-  return (
-    <ProposalButton variant={"abandoned"}>
-      <ProposalButtonBody
-        cast={cast}
-        channel={channel}
-        proposal={proposal!}
-        tokenInfo={tokenInfo}
-        showDeadline={false}
-      />
-    </ProposalButton>
-  );
 }

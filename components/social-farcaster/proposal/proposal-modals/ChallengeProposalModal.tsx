@@ -30,6 +30,8 @@ import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import { Button } from "~/components/ui/button";
 import { useAccount } from "wagmi";
 import { SECONDARY_COLOR } from "~/constants";
+import { getProposalErrorInfo } from "../utils";
+import ProposalErrorModal from "./ProposalErrorModal";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -148,6 +150,10 @@ function ChallengeProposalContentBody({
   onClose: () => void;
 }) {
   const { upsertProposalShareModal } = useAppModals();
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
   return (
     <View className="flex w-full flex-col gap-4">
       <View className="flex-row items-center justify-between gap-2">
@@ -179,12 +185,16 @@ function ChallengeProposalContentBody({
           upsertProposalShareModal({ open: true, cast, channel, proposal });
         }}
         onDisputeError={(error) => {
-          onClose();
-          Toast.show({
-            type: "error",
-            // text1: "Challenges cannot be repeated this round",
-            text1: error.message,
-          });
+          const errInfo = getProposalErrorInfo(error);
+          const { shortMessage, message } = errInfo;
+          if (message) {
+            setErrorModal({ open: true, message });
+          } else {
+            Toast.show({
+              type: "error",
+              text1: shortMessage,
+            });
+          }
         }}
         onProposeSuccess={() => {
           onClose();
@@ -195,12 +205,16 @@ function ChallengeProposalContentBody({
           upsertProposalShareModal({ open: true, cast, channel, proposal });
         }}
         onProposeError={(error) => {
-          onClose();
-          Toast.show({
-            type: "error",
-            // text1: "Challenges cannot be repeated this round",
-            text1: error.message,
-          });
+          const errInfo = getProposalErrorInfo(error);
+          const { shortMessage, message } = errInfo;
+          if (message) {
+            setErrorModal({ open: true, message });
+          } else {
+            Toast.show({
+              type: "error",
+              text1: shortMessage,
+            });
+          }
         }}
         onShare={() => {
           onClose();
@@ -212,6 +226,13 @@ function ChallengeProposalContentBody({
             description: "Share with more people to accelerate the challenge.",
           });
         }}
+      />
+      <ProposalErrorModal
+        open={errorModal.open}
+        onOpenChange={(o) => {
+          setErrorModal((pre) => ({ ...pre, open: o }));
+        }}
+        message={errorModal.message}
       />
     </View>
   );
@@ -294,11 +315,6 @@ export function DisputeProposalWrite({
   const { address } = useAccount();
   const preAddress = useRef(address);
   useEffect(() => {
-    if (minAmount) {
-      setSelectedPayAmount(minAmount);
-    }
-  }, [minAmount]);
-  useEffect(() => {
     if (preAddress.current !== address) {
       refetch();
       preAddress.current = address;
@@ -341,6 +357,7 @@ export function DisputeProposalWrite({
                 paymentAmount={selectedPayAmount!}
                 onDisputeSuccess={onDisputeSuccess}
                 onDisputeError={onDisputeError}
+                approveText="Downvote (Approve)"
               />
             </View>
           </View>
@@ -403,11 +420,6 @@ export function ProposeProposalWrite({
   const { address } = useAccount();
   const preAddress = useRef(address);
   useEffect(() => {
-    if (minAmount) {
-      setSelectedPayAmount(minAmount);
-    }
-  }, [minAmount]);
-  useEffect(() => {
     if (preAddress.current !== address) {
       refetch();
       preAddress.current = address;
@@ -450,6 +462,7 @@ export function ProposeProposalWrite({
                 paymentAmount={selectedPayAmount!}
                 onProposeSuccess={onProposeSuccess}
                 onProposeError={onProposeError}
+                approveText="Upvote (Approve)"
               />
             </View>
           </View>

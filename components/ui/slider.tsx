@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SliderPrimitive from "~/components/primitives/slider";
+import * as SliderPrimitive from "@rn-primitives/slider";
 import { cn } from "~/lib/utils";
 
 const Slider = React.forwardRef<

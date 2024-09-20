@@ -2,7 +2,7 @@ import * as React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { buttonTextVariants, buttonVariants } from "~/components/ui/button";
-import * as AlertDialogPrimitive from "~/components/primitives/alert-dialog";
+import * as AlertDialogPrimitive from "@rn-primitives/alert-dialog";
 import { cn } from "~/lib/utils";
 import { TextClassContext } from "~/components/ui/text";
 
@@ -19,9 +19,8 @@ const AlertDialogOverlayWeb = React.forwardRef<
   const { open } = AlertDialogPrimitive.useRootContext();
   return (
     <AlertDialogPrimitive.Overlay
-      style={StyleSheet.absoluteFill}
       className={cn(
-        "pointer-events-none z-50 flex items-center justify-center bg-black/80 p-2 max-sm:justify-end max-sm:p-0",
+        "absolute bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center bg-black/80 p-2 max-sm:justify-end max-sm:p-0",
         open
           ? "web:animate-in web:fade-in-0"
           : "web:animate-out web:fade-out-0",
@@ -69,12 +68,14 @@ const AlertDialogOverlay = Platform.select({
 
 const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content> & {
+    portalHost?: string;
+  }
+>(({ className, portalHost, ...props }, ref) => {
   const { open } = AlertDialogPrimitive.useRootContext();
 
   return (
-    <AlertDialogPortal>
+    <AlertDialogPortal hostName={portalHost}>
       <AlertDialogOverlay>
         <AlertDialogPrimitive.Content
           ref={ref}

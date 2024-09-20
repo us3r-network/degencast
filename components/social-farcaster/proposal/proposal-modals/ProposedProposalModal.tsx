@@ -5,42 +5,31 @@ import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import Toast from "react-native-toast-message";
-import { UpvoteProposalModalContentBody } from "./UpvoteProposalModal";
-import {
-  ChallengeProposalWriteForm,
-  PriceRangeRow,
-} from "./ChallengeProposalModal";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { AboutContents } from "~/components/help/HelpButton";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { formatUnits, parseUnits, TransactionReceipt } from "viem";
+import { parseUnits } from "viem";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
-import useProposePrice from "~/hooks/social-farcaster/proposal/useProposePrice";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import ProposalCastCard from "../ProposalCastCard";
-import PriceRow from "./PriceRow";
-import { Slider } from "~/components/ui/slider";
 import {
   DisputeProposalWriteButton,
   ProposeProposalWriteButton,
 } from "../proposal-write-buttons/ProposalWriteButton";
-import { getProposalMinPrice, getProposalPriceWithAmount } from "../utils";
 import useRoundProposals from "~/hooks/social-farcaster/proposal/useRoundProposals";
-import { Loading } from "~/components/common/Loading";
 import { Button, ButtonProps } from "~/components/ui/button";
 import { useAccount } from "wagmi";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import useAppModals from "~/hooks/useAppModals";
-import {
-  PaymentInfoType,
-  PaymentInfoWithProposed,
-  ProposalPaymentSelector,
-} from "./PaymentSelector";
+import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
 import useDisputePrice from "~/hooks/social-farcaster/proposal/useDisputePrice";
 import { SECONDARY_COLOR } from "~/constants";
+import { DialogCastActivitiesList } from "~/components/activity/Activities";
+import ProposalErrorModal from "./ProposalErrorModal";
+import { getProposalErrorInfo } from "../utils";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -75,11 +64,13 @@ export default function ProposedProposalModal({
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "upvote", title: "Vote" },
+    { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
 
   const renderScene = SceneMap({
     upvote: ProposedProposalModalContentBodyScene,
+    activity: CastActivitiesListScene,
     about: AboutContents,
   });
   return (
@@ -115,6 +106,15 @@ export default function ProposedProposalModal({
         </ProposedProposalCtx.Provider>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function CastActivitiesListScene() {
+  const { cast } = useProposedProposalCtx();
+  return (
+    <View className="h-[500px] w-full">
+      <DialogCastActivitiesList castHash={cast.hash} />
+    </View>
   );
 }
 
@@ -211,6 +211,10 @@ function ProposedProposalModalContentBodyScene() {
     }
   }, [address]);
 
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
   return (
     <ScrollView
       className="max-h-[80vh] w-full"
@@ -290,12 +294,16 @@ function ProposedProposalModalContentBodyScene() {
                   });
                 }}
                 onDisputeError={(error) => {
-                  setOpen(false);
-                  Toast.show({
-                    type: "error",
-                    // text1: "Challenges cannot be repeated this round",
-                    text1: error.message,
-                  });
+                  const errInfo = getProposalErrorInfo(error);
+                  const { shortMessage, message } = errInfo;
+                  if (message) {
+                    setErrorModal({ open: true, message });
+                  } else {
+                    Toast.show({
+                      type: "error",
+                      text1: shortMessage,
+                    });
+                  }
                 }}
               />
             </View>
@@ -325,17 +333,29 @@ function ProposedProposalModalContentBodyScene() {
                   });
                 }}
                 onProposeError={(error) => {
-                  Toast.show({
-                    type: "error",
-                    text1: error.message,
-                  });
-                  setOpen(false);
+                  const errInfo = getProposalErrorInfo(error);
+                  const { shortMessage, message } = errInfo;
+                  if (message) {
+                    setErrorModal({ open: true, message });
+                  } else {
+                    Toast.show({
+                      type: "error",
+                      text1: shortMessage,
+                    });
+                  }
                 }}
               />
             </View>
           </View>
         )}
       </View>
+      <ProposalErrorModal
+        open={errorModal.open}
+        onOpenChange={(o) => {
+          setErrorModal((pre) => ({ ...pre, open: o }));
+        }}
+        message={errorModal.message}
+      />
     </ScrollView>
   );
 }

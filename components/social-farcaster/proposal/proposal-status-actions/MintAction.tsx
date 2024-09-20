@@ -7,9 +7,11 @@ import { Deadline, MintCount } from "../ProposalStyled";
 import { ProposalButton } from "../ui/proposal-button";
 import { ProposalText } from "../ui/proposal-text";
 import type { ProposalStatusActionsProps } from "./ProposalStatusActions";
+import ExpiredNftModal from "../proposal-modals/ExpiredNftModal";
 
 export function ReadyToMintButton({
   cast,
+  channel,
   proposal,
   tokenInfo,
 }: ProposalStatusActionsProps) {
@@ -20,9 +22,17 @@ export function ReadyToMintButton({
   const { upsertOneToProposals } = useCacheCastProposal();
   if (isExpired) {
     return (
-      <ProposalButton variant={"mint-expired"}>
-        <ProposalText>End</ProposalText>
-      </ProposalButton>
+      <ExpiredNftModal
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+        triggerButton={
+          <ProposalButton variant={"mint-expired"}>
+            <ProposalText>End</ProposalText>
+          </ProposalButton>
+        }
+      />
     );
   }
   return (

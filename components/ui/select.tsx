@@ -1,60 +1,13 @@
+import * as SelectPrimitive from "@rn-primitives/select";
 import * as React from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Check, ChevronDown, ChevronUp } from "~/components/common/Icons";
-import * as SelectPrimitive from "~/components/primitives/select";
 import { cn } from "~/lib/utils";
 
 type Option = SelectPrimitive.Option;
 
-// const Select = SelectPrimitive.Root;
-const Select = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>
->(({ children, open: openSelect, onOpenChange, className, ...props }, ref) => {
-  const [open, setOpen] = React.useState(openSelect);
-  React.useEffect(() => {
-    if (openSelect !== undefined) {
-      setOpen(openSelect);
-    }
-  }, [openSelect]);
-
-  const zIndex = className?.match(/z-(\d+)/)?.[1];
-  return (
-    <>
-      {open && (
-        <Pressable
-          className={cn(
-            " fixed right-0 top-0 h-screen w-screen",
-            zIndex ? `z-${Number(zIndex) - 1}` : "z-[49]",
-          )}
-          onPress={(e) => {
-            if (openSelect !== undefined && onOpenChange) {
-              onOpenChange(false);
-            } else {
-              setOpen(false);
-            }
-          }}
-        />
-      )}
-      <SelectPrimitive.Root
-        className={cn("z-50", className)}
-        open={open}
-        onOpenChange={(o) => {
-          if (openSelect !== undefined && onOpenChange) {
-            onOpenChange(o);
-          } else {
-            setOpen(o);
-          }
-        }}
-        ref={ref}
-        {...props}
-      >
-        {children}
-      </SelectPrimitive.Root>
-    </>
-  );
-});
+const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 
@@ -63,20 +16,30 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "native:h-12 flex h-10 flex-row items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground web:ring-offset-background web:focus:outline-none web:focus:ring-2 web:focus:ring-ring web:focus:ring-offset-2 [&>span]:line-clamp-1",
-      props.disabled && "opacity-50 web:cursor-not-allowed",
-      className,
-    )}
-    {...props}
-  >
-    <>{children}</>
-    <ChevronDown size={16} aria-hidden={true} className="text-white" />
-  </SelectPrimitive.Trigger>
-));
+>(({ className, children, ...props }, ref) => {
+  const { open, onOpenChange } = SelectPrimitive.useRootContext();
+  return (
+    <SelectPrimitive.Trigger
+      ref={ref}
+      className={cn(
+        "native:h-12 flex h-10 flex-row items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground web:ring-offset-background web:focus:outline-none web:focus:ring-2 web:focus:ring-ring web:focus:ring-offset-2 [&>span]:line-clamp-1",
+        props.disabled && "opacity-50 web:cursor-not-allowed",
+        className,
+      )}
+      {...props}
+      onPointerDown={() => {
+        if (open) onOpenChange(false);
+      }}
+    >
+      <>{children}</>
+      <ChevronDown
+        size={16}
+        aria-hidden={true}
+        className="text-foreground opacity-50"
+      />
+    </SelectPrimitive.Trigger>
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 /**
@@ -97,7 +60,7 @@ const SelectScrollUpButton = ({
       )}
       {...props}
     >
-      <ChevronUp size={14} className="text-primary-foreground" />
+      <ChevronUp size={14} className="text-foreground" />
     </SelectPrimitive.ScrollUpButton>
   );
 };
@@ -120,7 +83,7 @@ const SelectScrollDownButton = ({
       )}
       {...props}
     >
-      <ChevronDown size={14} className="text-primary-foreground" />
+      <ChevronDown size={14} className="text-foreground" />
     </SelectPrimitive.ScrollDownButton>
   );
 };
@@ -131,13 +94,21 @@ const SelectContent = React.forwardRef<
     portalHost?: string;
   }
 >(({ className, children, position = "popper", portalHost, ...props }, ref) => {
-  const { open } = SelectPrimitive.useRootContext();
-
+  const { open, onOpenChange } = SelectPrimitive.useRootContext();
   return (
     <SelectPrimitive.Portal hostName={portalHost}>
       <SelectPrimitive.Overlay
         style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
       >
+        {/* {open && (
+          <TouchableOpacity
+            className="absolute bottom-0 left-0 right-0 top-0 bg-black/50"
+            onPress={(e) => {
+              console.log("SelectContent", Platform.OS, open);
+              onOpenChange(false);
+            }}
+          />
+        )} */}
         <Animated.View entering={FadeIn} exiting={FadeOut}>
           <SelectPrimitive.Content
             ref={ref}
@@ -194,7 +165,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "web:group native:py-2 native:pl-10 relative flex w-full flex-row items-center rounded-sm py-1.5 pl-8 pr-2 active:bg-accent web:cursor-default web:select-none web:outline-none web:focus:bg-accent",
+      "web:group native:py-2 native:pl-10 relative flex w-full flex-row items-center rounded-sm py-1.5 pl-8 pr-2 active:bg-accent web:cursor-default web:select-none web:outline-none web:hover:bg-accent/50 web:focus:bg-accent",
       props.disabled && "opacity-50 web:pointer-events-none",
       className,
     )}

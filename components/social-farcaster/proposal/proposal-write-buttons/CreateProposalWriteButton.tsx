@@ -94,6 +94,7 @@ export default function CreateProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
+      approveText="Upvote (Approve)"
       warpedButton={
         <Button
           variant={"secondary"}

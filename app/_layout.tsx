@@ -13,7 +13,7 @@ import { Platform, View } from "react-native";
 import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { Provider as ReduxProvider } from "react-redux";
 import StateUpdateWrapper from "~/components/StateUpdateWrapper";
-import { PortalHost } from "~/components/primitives/portal";
+import { PortalHost } from "@rn-primitives/portal";
 import { Text } from "~/components/ui/text";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
@@ -58,23 +58,31 @@ const toastConfig = {
     <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
       <Text className="font-bold text-white">Cast created successfully!</Text>
       <Link href={`/casts/${props.hash}?fid=${props.fid}`}>
-        <Text className="font-bold text-primary">View</Text>
+        <Text className="break-all font-bold text-primary">View</Text>
+      </Link>
+    </View>
+  ),
+  postPreviewToast: ({ props }: ToastConfigParams<{}>) => (
+    <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="font-bold text-white">Cast created successfully!</Text>
+      <Link href={`/casts/preview`}>
+        <Text className="break-all font-bold text-primary">View</Text>
       </Link>
     </View>
   ),
   success: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className=" z-50 flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">{text1}</Text>
+    <View className="flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="break-all font-bold text-white">{text1}</Text>
     </View>
   ),
   error: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="z-50 flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">{text1}</Text>
+    <View className="flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="break-all font-bold text-white">{text1}</Text>
     </View>
   ),
   info: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="z-50 flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">{text1}</Text>
+    <View className="flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
+      <Text className="break-all font-bold text-white">{text1}</Text>
     </View>
   ),
 };
@@ -112,10 +120,6 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack>
             <PortalHost />
-            <View
-              id="dialog-container"
-              className="pointer-events-none absolute h-full w-full"
-            />
             <Toast config={toastConfig} />
           </WagmiProvider>
         </QueryClientProvider>
