@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import * as DialogPrimitive from "@rn-primitives/dialog";
 import { cn } from "~/lib/utils";
 import { TextClassContext } from "./text";
+import Toast from "../Toast";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -106,6 +107,9 @@ const DialogContent = React.forwardRef<
                 />
               </DialogPrimitive.Close>
             )}
+
+            {/* Resolve the hierarchy issue of toast and dialog */}
+            <Toast />
           </DialogPrimitive.Content>
         </TextClassContext.Provider>
       </DialogOverlay>
