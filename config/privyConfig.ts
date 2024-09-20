@@ -11,7 +11,7 @@ export const privyConfig: PrivyClientConfig = {
       "coinbase_wallet",
       "metamask",
       "wallet_connect",
-      "detected_wallets",
+      // "detected_wallets",
       "rainbow",
     ],
   },
