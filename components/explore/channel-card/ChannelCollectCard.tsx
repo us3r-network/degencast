@@ -2,7 +2,7 @@ import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
 import { ExploreCard } from "../ExploreStyled";
 import React from "react";
-import { ViewRef } from "~/components/primitives/types";
+import { ViewRef } from "@rn-primitives/types";
 import { SelectionFeedsItem } from "~/hooks/explore/useLoadSelectionFeeds";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
