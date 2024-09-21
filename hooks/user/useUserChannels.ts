@@ -22,7 +22,7 @@ export function useUserFollowingChannels(fid: number | undefined) {
       });
       if (data.channels.length > 0) {
         setItems((prev) => uniqBy([...prev, ...data.channels], "id"));
-        setCursor(data.next.cursor);
+        setCursor(data.next?.cursor || null);
       } else throw new Error();
     } catch (e) {
       console.error(e);
