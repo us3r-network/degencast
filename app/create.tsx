@@ -67,12 +67,16 @@ export default function CreateScreen() {
 
   const { upsertCreateCastPreviewData } = useCreateCastPreview();
   return (
-    <SafeAreaView id="ss" style={{ flex: 1 }} className="h-full bg-white">
+    <SafeAreaView
+      id="ss"
+      style={{ flex: 1, width: "100%", height: "100%" }}
+      className="h-full bg-white"
+    >
       <Stack.Screen
         options={{
           header: () => (
             <View
-              className="flex flex-row items-center justify-between bg-white"
+              className="flex w-full flex-row items-center justify-between bg-white"
               style={{
                 height: 70,
                 paddingLeft: 15,
@@ -122,6 +126,7 @@ export default function CreateScreen() {
                           });
                           Toast.show({
                             type: "postPreviewToast",
+                            visibilityTime: 3000,
                           });
                           navigation.goBack();
                         }, 300);
