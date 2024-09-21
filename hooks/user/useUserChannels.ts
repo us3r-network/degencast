@@ -32,6 +32,8 @@ export function useUserFollowingChannels(fid: number | undefined) {
   };
 
   useEffect(() => {
+    setItems([]);
+    setCursor(null);
     load();
   }, [fid]);
 
@@ -63,6 +65,7 @@ export function useUserChannels(fid: number | undefined) {
   }, [fid]);
 
   useEffect(() => {
+    setItems([]);
     load();
   }, [fid]);
 
