@@ -14,7 +14,6 @@ import channelRank from "~/features/rank/channelRankSlice";
 import tokenRank from "~/features/rank/tokenRankSlice";
 import curatorRank from "~/features/rank/curatorRankSlice";
 import communityTokens from "~/features/trade/communityTokensSlice";
-import userChannels from "~/features/user/userChannelsSlice";
 import userCasts from "~/features/user/userCastsSlice";
 import userCurationCasts from "~/features/user/userCurationCastsSlice";
 import userHostChannels from "~/features/user/userHostChannelsSlice";
@@ -61,7 +60,6 @@ export const store = configureStore({
     curatorRank,
     userCommunityTokens,
     userCommunityNFTs,
-    userChannels,
     userCasts,
     userCurationCasts,
     userHostChannels,
