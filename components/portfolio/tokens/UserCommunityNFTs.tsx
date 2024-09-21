@@ -73,8 +73,8 @@ function NFTItem({ nft, isSelf }: { nft: ERC42069Token; isSelf: boolean }) {
     <View className="relative w-full">
       <NFTImage nft={nft} />
       {Number(nft?.nftBalance) > 1 && (
-        <View className="absolute bottom-2 left-2">
-          <Text>{nft.nftBalance}</Text>
+        <View className="absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-secondary">
+          <Text className="text-white font-medium">{nft.nftBalance}</Text>
         </View>
       )}
       {isSelf && (
