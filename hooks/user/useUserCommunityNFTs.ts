@@ -1,31 +1,40 @@
-import { UnknownAction } from "@reduxjs/toolkit";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchItems,
-  selectUserCommunityNFTs,
-} from "~/features/user/communityNFTsSlice";
-import { AsyncRequestStatus } from "~/services/shared/types";
+import { uniqWith } from "lodash";
+import { useEffect, useState } from "react";
+import { ApiRespCode } from "~/services/shared/types";
+import { ERC42069Token } from "~/services/trade/types";
+import { myNFTs } from "~/services/user/api";
 
 export default function useUserCommunityNFTs(address?: `0x${string}`) {
-  const dispatch = useDispatch();
-  const { items, status, error } = useSelector(selectUserCommunityNFTs);
-
-  // useEffect(() => {
-  //   if (status === AsyncRequestStatus.IDLE && address) {
-  //     dispatch(fetchItems(address) as unknown as UnknownAction);
-  //   }
-  // }, [status, dispatch]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [items, setItems] = useState<ERC42069Token[]>([]);
+  const load = async () => {
+    if (!address) return;
+    try {
+      setLoading(true);
+      const data = await myNFTs(address);
+      if (data.data.code === ApiRespCode.SUCCESS) {
+        const nfts = uniqWith(data.data.data, (a, b) => {
+          return (
+            a.contractAddress === b.contractAddress && a.tokenId === b.tokenId
+          );
+        });
+        setItems(nfts);
+      } else throw new Error(data.data.msg);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (status !== AsyncRequestStatus.PENDING && address) {
-      dispatch(fetchItems(address) as unknown as UnknownAction);
-    }
+    setItems([]);
+    load();
   }, [address]);
 
   return {
     items,
-    loading: status === AsyncRequestStatus.PENDING,
-    error,
+    loading,
+    load,
   };
 }
