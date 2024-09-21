@@ -19,11 +19,9 @@ export default function useUserCasts(fid?: number, viewer_fid?: number) {
         pageNumber: pageNumber,
       });
       if (data?.data?.code === ApiRespCode.SUCCESS) {
-        setItems((prev) =>
-          uniqBy([...prev, ...(data.data.data || [])], "cast.hash"),
-        );
-        if (data.data.data?.length === MAX_PAGE_SIZE)
-          setPageNumber((prev)=>prev+1);
+        const casts = data.data.data || [];
+        setItems((prev) => uniqBy([...prev, ...casts], "cast.hash"));
+        if (casts.length === MAX_PAGE_SIZE) setPageNumber((prev) => prev + 1);
         else setPageNumber(0);
       } else throw new Error(data.data.msg);
     } catch (e) {
@@ -34,13 +32,15 @@ export default function useUserCasts(fid?: number, viewer_fid?: number) {
   };
 
   useEffect(() => {
+    setItems([]);
+    setPageNumber(1);
     load();
   }, [fid]);
 
   return {
     items,
     loading,
-    hasMore: pageNumber>0,
+    hasMore: pageNumber > 0,
     load,
   };
 }

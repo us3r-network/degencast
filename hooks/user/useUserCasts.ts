@@ -32,6 +32,8 @@ export default function useUserCasts(fid?: number, viewer_fid?: number) {
   };
 
   useEffect(() => {
+    setItems([]);
+    setCursor(undefined);
     load();
   }, [fid]);
 
