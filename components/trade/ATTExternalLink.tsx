@@ -5,6 +5,7 @@ import { kebabCase } from "lodash";
 import { Button } from "../ui/button";
 import { Text } from "../ui/text";
 import { cn } from "~/lib/utils";
+import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 
 export default function ATTExternalLink({
   contractAddress,
@@ -15,9 +16,13 @@ export default function ATTExternalLink({
   tokenId?: string | number;
   className?: string;
 }) {
+  const { totalNFTSupply } = useATTNftInfo({
+    tokenContract: contractAddress as `0x${string}`,
+  });
+  if (!totalNFTSupply) return null;
   return (
     <ExternalLink
-      href={`https://${ATT_CONTRACT_CHAIN.testnet ? "testnets.":""}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${contractAddress}/${tokenId === undefined ? "" : tokenId}`}
+      href={`https://${ATT_CONTRACT_CHAIN.testnet ? "testnets." : ""}opensea.io/assets/${kebabCase(ATT_CONTRACT_CHAIN.name)}/${contractAddress}/${tokenId === undefined ? "" : tokenId}`}
       target="_blank"
     >
       <Button

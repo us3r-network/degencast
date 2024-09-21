@@ -6,15 +6,13 @@ import { PrivyProvider, WagmiProvider } from "~/lib/privy";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Link, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
-import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { Provider as ReduxProvider } from "react-redux";
 import StateUpdateWrapper from "~/components/StateUpdateWrapper";
 import { PortalHost } from "@rn-primitives/portal";
-import { Text } from "~/components/ui/text";
 import { privyConfig } from "~/config/privyConfig";
 import { wagmiConfig } from "~/config/wagmiConfig";
 import { PRIVY_APP_ID } from "~/constants";
@@ -24,6 +22,7 @@ import { getInstallPrompter } from "~/utils/pwa";
 import "../global.css";
 import { Buffer } from "buffer";
 import GlobalModals from "~/components/GlobalModals";
+import Toast from "~/components/Toast";
 // TODO 运行app模式可能会报错，注意处理兼容性问题
 global.Buffer = Buffer;
 
@@ -46,45 +45,6 @@ export {
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: "(tabs)",
-};
-
-const toastConfig = {
-  postToast: ({
-    props,
-  }: ToastConfigParams<{
-    hash: string;
-    fid: string;
-  }>) => (
-    <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">Cast created successfully!</Text>
-      <Link href={`/casts/${props.hash}?fid=${props.fid}`}>
-        <Text className="break-all font-bold text-primary">View</Text>
-      </Link>
-    </View>
-  ),
-  postPreviewToast: ({ props }: ToastConfigParams<{}>) => (
-    <View className="flex flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="font-bold text-white">Cast created successfully!</Text>
-      <Link href={`/casts/preview`}>
-        <Text className="break-all font-bold text-primary">View</Text>
-      </Link>
-    </View>
-  ),
-  success: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="break-all font-bold text-white">{text1}</Text>
-    </View>
-  ),
-  error: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="break-all font-bold text-white">{text1}</Text>
-    </View>
-  ),
-  info: ({ text1 }: ToastConfigParams<{}>) => (
-    <View className="flex max-w-[80vw] flex-row items-center gap-3 rounded-xl bg-secondary p-3 px-4">
-      <Text className="break-all font-bold text-white">{text1}</Text>
-    </View>
-  ),
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -120,7 +80,7 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack>
             <PortalHost />
-            <Toast config={toastConfig} />
+            <Toast />
           </WagmiProvider>
         </QueryClientProvider>
       </PrivyProvider>
