@@ -14,7 +14,13 @@ import useUserCommunityNFTs from "~/hooks/user/useUserCommunityNFTs";
 import { ERC42069Token } from "~/services/trade/types";
 
 const DEFAULT_ITEMS_NUM = 2;
-export default function CommunityNFTs({ address }: { address: Address }) {
+export default function CommunityNFTs({
+  address,
+  isSelf = false,
+}: {
+  address: Address;
+  isSelf?: boolean;
+}) {
   const { loading, items } = useUserCommunityNFTs(address);
 
   const [open, setOpen] = React.useState(false);
@@ -41,6 +47,7 @@ export default function CommunityNFTs({ address }: { address: Address }) {
               <NFTItem
                 key={`${item.contractAddress}-${item.tokenId}`}
                 nft={item}
+                isSelf={isSelf}
               />
             ))}
       </View>
@@ -52,6 +59,7 @@ export default function CommunityNFTs({ address }: { address: Address }) {
               <NFTItem
                 key={`${item.contractAddress}-${item.tokenId}`}
                 nft={item}
+                isSelf={isSelf}
               />
             ))}
       </CollapsibleContent>
@@ -59,7 +67,8 @@ export default function CommunityNFTs({ address }: { address: Address }) {
   );
 }
 
-function NFTItem({ nft }: { nft: ERC42069Token }) {
+function NFTItem({ nft, isSelf }: { nft: ERC42069Token; isSelf: boolean }) {
+  console.log("NFTItem", nft, isSelf);
   return (
     <View className="relative w-full">
       <NFTImage nft={nft} />
@@ -68,9 +77,11 @@ function NFTItem({ nft }: { nft: ERC42069Token }) {
           <Text>{nft.nftBalance}</Text>
         </View>
       )}
-      <View className="absolute bottom-2 right-2">
-        <SellButton token={nft} />
-      </View>
+      {isSelf && (
+        <View className="absolute bottom-2 right-2">
+          <SellButton token={nft} />
+        </View>
+      )}
     </View>
   );
 }
