@@ -2,9 +2,8 @@ import { createContext, useContext, useState } from "react";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
-import ChannelList from "~/components/portfolio/channels/UserChannels";
+import { UserChannels, UserFollowingChannels } from "~/components/portfolio/channels/UserChannels";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
-import { UserChannelsType } from "~/features/user/userChannelsSlice";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
 export type UserChannelsProps = {
@@ -24,7 +23,7 @@ function FollowingChannelsScene() {
   const { fid } = useUserChannelsCtx();
   return (
     <CardWarper>
-      <ChannelList fid={fid} type={UserChannelsType.FOLLOWING} />
+      <UserFollowingChannels fid={fid} />
     </CardWarper>
   );
 }
@@ -33,7 +32,7 @@ function HoldingChannelsScene() {
   const { fid } = useUserChannelsCtx();
   return (
     <CardWarper>
-      <ChannelList fid={fid} type={UserChannelsType.HOLDING} />
+      <UserChannels fid={fid} />
     </CardWarper>
   );
 }

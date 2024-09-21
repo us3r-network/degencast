@@ -3,25 +3,43 @@ import { FlatList, Image, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { Text } from "~/components/ui/text";
-import useUserChannels from "~/hooks/user/useUserChannels";
+import {
+  useUserChannels,
+  useUserFollowingChannels,
+} from "~/hooks/user/useUserChannels";
 import { Channel } from "~/services/farcaster/types";
 import UserChannelAssets from "./UserChannelAssets";
-import { UserChannelsType } from "~/features/user/userChannelsSlice";
-import { useEffect } from "react";
 
-export default function ChannelList({
-  fid,
-  type,
+export function UserFollowingChannels({ fid }: { fid: number }) {
+  const { loading, items, hasMore, load } = useUserFollowingChannels(fid);
+  console.log("UserFollowingChannels", { items, hasMore });
+  return (
+    <ChannelList
+      items={items}
+      loading={loading}
+      onEndReached={() => {
+        if (loading || (!loading && items?.length === 0) || !hasMore) return;
+        load();
+      }}
+    />
+  );
+}
+
+export function UserChannels({ fid }: { fid: number }) {
+  const { loading, items } = useUserChannels(fid);
+  console.log("UserChannels", { items });
+  return <ChannelList items={items} loading={loading} />;
+}
+
+function ChannelList({
+  loading,
+  items,
+  onEndReached,
 }: {
-  fid: number;
-  type: UserChannelsType;
+  items: Channel[];
+  loading: boolean;
+  onEndReached?: () => void;
 }) {
-  const { loading, items, hasNext, loadMore } = useUserChannels(fid, type);
-  // todo: when back from /user/channels/:id, the list is not updated
-  useEffect(() => {
-    loadMore();
-  }, [fid, type]);
-  // console.log("ChannelList", { fid, loading, items, hasNext });
   return (
     <View className="container h-full">
       {loading && items.length === 0 ? (
@@ -42,14 +60,11 @@ export default function ChannelList({
               ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
               renderItem={({ item }) => (
                 <View className="w-full max-w-[31%]">
-                  <ChannelThumb key={item.id} channel={item} fid={fid} />
+                  <ChannelThumb key={item.id} channel={item} />
                 </View>
               )}
               keyExtractor={(item) => item.id}
-              onEndReached={() => {
-                if (loading || !hasNext) return;
-                loadMore();
-              }}
+              onEndReached={onEndReached}
               onEndReachedThreshold={2}
               ListFooterComponent={() => {
                 return loading ? <Loading /> : null;
@@ -63,7 +78,6 @@ export default function ChannelList({
 }
 
 function ChannelThumb({ channel, fid }: { channel: Channel; fid?: number }) {
-  const isHost = channel.lead?.fid === fid;
   const hasToken = Number(channel.tokenInfo?.balance || 0) > 0;
   return (
     <View className="relative w-full">
@@ -80,11 +94,11 @@ function ChannelThumb({ channel, fid }: { channel: Channel; fid?: number }) {
       </Link>
       <View className="absolute bottom-8 right-1">
         {hasToken && <UserChannelAssets channel={channel} />}
-        {isHost && (
+        {/* {isHost && (
           <View className="rounded-full bg-secondary px-2">
             <Text className="text-xs text-white">host</Text>
           </View>
-        )}
+        )} */}
       </View>
     </View>
   );
