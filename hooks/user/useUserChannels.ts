@@ -1,41 +1,77 @@
-import { UnknownAction } from "@reduxjs/toolkit";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchItems,
-  selectUserChannels,
-  UserChannelsType,
-} from "~/features/user/userChannelsSlice";
-import { AsyncRequestStatus } from "~/services/shared/types";
+import { uniqBy } from "lodash";
+import { useCallback, useEffect, useState } from "react";
+import { fetchUserAssetsChannels } from "~/services/farcaster/api";
+import { fetchUserFollowingChannels } from "~/services/farcaster/neynar/farcaster";
+import { Channel } from "~/services/farcaster/types";
+import { ApiRespCode } from "~/services/shared/types";
 
-export default function useUserChannels(
-  fid: number | undefined,
-  type: UserChannelsType,
-) {
-  const dispatch = useDispatch();
-  const {
-    channels,
-    status,
-    error,
-    fid: currentFid,
-  } = useSelector(selectUserChannels);
+const MAX_PAGE_SIZE = 100;
 
-  // useEffect(() => {
-  //   if (status === AsyncRequestStatus.IDLE && fid) {
-  //     dispatch(fetchItems(fid) as unknown as UnknownAction);
-  //   }
-  // }, [status, dispatch, fid]);
-
-  const loadMore = () => {
-    if (fid && type)
-      dispatch(fetchItems({ fid, type }) as unknown as UnknownAction);
+export function useUserFollowingChannels(fid: number | undefined) {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [items, setItems] = useState<Channel[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const load = async () => {
+    if (!fid) return;
+    setLoading(true);
+    try {
+      const data = await fetchUserFollowingChannels({
+        fid,
+        limit: MAX_PAGE_SIZE,
+        cursor,
+      });
+      if (data.channels.length > 0) {
+        setItems((prev) => uniqBy([...prev, ...data.channels], "id"));
+        setCursor(data.next?.cursor || null);
+      } else throw new Error();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    setItems([]);
+    setCursor(null);
+    load();
+  }, [fid]);
+
   return {
-    items: channels.get(type)?.items || [],
-    loading: status === AsyncRequestStatus.PENDING,
-    error,
-    hasNext: !!channels.get(type)?.next.cursor,
-    loadMore,
+    items,
+    loading,
+    hasMore: !!cursor,
+    load,
+  };
+}
+
+export function useUserChannels(fid: number | undefined) {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [items, setItems] = useState<Channel[]>([]);
+  const load = useCallback(async () => {
+    if (!fid) return;
+    try {
+      setLoading(true);
+      const data = await fetchUserAssetsChannels({
+        fid,
+      });
+      if (data.data.code === ApiRespCode.SUCCESS) setItems(data.data.data);
+      else throw new Error(data.data.msg);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [fid]);
+
+  useEffect(() => {
+    setItems([]);
+    load();
+  }, [fid]);
+
+  return {
+    items,
+    loading,
+    load,
   };
 }

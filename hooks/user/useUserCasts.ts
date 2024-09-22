@@ -1,34 +1,46 @@
-import { UnknownAction } from "@reduxjs/toolkit";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchItems, selectUserCasts } from "~/features/user/userCastsSlice";
-import { AsyncRequestStatus } from "~/services/shared/types";
+import { uniqBy } from "lodash";
+import { useEffect, useState } from "react";
+import { CastData, getUserCasts } from "~/services/feeds/api/user";
+import { ApiRespCode } from "~/services/shared/types";
 
+const MAX_PAGE_SIZE = 20;
 export default function useUserCasts(fid?: number, viewer_fid?: number) {
-  const dispatch = useDispatch();
-  const {
-    items,
-    status,
-    error,
-    next,
-    fid: currentFid,
-  } = useSelector(selectUserCasts);
-
-  useEffect(() => {
-    if (items?.length === 0 || fid !== currentFid) loadItems();
-  }, [fid, viewer_fid]);
-
-  const loadItems = () => {
-    if (status !== AsyncRequestStatus.PENDING && fid) {
-      dispatch(fetchItems({ fid, viewer_fid }) as unknown as UnknownAction);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [items, setItems] = useState<CastData[]>([]);
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const load = async () => {
+    if (!fid) return;
+    setLoading(true);
+    try {
+      const data = await getUserCasts({
+        fid,
+        viewer_fid,
+        limit: MAX_PAGE_SIZE,
+        cursor: cursor,
+      });
+      if (data?.data?.code === ApiRespCode.SUCCESS) {
+        setItems((prev) =>
+          uniqBy([...prev, ...(data.data.data?.casts || [])], "cast.hash"),
+        );
+        setCursor(data.data.data?.next?.cursor || undefined);
+      } else throw new Error(data.data.msg);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    setItems([]);
+    setCursor(undefined);
+    load();
+  }, [fid]);
+
   return {
     items,
-    loading: status === AsyncRequestStatus.PENDING,
-    error,
-    hasNext: !!next.cursor,
-    loadItems,
+    loading,
+    hasMore: !!cursor,
+    load,
   };
 }

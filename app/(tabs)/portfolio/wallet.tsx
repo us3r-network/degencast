@@ -18,7 +18,9 @@ export default function MyWalletScreen() {
           <View className="flex w-full gap-6">
             {account && <UserWallet />}
             {account?.address && <UserTokens address={account?.address} />}
-            {account?.address && <CommunityNFTs address={account?.address} />}
+            {account?.address && (
+              <CommunityNFTs address={account?.address} isSelf={true} />
+            )}
             {account?.address && <CommunityTokens address={account?.address} />}
           </View>
         </ScrollView>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View,Image } from "react-native";
+import { Image, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { ExternalLink } from "~/components/common/ExternalLink";
 import { Minus, Plus, User } from "~/components/common/Icons";
@@ -8,11 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { WARRPCAST } from "~/constants/farcaster";
-import { UserChannelsType } from "~/features/user/userChannelsSlice";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useUserBulk from "~/hooks/user/useUserBulk";
-import useUserChannels from "~/hooks/user/useUserChannels";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { Author } from "~/services/farcaster/types/neynar";
 import { shortPubKey } from "~/utils/shortPubKey";
@@ -25,9 +23,6 @@ export default function UserInfo({ fid }: { fid?: number }) {
   const walletAccount =
     linkedWallets?.length > 0 ? linkedWallets[0] : undefined;
   fid = fid || currFid || undefined;
-  // useUserChannels(fid, UserChannelsType.FOLLOWING); //preload channels
-  // useUserChannels(fid, UserChannelsType.HOLDING); //preload channels
-  // useUserCasts(fid, currFid || undefined); //preload casts
   const { userInfo, load } = useUserBulk(currFid || undefined);
   useEffect(() => {
     if (fid) load(fid);
