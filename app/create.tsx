@@ -67,16 +67,12 @@ export default function CreateScreen() {
 
   const { upsertCreateCastPreviewData } = useCreateCastPreview();
   return (
-    <SafeAreaView
-      id="ss"
-      style={{ flex: 1, width: "100%", height: "100%" }}
-      className="h-full bg-white"
-    >
+    <SafeAreaView style={{ flex: 1 }} className="h-screen bg-white">
       <Stack.Screen
         options={{
           header: () => (
             <View
-              className="flex w-full flex-row items-center justify-between bg-white"
+              className="flex w-screen flex-row items-center justify-between bg-white"
               style={{
                 height: 70,
                 paddingLeft: 15,
@@ -184,7 +180,7 @@ export default function CreateScreen() {
       />
 
       <View
-        className="mx-auto h-full w-full p-4 pt-0 sm:max-w-screen-sm"
+        className="mx-auto h-full w-screen p-4 pt-0 md:max-w-screen-sm"
         id="create-view"
       >
         {(!currFid && (
