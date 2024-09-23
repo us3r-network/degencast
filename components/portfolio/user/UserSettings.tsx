@@ -171,7 +171,7 @@ export function LinkWallets() {
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
-          <Text>Link a wallet</Text>
+          <Text>Connect a wallet</Text>
         </View>
       </Pressable>
     </View>
