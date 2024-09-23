@@ -8,6 +8,7 @@ import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { getInstallPrompter } from "~/utils/pwa";
 
 const OnboardingModal = React.forwardRef<
   React.ElementRef<typeof Dialog>,
@@ -56,6 +57,7 @@ export default OnboardingModal;
 export const SKIP_ONBOARDING_KEY = "skipOnboarding";
 export function Onboarding({ onComplete }: { onComplete: () => void }) {
   const [signedUp, setSignedUp] = useState(false);
+  const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
   const { currFid } = useFarcasterAccount();
   if (signedUp)
     return (
@@ -71,6 +73,9 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
           if (currFid) {
             setSignedUp(true);
           } else {
+            if (Platform.OS === "web" && isSupported && !isInstalled) {
+              showPrompt();
+            }
             onComplete();
           }
         }}
