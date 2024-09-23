@@ -20,8 +20,6 @@ import {
   DEGEN_TOKEN_METADATA,
   NATIVE_TOKEN_METADATA,
 } from "~/constants";
-import { fetchItems as fetchUserCommunityNFTs } from "~/features/user/communityNFTsSlice";
-import { fetchItems as fetchUserCommunityTokens } from "~/features/user/communityTokensSlice";
 import { useFetchPrice, useSwapToken } from "~/hooks/trade/use0xSwap";
 import useAppModals from "~/hooks/useAppModals";
 import useUserAction from "~/hooks/user/useUserAction";
@@ -286,18 +284,7 @@ function SwapToken({
       };
       setTransationData(transationData);
       setSwaping?.(swaping);
-      setTimeout(() => {
-        if (isSuccess && account?.address) {
-          dispatch(
-            fetchUserCommunityNFTs(account.address) as unknown as UnknownAction,
-          );
-          dispatch(
-            fetchUserCommunityTokens(
-              account.address,
-            ) as unknown as UnknownAction,
-          );
-        }
-      }, 5000);
+      // todo: update tokens info in portfolio page
     }
   }, [isSuccess, waitingUserSign, transactionReceipt, transationLoading]);
 

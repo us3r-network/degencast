@@ -66,8 +66,6 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import { fetchItems as fetchUserCommunityNFTs } from "~/features/user/communityNFTsSlice";
-import { fetchItems as fetchUserCommunityTokens } from "~/features/user/communityTokensSlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 
@@ -431,19 +429,7 @@ const MintNFT = forwardRef<
 
   const onMintSuccess = (data: TransationData) => {
     onSuccess?.(data);
-    setTimeout(() => {
-      if (account?.address) {
-        dispatch(
-          fetchUserCommunityNFTs(account.address) as unknown as UnknownAction,
-        );
-        if (graduated)
-          dispatch(
-            fetchUserCommunityTokens(
-              account.address,
-            ) as unknown as UnknownAction,
-          );
-      }
-    }, 5000);
+    // todo: update nft info in portfolio page
   };
 
   return (

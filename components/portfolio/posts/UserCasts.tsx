@@ -5,14 +5,14 @@ import useUserCurationCasts from "~/hooks/user/useUserCurationCasts";
 
 export function UserCastList({ fid }: { fid: number }) {
   const { currFid } = useFarcasterAccount();
-  const { items, loading, loadItems, hasNext } = useUserCasts(fid, currFid);
+  const { items, loading, load, hasMore } = useUserCasts(fid, currFid);
   return (
     <CastListWithChannel
       items={items}
       loading={loading}
       onEndReached={() => {
-        if (loading || (!loading && items?.length === 0) || !hasNext) return;
-        loadItems();
+        if (loading || (!loading && items?.length === 0) || !hasMore) return;
+        load();
         return;
       }}
     />
@@ -21,7 +21,7 @@ export function UserCastList({ fid }: { fid: number }) {
 
 export function UserCurationCastList({ fid }: { fid: number }) {
   const { currFid } = useFarcasterAccount();
-  const { items, loading, loadItems, hasMore } = useUserCurationCasts(
+  const { items, loading, load, hasMore } = useUserCurationCasts(
     fid,
     currFid,
   );
@@ -31,7 +31,7 @@ export function UserCurationCastList({ fid }: { fid: number }) {
       loading={loading}
       onEndReached={() => {
         if (loading || (!loading && items?.length === 0) || !hasMore) return;
-        loadItems();
+        load();
         return;
       }}
     />
