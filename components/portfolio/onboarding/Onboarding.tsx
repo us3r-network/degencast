@@ -14,6 +14,7 @@ const OnboardingModal = React.forwardRef<
   React.ElementRef<typeof Dialog>,
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
+  const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
   const [open, setOpen] = useState(false);
   const { ready, authenticated } = useAuth();
   useEffect(() => {
@@ -42,6 +43,10 @@ const OnboardingModal = React.forwardRef<
               SKIP_ONBOARDING_KEY,
               nowDate.setDate(nowDate.getDate() + 7).toString(),
             );
+            console.log("pwa", Platform.OS, { isSupported, isInstalled });
+            if (Platform.OS === "web" && isSupported && !isInstalled) {
+              showPrompt();
+            }
             if (!!coinBaseWallet) {
               activeOneWallet();
               setShowDeposit(true);
@@ -57,7 +62,6 @@ export default OnboardingModal;
 export const SKIP_ONBOARDING_KEY = "skipOnboarding";
 export function Onboarding({ onComplete }: { onComplete: () => void }) {
   const [signedUp, setSignedUp] = useState(false);
-  const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
   const { currFid } = useFarcasterAccount();
   if (signedUp)
     return (
@@ -73,9 +77,6 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
           if (currFid) {
             setSignedUp(true);
           } else {
-            if (Platform.OS === "web" && isSupported && !isInstalled) {
-              showPrompt();
-            }
             onComplete();
           }
         }}
