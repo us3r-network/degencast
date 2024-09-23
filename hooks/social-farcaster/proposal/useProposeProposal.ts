@@ -9,6 +9,8 @@ import {
 import useCacheCastProposal from "./useCacheCastProposal";
 import { walletActionsEip5792 } from "viem/experimental";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
+import useUserAction from "~/hooks/user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export default function useProposeProposal({
   contractAddress,
@@ -37,6 +39,8 @@ export default function useProposeProposal({
   const isLoading = status === "pending";
 
   const { upsertOneToProposals } = useCacheCastProposal();
+  const { submitUserAction } = useUserAction();
+
   const propose = useCallback(
     async (paymentConfig: PaymentConfig) => {
       try {
@@ -51,6 +55,13 @@ export default function useProposeProposal({
         setTransactionReceipt(receipt);
         setStatus("success");
         onProposeSuccess?.(receipt);
+        submitUserAction({
+          action: UserActionName.VoteCast,
+          castHash: castHash,
+          data: {
+            hash: receipt.transactionHash,
+          },
+        });
 
         const proposals = await getProposals({
           publicClient: publicClient!,
@@ -78,6 +89,7 @@ export default function useProposeProposal({
       walletClient,
       onProposeSuccess,
       onProposeError,
+      submitUserAction,
     ],
   );
   return {

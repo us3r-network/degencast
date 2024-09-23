@@ -10,11 +10,10 @@ import {
   HeaderLogo,
   HeaderRight,
 } from "../header/Header";
-import { SearchLink } from "../header/HeaderLinks";
+import { PointLink, SearchLink } from "../header/HeaderLinks";
 import { getRouteItemRenderConfig } from "./TabBar";
 import { SECONDARY_COLOR } from "~/constants";
 import HelpButton from "~/components/help/HelpButton";
-import InviteButton from "../header/InviteButton";
 
 export default function PageTabBar(
   props: MaterialTopTabBarProps & { level?: number },
@@ -78,8 +77,8 @@ export default function PageTabBar(
       </HeaderCenter>
       <HeaderRight>
         <HelpButton />
+        <PointLink />
         {!level && <SearchLink />}
-        <InviteButton />
       </HeaderRight>
     </Header>
   );

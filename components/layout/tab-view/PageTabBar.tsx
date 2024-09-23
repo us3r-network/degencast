@@ -8,10 +8,9 @@ import {
   HeaderLogo,
   HeaderRight,
 } from "../header/Header";
-import { PostLink, SearchLink } from "../header/HeaderLinks";
+import { PointLink, PostLink, SearchLink } from "../header/HeaderLinks";
 import { SECONDARY_COLOR } from "~/constants";
 import HelpButton from "~/components/help/HelpButton";
-import InviteButton from "../header/InviteButton";
 
 export default function PageTabBar(
   props: SceneRendererProps & {
@@ -72,8 +71,8 @@ export default function PageTabBar(
       <HeaderRight>
         {showCreatePost && <PostLink />}
         <HelpButton />
+        <PointLink />
         <SearchLink />
-        <InviteButton />
       </HeaderRight>
     </Header>
   );

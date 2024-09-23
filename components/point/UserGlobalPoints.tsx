@@ -44,7 +44,7 @@ export default function UserGlobalPoints() {
   };
   return (
     <>
-      <Link asChild href="/cast">
+      <Link asChild href="/point">
         <Pressable
           onPress={(e) => {
             e.stopPropagation();

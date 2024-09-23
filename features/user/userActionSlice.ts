@@ -91,12 +91,14 @@ const defaultActionPointConfig: UserActionPointConfig = {
   Like: { unit: 1, dailyLimit: 30 },
   UnLike: { unit: -1 },
   Tips: { unit: 5 },
-  ConnectFarcaster: { unit: 1000 },
+  ConnectFarcaster: { unit: 200 },
   BuyChannelShare: { unit: 500 },
   Invite: { unit: 200 },
   SwapToken: { unit: 500 },
-  MintCast: { unit: 200 },
+  MintCast: { unit: 100 },
   ViewChannel: { unit: 1, dailyLimit: 10 },
+  VoteCast: { unit: 100 },
+  PostingSignature: { unit: 10 },
 };
 const userActionState: UserActionState = {
   actionPointConfig: defaultActionPointConfig,
@@ -418,7 +420,10 @@ export const userActionSlice = createSlice({
         state.actionPointConfigRequestStatus = AsyncRequestStatus.PENDING;
       })
       .addCase(fetchUserActionConfig.fulfilled, (state, action) => {
-        state.actionPointConfig = action.payload;
+        state.actionPointConfig = {
+          ...defaultActionPointConfig,
+          ...action.payload,
+        };
         state.actionPointConfigRequestStatus = AsyncRequestStatus.FULFILLED;
       })
       .addCase(fetchUserActionConfig.rejected, (state, action) => {

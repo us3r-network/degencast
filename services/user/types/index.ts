@@ -21,6 +21,8 @@ export enum UserActionName {
   SwapToken = "SwapToken",
   MintCast = "MintCast",
   ViewChannel = "ViewChannel",
+  VoteCast = "VoteCast",
+  PostingSignature = "PostingSignature",
 }
 
 export type UserActionData = {
