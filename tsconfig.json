@@ -6,8 +6,8 @@
     "paths": {
       "@external-types/*": ["external-types/*"],
       "~/*": ["./*"],
-      "@rnr/*": ["./components/primitives/*"]
-    }
+    },
+    "moduleResolution": "Bundler",
   },
   "include": [
     "**/*.ts",

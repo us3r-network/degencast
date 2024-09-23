@@ -2,7 +2,7 @@ import { View, ViewProps } from "react-native";
 import { cn } from "~/lib/utils";
 import { LegacyRef } from "react";
 import React from "react";
-import { ViewRef } from "~/components/primitives/types";
+import { ViewRef } from "@rn-primitives/types";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { AlarmClockIcon, DiamondPlus } from "~/components/common/Icons";

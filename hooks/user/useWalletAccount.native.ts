@@ -24,8 +24,6 @@ export default function useWalletAccount() {
 
   return {
     connectWallet,
-    linkWallet:walletFlow.linkWithSiwe,
-    unlinkWallet:unsurpported,
     setActiveWallet:unsurpported,
     linkAccountNum,
     connectedWallets:[],

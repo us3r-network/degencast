@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 import { Card } from "../ui/card";
 import { forwardRef, LegacyRef } from "react";
 import React from "react";
-import { ViewRef } from "../primitives/types";
+import { ViewRef } from "@rn-primitives/types";
 
 export const headerHeight = DEFAULT_HEADER_HEIGHT;
 export const footerHeight = DEFAULT_TABBAR_HEIGHT;
