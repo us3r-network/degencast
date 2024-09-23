@@ -41,7 +41,7 @@ export default function UserSignin({
           onPress={() => {
             // login({ onSuccess });
             console.log("login frome UserSignin");
-            login({ loginMethods: ["wallet"] }, onSuccess, onFail);
+            login({ loginMethods: ["farcaster"] }, onSuccess, onFail);
           }}
         >
           <Text>Sign in</Text>

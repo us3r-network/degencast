@@ -23,22 +23,22 @@ export const privyConfig: PrivyClientConfig = {
   externalWallets: {
     coinbaseWallet: {
       // Valid connection options include 'eoaOnly' (default), 'smartWalletOnly', or 'all'
-      connectionOptions: "all",
+      connectionOptions: "smartWalletOnly",
     },
   },
   fundingMethodConfig: {
     moonpay: { useSandbox: true },
   },
-  // loginMethods: ["wallet", "farcaster"],
-  loginMethodsAndOrder: {
-    primary: [
-      // "farcaster",
-      // "twitter",
-      // "metamask",
-      "coinbase_wallet",
-      // "wallet_connect",
-      // "detected_wallets",
-      // "rainbow",
-    ],
-  },
+  loginMethods: ["wallet", "farcaster"],
+  // loginMethodsAndOrder: {
+  //   primary: [
+  //     "farcaster",
+  //     "twitter",
+  //     "metamask",
+  //     "coinbase_wallet",
+  //     "wallet_connect",
+  //     "detected_wallets",
+  //     "rainbow",
+  //   ],
+  // },
 };
