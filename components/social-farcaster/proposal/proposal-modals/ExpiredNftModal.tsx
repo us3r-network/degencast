@@ -1,9 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
-import {
-  TokenActivitieList
-} from "~/components/activity/Activities";
+import { TokenActivitieList } from "~/components/activity/Activities";
 import { AboutContents } from "~/components/help/HelpButton";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import { NftDetails } from "~/components/onchain-actions/att/ATTShared";
@@ -164,7 +162,7 @@ function ExpiredNftModalContentBody({
         <Text>Cast Status:</Text>
         <Text className="text-sm">Eliminated</Text>
       </View>
-      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+      {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
     </View>
   );
 }

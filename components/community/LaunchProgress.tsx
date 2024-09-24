@@ -25,7 +25,7 @@ export default function LaunchProgress({
         onPress={() => {
           Toast.show({
             type: "info",
-            text1: `Curation Token Launch Progress: ${progressNumber}%`,
+            text1: `Contribution Token Launch Progress: ${progressNumber}%`,
           });
         }}
       >

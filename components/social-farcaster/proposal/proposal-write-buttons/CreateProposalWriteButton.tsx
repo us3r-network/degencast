@@ -94,7 +94,7 @@ export default function CreateProposalWriteButton({
       className="w-full"
       targetChainId={ATT_CONTRACT_CHAIN.id}
       allowanceParams={allowanceParams}
-      approveText="Upvote (Approve)"
+      approveText="👍 Superlike (Approve)"
       warpedButton={
         <Button
           variant={"secondary"}
@@ -132,11 +132,11 @@ export default function CreateProposalWriteButton({
           {isLoading ? (
             <Loading />
           ) : isCreated ? (
-            <Text>Upvote</Text>
+            <Text>👍 Superlike</Text>
           ) : !isConnected ? (
             <Text>Connect your wallet first</Text>
           ) : (
-            <Text>Upvote</Text>
+            <Text>👍 Superlike</Text>
           )}
         </Button>
       }

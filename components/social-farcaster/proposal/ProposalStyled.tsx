@@ -5,7 +5,7 @@ import React from "react";
 import { ViewRef } from "@rn-primitives/types";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
-import { AlarmClockIcon, DiamondPlus } from "~/components/common/Icons";
+import { AlarmClockIcon, DiamondPlus, Heart } from "~/components/common/Icons";
 import dayjs from "dayjs";
 
 export const CardWrapper = React.forwardRef<
@@ -62,7 +62,26 @@ export const Deadline = React.forwardRef<
       {...props}
     >
       <AlarmClockIcon className="size-4 stroke-[#9BA1AD]" />
-      <Text className="text-xs text-[#9BA1AD]">{text}</Text>
+      <Text className="text-xs leading-none text-[#9BA1AD]">{text}</Text>
+    </View>
+  );
+});
+
+export const LikeCount = React.forwardRef<
+  ViewRef,
+  React.ComponentPropsWithoutRef<typeof View> & {
+    count: number;
+  }
+>(({ className, count, ...props }, ref: LegacyRef<View>) => {
+  return (
+    <View
+      className={cn("flex flex-row items-center gap-1", className)}
+      ref={ref}
+      {...props}
+    >
+      <Heart className="size-4 fill-[#9BA1AD] stroke-[#9BA1AD]" />
+      {/* <Text className="text-xs text-[#9BA1AD]">❤️</Text> */}
+      <Text className="text-xs leading-none text-[#9BA1AD]">{count}</Text>
     </View>
   );
 });

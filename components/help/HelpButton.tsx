@@ -33,16 +33,16 @@ export default function HelpButton() {
 }
 
 export const CurationInfo = [
-  "Upvote/Downvote: Create or reject a Curation NFT.",
-  "Vote Cost & Weight: Costs the NFT price; weight depends on spending.",
+  "Superlike/Dislike: Create or reject a Contribution NFT.",
+  "Stake & Weight: Stake the NFT price; weight depends on spending.",
   "Challenge: Extend countdown; need double the weight to win.",
-  "Curators: Top 10 early upvoters earn more.",
+  "Contributors: Top 10 early contributors earn more.",
 ];
 
 export const CurationNFTInfo = [
-  "Token Value: Each NFT equals 100,000 Curation Tokens.",
-  "Fees Distribution: 1% to Degencast, 2% to host, 3% to creators, 4% to curators.",
-  "Bonding Curve: Shared curve; liquidity moves to Uniswap at 42069 DEGEN cap.",
+  "Token value: Each NFT equals 100,000 Contribution Tokens.",
+  "Fees Distribution: 1% to DegenCast, 2% to host, 3% to creators, 4% to Contributors.",
+  "Bonding Curve: Shared curve; liquidity moves to Uniswap at $42,069 cap.",
   "After Launch: NFT still equals 100,000 Tokens.",
 ];
 
@@ -53,9 +53,9 @@ export function AboutContents() {
       showsHorizontalScrollIndicator={false}
     >
       <View className="flex gap-4">
-        <Text className="text-base font-bold">Curate</Text>
+        <Text className="text-base font-bold">Superlike</Text>
         <UnorderedList texts={CurationInfo} />
-        <Text className="text-base">Curation NFT</Text>
+        <Text className="text-base">Contribution NFT</Text>
         <UnorderedList texts={CurationNFTInfo} />
       </View>
     </ScrollView>

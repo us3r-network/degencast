@@ -1,6 +1,5 @@
 # DegenCast: Curate, Mint, and Trade Onchain Content 🎩✨
 
-
 DegenCast lets you curate content onchain by minting ERC1155-ERC20 hybrid tokens on a bonding curve, which are later launched on UniswapV3. Each piece of curated content undergoes a proposal process secured by an economic game inspired by Kleros, ensuring only high-quality contributions make it through. Whether you’re a creator or a curator, DegenCast offers a seamless way to engage with and monetize top-tier content in a decentralized ecosystem.
 
 Degencast is built as a cross platform a mobile and web application built with React Native and Expo, on Farcaster ecosystem and powered by $DEGEN.
@@ -9,8 +8,8 @@ Degencast is built as a cross platform a mobile and web application built with R
 
 Degencast revolutionizes content curation in the social media landscape by combining the power of decentralized finance (DeFi) 💰 with community-driven content selection 🗳️. At its core, Degencast introduces innovative features that empower users to curate and value content collectively:
 
-- Channel Content Curation NFTs 🖼️: Users can propose to transform high-quality casts (posts) into Channel NFTs, creating a new paradigm for content curation where the community decides what content is most valuable.
-- Community-Driven Curation 👥: Degencast implements a unique challenge system for proposal approval, ensuring that content curation is a collaborative effort driven by community consensus.
+- Channel Content Contribution NFTs 🖼️: Users can propose to transform high-quality casts (posts) into Channel NFTs, creating a new paradigm for content curation where the community decides what content is most valuable.
+- Community-Driven Contribution 👥: Degencast implements a unique challenge system for proposal approval, ensuring that content curation is a collaborative effort driven by community consensus.
 - Curator Rewards 🏆: Top curators (including the proposer and early supporters) are rewarded with a share of the transaction fees, encouraging active participation in content curation.
 
 By tokenizing content curation, Degencast creates a more engaging and rewarding social media experience where users have a direct stake in the quality of content shared on the platform. This approach not only enhances the overall content quality but also fosters a sense of ownership and community among users. 🌟
@@ -111,7 +110,6 @@ The application can be run on different platforms:
 
 Channel NFTs represent curated content within Degencast. Users can propose to turn high-quality casts into Channel NFTs, which are then subject to community approval.
 
-
 The challenge process for Channel NFTs works as follows:
 
 - **Propose**: Users can propose to turn a high-quality cast into a Channel NFT.
@@ -129,23 +127,19 @@ The challenge process for Channel NFTs works as follows:
 - **Liquidity Provision**: When the bonding curve reaches a market cap of 4,206,900 DEGEN, all liquidity is deposited into Uniswap v3.
 - **Post-Launch**: After the token launch, each Channel NFT still represents 1000 Channel Tokens.
 
-
-### Curation Process 🗳️
+### Contribution Process 🗳️
 
 The curation process involves proposing, challenging, and approving content to become Channel NFTs. This process ensures that only the most valuable content is tokenized and rewarded.
 
-
-- Curation NFT = 1000 Curation Token.
+- Contribution NFT = 1000 Contribution Token.
 - NFT transaction fee: Degencast 1%, Channel host 2%, Creator 3%, Curators 4%.
-- All Curation NFTs share the same bonding curve.
+- All Contribution NFTs share the same bonding curve.
 - When bonding curve reaches a market cap of 4,206,900 DEGEN, all the liquidity will be deposited into Uniswap v3.
-- After token launch, Curation NFT = 1000 Curation Token.
-
+- After token launch, Contribution NFT = 1000 Contribution Token.
 
 ### Content Creation ✍️
 
 Users can create casts (posts) within the Degencast ecosystem, which can then be proposed for curation.
-
 
 ```18:36:components/social-farcaster/Editor.tsx
 export default function Editor({
@@ -169,11 +163,9 @@ export default function Editor({
 }) {
 ```
 
-
 ### NFT Creation 🎨
 
 When a cast is approved to become a Channel NFT, the platform uses the Zora Protocol SDK to create and mint the NFT.
-
 
 ```179:222:hooks/social-farcaster/cast-nft/useCreateNew1155Token.ts
 async function createNew1155Token({
@@ -221,7 +213,6 @@ async function createNew1155Token({
   };
 }
 ```
-
 
 ## Contributing 🤝
 
