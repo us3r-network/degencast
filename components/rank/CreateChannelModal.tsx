@@ -217,38 +217,6 @@ export default function CreateChannelDialog({
               </Button>
             )}
           </View>
-          <View className="flex gap-4">
-            <Text>Channel Description</Text>
-            <Textarea
-              className="text-secondary"
-              placeholder="Input Channel Description"
-              value={channelDescription}
-              onChangeText={(text) => setChannelDescription(text)}
-            ></Textarea>
-          </View>
-          {hasSigner ? (
-            <Button
-              variant="secondary"
-              disabled={
-                loading ||
-                !validated ||
-                !channelName ||
-                !channelId ||
-                !channelDescription
-              }
-              onPress={() => submit()}
-            >
-              {loading ? (
-                <PercentPrograssText duration={8000} divisor={100} />
-              ) : (
-                <Text>Create Channel & Launch Contribution Token</Text>
-              )}
-            </Button>
-          ) : (
-            <Button variant={"secondary"} onPress={requestSigner}>
-              <Text>Request Farcaster signer</Text>
-            </Button>
-          )}
         </ScrollView>
       </DialogContent>
     </Dialog>
