@@ -48,7 +48,7 @@ export default function BuyDialog({
   const { submitUserAction } = useUserAction();
   const MintNFTScene = () => (
     <ScrollView
-      className="max-h-[70vh] w-full"
+      className="max-h-[90vh] w-full"
       showsHorizontalScrollIndicator={false}
     >
       <View className="gap-4">
