@@ -74,7 +74,7 @@ export default function UserSettings({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <View className="flex items-start gap-4 divide-solid">
+          <View className="flex items-start gap-4 divide-solid p-1">
             <Catalog
               title="Active Wallets"
               icon={<Wallet className="size-4" />}
@@ -133,7 +133,7 @@ function Catalog({ title, icon, children }: CatalogProps) {
         {icon}
         <Text>{title}</Text>
       </View>
-      <View className="flex gap-2 pl-4">{children}</View>
+      <View className="flex gap-2 pl-4 pr-2">{children}</View>
     </View>
   );
 }
@@ -144,7 +144,7 @@ export function LinkWallets() {
 
   if (!ready || !authenticated) return null;
   return (
-    <View className="flex w-full gap-2">
+    <View className="flex w-full gap-2 m-1">
       {unconnectedLinkedWallets.map((wallet) => (
         <WalletItem
           key={wallet.address}
@@ -185,7 +185,7 @@ function CreateWallet() {
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
   if (!ready || !authenticated || coinBaseWallet) return null;
   return (
-    <View className="flex w-full gap-2">
+    <View className="flex w-full gap-2 m-1">
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         onPointerUp={() => {
@@ -215,7 +215,7 @@ export const WalletItem = React.forwardRef<
   const { disconnect } = useDisconnect();
   const { connectedWallets, connectWallet } = useWalletAccount();
   return (
-    <View className="w-full flex-row items-center justify-between gap-6">
+    <View className="w-full flex-row items-center justify-between gap-6 m-1 pr-2">
       <Pressable
         className="flex-row items-center gap-2"
         onPointerUp={() => action?.()}
@@ -285,7 +285,7 @@ function FarcasterAccount() {
   if (!ready || !authenticated) return null;
   if (farcasterAccount?.fid) {
     return (
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row items-center justify-between m-1">
         <View className="flex-row items-center gap-2">
           <Avatar alt={farcasterAccount.username || ""} className="size-4">
             <AvatarImage source={{ uri: farcasterAccount.pfp || "" }} />
@@ -311,12 +311,12 @@ function FarcasterAccount() {
               <Edit className="size-4" />
             </Pressable>
           )}
-          <UnlinkButton
+          {/* <UnlinkButton
             action={() => {
               console.log("unlinking farcaster", farcasterAccount.fid);
               if (farcasterAccount?.fid) unlinkFarcaster(farcasterAccount.fid);
             }}
-          />
+          /> */}
         </View>
       </View>
     );

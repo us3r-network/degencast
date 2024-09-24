@@ -1,6 +1,7 @@
 import * as SelectPrimitive from "@rn-primitives/select";
 import * as React from "react";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { isDesktop } from "react-device-detect";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Check, ChevronDown, ChevronUp } from "~/components/common/Icons";
 import { cn } from "~/lib/utils";
@@ -88,7 +89,7 @@ const SelectScrollDownButton = ({
   );
 };
 
-const SelectContent = React.forwardRef<
+const SelectContentDesktop = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
     portalHost?: string;
@@ -99,16 +100,8 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Portal hostName={portalHost}>
       <SelectPrimitive.Overlay
         style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
+        asChild
       >
-        {/* {open && (
-          <TouchableOpacity
-            className="absolute bottom-0 left-0 right-0 top-0 bg-black/50"
-            onPress={(e) => {
-              console.log("SelectContent", Platform.OS, open);
-              onOpenChange(false);
-            }}
-          />
-        )} */}
         <Animated.View entering={FadeIn} exiting={FadeOut}>
           <SelectPrimitive.Content
             ref={ref}
@@ -141,6 +134,58 @@ const SelectContent = React.forwardRef<
     </SelectPrimitive.Portal>
   );
 });
+
+const SelectContentMobile = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
+    portalHost?: string;
+  }
+>(({ className, children, position = "popper", portalHost, ...props }, ref) => {
+  const { open, onOpenChange } = SelectPrimitive.useRootContext();
+  console.log("SelectContentMobile", position);
+  return (
+    <SelectPrimitive.Portal hostName={portalHost}>
+      <SelectPrimitive.Overlay
+        style={Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined}
+      >
+        <Animated.View entering={FadeIn} exiting={FadeOut}>
+          <SelectPrimitive.Content
+            ref={ref}
+            className={cn(
+              "absolute bottom-0 z-50 h-screen w-screen",
+              "flex justify-end",
+              "slide-in-from-bottom-2",
+              open
+                ? "web:animate-in web:fade-in-0 web:slide-in-from-bottom-8"
+                : "web:slide-out-from-bottom-8 web:animate-out web:fade-out-0",
+            )}
+            position={"item-aligned"}
+            disablePositioningStyle={true}
+            {...props}
+          >
+            <Pressable
+              className="absolute inset-0 bg-black/50"
+              onPointerDown={() => onOpenChange(false)}
+            ></Pressable>
+            <View
+              className={cn(
+                "flex max-h-96 justify-end border border-border bg-popover px-1 py-2 shadow-md shadow-foreground/10",
+                className,
+              )}
+            >
+              <SelectScrollUpButton />
+              <SelectPrimitive.Viewport className="w-full">
+                {children}
+              </SelectPrimitive.Viewport>
+              <SelectScrollDownButton />
+            </View>
+          </SelectPrimitive.Content>
+        </Animated.View>
+      </SelectPrimitive.Overlay>
+    </SelectPrimitive.Portal>
+  );
+});
+const SelectContent = isDesktop ? SelectContentDesktop : SelectContentMobile;
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef<
@@ -213,5 +258,6 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-  type Option,
+  type Option
 };
+
