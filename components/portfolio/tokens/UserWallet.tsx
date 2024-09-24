@@ -1,8 +1,8 @@
 import { View } from "react-native";
-import DepositButton from "~/components/trade/DepositButton";
-import FundButton from "~/components/trade/FundButton";
-import SendTokenButton from "~/components/trade/SendTokenButton";
-import SwapButton from "~/components/trade/TradeButton";
+import DepositButton from "~/components/onchain-actions/wallet/DepositButton";
+import FundButton from "~/components/onchain-actions/wallet/FundButton";
+import SendTokenButton from "~/components/onchain-actions/wallet/SendTokenButton";
+import SwapButton from "~/components/onchain-actions/swap/TradeButton";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import UserWalletSelect from "./UserWalletSelect";

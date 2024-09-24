@@ -4,7 +4,7 @@ import { FlatList, Pressable, View } from "react-native";
 import { Loading } from "~/components/common/Loading";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
-import { TradeButton } from "~/components/trade/TradeButton";
+import { TradeButton } from "~/components/onchain-actions/swap/TradeButton";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_ORDER_PARAMS } from "~/features/rank/tokenRankSlice";
 import useTokenRank from "~/hooks/rank/useTokenRank";

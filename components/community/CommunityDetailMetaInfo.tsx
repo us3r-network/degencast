@@ -23,7 +23,7 @@ import { Separator } from "../ui/separator";
 import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
 import { formatUnits } from "viem";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
-import { TradeButton } from "../trade/TradeButton";
+import { TradeButton } from "../onchain-actions/swap/TradeButton";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { CommunitySharingButton } from "../platform-sharing/PlatformSharingButton";
 

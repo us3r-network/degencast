@@ -3,9 +3,9 @@ import { ActivityIndicator, View } from "react-native";
 import { Chain, TransactionReceipt, WalletCallReceipt } from "viem";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { ExternalLink } from "../common/ExternalLink";
-import { Check, ReceiptText, X } from "../common/Icons";
-import { TransactionResultSharingButton } from "../platform-sharing/PlatformSharingButton";
+import { ExternalLink } from "../../common/ExternalLink";
+import { Check, ReceiptText, X } from "../../common/Icons";
+import { TransactionResultSharingButton } from "../../platform-sharing/PlatformSharingButton";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 

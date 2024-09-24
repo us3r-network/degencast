@@ -1,12 +1,12 @@
+import { Option } from "@rn-primitives/select";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { TokenInfo } from "~/components/common/TokenInfo";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
 import { Text } from "~/components/ui/text";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { Option } from "../primitives/select";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 
 export default function CommunityTokenSelect({
   chainId,

@@ -1,6 +1,6 @@
 import { useAccount } from "wagmi";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { Plus } from "../common/Icons";
+import { Plus } from "~/components/common/Icons";
 import { Text } from "~/components/ui/text";
 import { cva, VariantProps } from "class-variance-authority";
 import { SlottableViewProps } from "@rn-primitives/types";

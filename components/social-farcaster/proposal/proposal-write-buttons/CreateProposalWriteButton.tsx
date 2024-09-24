@@ -1,7 +1,7 @@
 import { Text } from "~/components/ui/text";
 import { CastProposeStatusProps } from "../proposal-modals/CreateProposalModal";
 import { Button, ButtonProps } from "~/components/ui/button";
-import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "~/components/onchain-actions/common/OnChainActionButtonWarper";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useCreateProposal from "~/hooks/social-farcaster/proposal/useCreateProposal";
 import { useAccount, useChainId } from "wagmi";

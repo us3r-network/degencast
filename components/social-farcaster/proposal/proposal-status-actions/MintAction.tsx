@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { View } from "react-native";
 import { DiamondPlus } from "~/components/common/Icons";
-import { BuyButton } from "~/components/trade/ATTBuyButton";
+import { BuyButton } from "~/components/onchain-actions/att/ATTBuyButton";
 import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
 import { Deadline, MintCount } from "../ProposalStyled";
 import { ProposalButton } from "../ui/proposal-button";
@@ -44,7 +44,7 @@ export function ReadyToMintButton({
           tokenId: Number(proposal.tokenId),
         }}
         cast={cast}
-        renderButton={(props) => {
+        renderButton={(props:any) => {
           return (
             <ProposalButton variant={"ready-to-mint"} {...props}>
               <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" />
@@ -52,7 +52,7 @@ export function ReadyToMintButton({
             </ProposalButton>
           );
         }}
-        onSuccess={(newMintNFTAmount) => {
+        onSuccess={(newMintNFTAmount:number) => {
           // console.log("newMintNFTAmount", newMintNFTAmount, proposal);
           upsertOneToProposals(cast.hash as `0x${string}`, {
             ...proposal,

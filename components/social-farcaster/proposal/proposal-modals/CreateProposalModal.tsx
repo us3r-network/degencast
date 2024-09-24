@@ -13,7 +13,7 @@ import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import { PercentPrograssText } from "~/components/common/PercentPrograssText";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
-import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
+import { CreateTokenButton } from "~/components/onchain-actions/att/ATTCreateButton";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Slider } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
