@@ -6,7 +6,7 @@ import {
 } from "~/components/activity/Activities";
 import { AboutContents } from "~/components/help/HelpButton";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { NftDetails } from "~/components/onchain-actions/att/ATTBuyButton";
+import { NftDetails } from "~/components/onchain-actions/att/ATTShared";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
