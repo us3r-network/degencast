@@ -67,7 +67,6 @@ import {
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
 import { useDispatch } from "react-redux";
-import { UnknownAction } from "@reduxjs/toolkit";
 
 export type NFTProps = {
   cast?: NeynarCast;
