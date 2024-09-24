@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
 import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
-import { DepositDialog } from "~/components/trade/DepositButton";
+import { DepositDialog } from "~/components/onchain-actions/wallet/DepositButton";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";

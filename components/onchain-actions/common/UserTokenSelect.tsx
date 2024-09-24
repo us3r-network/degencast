@@ -14,7 +14,7 @@ import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { Option } from "../primitives/select";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "../../ui/select";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 
 export default function UserTokenSelect({

@@ -14,10 +14,14 @@ import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 // import About from "~/components/common/About";
 import { useDispatch } from "react-redux";
+import { TokenActivitieList } from "~/components/activity/Activities";
+import { Copy } from "~/components/common/Icons";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
+import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
+import NeynarCastUserInfo from "~/components/social-farcaster/proposal/NeynarCastUserInfo";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -57,18 +61,14 @@ import {
 import { UserActionName } from "~/services/user/types";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { shortPubKey } from "~/utils/shortPubKey";
-import { TokenActivitieList } from "../activity/Activities";
-import { Copy } from "../common/Icons";
-import DialogTabBar from "../layout/tab-view/DialogTabBar";
-import NeynarCastUserInfo from "../social-farcaster/proposal/NeynarCastUserInfo";
-import ATTExternalLink from "./ATTExternalLink";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
-} from "./TranasactionResult";
-import UserTokenSelect from "./UserTokenSelect";
+} from "../common/TranasactionResult";
+import UserTokenSelect from "../common/UserTokenSelect";
+import ATTExternalLink from "./ATTExternalLink";
 
 export type NFTProps = {
   cast?: NeynarCast;

@@ -1,22 +1,20 @@
 import { createContext, useContext, useState } from "react";
 import { ScrollView, View } from "react-native";
-import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
+import { SceneMap, TabView } from "react-native-tab-view";
+import {
+  TokenActivitieList
+} from "~/components/activity/Activities";
+import { AboutContents } from "~/components/help/HelpButton";
+import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
+import { NftDetails } from "~/components/onchain-actions/att/ATTBuyButton";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
+import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalCastCard from "../ProposalCastCard";
-import {
-  DialogCastActivitiesList,
-  TokenActivitieList,
-} from "~/components/activity/Activities";
-import { SceneMap, TabView } from "react-native-tab-view";
-import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
-import { AboutContents } from "~/components/help/HelpButton";
-import { NftDetails } from "~/components/trade/ATTBuyButton";
-import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;

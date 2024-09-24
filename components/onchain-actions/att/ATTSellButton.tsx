@@ -1,11 +1,13 @@
 import { forwardRef, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
+import { useDispatch } from "react-redux";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
+import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Button } from "~/components/ui/button";
 import {
@@ -23,21 +25,18 @@ import {
   useATTFactoryContractInfo,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
+import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { ERC42069Token } from "~/services/trade/types";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import DialogTabBar from "../layout/tab-view/DialogTabBar";
-import { ActivityScene, DetailsScene, NftCtx } from "./ATTBuyButton";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
-} from "./TranasactionResult";
-import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
-import { useDispatch } from "react-redux";
-import { UnknownAction } from "@reduxjs/toolkit";
+} from "../common/TranasactionResult";
+import { ActivityScene, DetailsScene, NftCtx } from "./ATTBuyButton";
 
 export function SellButton({ token }: { token: ERC42069Token }) {
   const [transationData, setTransationData] = useState<TransationData>();

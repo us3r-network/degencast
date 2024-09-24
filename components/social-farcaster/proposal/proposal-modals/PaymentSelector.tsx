@@ -5,7 +5,7 @@ import { Text } from "~/components/ui/text";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { formatUnits, parseUnits } from "viem";
-import UserTokenSelect from "~/components/trade/UserTokenSelect";
+import UserTokenSelect from "~/components/onchain-actions/common/UserTokenSelect";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { useSwap } from "~/hooks/trade/useUniSwapV3";

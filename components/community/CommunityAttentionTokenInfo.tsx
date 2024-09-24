@@ -20,8 +20,8 @@ import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { CopyTextContainer } from "../common/CopyText";
 import { getChain } from "~/utils/chain/getChain";
 import { ATT_CONTRACT_CHAIN } from "~/constants";
-import { TradeButton } from "../trade/TradeButton";
-import ATTExternalLink from "../trade/ATTExternalLink";
+import { TradeButton } from "../onchain-actions/swap/TradeButton";
+import ATTExternalLink from "../onchain-actions/att/ATTExternalLink";
 
 export default function CommunityAttentionTokenInfo({
   channelId,

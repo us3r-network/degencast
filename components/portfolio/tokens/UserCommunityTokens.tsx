@@ -12,7 +12,7 @@ import {
 import { Text } from "~/components/ui/text";
 import useUserCommunityTokens from "~/hooks/user/useUserCommunityTokens";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { TradeButton } from "../../trade/TradeButton";
+import { TradeButton } from "../../onchain-actions/swap/TradeButton";
 import { DEGEN_TOKEN_ADDRESS } from "~/constants";
 import { Address } from "viem";
 
