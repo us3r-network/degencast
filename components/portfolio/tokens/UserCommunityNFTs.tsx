@@ -33,7 +33,7 @@ export default function CommunityNFTs({
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-sm font-medium text-secondary">
-            Curation NFTs {loading ? "" : `(${items.length})`}
+            Contribution NFTs {loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&

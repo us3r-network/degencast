@@ -61,8 +61,8 @@ function RewardActivityScene() {
 export default function Activities({ fid, type }: ActivitiesProps) {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "proposal", title: "Vote" },
-    { key: "nfts", title: "Collect" },
+    { key: "proposal", title: "Superlike" },
+    { key: "nfts", title: "Mint" },
     { key: "rewards", title: "Reward" },
   ]);
   const renderScene = SceneMap({
