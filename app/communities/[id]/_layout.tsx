@@ -72,15 +72,15 @@ export default function CommunityDetail() {
   } = useLoadCommunityDetail(channelId);
   const [routes, setRoutes] = useState<any[]>([
     { key: "casts", title: "Cast", component: CastFeeds },
-    { key: "vote", title: "Vote", component: ProposalFeeds },
-    { key: "collect", title: "Collect", component: SelectionFeeds },
+    { key: "vote", title: "Like", component: ProposalFeeds },
+    { key: "collect", title: "Mint", component: SelectionFeeds },
     { key: "activities", title: "Activity", component: ActivitiesScreen },
     {
       key: "attention-token",
-      title: "Curation Token",
+      title: "Contribution Token",
       component: AttentionTokenScreen,
     },
-    { key: "curators", title: "Curator", component: CuratorsScreen },
+    { key: "curators", title: "DegenCaster", component: CuratorsScreen },
   ]);
 
   const community = communityDetail || communityBasic;

@@ -23,23 +23,28 @@ export default function PriceRow({
   isLoading?: boolean;
   onClickPriceValue?: () => void;
 }) {
+  const priceText = (
+    <Text className="text-xs font-normal text-primary-foreground">
+      {isLoading || !price || !paymentTokenInfo?.decimals
+        ? "--"
+        : formatAmount(paymentTokenInfo, price)}{" "}
+      {paymentTokenInfo?.symbol}
+    </Text>
+  );
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text>{title || "Total Cost"}</Text>
+      <Text className="text-xs text-secondary">{title || "Total Cost"}</Text>
       <View className="flex flex-row items-center gap-1">
-        <Image
+        {/* <Image
           source={require("~/assets/images/degen-icon-2.png")}
           resizeMode="contain"
           style={{ width: 20, height: 20 }}
-        />
-        <Pressable onPress={onClickPriceValue}>
-          <Text className="font-normal">
-            {isLoading || !price || !paymentTokenInfo?.decimals
-              ? "--"
-              : formatAmount(paymentTokenInfo, price)}{" "}
-            {paymentTokenInfo?.symbol}
-          </Text>
-        </Pressable>
+        /> */}
+        {onClickPriceValue ? (
+          <Pressable onPress={onClickPriceValue}>{priceText}</Pressable>
+        ) : (
+          priceText
+        )}
       </View>
     </View>
   );

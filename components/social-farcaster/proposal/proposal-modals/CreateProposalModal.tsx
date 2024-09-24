@@ -142,7 +142,7 @@ function CreateProposalModalContentBodyScene() {
             onCreateProposalSuccess={() => {
               Toast.show({
                 type: "success",
-                text1: "Upvote successful !",
+                text1: "👍 Superlike successful !",
               });
               setOpen(false);
               upsertProposalShareModal({
@@ -206,7 +206,8 @@ function CreateTokenModalContentBody({
       </View>
       <ProposalCastCard channel={channel} cast={cast} />
       <Text className="text-sm text-secondary">
-        This channel hasn't activated Curation Token yet. Please activate first.
+        This channel hasn't activated Contribution Token yet. Please activate
+        first.
       </Text>
       <CreateTokenButton
         channelId={channel?.channelId!}
@@ -285,9 +286,9 @@ function CreateProposalModalContentBody({
       </View>
       <View className="flex-row items-center justify-between gap-2">
         <Text>Cast Status:</Text>
-        <Text className="text-sm">Voteable</Text>
+        <Text className="text-sm">--</Text>
       </View>
-      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+      {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
       {paymentTokenInfoLoading ? (
         <ActivityIndicator color={SECONDARY_COLOR} />
       ) : (

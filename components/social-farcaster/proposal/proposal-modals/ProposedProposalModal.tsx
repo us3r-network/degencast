@@ -63,7 +63,7 @@ export default function ProposedProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "upvote", title: "Vote" },
+    { key: "upvote", title: "Superlike" },
     { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
@@ -225,7 +225,7 @@ function ProposedProposalModalContentBodyScene() {
           <Text>Active Wallet</Text>
           <UserWalletSelect />
         </View>
-        <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+        {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
         {isLoading ? (
           <ActivityIndicator color={SECONDARY_COLOR} />
         ) : (
@@ -270,8 +270,8 @@ function ProposedProposalModalContentBodyScene() {
           <View className="flex flex-row items-center justify-between gap-5">
             <View className="flex-1">
               <DisputeProposalWriteButton
-                approveText="Downvote (Approve)"
-                downvoteText="Downvote"
+                approveText="👎 Dislike (Approve)"
+                downvoteText="👎 Dislike"
                 cast={cast}
                 channel={channel}
                 proposal={{ ...proposal, status: ProposalState.Accepted }}
@@ -309,8 +309,8 @@ function ProposedProposalModalContentBodyScene() {
             </View>
             <View className="flex-1">
               <ProposeProposalWriteButton
-                approveText="Upvote (Approve)"
-                upvoteText="Upvote"
+                approveText="👍 Superlike (Approve)"
+                upvoteText="👍 Superlike"
                 cast={cast}
                 channel={channel}
                 proposal={{ ...proposal, status: ProposalState.Proposed }}

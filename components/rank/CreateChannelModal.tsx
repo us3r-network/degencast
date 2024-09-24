@@ -204,7 +204,7 @@ export default function CreateChannelDialog({
               {loading ? (
                 <PercentPrograssText duration={8000} divisor={100} />
               ) : (
-                <Text>Create Channel & Launch Curation Token</Text>
+                <Text>Create Channel & Launch Contribution Token</Text>
               )}
             </Button>
           ) : (

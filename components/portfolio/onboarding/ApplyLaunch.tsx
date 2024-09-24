@@ -34,7 +34,7 @@ export default function ApplyLaunch({
           </Text>
           <View>
             <Text className="text-center text-base font-bold text-secondary">
-              Click the launch button to enable Curation Token and other
+              Click the launch button to enable Contribution Token and other
               curation features.
             </Text>
           </View>

@@ -10,10 +10,12 @@ export default function CastListWithChannel({
   items,
   loading,
   onEndReached,
+  renderHeaderComponent,
 }: {
   items: CastFeedsItem[];
   loading: boolean;
   onEndReached: () => void;
+  renderHeaderComponent?: () => React.ReactNode;
 }) {
   return (
     <FlatList
@@ -37,6 +39,12 @@ export default function CastListWithChannel({
             proposal={proposal}
           />
         );
+      }}
+      ListHeaderComponent={() => {
+        if (renderHeaderComponent) {
+          return renderHeaderComponent();
+        }
+        return null;
       }}
       ListFooterComponent={() => {
         if (loading) {
