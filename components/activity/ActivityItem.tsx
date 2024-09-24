@@ -218,9 +218,9 @@ export function ActivityItemOperation({
       )}
     >
       {operation === ActivityOperation.PROPOSE
-        ? "upvoted"
+        ? "superlike"
         : operation === ActivityOperation.DISPUTE
-          ? "downvoted"
+          ? "dislike"
           : operation === ActivityOperation.MINT
             ? "minted"
             : operation === ActivityOperation.BURN

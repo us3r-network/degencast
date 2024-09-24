@@ -1,32 +1,27 @@
-import { useMemo, useState } from "react";
-import { Dimensions, Image, Platform, View } from "react-native";
+import {
+  User,
+  useConnectCoinbaseSmartWallet,
+  useLinkAccount,
+  usePrivy
+} from "@privy-io/react-auth";
+import { useState } from "react";
+import { Dimensions, Image, View } from "react-native";
 import { X } from "~/components/common/Icons";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
-import {
-  ConnectedWallet,
-  User,
-  useConnectCoinbaseSmartWallet,
-  useLinkAccount,
-  usePrivy,
-} from "@privy-io/react-auth";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
-import { getInstallPrompter } from "~/utils/pwa";
 import { shortPubKey } from "~/utils/shortPubKey";
 import UserSignin from "../user/UserSignin";
-//todo: seperate install pwa from onboarding steps
-const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
-import { isDesktop } from "react-device-detect";
-import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function OnboardingSteps({
   onComplete,
 }: {
   onComplete: () => void;
 }) {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState<0|1|2|3>(0);
 
   const { user } = usePrivy();
   const { logout } = useAuth();
@@ -46,8 +41,6 @@ export default function OnboardingSteps({
       setStep(2);
     } else if (!u?.farcaster?.signerPublicKey) {
       setStep(3);
-    } else if (!isInstalled && isSupported) {
-      setStep(4);
     } else {
       onComplete();
     }
@@ -67,8 +60,6 @@ export default function OnboardingSteps({
       setStep(2);
     } else if (user?.farcaster && !user?.farcaster?.signerPublicKey && s <= 3) {
       setStep(3);
-    } else if (!isInstalled && isSupported && s <= 4) {
-      setStep(4);
     } else {
       onComplete();
     }
@@ -236,23 +227,6 @@ export default function OnboardingSteps({
             {SkipButton}
           </View>
         ))}
-      {step === 4 && (
-        <View className=" relative h-full w-full">
-          <StepImage step="4" />
-          <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">
-            <StepIndicator stepNum={5} stepNo={step} />
-            <Button
-              variant="secondary"
-              className="w-1/2 rounded-full"
-              disabled={!isSupported}
-              onPress={showPrompt}
-            >
-              <Text>Install Degencast</Text>
-            </Button>
-          </View>
-          {SkipButton}
-        </View>
-      )}
     </>
   );
 }
@@ -301,7 +275,6 @@ const STEP_IMAGES = {
   "1a": require("assets/images/onboarding/1a.png"),
   "2a": require("assets/images/onboarding/2a.png"),
   "3": require("assets/images/onboarding/3.png"),
-  "4": require("assets/images/onboarding/4.png"),
 };
 const dimensions = Dimensions.get("window");
 const imageWidth = Math.min(dimensions.width, 400);

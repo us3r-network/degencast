@@ -13,6 +13,7 @@ import Toast from "react-native-toast-message";
 import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 // import About from "~/components/common/About";
+import { useDispatch } from "react-redux";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
@@ -44,6 +45,7 @@ import {
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
+import useUserAction from "~/hooks/user/useUserAction";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
@@ -52,6 +54,7 @@ import {
   ERC42069Token,
   TokenWithTradeInfo,
 } from "~/services/trade/types";
+import { UserActionName } from "~/services/user/types";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { TokenActivitieList } from "../activity/Activities";
@@ -66,8 +69,6 @@ import {
   TransationData,
 } from "./TranasactionResult";
 import UserTokenSelect from "./UserTokenSelect";
-import { useDispatch } from "react-redux";
-import { UnknownAction } from "@reduxjs/toolkit";
 
 export type NFTProps = {
   cast?: NeynarCast;
@@ -257,6 +258,7 @@ export function BuyDialog({
     { key: "activity", title: "Activity" },
   ]);
 
+  const { submitUserAction } = useUserAction();
   const MintNFTScene = () => (
     <ScrollView
       className="max-h-[70vh] w-full"
@@ -272,6 +274,13 @@ export function BuyDialog({
           onSuccess={(data) => {
             setTransationData(data);
             onSuccess?.(data.amount || 0);
+            submitUserAction({
+              action: UserActionName.MintCast,
+              castHash: cast?.hash,
+              data: {
+                hash: data?.transactionReceipt?.transactionHash,
+              },
+            });
           }}
           onError={setError}
         />
@@ -426,7 +435,6 @@ const MintNFT = forwardRef<
           value: nftPrice,
         }
       : undefined;
-
   const onMintSuccess = (data: TransationData) => {
     onSuccess?.(data);
     // todo: update nft info in portfolio page
