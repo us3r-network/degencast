@@ -9,7 +9,7 @@ import { Text } from "~/components/ui/text";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { NFTProps } from "./ATTShared";
-import BuyDialog from "./ATTBuyDialog";
+import BuyDialog from "./ATTBuyModal";
 
 export function BuyButton({
   token,
