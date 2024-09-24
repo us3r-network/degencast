@@ -1,5 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import React from "react";
+import { isDesktop } from "react-device-detect";
 import { View } from "react-native";
 import { WalletIcon } from "~/components/common/WalletIcon";
 import {
@@ -10,12 +11,12 @@ import {
   SelectTrigger,
 } from "~/components/ui/select";
 import { Text, TextClassContext } from "~/components/ui/text";
+import { ZERO_ADDRESS } from "~/constants";
 import useAuth from "~/hooks/user/useAuth";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { shortPubKey } from "~/utils/shortPubKey";
 import { LinkWallets, WalletItem } from "../user/UserSettings";
-import { ZERO_ADDRESS } from "~/constants";
 
 export default function UserWalletSelect({
   disabled = false,
@@ -89,23 +90,26 @@ export default function UserWalletSelect({
             </View>
           )}
         </SelectTrigger>
-        <SelectContent className="flex items-start gap-4 divide-solid">
-          <View className="flex items-start gap-4 divide-solid">
-            <SelectGroup className={cn("flex gap-2")}>
-              {connectedExternalWallet.map((wallet) => (
-                <SelectItem
-                  asChild
-                  className={cn("p-0")}
-                  key={wallet.address}
-                  label={wallet.address}
-                  value={wallet.address}
-                >
-                  <WalletItem wallet={wallet} />
-                </SelectItem>
-              ))}
-              <LinkWallets />
-            </SelectGroup>
-          </View>
+        <SelectContent>
+          <SelectGroup
+            className={cn(
+              "flex w-full items-start gap-2 divide-solid",
+              isDesktop ? "p-0" : "p-2",
+            )}
+          >
+            {connectedExternalWallet.map((wallet) => (
+              <SelectItem
+                asChild
+                className="p-0"
+                key={wallet.address}
+                label={wallet.address}
+                value={wallet.address}
+              >
+                <WalletItem wallet={wallet} />
+              </SelectItem>
+            ))}
+            <LinkWallets />
+          </SelectGroup>
         </SelectContent>
       </Select>
     </TextClassContext.Provider>

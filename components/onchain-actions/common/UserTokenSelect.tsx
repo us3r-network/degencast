@@ -1,4 +1,6 @@
+import { Option } from "@rn-primitives/select";
 import { useEffect, useMemo, useState } from "react";
+import { isDesktop } from "react-device-detect";
 import { Pressable, View } from "react-native";
 import { Chain } from "viem";
 import { useAccount } from "wagmi";
@@ -13,8 +15,12 @@ import {
 import { useUserNativeToken, useUserToken } from "~/hooks/user/useUserTokens";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { Option } from "../primitives/select";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "../../ui/select";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
 
 export default function UserTokenSelect({
@@ -111,7 +117,10 @@ export default function UserTokenSelect({
               >
                 <View
                   key={token.address}
-                  className="w-full flex-row items-center gap-4 p-1"
+                  className={cn(
+                    "w-full flex-row items-center gap-4 p-1",
+                    isDesktop ? "p-1" : "p-2",
+                  )}
                 >
                   <TokenInfo
                     name={token.name}
