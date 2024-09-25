@@ -51,7 +51,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
           <Avatar alt={username} className="size-24 border-2 border-[#e0e0e0] ">
-            <AvatarImage source={{ uri: "sss" }} />
+            <AvatarImage source={{ uri: userAvatar }} />
             <AvatarFallback className="bg-white">
               <Image
                 source={require("~/assets/images/user-avatar.png")}
