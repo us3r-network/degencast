@@ -43,8 +43,8 @@ export function ChannelShareGlobalModal() {
           name: "",
         });
       }}
-      hideWarpcastPoints
-      hideTwitterPoints
+      // hideWarpcastPoints
+      // hideTwitterPoints
     />
   );
 }
