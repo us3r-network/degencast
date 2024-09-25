@@ -2,7 +2,10 @@ import { createContext, useContext, useState } from "react";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import { OutlineTabBar } from "~/components/layout/tab-view/TabBar";
-import { UserChannels, UserFollowingChannels } from "~/components/portfolio/channels/UserChannels";
+import {
+  UserChannels,
+  UserFollowingChannels,
+} from "~/components/portfolio/channels/UserChannels";
 import { LinkFarcaster } from "~/components/portfolio/user/LinkFarster";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 
@@ -50,7 +53,7 @@ export default function UserChannelScreen({ fid }: { fid?: number }) {
   });
   return (
     <PageContent>
-      {currFid ? (
+      {fid || currFid ? (
         <UserChannelsCtx.Provider value={{ fid: fid || currFid || 0 }}>
           <TabView
             navigationState={{ index, routes }}
