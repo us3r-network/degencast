@@ -10,10 +10,7 @@ import { FarCast } from "~/services/farcaster/types";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { UserActionName } from "~/services/user/types";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import {
-  getCastFid,
-  getCastHex
-} from "~/utils/farcaster/cast-utils";
+import { getCastFid, getCastHex } from "~/utils/farcaster/cast-utils";
 import useAuth from "../user/useAuth";
 import useUserAction from "../user/useUserAction";
 import useFarcasterAccount from "./useFarcasterAccount";
@@ -25,7 +22,7 @@ export default function useFarcasterLikeAction({
   onLikeSuccess,
   onRemoveLikeSuccess,
 }: {
-  cast: FarCast | NeynarCast;
+  cast: NeynarCast;
   onLikeSuccess?: () => void;
   onRemoveLikeSuccess?: () => void;
 }) {

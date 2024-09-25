@@ -6,9 +6,7 @@ import {
   getCastViewerContext,
 } from "./cast-utils";
 
-export function getReactionsCountAndViewerContexts(
-  casts: Array<FarCast | NeynarCast>,
-) {
+export function getReactionsCountAndViewerContexts(casts: Array<NeynarCast>) {
   const data = casts.reduce(
     (
       acc: {
@@ -24,7 +22,7 @@ export function getReactionsCountAndViewerContexts(
       if (viewerContext) {
         acc[castHex] = {
           ...acc[castHex],
-          viewerContext,
+          ...viewerContext,
         };
       }
       return acc;
