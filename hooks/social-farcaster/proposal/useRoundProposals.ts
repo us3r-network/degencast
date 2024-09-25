@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Address } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
 import { getProposals, getRound, ProposalsInfo } from "./proposal-helper";
@@ -21,6 +21,8 @@ export default function useRoundProposals({
   >("idle");
   const isLoading = status === "pending";
   const isRejected = status === "error";
+
+  const walletAddressRef = useRef("");
   useEffect(() => {
     const fetchProposals = async () => {
       try {
@@ -50,9 +52,14 @@ export default function useRoundProposals({
         setError(error);
         setStatus("error");
         console.error("getRoundProposals error", error);
+      } finally {
+        walletAddressRef.current = walletAddress!;
       }
     };
-    if (status === "idle") {
+    if (
+      status === "idle" ||
+      (!!walletAddress && walletAddress !== walletAddressRef.current)
+    ) {
       fetchProposals();
     }
   }, [publicClient, contractAddress, walletAddress, castHash, status]);
