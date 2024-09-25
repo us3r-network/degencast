@@ -33,12 +33,20 @@ export const getCastProposalShareTextWithTwitter = () => {
   return `Vote the proposal in @${TWITTER_SCREEN_NAME}`;
 };
 
-export const getPortfolioTextWithWarpcast = () => {
-  return `Trade & explore news in /${WARPCAST_CHANNEL_NAME}`;
+export const getPortfolioTextWithWarpcast = (opts?: { hasNfts?: boolean }) => {
+  const { hasNfts } = opts || {};
+  if (hasNfts) {
+    return `Sharing my superliked high-quality casts.`;
+  }
+  return `Join me on DegenCast now!`;
 };
 
-export const getPortfolioTextWithTwitter = () => {
-  return `Trade & explore news in @${TWITTER_SCREEN_NAME}.`;
+export const getPortfolioTextWithTwitter = (opts?: { hasNfts?: boolean }) => {
+  const { hasNfts } = opts || {};
+  if (hasNfts) {
+    return `Sharing my superliked high-quality casts.`;
+  }
+  return `Join me on DegenCast now!`;
 };
 
 export const getMintCastTextWithWarpcast = () => {

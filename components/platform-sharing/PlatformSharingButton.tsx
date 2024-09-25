@@ -36,12 +36,15 @@ export default function PlatformSharingButton({
   className,
   navigateToCreatePageAfter,
   ...props
-}: ButtonProps & ShareProps) {
+}: ButtonProps &
+  ShareProps & {
+    iconClassName?: string;
+  }) {
   const [open, setOpen] = useState(false);
   return (
     <View>
       <Button
-        className={cn("bg-transparent p-0", className)}
+        className={cn("bg-transparent p-0")}
         onPress={() => {
           setOpen(true);
         }}
@@ -50,6 +53,7 @@ export default function PlatformSharingButton({
         <Share2
           className={cn(
             " size-5 fill-primary-foreground stroke-primary-foreground",
+            className,
           )}
         />
       </Button>
@@ -105,16 +109,17 @@ export function TradeSharingButton({ fid }: { fid: string | number }) {
 
 export function PortfolioSharingButton({
   fid,
-  fname,
+  hasNfts,
 }: {
   fid: number;
-  fname: string;
+  hasNfts?: boolean;
 }) {
   const { currFid } = useFarcasterAccount();
   return (
     <PlatformSharingButton
-      twitterText={getPortfolioTextWithTwitter()}
-      warpcastText={getPortfolioTextWithWarpcast()}
+      className="fill-secondary stroke-secondary"
+      twitterText={getPortfolioTextWithTwitter({ hasNfts })}
+      warpcastText={getPortfolioTextWithWarpcast({ hasNfts })}
       websiteLink={getPortfolioWebsiteLink({
         fid,
         inviteFid: Number(currFid),
@@ -122,7 +127,7 @@ export function PortfolioSharingButton({
       warpcastEmbeds={[
         getPortfolioFrameLink({
           fid,
-          fname,
+          inviteFid: fid,
         }),
       ]}
     />

@@ -16,9 +16,12 @@ import { SECONDARY_COLOR } from "~/constants";
 import HelpButton from "~/components/help/HelpButton";
 
 export default function PageTabBar(
-  props: MaterialTopTabBarProps & { level?: number },
+  props: MaterialTopTabBarProps & {
+    level?: number;
+    renderRightContent?: () => React.ReactNode;
+  },
 ) {
-  const { state, position, level } = props;
+  const { state, position, level, renderRightContent } = props;
   const { routes } = state;
   const navigation = useNavigation();
 
@@ -76,9 +79,15 @@ export default function PageTabBar(
         })}
       </HeaderCenter>
       <HeaderRight>
-        <HelpButton />
-        <PointLink />
-        {!level && <SearchLink />}
+        {renderRightContent ? (
+          renderRightContent()
+        ) : (
+          <>
+            <HelpButton />
+            <PointLink />
+            {!level && <SearchLink />}
+          </>
+        )}
       </HeaderRight>
     </Header>
   );

@@ -64,8 +64,8 @@ export default function ProposalShareGlobalModal() {
         upsertProposalShareModal({ open });
       }}
       warpcastChannelId={channel?.channelId}
-      hideWarpcastPoints
-      hideTwitterPoints
+      // hideWarpcastPoints
+      // hideTwitterPoints
       navigateToCreatePageAfter={() => {
         upsertProposalShareModal(appModalsStateDefalut.proposalShareModal);
       }}
