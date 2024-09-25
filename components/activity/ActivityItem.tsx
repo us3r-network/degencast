@@ -51,24 +51,13 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
   return (
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
-        <View className="w-full flex-row justify-between">
-          <View className="flex-row items-center gap-2">
-            <ActivityItemUser
-              userAddr={data.userAddr}
-              userData={data.user}
-              hideHandle
-            />
-            {eventLogUrl ? (
-              <ExternalLink href={eventLogUrl}>
-                <View className="flex-row items-center gap-1">
-                  <ActivityItemOperation operation={data.operation} />
-                  <SquareArrowOutUpRight size={16} color={"grey"}/>
-                </View>
-              </ExternalLink>
-            ) : (
-              <ActivityItemOperation operation={data.operation} />
-            )}
-          </View>
+        <View className="m-1 w-full flex-row justify-between">
+          {/* line 1 */}
+          <ActivityItemUser
+            userAddr={data.userAddr}
+            userData={data.user}
+            hideHandle
+          />
           {data.timestamp &&
             (transcationUrl ? (
               <ExternalLink href={transcationUrl}>
@@ -82,53 +71,28 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               </Text>
             ))}
         </View>
-
-        {data.operation === ActivityOperation.REWARD ? (
-          <View className="w-full flex-row items-center gap-2">
-            {data.channel && (
-              <>
-                <Link href={`/casts/${data?.cast?.hash}`}>
-                  <Text className="text-primary underline">cast</Text>
-                </Link>
-                <Text>{`${data.rewardDescription}`}</Text>
-                <ActivityItemChannel channel={data.channel} />
-              </>
-            )}
-          </View>
-        ) : (
-          <View className="w-full flex-row items-center gap-2">
-            {data.tokenAmount > 0 && (
-              <Text className=" inline-block  align-baseline">
-                {data.tokenAmount}
-              </Text>
-            )}
-            {data.channel && (
-              <>
-                <Link href={`/casts/${data?.cast?.hash}`}>
-                  <Text className="text-primary underline">cast</Text>
-                </Link>
-                <Text>in</Text>
-                <ActivityItemChannel channel={data.channel} />
-              </>
-            )}
-          </View>
-        )}
-        <View className="flex-row items-center gap-2">
-          <Text>From</Text>
-          <ActivityItemUser userData={data?.cast?.author} hideHandle />
-          {data.paymentTokenAmount && data.paymentTokenInfo && (
-            <View className="flex-row items-center gap-2">
-              <Text>for</Text>
-              {eventLogUrl ? (
+        {/* line 2 */}
+        <View className="m-1">
+          <ActivityItemOperation
+            operation={data.operation}
+            payment={
+              eventLogUrl ? (
                 <ExternalLink href={eventLogUrl}>
-                  <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+                  <Text className="text-secondary font-bold underline">{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
                 </ExternalLink>
               ) : (
                 <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
-              )}
-            </View>
-          )}
+              )
+            }
+            amount={data.tokenAmount}
+            rewardDescription={data.rewardDescription}
+          />
         </View>
+        {/* line 3 */}
+        <View className="w-1/2">
+          <ActivityItemChannel channel={data.channel} />
+        </View>
+        {/* line 4 */}
         {data?.cast && <ActivityCast cast={data?.cast} />}
       </CardContent>
     </Card>
@@ -198,45 +162,70 @@ function ActivityItemUser({
 
 export function ActivityItemOperation({
   operation,
+  payment,
+  amount,
+  rewardDescription,
 }: {
   operation: ActivityOperation;
+  payment?: any;
+  amount?: number;
+  rewardDescription?: string;
 }) {
-  return (
-    <Text
-      className={cn(
-        " inline-block align-baseline text-base font-medium",
-        operation === ActivityOperation.BURN ||
-          operation === ActivityOperation.SELL ||
-          operation === ActivityOperation.DISPUTE
-          ? "text-[#F41F4C]"
-          : operation === ActivityOperation.MINT ||
-              operation === ActivityOperation.BUY ||
-              operation === ActivityOperation.PROPOSE ||
-              operation === ActivityOperation.REWARD
-            ? "text-[#00D1A7]"
-            : "",
-      )}
-    >
-      {operation === ActivityOperation.PROPOSE
-        ? "superlike"
-        : operation === ActivityOperation.DISPUTE
-          ? "dislike"
-          : operation === ActivityOperation.MINT
-            ? "minted"
-            : operation === ActivityOperation.BURN
-              ? "burned"
-              : operation === ActivityOperation.REWARD
-                ? "rewarded"
-                : operation}
-    </Text>
-  );
+  switch (operation) {
+    case ActivityOperation.PROPOSE:
+      return (
+        <Text>
+          stake {payment} to <span className="text-[#00D1A7]">👍superlike</span>
+          .
+        </Text>
+      );
+    case ActivityOperation.DISPUTE:
+      return (
+        <Text>
+          stake {payment} to <span className="text-[#F41F4C]">👎dislike</span>.
+        </Text>
+      );
+    case ActivityOperation.MINT:
+      return (
+        <Text>
+          spent {payment} to <span className="text-[#00D1A7]">mint</span>{" "}
+          {amount} NFT.
+        </Text>
+      );
+    case ActivityOperation.BURN:
+      return (
+        <Text>
+          <span className="text-[#F41F4C]">burned</span> {amount} and received{" "}
+          {payment}.
+        </Text>
+      );
+    case ActivityOperation.REWARD:
+      switch (rewardDescription) {
+        case "payout":
+          return (
+            <Text>
+              received a <span className="text-[#00D1A7]">payout</span> of{" "}
+              {payment}.
+            </Text>
+          );
+        default:
+          return (
+            <Text>
+              received {payment} as{" "}
+              <span className="text-[#00D1A7]">{rewardDescription}</span>.
+            </Text>
+          );
+      }
+    default:
+      return null;
+  }
 }
 
 export function ActivityItemChannel({ channel }: { channel: WarpcastChannel }) {
   return (
     <Link asChild href={`/communities/${channel.id || ""}`}>
       <Pressable
-        className="flex-row items-center gap-1 align-bottom"
+        className="w-fit flex-row items-center gap-2 rounded-full border border-secondary p-1 pr-2"
         onPress={(e) => {
           e.stopPropagation();
           if (!channel.id) {
@@ -244,7 +233,17 @@ export function ActivityItemChannel({ channel }: { channel: WarpcastChannel }) {
           }
         }}
       >
-        <CommunityInfo name={channel.name} logo={channel.imageUrl} />
+        <Avatar alt={channel.name || ""} className={cn("size-6")}>
+          <AvatarImage source={{ uri: channel.imageUrl || "" }} />
+          <AvatarFallback>
+            <Text className="text-sm font-medium">
+              {channel.name?.substring(0, 2)}
+            </Text>
+          </AvatarFallback>
+        </Avatar>
+        <Text className={cn("line-clamp-1 text-sm font-medium")}>
+          /{channel.id}
+        </Text>
       </Pressable>
     </Link>
   );
@@ -256,13 +255,13 @@ function ActivityCast({ cast }: { cast: NeynarCast }) {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      style={{ position: "relative", top: -30 }}
+      style={{ position: "relative", top: -36 }}
     >
       <CollapsibleTrigger style={{ position: "absolute", right: 0 }}>
         {open ? <ChevronUp color={"black"} /> : <ChevronDown color={"black"} />}
       </CollapsibleTrigger>
-      <CollapsibleContent style={{ marginBottom: -8, top: 40 }}>
-        <FCastWithNftImage cast={cast} hideUserInfo />
+      <CollapsibleContent style={{ marginBottom: 0, top: 40 }}>
+        <FCastWithNftImage cast={cast} />
       </CollapsibleContent>
     </Collapsible>
   );
