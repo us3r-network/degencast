@@ -37,7 +37,7 @@ export default function UserFeedScreen({ fid }: MyCastsProps) {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "casts", title: "Casts" },
-    { key: "curation", title: "Curation" },
+    { key: "curation", title: "Contributions" },
   ]);
   const renderScene = SceneMap({
     curation: CurationFeedsScene,

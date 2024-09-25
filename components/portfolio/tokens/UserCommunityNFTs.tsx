@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Address } from "viem";
 import { ChevronDown, ChevronUp } from "~/components/common/Icons";
 import NFTImage from "~/components/common/NFTImage";
-import { SellButton } from "~/components/trade/ATTSellButton";
+import { SellButton } from "~/components/onchain-actions/att/ATTSellButton";
 import {
   Collapsible,
   CollapsibleContent,
@@ -33,7 +33,7 @@ export default function CommunityNFTs({
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-sm font-medium text-secondary">
-            Curation NFTs {loading ? "" : `(${items.length})`}
+            Contribution NFTs {loading ? "" : `(${items.length})`}
           </Text>
         </View>
         {items?.length > DEFAULT_ITEMS_NUM &&

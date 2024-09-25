@@ -4,8 +4,11 @@ import CreateProposalModal, {
   CastProposeStatusProps,
 } from "../proposal-modals/CreateProposalModal";
 import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
-import { ProposalButtonBody } from "./ProposalButtonBody";
 import useAuth from "~/hooks/user/useAuth";
+import { View } from "react-native";
+import { ProposalText } from "../ui/proposal-text";
+import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
+import { LikeCount } from "../ProposalStyled";
 
 export function CreateProposalButton({
   cast,
@@ -19,13 +22,10 @@ export function CreateProposalButton({
   const { ready, authenticated, login } = useAuth();
   if (!proposal) return null;
   const buttonBody = (
-    <ProposalButtonBody
-      hideDownvote
-      cast={cast}
-      channel={channel}
-      proposal={proposal!}
-      tokenInfo={tokenInfo}
-    />
+    <View className="flex flex-row items-center gap-1">
+      <ProposalText>👍</ProposalText>
+      <ProposalText>Superlike</ProposalText>
+    </View>
   );
 
   if (!authenticated) {
@@ -63,5 +63,26 @@ export function CreateProposalButton({
         </ProposalButton>
       }
     />
+  );
+}
+
+export function CreateProposalActionLayout({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: CastProposeStatusProps) {
+  const { likeCount } = useFarcasterLikeAction({ cast });
+  return (
+    <View className="flex flex-row items-center gap-4">
+      <LikeCount count={likeCount || 0} />
+
+      <CreateProposalButton
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
+    </View>
   );
 }

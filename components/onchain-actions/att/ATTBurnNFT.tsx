@@ -1,20 +1,12 @@
 import { forwardRef, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
-import { SceneMap, TabView } from "react-native-tab-view";
+import { View } from "react-native";
+import { useDispatch } from "react-redux";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
-import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Button } from "~/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useATTContractInfo } from "~/hooks/trade/useATTContract";
@@ -23,144 +15,11 @@ import {
   useATTFactoryContractInfo,
 } from "~/hooks/trade/useATTFactoryContract";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
-import useWalletAccount from "~/hooks/user/useWalletAccount";
-import { cn } from "~/lib/utils";
 import { ERC42069Token } from "~/services/trade/types";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import DialogTabBar from "../layout/tab-view/DialogTabBar";
-import { ActivityScene, DetailsScene, NftCtx } from "./ATTBuyButton";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
 import {
-  ErrorInfo,
-  TransactionInfo,
-  TransationData,
-} from "./TranasactionResult";
-import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
-import { useDispatch } from "react-redux";
-import { UnknownAction } from "@reduxjs/toolkit";
-
-export function SellButton({ token }: { token: ERC42069Token }) {
-  const [transationData, setTransationData] = useState<TransationData>();
-  const [error, setError] = useState("");
-  const account = useAccount();
-  const { connectWallet } = useWalletAccount();
-  const { tokenInfo } = useCurationTokenInfo(
-    token.contractAddress,
-    token.tokenId,
-  );
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "nft", title: "NFT" },
-    { key: "details", title: "Details" },
-    { key: "activity", title: "Activity" },
-  ]);
-
-  const BurnNFTScene = () => (
-    <ScrollView
-      className="max-h-[70vh] w-full"
-      showsHorizontalScrollIndicator={false}
-    >
-      <View className="gap-4">
-        <View className="flex-row items-center justify-between gap-2">
-          <Text>Active Wallet</Text>
-          <UserWalletSelect />
-        </View>
-        <BurnNFT nft={token} onSuccess={setTransationData} onError={setError} />
-      </View>
-    </ScrollView>
-  );
-
-  const renderScene = SceneMap({
-    nft: BurnNFTScene,
-    details: DetailsScene,
-    activity: ActivityScene,
-  });
-
-  if (!account.address)
-    return (
-      <Button
-        className={cn("w-14")}
-        size="sm"
-        variant={"secondary"}
-        onPress={() => connectWallet()}
-      >
-        <Text>Sell</Text>
-      </Button>
-    );
-  else
-    return (
-      <Dialog
-        onOpenChange={() => {
-          setTransationData(undefined);
-          setError("");
-        }}
-      >
-        <DialogTrigger asChild>
-          <Button className={cn("w-14")} size="sm" variant={"secondary"}>
-            <Text>Sell</Text>
-          </Button>
-        </DialogTrigger>
-        {!transationData && !error && (
-          <DialogContent
-            className="w-screen"
-            onInteractOutside={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <NftCtx.Provider
-              value={{
-                token,
-              }}
-            >
-              <TabView
-                swipeEnabled={false}
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                renderTabBar={DialogTabBar}
-              />
-            </NftCtx.Provider>
-          </DialogContent>
-        )}
-        {transationData && (
-          <DialogContent
-            className="w-screen"
-            onInteractOutside={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <DialogHeader className={cn("flex gap-2")}>
-              <DialogTitle>Transaction</DialogTitle>
-            </DialogHeader>
-            <TransactionInfo
-              type={ONCHAIN_ACTION_TYPE.BURN_NFT}
-              data={transationData}
-              cast={tokenInfo?.cast}
-              buttonText="Sell more"
-              buttonAction={() => setTransationData(undefined)}
-            />
-          </DialogContent>
-        )}
-        {error && (
-          <DialogContent
-            className="w-screen"
-            onInteractOutside={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <DialogHeader className={cn("flex gap-2")}>
-              <DialogTitle>Error</DialogTitle>
-            </DialogHeader>
-            <ErrorInfo
-              error={error}
-              buttonText="Try Again"
-              buttonAction={() => setError("")}
-            />
-          </DialogContent>
-        )}
-      </Dialog>
-    );
-}
+  TransationData
+} from "../common/TranasactionResult";
 
 const BurnNFT = forwardRef<
   React.ElementRef<typeof View>,
@@ -299,3 +158,5 @@ const BurnNFT = forwardRef<
     </View>
   );
 });
+
+export default BurnNFT;

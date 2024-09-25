@@ -1,4 +1,3 @@
-import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -14,7 +13,6 @@ export default function UserSignin({
 }) {
   const { status, login } = useAuth();
   const [showInviteCodeModal, setShowInviteCodeModal] = useState(false);
-  // const { login } = usePrivy();
   useEffect(() => {
     const subscription = eventBus.subscribe((event) => {
       console.log("event", event);

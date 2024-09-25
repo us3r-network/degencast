@@ -11,6 +11,10 @@ import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import TipAllocationModal from "./TipAllocationModal";
 import { SECONDARY_COLOR } from "~/constants";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import { Loading } from "../common/Loading";
+import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 const POINTS_INFINITE_VALUE = 999999999;
 export function PointsRules() {
@@ -25,6 +29,8 @@ export function PointsRules() {
     Invite: { unit: inviteUnit },
     SwapToken: { unit: swapTokenUnit },
     MintCast: { unit: mintCastUnit },
+    VoteCast: { unit: voteCastUnit },
+    PostingSignature: { unit: postingSignatureUnit },
   } = actionPointConfig;
   const { loading, rejected, loadMyInvitationCodes, invitationCodes } =
     useUserInvitationCodes();
@@ -33,109 +39,44 @@ export function PointsRules() {
     loadMyInvitationCodes();
   }, [loading, rejected, invitationCodes]);
   const showInviteCode = invitationCodes.find((item) => !item?.isUsed);
-  const [openTipAllocation, setOpenTipAllocation] = useState(false);
   return (
-    <RuleGroups>
-      <RuleGroup title="Point">
-        <RuleItem
-          title="Invite a new Farcaster user"
-          points={inviteUnit}
-          description={
-            loading
+    <View className="flex flex-col gap-4">
+      <RuleItem
+        title="Invite a new Farcaster user"
+        points={inviteUnit}
+        description={
+          loading
+            ? ""
+            : !!showInviteCode
               ? ""
-              : !!showInviteCode
-                ? ""
-                : "No more invitation codes for you now"
-          }
-          content={
-            loading ? (
-              <ActivityIndicator size={20} color={SECONDARY_COLOR} />
-            ) : !!showInviteCode ? (
-              <InviteCodeCopy inviteCode={showInviteCode.code} />
-            ) : null
-          }
-        />
-        <RuleItem
-          title="Channel Rewards"
-          points={POINTS_INFINITE_VALUE}
-          description="Curve up channel reward pool"
-        />
-        <RuleItem
-          title="To tip and to be tipped"
-          points={POINTS_INFINITE_VALUE}
-          description="Allocate tip allowances on a pro rata basis"
-          showHelpIcon
-          onHelpPress={() => {
-            setOpenTipAllocation(true);
-          }}
-        />
-        <TipAllocationModal
-          open={openTipAllocation}
-          onOpenChange={setOpenTipAllocation}
-        />
-      </RuleGroup>
-      <RuleGroup title="Daily Allowance">
-        <RuleItem
-          title="Hold the Channel Badges"
-          points={POINTS_INFINITE_VALUE}
-          content={
-            <>
-              <Text className=" text-sm font-normal text-secondary">
-                Hold the longer, the more allowance growth
-              </Text>
-              <Text className=" text-sm font-normal text-secondary">
-                void after sale
-              </Text>
-            </>
-          }
-        />
-        <RuleItem
-          title="Explore Degencast"
-          points={viewChannelUnit * (viewChannelDailyLimit || 0)}
-          description={`Browse ${viewChannelDailyLimit} trending channels daily`}
-        />
-        <RuleItem
-          title="Swap tokens"
-          points={swapTokenUnit}
-          description={`One-time swap of token worth 30 USD`}
-        />
-        <RuleItem
-          title="Mint casts"
-          points={mintCastUnit}
-          description={`Mint casts to NFTs`}
-        />
-      </RuleGroup>
-    </RuleGroups>
-  );
-}
-
-function RuleGroups({ className, children, ...props }: ViewProps) {
-  const childrenArray = React.Children.toArray(children);
-  return (
-    <View className={cn("flex w-full flex-col", className)} {...props}>
-      {childrenArray.map((child, index) => (
-        <React.Fragment key={index}>
-          {child}
-          {index < childrenArray.length - 1 && (
-            <Separator className="my-8 bg-primary/10" />
-          )}
-        </React.Fragment>
-      ))}
-    </View>
-  );
-}
-function RuleGroup({
-  title,
-  className,
-  children,
-  ...props
-}: ViewProps & {
-  title: string;
-}) {
-  return (
-    <View className={cn("flex w-full flex-col gap-4", className)} {...props}>
-      <Text className="font-bold text-black">{title}</Text>
-      {children}
+              : "No more invitation codes for you now"
+        }
+        content={
+          loading ? (
+            <ActivityIndicator size={20} color={SECONDARY_COLOR} />
+          ) : !!showInviteCode ? (
+            <InviteCodeCopy inviteCode={showInviteCode.code} />
+          ) : null
+        }
+      />
+      <RuleItem title="Add Farcaster signer" points={connectFarcasterUnit} />
+      <AddFarcasterSigner />
+      <Separator className=" color-[#E0E0E0]" />
+      <RuleItem
+        title="Degencast posting signature"
+        points={postingSignatureUnit}
+        unitText="cast"
+      />
+      <RuleItem
+        title="Superlike/dislike cast"
+        points={voteCastUnit}
+        unitText="cast"
+      />
+      <RuleItem
+        title="Mint Contribution NFT"
+        points={mintCastUnit}
+        unitText="NFT"
+      />
     </View>
   );
 }
@@ -144,6 +85,7 @@ function RuleItem({
   className,
   title,
   points,
+  unitText,
   description,
   content,
   showHelpIcon,
@@ -152,6 +94,7 @@ function RuleItem({
 }: ViewProps & {
   title: string;
   points: number;
+  unitText?: string;
   description?: string;
   content?: React.ReactNode;
   showHelpIcon?: boolean;
@@ -166,14 +109,15 @@ function RuleItem({
         )}
         {...props}
       >
-        <Text>{title}</Text>
+        <Text className="font-bold">{title}</Text>
         <Text className="text-secondary">
           {points === POINTS_INFINITE_VALUE ? "+∞" : `+${points}`}
+          {unitText ? `/${unitText}` : ""}
         </Text>
       </View>
       {content}
       {description && (
-        <Text className=" text-sm font-normal text-secondary">
+        <Text className=" text-sm font-normal text-[#9BA1AD]">
           {description}{" "}
           {showHelpIcon && (
             <Pressable
@@ -219,5 +163,35 @@ export function InviteCodeCopy({
       </Text>
       <Copy className="size-4 stroke-secondary" />
     </Button>
+  );
+}
+
+export function AddFarcasterSigner() {
+  const { hasSigner, requesting, requestSigner } = useFarcasterSigner();
+  const { farcasterAccount } = useFarcasterAccount();
+  if (!hasSigner) {
+    return (
+      <Button
+        variant="secondary"
+        disabled={requesting}
+        onPress={() => requestSigner()}
+        className="h-8 w-full"
+      >
+        {requesting ? <Loading /> : <Text>Connect</Text>}
+      </Button>
+    );
+  }
+  return (
+    <View className="flex flex-row items-center gap-2">
+      {farcasterAccount?.pfp && (
+        <Avatar alt="" className="h-8 w-8">
+          <AvatarImage source={{ uri: farcasterAccount?.pfp }} />
+        </Avatar>
+      )}
+      <Text className="text-base font-medium">
+        {farcasterAccount?.displayName}
+      </Text>
+      <Check className=" ml-auto size-6 stroke-[#00D1A7]" />
+    </View>
   );
 }

@@ -13,7 +13,7 @@ import { formatUnits, parseUnits, TransactionReceipt } from "viem";
 import { PercentPrograssText } from "~/components/common/PercentPrograssText";
 import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
-import { CreateTokenButton } from "~/components/trade/ATTCreateButton";
+import { CreateTokenButton } from "~/components/onchain-actions/att/ATTCreateButton";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Slider } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
@@ -142,7 +142,7 @@ function CreateProposalModalContentBodyScene() {
             onCreateProposalSuccess={() => {
               Toast.show({
                 type: "success",
-                text1: "Upvote successful !",
+                text1: "👍 Superlike successful !",
               });
               setOpen(false);
               upsertProposalShareModal({
@@ -206,7 +206,8 @@ function CreateTokenModalContentBody({
       </View>
       <ProposalCastCard channel={channel} cast={cast} />
       <Text className="text-sm text-secondary">
-        This channel hasn't activated Curation Token yet. Please activate first.
+        This channel hasn't activated Contribution Token yet. Please activate
+        first.
       </Text>
       <CreateTokenButton
         channelId={channel?.channelId!}
@@ -285,9 +286,9 @@ function CreateProposalModalContentBody({
       </View>
       <View className="flex-row items-center justify-between gap-2">
         <Text>Cast Status:</Text>
-        <Text className="text-sm">Voteable</Text>
+        <Text className="text-sm">--</Text>
       </View>
-      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+      {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
       {paymentTokenInfoLoading ? (
         <ActivityIndicator color={SECONDARY_COLOR} />
       ) : (

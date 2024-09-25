@@ -3,9 +3,9 @@ import { View } from "react-native";
 import {
   Address,
   Chain,
-  TransactionReceipt,
   isAddress,
   parseEther,
+  TransactionReceipt,
 } from "viem";
 import {
   useAccount,
@@ -13,6 +13,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { ArrowUp } from "~/components/common/Icons";
+import { TokenWithValue } from "~/components/common/TokenInfo";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -21,25 +22,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
+import { Slider } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
 import { DEFAULT_CHAIN, NATIVE_TOKEN_ADDRESS } from "~/constants";
 import { useERC20Transfer } from "~/hooks/trade/useERC20Contract";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+import { eventBus, EventTypes } from "~/utils/eventBus";
+import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
 import { shortPubKey } from "~/utils/shortPubKey";
-import { TokenWithValue } from "../common/TokenInfo";
-import { Input } from "../ui/input";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
-} from "./TranasactionResult";
-import UserTokenSelect from "./UserTokenSelect";
-import { eventBus, EventTypes } from "~/utils/eventBus";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import { Slider } from "../ui/slider";
+} from "../common/TranasactionResult";
+import UserTokenSelect from "../common/UserTokenSelect";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,

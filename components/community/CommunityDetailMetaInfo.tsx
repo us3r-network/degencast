@@ -23,7 +23,7 @@ import { Separator } from "../ui/separator";
 import useATTNftPrice from "~/hooks/trade/useATTNftPrice";
 import { formatUnits } from "viem";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
-import { TradeButton } from "../trade/TradeButton";
+import { TradeButton } from "../onchain-actions/swap/TradeButton";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { CommunitySharingButton } from "../platform-sharing/PlatformSharingButton";
 
@@ -96,7 +96,7 @@ export default function CommunityDetailMetaInfo({
             className="flex flex-row gap-1"
           >
             <Text className="text-sm font-medium leading-none text-secondary">
-              Curation Token Initiator
+              Contribution Token Initiator
             </Text>
             <Text className="text-sm font-medium leading-none text-primary-foreground hover:underline">
               @{tokenInitiatorUserData?.username}
@@ -227,7 +227,7 @@ export function CommunityDetailMetaInfoMobile({
           }}
         >
           <Text className="text-sm font-normal leading-6 text-primary-foreground ">
-            Curation Token Initiator
+            Contribution Token Initiator
           </Text>
           <Text className="text-sm font-normal leading-6 text-secondary">
             @{tokenInitiatorUserData?.username}
@@ -278,7 +278,7 @@ export function CommunityDetailMetaInfoMobile({
       {/* {communityInfo?.attentionTokenInfo && (
         <View className="flex flex-row items-center justify-between">
           <Text className={cn("text-sm text-primary-foreground")}>
-            Curation NFT
+            Contribution NFT
           </Text>
           <Text className={cn("text-sm text-primary-foreground")}>
             {communityInfo?.attentionTokenInfo?.readyToMintCount || 0}

@@ -3,16 +3,18 @@ import React, { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 import ApplyLaunch from "~/components/portfolio/onboarding/ApplyLaunch";
 import OnboardingSteps from "~/components/portfolio/onboarding/OnboardingSteps";
-import { DepositDialog } from "~/components/trade/DepositButton";
+import { DepositDialog } from "~/components/onchain-actions/wallet/DepositButton";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useAuth from "~/hooks/user/useAuth";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
+import { getInstallPrompter } from "~/utils/pwa";
 
 const OnboardingModal = React.forwardRef<
   React.ElementRef<typeof Dialog>,
   React.ComponentPropsWithoutRef<typeof Dialog>
 >(({ ...props }, ref) => {
+  const { isSupported, isInstalled, showPrompt } = getInstallPrompter();
   const [open, setOpen] = useState(false);
   const { ready, authenticated } = useAuth();
   useEffect(() => {
@@ -41,6 +43,10 @@ const OnboardingModal = React.forwardRef<
               SKIP_ONBOARDING_KEY,
               nowDate.setDate(nowDate.getDate() + 7).toString(),
             );
+            console.log("pwa", Platform.OS, { isSupported, isInstalled });
+            if (Platform.OS === "web" && isSupported && !isInstalled) {
+              showPrompt();
+            }
             if (!!coinBaseWallet) {
               activeOneWallet();
               setShowDeposit(true);

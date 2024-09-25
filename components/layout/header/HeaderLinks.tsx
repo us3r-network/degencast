@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Button } from "~/components/ui/button";
 import { Search } from "~/components/common/Icons";
-import { EditIcon } from "~/components/common/SvgIcons";
+import { EditIcon, WandSparklesIcon } from "~/components/common/SvgIcons";
 
 export function SearchLink() {
   return (
@@ -18,6 +18,16 @@ export function PostLink() {
     <Link href="/create" asChild>
       <Button variant={"link"} className="m-0 p-0">
         <EditIcon className=" h-6 w-6 cursor-pointer stroke-secondary" />
+      </Button>
+    </Link>
+  );
+}
+
+export function PointLink() {
+  return (
+    <Link href="/point" asChild>
+      <Button variant={"link"} className="m-0 p-0">
+        <WandSparklesIcon />
       </Button>
     </Link>
   );

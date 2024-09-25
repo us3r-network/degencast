@@ -1,7 +1,7 @@
 import { useConnectCoinbaseSmartWallet } from "@privy-io/react-auth";
+import { SlottableViewProps, ViewRef } from "@rn-primitives/types";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
-import { get } from "lodash";
 import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -19,7 +19,6 @@ import {
 } from "~/components/common/Icons";
 import { HasSignerIcon } from "~/components/common/SvgIcons";
 import { WalletIcon } from "~/components/common/WalletIcon";
-import { SlottableViewProps, ViewRef } from "~/components/primitives/types";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -38,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Text, TextClassContext } from "~/components/ui/text";
+import { privyConfig } from "~/config/privyConfig";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
@@ -62,7 +62,7 @@ export default function UserSettings({
   }
   return (
     <TextClassContext.Provider value="text-sm font-medium">
-      <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenu onOpenChange={setOpen}>
         <DropdownMenuTrigger>
           <Button
             size={"icon"}
@@ -74,7 +74,7 @@ export default function UserSettings({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <View className="flex items-start gap-4 divide-solid">
+          <View className="flex items-start gap-4 divide-solid p-1">
             <Catalog
               title="Active Wallets"
               icon={<Wallet className="size-4" />}
@@ -133,35 +133,45 @@ function Catalog({ title, icon, children }: CatalogProps) {
         {icon}
         <Text>{title}</Text>
       </View>
-      <View className="flex gap-2 pl-4">{children}</View>
+      <View className="flex gap-2 pl-4 pr-2">{children}</View>
     </View>
   );
 }
 
 export function LinkWallets() {
   const { ready, authenticated } = useAuth();
-  const { unconnectedLinkedWallets, connectWallet, linkWallet } =
-    useWalletAccount();
+  const { unconnectedLinkedWallets, connectWallet } = useWalletAccount();
 
   if (!ready || !authenticated) return null;
   return (
-    <View className="flex w-full gap-2">
+    <View className="flex w-full gap-2 m-1">
       {unconnectedLinkedWallets.map((wallet) => (
         <WalletItem
           key={wallet.address}
           wallet={wallet}
-          action={() => connectWallet()}
+          action={() =>
+            connectWallet({
+              suggestedAddress: wallet.address,
+              walletList: privyConfig.appearance?.walletList?.filter(
+                (w) =>  w ===wallet.walletClientType,
+              ),
+            })
+          }
         />
       ))}
       {/* link wallet */}
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         // onPress={() => linkWallet()}
-        onPointerUp={() => linkWallet()}
+        onPointerUp={() =>
+          connectWallet({
+            walletList: privyConfig.appearance?.walletList,
+          })
+        }
       >
         <View className="flex-row items-center gap-2">
           <PlusCircle className="size-4" />
-          <Text>Link a wallet</Text>
+          <Text>Connect a wallet</Text>
         </View>
       </Pressable>
     </View>
@@ -175,7 +185,7 @@ function CreateWallet() {
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
   if (!ready || !authenticated || coinBaseWallet) return null;
   return (
-    <View className="flex w-full gap-2">
+    <View className="flex w-full gap-2 m-1">
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         onPointerUp={() => {
@@ -203,9 +213,9 @@ export const WalletItem = React.forwardRef<
 >(({ wallet, action }, ref) => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { connectedWallets, unlinkWallet, connectWallet } = useWalletAccount();
+  const { connectedWallets, connectWallet } = useWalletAccount();
   return (
-    <View className="w-full flex-row items-center justify-between gap-6">
+    <View className="w-full flex-row items-center justify-between gap-6 m-1 pr-2">
       <Pressable
         className="flex-row items-center gap-2"
         onPointerUp={() => action?.()}
@@ -250,7 +260,7 @@ export const WalletItem = React.forwardRef<
               <Plug className="size-4" />
             </Pressable>
           )}
-          {(get(wallet, "linked") || get(wallet, "type") === "wallet") && (
+          {/* {(get(wallet, "linked") || get(wallet, "type") === "wallet") && (
             <UnlinkButton
               action={() => {
                 console.log("unlinking wallet", wallet.address);
@@ -258,7 +268,7 @@ export const WalletItem = React.forwardRef<
                 unlinkWallet(wallet.address);
               }}
             />
-          )}
+          )} */}
         </View>
       )}
     </View>
@@ -275,7 +285,7 @@ function FarcasterAccount() {
   if (!ready || !authenticated) return null;
   if (farcasterAccount?.fid) {
     return (
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row items-center justify-between m-1">
         <View className="flex-row items-center gap-2">
           <Avatar alt={farcasterAccount.username || ""} className="size-4">
             <AvatarImage source={{ uri: farcasterAccount.pfp || "" }} />
@@ -301,12 +311,12 @@ function FarcasterAccount() {
               <Edit className="size-4" />
             </Pressable>
           )}
-          <UnlinkButton
+          {/* <UnlinkButton
             action={() => {
               console.log("unlinking farcaster", farcasterAccount.fid);
               if (farcasterAccount?.fid) unlinkFarcaster(farcasterAccount.fid);
             }}
-          />
+          /> */}
         </View>
       </View>
     );

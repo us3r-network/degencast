@@ -50,10 +50,13 @@ export default function UserInfo({ fid }: { fid?: number }) {
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
-          <Avatar alt={username} className="size-24 border-2 ">
+          <Avatar alt={username} className="size-24 border-2 border-[#e0e0e0] ">
             <AvatarImage source={{ uri: userAvatar }} />
             <AvatarFallback className="bg-white">
-              <User className="size-16 fill-primary/80 font-medium text-primary" />
+              <Image
+                source={require("~/assets/images/user-avatar.png")}
+                style={{ width: 96, height: 96 }}
+              />
             </AvatarFallback>
           </Avatar>
           <View className="absolute bottom-0 right-0 size-6">
@@ -187,7 +190,7 @@ function FollowUserButton({
       <Button
         size={"icon"}
         disabled={loading}
-        className="size-6 rounded-full bg-secondary border-2 border-white"
+        className="size-6 rounded-full border-2 border-white bg-secondary"
         onPress={async () => {
           setLoading(true);
           const r = await unfollowUser(farcasterUserInfo?.fid || 0);
@@ -212,7 +215,7 @@ function FollowUserButton({
       <Button
         size={"icon"}
         disabled={loading}
-        className="absolute bottom-0 right-0 size-6 rounded-full bg-secondary border-2 border-white"
+        className="absolute bottom-0 right-0 size-6 rounded-full border-2 border-white bg-secondary"
         onPress={async () => {
           setLoading(true);
           const r = await followUser(farcasterUserInfo?.fid || 0);

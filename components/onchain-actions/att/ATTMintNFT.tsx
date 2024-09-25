@@ -1,30 +1,18 @@
-import * as Clipboard from "expo-clipboard";
 import React, {
-  createContext,
   forwardRef,
-  useContext,
   useEffect,
   useMemo,
-  useState,
+  useState
 } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import { SceneMap, TabView } from "react-native-tab-view";
-import Toast from "react-native-toast-message";
-import { Address, formatUnits } from "viem";
+import { View } from "react-native";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 // import About from "~/components/common/About";
+import { useDispatch } from "react-redux";
 import NFTImage from "~/components/common/NFTImage";
 import NumberField from "~/components/common/NumberField";
 import { TokenWithValue } from "~/components/common/TokenInfo";
-import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { Button } from "~/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  // DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import {
   DEGEN_TOKEN_METADATA,
@@ -45,318 +33,15 @@ import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
-import { cn } from "~/lib/utils";
-import { NeynarCast } from "~/services/farcaster/types/neynar";
 import {
-  CurationTokenInfo,
   ERC42069Token,
-  TokenWithTradeInfo,
+  TokenWithTradeInfo
 } from "~/services/trade/types";
-import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import { shortPubKey } from "~/utils/shortPubKey";
-import { TokenActivitieList } from "../activity/Activities";
-import { Copy } from "../common/Icons";
-import DialogTabBar from "../layout/tab-view/DialogTabBar";
-import NeynarCastUserInfo from "../social-farcaster/proposal/NeynarCastUserInfo";
-import ATTExternalLink from "./ATTExternalLink";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
 import {
-  ErrorInfo,
-  TransactionInfo,
-  TransationData,
-} from "./TranasactionResult";
-import UserTokenSelect from "./UserTokenSelect";
-import { useDispatch } from "react-redux";
-import { UnknownAction } from "@reduxjs/toolkit";
-
-export type NFTProps = {
-  cast?: NeynarCast;
-  token: ERC42069Token;
-};
-
-export function BuyButton({
-  token,
-  cast,
-  renderButton,
-  onSuccess,
-}: NFTProps & {
-  renderButton?: (props: { onPress: () => void }) => React.ReactNode;
-  onSuccess?: (mintNum: number) => void;
-}) {
-  const account = useAccount();
-  const { connectWallet } = useWalletAccount();
-  const [open, setOpen] = useState(false);
-  const handlePress = () => {
-    if (!account.address) {
-      connectWallet();
-      return;
-    }
-    setOpen(true);
-  };
-  return (
-    <Pressable>
-      {renderButton ? (
-        renderButton({ onPress: handlePress })
-      ) : (
-        <Button
-          className={cn("w-14")}
-          size="sm"
-          variant={"secondary"}
-          onPress={handlePress}
-        >
-          <Text>Mint</Text>
-        </Button>
-      )}
-
-      {account.address && (
-        <BuyDialog
-          token={token}
-          cast={cast}
-          open={open}
-          onSuccess={onSuccess}
-          setOpen={setOpen}
-        />
-      )}
-    </Pressable>
-  );
-}
-
-export const NftCtx = createContext<NFTProps | undefined>(undefined);
-
-const useNftCtx = () => {
-  const ctx = useContext(NftCtx);
-  if (!ctx) {
-    throw new Error("useCreateProposalCtx must be used within a provider");
-  }
-  return ctx;
-};
-
-export const DetailsScene = () => {
-  const { token } = useNftCtx();
-  const { tokenInfo } = useCurationTokenInfo(
-    token.contractAddress,
-    token.tokenId,
-  );
-  // console.log("DetailsScene", token, cast);
-  return <NftDetails token={token} tokenInfo={tokenInfo} />;
-};
-
-export const NftDetails = ({
-  token,
-  tokenInfo,
-}: {
-  token: ERC42069Token;
-  tokenInfo: CurationTokenInfo | undefined;
-}) => {
-  // console.log("DetailsScene", token, cast);
-  return (
-    <View className="relative h-full max-h-[80vh] gap-4 pt-4">
-      <ScrollView
-        className="flex-1"
-        horizontal={false}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="gap-4">
-          <View className="flex-row items-center justify-between gap-2">
-            <Text>Contract Address</Text>
-            <View className="flex-row items-center justify-between gap-2">
-              <Text className="line-clamp-1">
-                {shortPubKey(token.contractAddress)}
-              </Text>
-              <Button
-                size="icon"
-                className="h-6 w-6 p-0"
-                onPress={async (event) => {
-                  await Clipboard.setStringAsync(
-                    token.contractAddress as Address,
-                  );
-                  Toast.show({
-                    type: "info",
-                    text1: "Wallet Address Copied!",
-                  });
-                }}
-              >
-                <Copy className="size-4 text-white" />
-              </Button>
-            </View>
-          </View>
-          <View className="flex-row items-center justify-between gap-2">
-            <Text>Token ID</Text>
-            <Text> {token.tokenId} </Text>
-          </View>
-          <View className="flex-row items-center justify-between gap-2">
-            <Text>Token Standard</Text>
-            <Text>ERC-1155｜ERC-20</Text>
-          </View>
-          <View className="flex-row items-center justify-between gap-2">
-            <Text>Chain</Text>
-            <Text>{ATT_CONTRACT_CHAIN.name}</Text>
-          </View>
-          {tokenInfo?.channel?.lead && (
-            <View className="flex-row items-center justify-between gap-2">
-              <Text>Channel Host</Text>
-              <NeynarCastUserInfo userData={tokenInfo.channel.lead} />
-            </View>
-          )}
-          {tokenInfo?.cast?.author && (
-            <View className="flex-row items-center justify-between gap-2">
-              <Text>Cast Author</Text>
-              <NeynarCastUserInfo userData={tokenInfo.cast.author} />
-            </View>
-          )}
-          {tokenInfo?.curators && tokenInfo.curators.length > 0 && (
-            <View className="flex-row items-start justify-between gap-2">
-              <Text>Curators</Text>
-              <View className="flex items-end gap-4">
-                {tokenInfo.curators.map((curator, index) => (
-                  <NeynarCastUserInfo key={index} userData={curator} />
-                ))}
-              </View>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-      <ATTExternalLink
-        contractAddress={token.contractAddress}
-        tokenId={token.tokenId}
-      />
-    </View>
-  );
-};
-
-export const ActivityScene = () => {
-  const { token } = useNftCtx();
-  return (
-    <ScrollView
-      className="max-h-[70vh] w-full"
-      showsHorizontalScrollIndicator={false}
-    >
-      <TokenActivitieList token={token} />
-    </ScrollView>
-  );
-};
-
-export function BuyDialog({
-  token,
-  cast,
-  open,
-  setOpen,
-  onSuccess,
-}: NFTProps & {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSuccess?: (mintNum: number) => void;
-}) {
-  const [transationData, setTransationData] = useState<TransationData>();
-  const [error, setError] = useState("");
-
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "nft", title: "NFT" },
-    { key: "details", title: "Details" },
-    { key: "activity", title: "Activity" },
-  ]);
-
-  const MintNFTScene = () => (
-    <ScrollView
-      className="max-h-[70vh] w-full"
-      showsHorizontalScrollIndicator={false}
-    >
-      <View className="gap-4">
-        <View className="flex-row items-center justify-between gap-2">
-          <Text>Active Wallet</Text>
-          <UserWalletSelect />
-        </View>
-        <MintNFT
-          nft={token}
-          onSuccess={(data) => {
-            setTransationData(data);
-            onSuccess?.(data.amount || 0);
-          }}
-          onError={setError}
-        />
-      </View>
-    </ScrollView>
-  );
-
-  const renderScene = SceneMap({
-    nft: MintNFTScene,
-    details: DetailsScene,
-    activity: ActivityScene,
-  });
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setTransationData(undefined);
-        setError("");
-        setOpen(o);
-      }}
-    >
-      {!transationData && !error && (
-        <DialogContent
-          className="w-screen"
-          onInteractOutside={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <NftCtx.Provider
-            value={{
-              cast,
-              token,
-            }}
-          >
-            <TabView
-              swipeEnabled={false}
-              navigationState={{ index, routes }}
-              renderScene={renderScene}
-              onIndexChange={setIndex}
-              renderTabBar={DialogTabBar}
-            />
-          </NftCtx.Provider>
-        </DialogContent>
-      )}
-      {transationData && (
-        <DialogContent
-          className="w-screen"
-          onInteractOutside={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Transaction</DialogTitle>
-          </DialogHeader>
-          <TransactionInfo
-            type={ONCHAIN_ACTION_TYPE.MINT_NFT}
-            cast={cast}
-            data={transationData}
-            buttonText="Mint more"
-            buttonAction={() => setTransationData(undefined)}
-            navigateToCreatePageAfter={() => setOpen(false)}
-          />
-        </DialogContent>
-      )}
-      {error && (
-        <DialogContent
-          className="w-screen"
-          onInteractOutside={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <DialogHeader className={cn("flex gap-2")}>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <ErrorInfo
-            error={error}
-            buttonText="Try Again"
-            buttonAction={() => setError("")}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
-  );
-}
+  TransationData
+} from "../common/TranasactionResult";
+import UserTokenSelect from "../common/UserTokenSelect";
 
 const GRADUATION_NFT_NUM = 10; // todo:  get from contract or backend
 const MintNFT = forwardRef<
@@ -426,7 +111,6 @@ const MintNFT = forwardRef<
           value: nftPrice,
         }
       : undefined;
-
   const onMintSuccess = (data: TransationData) => {
     onSuccess?.(data);
     // todo: update nft info in portfolio page
@@ -855,3 +539,5 @@ function MintButtonAA({
     </Button>
   );
 }
+
+export default MintNFT;

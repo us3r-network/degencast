@@ -1,13 +1,14 @@
 import dayjs from "dayjs";
 import { View } from "react-native";
 import { DiamondPlus } from "~/components/common/Icons";
-import { BuyButton } from "~/components/trade/ATTBuyButton";
+import { BuyButton } from "~/components/onchain-actions/att/ATTBuyButton";
 import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
-import { Deadline, MintCount } from "../ProposalStyled";
+import { Deadline, LikeCount, MintCount } from "../ProposalStyled";
 import { ProposalButton } from "../ui/proposal-button";
 import { ProposalText } from "../ui/proposal-text";
 import type { ProposalStatusActionsProps } from "./ProposalStatusActions";
 import ExpiredNftModal from "../proposal-modals/ExpiredNftModal";
+import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 
 export function ReadyToMintButton({
   cast,
@@ -44,7 +45,7 @@ export function ReadyToMintButton({
           tokenId: Number(proposal.tokenId),
         }}
         cast={cast}
-        renderButton={(props) => {
+        renderButton={(props: any) => {
           return (
             <ProposalButton variant={"ready-to-mint"} {...props}>
               <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" />
@@ -52,7 +53,7 @@ export function ReadyToMintButton({
             </ProposalButton>
           );
         }}
-        onSuccess={(newMintNFTAmount) => {
+        onSuccess={(newMintNFTAmount: number) => {
           // console.log("newMintNFTAmount", newMintNFTAmount, proposal);
           upsertOneToProposals(cast.hash as `0x${string}`, {
             ...proposal,
@@ -70,6 +71,7 @@ export function ReadyToMintActionLayout({
   proposal,
   tokenInfo,
 }: ProposalStatusActionsProps) {
+  const { likeCount } = useFarcasterLikeAction({ cast });
   const mintedCount = isNaN(Number(proposal?.mintedCount))
     ? 0
     : Number(proposal?.mintedCount);
@@ -79,7 +81,7 @@ export function ReadyToMintActionLayout({
       {proposal?.nftDeadline && (
         <Deadline timestamp={Number(proposal.nftDeadline)} />
       )}
-
+      <LikeCount count={likeCount || 0} />
       <ReadyToMintButton
         cast={cast}
         channel={channel}

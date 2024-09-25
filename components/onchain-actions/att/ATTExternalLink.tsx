@@ -1,11 +1,11 @@
-import { Image } from "react-native";
-import { ATT_CONTRACT_CHAIN } from "~/constants/att";
-import { ExternalLink } from "../common/ExternalLink";
 import { kebabCase } from "lodash";
-import { Button } from "../ui/button";
-import { Text } from "../ui/text";
-import { cn } from "~/lib/utils";
+import { Image } from "react-native";
+import { ExternalLink } from "~/components/common/ExternalLink";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
+import { cn } from "~/lib/utils";
 
 export default function ATTExternalLink({
   contractAddress,

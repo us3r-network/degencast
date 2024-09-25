@@ -28,21 +28,21 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import { UserActionName } from "~/services/user/types";
 import { eventBus, EventTypes } from "~/utils/eventBus";
 import { ONCHAIN_ACTION_TYPE } from "~/utils/platform-sharing/types";
-import { ArrowUpDown } from "../common/Icons";
-import { Loading } from "../common/Loading";
-import { TokenWithValue } from "../common/TokenInfo";
-import UserWalletSelect from "../portfolio/tokens/UserWalletSelect";
-import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
-import CommunityTokenSelect from "./CommunityTokenSelect";
-import OnChainActionButtonWarper from "./OnChainActionButtonWarper";
-import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
+import { ArrowUpDown } from "../../common/Icons";
+import { Loading } from "../../common/Loading";
+import { TokenWithValue } from "../../common/TokenInfo";
+import UserWalletSelect from "../../portfolio/tokens/UserWalletSelect";
+import { Input } from "../../ui/input";
+import { Separator } from "../../ui/separator";
+import CommunityTokenSelect from "../common/CommunityTokenSelect";
+import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
+import { ERC20TokenBalance, NativeTokenBalance } from "../common/TokenBalance";
 import {
   ErrorInfo,
   TransactionInfo,
   TransationData,
-} from "./TranasactionResult";
-import UserTokenSelect from "./UserTokenSelect";
+} from "../common/TranasactionResult";
+import UserTokenSelect from "../common/UserTokenSelect";
 
 export default function TradeModal({
   token1 = NATIVE_TOKEN_METADATA,

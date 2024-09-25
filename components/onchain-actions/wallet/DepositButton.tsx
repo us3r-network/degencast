@@ -33,11 +33,11 @@ import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { eventBus, EventTypes } from "~/utils/eventBus";
 import { shortPubKey } from "~/utils/shortPubKey";
-import UserTokens from "../portfolio/tokens/UserTokens";
-import { Input } from "../ui/input";
-import { Slider } from "../ui/slider";
+import UserTokens from "~/components/portfolio/tokens/UserTokens";
+import { Input } from "~/components/ui/input";
+import { Slider } from "~/components/ui/slider";
 import FundButton from "./FundButton";
-import UserTokenSelect from "./UserTokenSelect";
+import UserTokenSelect from "../common/UserTokenSelect";
 
 export default function DepositButton({
   renderButton,
@@ -151,7 +151,12 @@ export function DepositDialog({
                   toWallet={activeWallet}
                 />
               ) : (
-                <Button variant="secondary" onPress={() => connectWallet()}>
+                <Button
+                  variant="secondary"
+                  onPress={() =>
+                    connectWallet()
+                  }
+                >
                   <Text>Connect your wallet & transfer</Text>
                 </Button>
               )}

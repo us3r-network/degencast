@@ -1,9 +1,9 @@
 import { useAccount } from "wagmi";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { Plus } from "../common/Icons";
+import { Plus } from "~/components/common/Icons";
 import { Text } from "~/components/ui/text";
 import { cva, VariantProps } from "class-variance-authority";
-import { SlottableViewProps } from "../primitives/types";
+import { SlottableViewProps } from "@rn-primitives/types";
 import { cn } from "~/lib/utils";
 import useWalletAccount, { MoonpayConfig } from "~/hooks/user/useWalletAccount";
 import { PRIMARY_COLOR } from "~/constants";

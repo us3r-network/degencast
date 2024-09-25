@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 import { ExploreCard } from "../ExploreStyled";
 import ChannelCardCasts from "./ChannelCardCasts";
 import React from "react";
-import { ViewRef } from "~/components/primitives/types";
+import { ViewRef } from "@rn-primitives/types";
 import { SelectionFeedsItem } from "~/hooks/explore/useLoadSelectionFeeds";
 import { Separator } from "~/components/ui/separator";
 import { Text } from "~/components/ui/text";
@@ -44,7 +44,7 @@ const ChannelCard = React.forwardRef<
         </View>
       ) : (
         <View className="flex w-full flex-row items-center justify-between px-4">
-          <Text>No Curation Cast now</Text>
+          <Text>No Contribution Cast now</Text>
           {channelId && (
             <Link href={`/communities/${channelId}/casts`} asChild>
               <ActionButton className="w-auto px-3">

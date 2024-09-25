@@ -7,7 +7,7 @@ import TradingViewNotice from "./TradingViewNotice";
 import { TradeInfo } from "~/services/community/types/trade";
 import { shortAddress } from "~/utils/shortAddress";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
-import { TradeButton, TradeChannelTokenButton } from "../trade/TradeButton";
+import { TradeButton, TradeChannelTokenButton } from "../onchain-actions/swap/TradeButton";
 
 export default function CommunityTokenInfo({
   tokenInfo,

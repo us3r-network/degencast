@@ -80,22 +80,22 @@ export const getPortfolioWebsiteLink = (opts?: {
   fid: number;
   inviteFid?: number;
 }) => {
-  let link = DEGENCAST_WEB_HOST;
   const { fid, inviteFid } = opts || {};
-  if (fid) {
-    link += `/u/${fid}/tokens?inviteFid=${inviteFid}`;
+  let link = `${DEGENCAST_FRAME_HOST}/curationportfolio/frames?fid=${fid}`;
+  if (inviteFid) {
+    link += `&inviteFid=${inviteFid}`;
   }
   return link;
 };
 
 export const getPortfolioFrameLink = (opts?: {
   fid: number;
-  fname: string;
+  inviteFid?: number;
 }) => {
-  let link = `${DEGENCAST_FRAME_HOST}/portfolio/frames`;
-  const { fid, fname } = opts || {};
-  if (fid) {
-    link += `?fid=${fid}&fname=${fname}`;
+  const { fid, inviteFid } = opts || {};
+  let link = `${DEGENCAST_FRAME_HOST}/curationportfolio/frames?fid=${fid}`;
+  if (inviteFid) {
+    link += `&inviteFid=${inviteFid}`;
   }
   return link;
 };

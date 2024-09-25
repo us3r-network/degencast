@@ -65,7 +65,7 @@ export default function ChallengeProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "challenge", title: "Vote" },
+    { key: "challenge", title: "Superlike" },
     { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
@@ -164,12 +164,12 @@ function ChallengeProposalContentBody({
         <Text>Cast Status:</Text>
         <Text className="text-sm">
           {proposal.status === ProposalState.Disputed
-            ? "👎Downvoted"
-            : "👍Upvoted"}
+            ? "👎Dislike"
+            : "👍Superlike"}
         </Text>
       </View>
 
-      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+      {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
 
       <ChallengeProposalWriteForm
         cast={cast}
@@ -338,9 +338,9 @@ export function DisputeProposalWrite({
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
           />
-          <Text className="text-center text-xs text-secondary">
+          {/* <Text className="text-center text-xs text-secondary">
             Share with more people to accelerate the challenge.
-          </Text>
+          </Text> */}
           <View className="flex-row items-center justify-between gap-4">
             <Button className="h-8 w-20 bg-white" onPress={onShare}>
               <Text className="text-xs text-primary">Share</Text>
@@ -357,7 +357,7 @@ export function DisputeProposalWrite({
                 paymentAmount={selectedPayAmount!}
                 onDisputeSuccess={onDisputeSuccess}
                 onDisputeError={onDisputeError}
-                approveText="Downvote (Approve)"
+                approveText="👎 Dislike (Approve)"
               />
             </View>
           </View>
@@ -443,9 +443,9 @@ export function ProposeProposalWrite({
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
           />
-          <Text className="text-center text-xs text-secondary">
+          {/* <Text className="text-center text-xs text-secondary">
             Share with more people to accelerate the challenge.
-          </Text>
+          </Text> */}
           <View className="flex-row items-center justify-between gap-4">
             <Button className="h-8 w-20 bg-white" onPress={onShare}>
               <Text className="text-xs text-primary">Share</Text>
@@ -462,7 +462,7 @@ export function ProposeProposalWrite({
                 paymentAmount={selectedPayAmount!}
                 onProposeSuccess={onProposeSuccess}
                 onProposeError={onProposeError}
-                approveText="Upvote (Approve)"
+                approveText="👍 Superlike (Approve)"
               />
             </View>
           </View>
@@ -490,13 +490,13 @@ export function PriceRangeRow({
 }) {
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="text-xs font-normal">
+      <Text className="text-xs font-normal text-primary-foreground">
         {displayValue(min, maximumFractionDigits)}(minimum)
       </Text>
-      <Text className="text-xs font-normal">
+      <Text className="text-xs font-normal text-primary-foreground">
         {displayValue(value, maximumFractionDigits)}
       </Text>
-      <Text className="text-xs font-normal">
+      <Text className="text-xs font-normal text-primary-foreground">
         {displayValue(max, maximumFractionDigits)}
       </Text>
     </View>

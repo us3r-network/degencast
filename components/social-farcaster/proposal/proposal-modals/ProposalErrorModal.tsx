@@ -1,4 +1,4 @@
-import { ErrorInfo } from "~/components/trade/TranasactionResult";
+import { ErrorInfo } from "~/components/onchain-actions/common/TranasactionResult";
 import {
   Dialog,
   DialogContent,

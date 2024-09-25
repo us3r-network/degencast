@@ -1,7 +1,7 @@
 import { Text } from "~/components/ui/text";
 import { CastProposeStatusProps } from "../proposal-modals/CreateProposalModal";
 import { Button, ButtonProps } from "~/components/ui/button";
-import OnChainActionButtonWarper from "~/components/trade/OnChainActionButtonWarper";
+import OnChainActionButtonWarper from "~/components/onchain-actions/common/OnChainActionButtonWarper";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import { useAccount, useChainId } from "wagmi";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
@@ -136,7 +136,7 @@ export function ProposeProposalWriteButton({
             <Loading />
           ) : participated ? (
             proposals?.state === ProposalState.Accepted ? (
-              <Text>You have already voted.</Text>
+              <Text>You have already liked.</Text>
             ) : (
               <Text>You can only vote once in this round.</Text>
             )
@@ -146,14 +146,14 @@ export function ProposeProposalWriteButton({
             <Text>The proposal has been abandoned</Text>
           ) : proposals?.state === ProposalState.Accepted ? (
             Number(proposals?.roundIndex) <= 1 ? (
-              <Text>{upvoteText || "Upvote"}</Text>
+              <Text>{upvoteText || "👍 Superlike"}</Text>
             ) : (
               <Text>The proposal has been accepted</Text>
             )
           ) : !isConnected ? (
             <Text>Connect Wallet</Text>
           ) : (
-            <Text>{upvoteText || "Upvote"}</Text>
+            <Text>{upvoteText || "👍 Superlike"}</Text>
           )}
         </Button>
       }
@@ -286,7 +286,7 @@ export function DisputeProposalWriteButton({
             <Loading />
           ) : participated ? (
             proposals?.state === ProposalState.Disputed ? (
-              <Text>You have already disputed</Text>
+              <Text>You have already disliked</Text>
             ) : (
               <Text>You can only vote once in this round.</Text>
             )
@@ -295,11 +295,11 @@ export function DisputeProposalWriteButton({
           ) : proposals?.state === ProposalState.Abandoned ? (
             <Text>The proposal has been abandoned</Text>
           ) : proposals?.state === ProposalState.Disputed ? (
-            <Text>The proposal has been disputed</Text>
+            <Text>The proposal has been disliked</Text>
           ) : !isConnected ? (
             <Text>Connect Wallet</Text>
           ) : (
-            <Text>{downvoteText || "Downvote"}</Text>
+            <Text>{downvoteText || "👎 Dislike"}</Text>
           )}
         </Button>
       }

@@ -45,7 +45,7 @@ export default function AbandonedProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "challenge", title: "Vote" },
+    { key: "challenge", title: "Superlike" },
     { key: "activity", title: "Activity" },
     { key: "about", title: "About" },
   ]);
@@ -135,7 +135,7 @@ function AbandonedProposalContentBody({
         <Text>Cast Status:</Text>
         <Text className="text-sm">Eliminated</Text>
       </View>
-      <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} />
+      {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
     </View>
   );
 }

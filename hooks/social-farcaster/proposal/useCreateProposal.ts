@@ -6,6 +6,8 @@ import { arCheckCastProposalMetadata } from "~/services/upload";
 import { ApiRespCode } from "~/services/shared/types";
 import useCacheCastProposal from "./useCacheCastProposal";
 import { walletActionsEip5792 } from "viem/experimental";
+import useUserAction from "~/hooks/user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export default function useCreateProposal({
   contractAddress,
@@ -29,6 +31,7 @@ export default function useCreateProposal({
   >("idle");
   const isLoading = status === "pending";
   const { upsertOneToProposals } = useCacheCastProposal();
+  const { submitUserAction } = useUserAction();
   const create = useCallback(
     async (
       proposalConfig: {
@@ -68,12 +71,18 @@ export default function useCreateProposal({
           setTransactionReceipt(receipt);
           setStatus("success");
           onCreateProposalSuccess?.(receipt);
+          submitUserAction({
+            action: UserActionName.VoteCast,
+            castHash: proposalConfig.castHash,
+            data: {
+              hash: receipt.transactionHash,
+            },
+          });
           const proposals = await getProposals({
             publicClient,
             contractAddress,
             castHash: proposalConfig.castHash,
           });
-          console.log("proposals", proposals);
 
           upsertOneToProposals(proposalConfig.castHash as any, {
             status: proposals.state,
@@ -99,6 +108,7 @@ export default function useCreateProposal({
       onCreateProposalSuccess,
       onCreateProposalError,
       upsertOneToProposals,
+      submitUserAction,
     ],
   );
   return {

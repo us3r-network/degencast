@@ -4,7 +4,7 @@ import { TokenInfo } from "~/components/common/TokenInfo";
 import {
   ERC20TokenBalance,
   NativeTokenBalance,
-} from "~/components/trade/TokenBalance";
+} from "~/components/onchain-actions/common/TokenBalance";
 import { TextClassContext } from "~/components/ui/text";
 import { DEGEN_TOKEN_METADATA, NATIVE_TOKEN_METADATA } from "~/constants";
 

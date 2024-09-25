@@ -8,7 +8,7 @@ import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCast
 import { ProposedProposalActionLayout } from "./ProposedProposalAction";
 import { ChallengeProposalActionLayout } from "./ChallengeProposalAction";
 import { ReadyToMintActionLayout } from "./MintAction";
-import { CreateProposalButton } from "./CreateProposalAction";
+import { CreateProposalActionLayout } from "./CreateProposalAction";
 import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
 import { AbandonedProposalActionLayout } from "./AbandonedProposalAction";
 
@@ -50,7 +50,7 @@ export default function ProposalStatusActions({
   switch (status) {
     case ProposalState.NotProposed:
       return (
-        <CreateProposalButton
+        <CreateProposalActionLayout
           cast={cast}
           channel={channel}
           proposal={updatedProposal}

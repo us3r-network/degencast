@@ -9,6 +9,8 @@ import {
 import useCacheCastProposal from "./useCacheCastProposal";
 import { walletActionsEip5792 } from "viem/experimental";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
+import useUserAction from "~/hooks/user/useUserAction";
+import { UserActionName } from "~/services/user/types";
 
 export default function useDisputeProposal({
   contractAddress,
@@ -37,6 +39,8 @@ export default function useDisputeProposal({
   const isLoading = status === "pending";
 
   const { upsertOneToProposals } = useCacheCastProposal();
+  const { submitUserAction } = useUserAction();
+
   const dispute = useCallback(
     async (paymentConfig: PaymentConfig) => {
       try {
@@ -51,6 +55,13 @@ export default function useDisputeProposal({
         setTransactionReceipt(receipt);
         setStatus("success");
         onDisputeSuccess?.(receipt);
+        submitUserAction({
+          action: UserActionName.VoteCast,
+          castHash: castHash,
+          data: {
+            hash: receipt.transactionHash,
+          },
+        });
 
         const proposals = await getProposals({
           publicClient: publicClient!,

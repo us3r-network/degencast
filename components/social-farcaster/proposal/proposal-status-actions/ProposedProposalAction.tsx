@@ -5,8 +5,9 @@ import { ProposalButton, ProposalButtonProps } from "../ui/proposal-button";
 import { ProposalButtonBody } from "./ProposalButtonBody";
 import ProposedProposalModal from "../proposal-modals/ProposedProposalModal";
 import { View } from "react-native";
-import { Deadline } from "../ProposalStyled";
+import { Deadline, LikeCount } from "../ProposalStyled";
 import useAuth from "~/hooks/user/useAuth";
+import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 
 export function ProposedProposalButton({
   cast,
@@ -73,11 +74,13 @@ export function ProposedProposalActionLayout({
   proposal,
   tokenInfo,
 }: CastProposeStatusProps) {
+  const { likeCount } = useFarcasterLikeAction({ cast });
   return (
     <View className="flex flex-row items-center gap-4">
       {proposal?.finalizeTime && (
         <Deadline timestamp={proposal?.finalizeTime} />
       )}
+      <LikeCount count={likeCount || 0} />
 
       <ProposedProposalButton
         cast={cast}

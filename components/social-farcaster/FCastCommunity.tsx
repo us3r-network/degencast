@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import CommunityBuyShareButton from "../community/CommunityBuyShareButton";
 import useCommunityPage from "~/hooks/community/useCommunityPage";
 import useCommunityTokens from "~/hooks/trade/useCommunityTokens";
-import { TradeChannelTokenButton } from "../trade/TradeButton";
+import { TradeChannelTokenButton } from "../onchain-actions/swap/TradeButton";
 
 export default function FCastCommunity({
   communityInfo,

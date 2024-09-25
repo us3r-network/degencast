@@ -12,8 +12,8 @@ import {
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
 import { TokenWithTradeInfo } from "~/services/trade/types";
-import { ArrowUpDown } from "../common/Icons";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ArrowUpDown } from "../../common/Icons";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import TradeModal from "./TradeModal";
 import useAppModals from "~/hooks/useAppModals";
 

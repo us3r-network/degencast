@@ -5,7 +5,7 @@ import { Text } from "~/components/ui/text";
 import { PriceRangeRow } from "./ChallengeProposalModal";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import { formatUnits, parseUnits } from "viem";
-import UserTokenSelect from "~/components/trade/UserTokenSelect";
+import UserTokenSelect from "~/components/onchain-actions/common/UserTokenSelect";
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { useSwap } from "~/hooks/trade/useUniSwapV3";
@@ -17,6 +17,12 @@ import {
   UNISWAP_V3_DEGEN_ETH_POOL_FEES,
 } from "~/constants/chain";
 import { useEffect, useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
 
 export enum PaymentInfoType {
   Create,
@@ -101,14 +107,16 @@ export function ProposalPaymentSelector({
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
           hideChallengeAmount={true}
+          description="Stake DEGEN to superlike for reward."
         />
       ) : paymentInfoType === PaymentInfoType.Proposed ? (
-        <PaymentInfoWithProposed
+        <PaymentInfo
           paymentTokenInfo={selectedPaymentToken}
           recommendedPayAmount={recommendedPayAmount || 0n}
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
+          description="Stake DEGEN to superlike for reward."
         />
       ) : paymentInfoType === PaymentInfoType.Upvote ? (
         <PaymentInfo
@@ -117,7 +125,7 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
-          description="Upvote spam casts, share the staked funds after success."
+          description="Stake DEGEN to judge for reward."
         />
       ) : paymentInfoType === PaymentInfoType.Challenge ? (
         <PaymentInfo
@@ -126,7 +134,7 @@ export function ProposalPaymentSelector({
           minPayAmount={minPayAmount || 0n}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
-          description="Downvote spam casts, share the staked funds after success."
+          description="Stake DEGEN to judge for reward."
         />
       ) : null}
     </View>
@@ -238,6 +246,12 @@ function UserTokenSelectWrapper({
   );
 }
 
+const displayValue = (value: number, maximumFractionDigits: number) => {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits,
+  }).format(Number(value));
+};
+
 export function PaymentInfo({
   paymentTokenInfo,
   recommendedPayAmount,
@@ -290,53 +304,63 @@ export function PaymentInfo({
   };
 
   return (
-    <View className="flex flex-col gap-4">
-      <PriceRow
-        title={"Minimum Cost"}
-        paymentTokenInfo={paymentTokenInfo}
-        price={minPayAmount}
-        onClickPriceValue={() => {
-          if (minPayAmount) {
-            setSelectedPayAmount(minPayAmount);
-          }
-        }}
-      />
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="item-1" className="w-full border-none">
+        <AccordionTrigger
+          className="w-full"
+          chevronClassName="text-primary-foreground"
+        >
+          <View className="flex-1">
+            <PriceRow
+              title={description}
+              paymentTokenInfo={paymentTokenInfo}
+              price={selectedPayAmount}
+            />
+          </View>
+        </AccordionTrigger>
+        <AccordionContent>
+          <View className="flex w-full flex-col gap-4">
+            <PriceRow
+              title={"Minimum"}
+              paymentTokenInfo={paymentTokenInfo}
+              price={minPayAmount}
+              onClickPriceValue={() => {
+                if (minPayAmount) {
+                  setSelectedPayAmount(minPayAmount);
+                }
+              }}
+            />
 
-      {!hideChallengeAmount && !!recommendedPayAmount && (
-        <PriceRow
-          title={"Successfully Challenge"}
-          paymentTokenInfo={paymentTokenInfo}
-          price={recommendedPayAmount}
-          isLoading={amountLoading}
-          onClickPriceValue={() => {
-            if (recommendedPayAmount) {
-              setSelectedPayAmount(recommendedPayAmount);
-            }
-          }}
-        />
-      )}
-      <Text className="text-center text-xs text-secondary">
-        Risk DEGEN to vote and get rewarded for every mint.
-      </Text>
-      {description && (
-        <Text className="text-center text-xs text-secondary">
-          {description}
-        </Text>
-      )}
-      <Slider
-        {...priceSliderConfig}
-        disabled={maxAmountNumber <= minPayAmountNumber}
-        onValueChange={(v) => {
-          if (!isNaN(Number(v))) {
-            const vInt = Number(v);
-            setSelectedPayAmount(
-              parseUnits(vInt.toString(), paymentTokenInfo?.decimals!),
-            );
-          }
-        }}
-      />
-      <PriceRangeRow {...priceSliderConfig} />
-    </View>
+            {!hideChallengeAmount && !!recommendedPayAmount && (
+              <PriceRow
+                title={"Successfully Challenge"}
+                paymentTokenInfo={paymentTokenInfo}
+                price={recommendedPayAmount}
+                isLoading={amountLoading}
+                onClickPriceValue={() => {
+                  if (recommendedPayAmount) {
+                    setSelectedPayAmount(recommendedPayAmount);
+                  }
+                }}
+              />
+            )}
+            <Slider
+              {...priceSliderConfig}
+              disabled={maxAmountNumber <= minPayAmountNumber}
+              onValueChange={(v) => {
+                if (!isNaN(Number(v))) {
+                  const vInt = Number(v);
+                  setSelectedPayAmount(
+                    parseUnits(vInt.toString(), paymentTokenInfo?.decimals!),
+                  );
+                }
+              }}
+            />
+            <PriceRangeRow {...priceSliderConfig} />
+          </View>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
@@ -405,11 +429,11 @@ export function PaymentInfoWithProposed({
       />
       <View className="flex flex-col items-center gap-2">
         <Text className="text-center text-xs text-secondary">
-          Upvote and earn minting fee rewards upon success!
+          👍 Superlike and earn minting fee rewards upon success!
         </Text>
         <Text className="text-center text-xs text-secondary">or</Text>
         <Text className="text-center text-xs text-secondary">
-          Downvote spam casts, if you win, you can share the staked funds from
+          👎 Dislike spam casts, if you win, you can share the staked funds from
           upvoters.
         </Text>
       </View>

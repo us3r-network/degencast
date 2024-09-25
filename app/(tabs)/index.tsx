@@ -26,10 +26,14 @@ function VotePage({ jumpTo }: { jumpTo: (key: string) => void }) {
   );
 }
 
-function CastPage() {
+function CastPage({ jumpTo }: { jumpTo: (key: string) => void }) {
   return (
     <PageContent>
-      <CastFeeds />
+      <CastFeeds
+        jumpTo={(key) => {
+          jumpTo(key);
+        }}
+      />
     </PageContent>
   );
 }
@@ -37,15 +41,15 @@ function CastPage() {
 export default function ExploreLayout() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "cast", title: "Cast" },
-    { key: "collect", title: "Collect" },
-    { key: "vote", title: "Vote" },
+    { key: "cast", title: "Explore" },
+    { key: "vote", title: "Like" },
+    { key: "collect", title: "Mint" },
   ]);
 
   const renderScene = SceneMap({
-    collect: CollectPage,
-    vote: VotePage,
     cast: CastPage,
+    vote: VotePage,
+    collect: CollectPage,
   });
 
   return (
