@@ -45,7 +45,7 @@ export default function UserFeedScreen({ fid }: MyCastsProps) {
   });
   return (
     <PageContent>
-      {currFid ? (
+      {fid || currFid ? (
         <MyCastsCtx.Provider value={{ fid: fid || currFid || 0 }}>
           <TabView
             navigationState={{ index, routes }}
