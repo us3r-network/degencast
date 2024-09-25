@@ -31,7 +31,7 @@ export default function CastFeeds({
 }
 
 const banners = [
-  { img: "images/explore-banner-1.png", tab: "cast" },
+  { img: "images/explore-banner-1.png", tab: "vote" },
   { img: "images/explore-banner-2.png", tab: "collect" },
 ];
 function ExploreHeader({ jumpTo }: { jumpTo?: (key: string) => void }) {
