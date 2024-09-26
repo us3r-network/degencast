@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import Toast from "react-native-toast-message";
@@ -15,7 +8,6 @@ import DialogTabBar from "~/components/layout/tab-view/DialogTabBar";
 import UserWalletSelect from "~/components/portfolio/tokens/UserWalletSelect";
 import { CreateTokenButton } from "~/components/onchain-actions/att/ATTCreateButton";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Slider } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
 import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
 import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
@@ -23,19 +15,18 @@ import { AttentionTokenEntity } from "~/services/community/types/attention-token
 import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
-import ProposeWriteButton from "../proposal-write-buttons/CreateProposalWriteButton";
+import ProposeWriteButton, {
+  ProxyUserToCreateProposalButton,
+} from "../proposal-write-buttons/CreateProposalWriteButton";
 import ProposalCastCard from "../ProposalCastCard";
-import { getProposalErrorInfo, getProposalMinPrice } from "../utils";
+import { getProposalErrorInfo } from "../utils";
 import { AboutContents } from "~/components/help/HelpButton";
-import { PriceRangeRow } from "./ChallengeProposalModal";
-import PriceRow from "./PriceRow";
 import useAppModals from "~/hooks/useAppModals";
 import { PaymentInfoType, ProposalPaymentSelector } from "./PaymentSelector";
-import { Loading } from "~/components/common/Loading";
-import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { useAccount } from "wagmi";
 import { SECONDARY_COLOR } from "~/constants";
 import ProposalErrorModal from "./ProposalErrorModal";
+import { PaymentType } from "../ProposalPaymentSelect";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -247,6 +238,9 @@ function CreateProposalModalContentBody({
     contractAddress: tokenInfo?.danContract!,
   });
 
+  const [selectedPaymentType, setSelectedPaymentType] = useState(
+    PaymentType.Erc20,
+  );
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -304,19 +298,33 @@ function CreateProposalModalContentBody({
             setSelectedPaymentToken={setSelectedPaymentToken}
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
+            selectedPaymentType={selectedPaymentType}
+            setSelectedPaymentType={setSelectedPaymentType}
           />
-          <ProposeWriteButton
-            cast={cast}
-            channel={channel}
-            // proposal={proposal}
-            tokenInfo={tokenInfo}
-            paymentTokenInfo={paymentTokenInfo!}
-            usedPaymentTokenInfo={selectedPaymentToken}
-            paymentTokenInfoLoading={paymentTokenInfoLoading}
-            paymentAmount={selectedPayAmount!}
-            onCreateProposalSuccess={onCreateProposalSuccess}
-            onCreateProposalError={onCreateProposalError}
-          />
+
+          {selectedPaymentType === PaymentType.Allowance ? (
+            <ProxyUserToCreateProposalButton
+              cast={cast}
+              channel={channel}
+              // proposal={proposal}
+              tokenInfo={tokenInfo}
+              onCreateProposalSuccess={onCreateProposalSuccess}
+              onCreateProposalError={onCreateProposalError}
+            />
+          ) : (
+            <ProposeWriteButton
+              cast={cast}
+              channel={channel}
+              // proposal={proposal}
+              tokenInfo={tokenInfo}
+              paymentTokenInfo={paymentTokenInfo!}
+              usedPaymentTokenInfo={selectedPaymentToken}
+              paymentTokenInfoLoading={paymentTokenInfoLoading}
+              paymentAmount={selectedPayAmount!}
+              onCreateProposalSuccess={onCreateProposalSuccess}
+              onCreateProposalError={onCreateProposalError}
+            />
+          )}
         </>
       )}
     </>
