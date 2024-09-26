@@ -1,7 +1,10 @@
 export type LoginRespEntity = {
   id: number;
+  name: string;
+  avatar: string;
   createdAt: string;
   lastModifiedAt: string;
+  isSuperlikeUser: boolean;
 };
 
 export type InvitationCodeRespEntity = {

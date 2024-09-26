@@ -1,14 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
-import { AsyncRequestStatus } from "~/services/shared/types";
+import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 import { Author } from "~/services/farcaster/types/neynar";
 import { fetchUserBulk } from "~/services/farcaster/neynar/farcaster";
+import { LoginRespEntity } from "~/services/user/types";
+import { getMyDegencast } from "~/services/user/api";
 
 type UserAuthState = {
   degencastId: string | number;
   degencastLoginRequestStatus: AsyncRequestStatus;
   currNeynarUserInfo: Author | undefined;
   currNeynarUserInfoRequestStatus: AsyncRequestStatus;
+  degencastUserInfo: LoginRespEntity | undefined;
+  degencastUserInfoRequestStatus: AsyncRequestStatus;
 };
 
 const userAuthState: UserAuthState = {
@@ -16,6 +20,8 @@ const userAuthState: UserAuthState = {
   degencastLoginRequestStatus: AsyncRequestStatus.IDLE,
   currNeynarUserInfo: undefined,
   currNeynarUserInfoRequestStatus: AsyncRequestStatus.IDLE,
+  degencastUserInfo: undefined,
+  degencastUserInfoRequestStatus: AsyncRequestStatus.IDLE,
 };
 
 export const fetchCurrUserInfo = createAsyncThunk(
@@ -43,6 +49,29 @@ export const fetchCurrUserInfo = createAsyncThunk(
   },
 );
 
+export const fetchDegencastUserInfo = createAsyncThunk(
+  "userAuth/fetchDegencastUserInfo",
+  async () => {
+    const resp = await getMyDegencast();
+    const { code, msg, data } = resp.data;
+    if (code === ApiRespCode.SUCCESS) {
+      return data;
+    }
+    throw new Error(msg);
+  },
+  {
+    condition: (_, { getState }) => {
+      const state = getState() as RootState;
+      const { userAuth } = state;
+      const { degencastUserInfo } = userAuth;
+      if (degencastUserInfo) {
+        return false;
+      }
+      return true;
+    },
+  },
+);
+
 export const userAuthSlice = createSlice({
   name: "userAuth",
   initialState: userAuthState,
@@ -62,6 +91,9 @@ export const userAuthSlice = createSlice({
     ) => {
       state.degencastLoginRequestStatus = action.payload;
     },
+    clearDegencastUserInfo: (state: UserAuthState) => {
+      state.degencastUserInfo = undefined;
+    },
   },
   extraReducers(builder) {
     builder
@@ -74,6 +106,16 @@ export const userAuthSlice = createSlice({
       })
       .addCase(fetchCurrUserInfo.rejected, (state) => {
         state.currNeynarUserInfoRequestStatus = AsyncRequestStatus.REJECTED;
+      })
+      .addCase(fetchDegencastUserInfo.pending, (state) => {
+        state.degencastUserInfoRequestStatus = AsyncRequestStatus.PENDING;
+      })
+      .addCase(fetchDegencastUserInfo.fulfilled, (state, action) => {
+        state.degencastUserInfo = action.payload;
+        state.degencastUserInfoRequestStatus = AsyncRequestStatus.FULFILLED;
+      })
+      .addCase(fetchDegencastUserInfo.rejected, (state) => {
+        state.degencastUserInfoRequestStatus = AsyncRequestStatus.REJECTED;
       });
   },
 });
@@ -83,6 +125,7 @@ export const {
   setDegencastId,
   clearDegencastId,
   setDegencastLoginRequestStatus,
+  clearDegencastUserInfo,
 } = actions;
 export const selectUserAuth = (state: RootState) => state.userAuth;
 export default reducer;
