@@ -1,10 +1,13 @@
 import { useRef, useState } from "react";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import { CommunityEntity } from "~/services/community/types/community";
 import { getCastReplies } from "~/services/farcaster/api";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { useAppDispatch } from "~/store/hooks";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const PAGE_SIZE = 10;
 export type CastReplyItem = {
@@ -18,6 +21,7 @@ export default function useCastReplies(props?: {
   type?: string;
   castHash: string;
 }) {
+  const dispatch = useAppDispatch();
   const [items, setItems] = useState<CastReplyItem[]>([]);
   const [status, setStatus] = useState(AsyncRequestStatus.IDLE);
   const typeRef = useRef(props?.type || "");
@@ -70,6 +74,11 @@ export default function useCastReplies(props?: {
       console.log("pageInfoRef.current", pageInfoRef.current);
 
       setStatus(AsyncRequestStatus.FULFILLED);
+
+      const reactions = getReactionsCountAndViewerContexts(
+        casts.map((i) => i.cast),
+      );
+      dispatch(upsertManyToReactions(reactions));
     } catch (err) {
       console.error(err);
       setStatus(AsyncRequestStatus.REJECTED);

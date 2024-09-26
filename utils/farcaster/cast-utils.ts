@@ -34,35 +34,17 @@ export function getCastParentUrl(cast: FarCast | NeynarCast) {
   return (cast as FarCast)?.parentUrl || (cast as FarCast)?.parent_url;
 }
 
-export function getCastReactionsCount(cast: FarCast | NeynarCast) {
-  if (isNeynarCast(cast)) {
-    return {
-      likesCount: (cast as NeynarCast)?.reactions?.likes_count || 0,
-      recastsCount: (cast as NeynarCast)?.reactions?.recasts_count || 0,
-    };
-  }
+export function getCastReactionsCount(cast: NeynarCast) {
   return {
-    likesCount: Number(
-      (cast as FarCast)?.like_count || (cast as FarCast)?.likesCount || 0,
-    ),
-    recastsCount: Number(
-      (cast as FarCast)?.recast_count || (cast as FarCast)?.recastsCount || 0,
-    ),
+    likesCount: (cast as NeynarCast)?.reactions?.likes_count || 0,
+    recastsCount: (cast as NeynarCast)?.reactions?.recasts_count || 0,
   };
 }
 
 export function getCastRepliesCount(cast: FarCast | NeynarCast) {
-  if (isNeynarCast(cast)) {
-    return (cast as NeynarCast)?.replies?.count || 0;
-  }
-  return Number(
-    (cast as FarCast)?.comment_count || (cast as FarCast)?.repliesCount || 0,
-  );
+  return (cast as NeynarCast)?.replies?.count || 0;
 }
 
-export function getCastViewerContext(cast: FarCast | NeynarCast) {
-  if (isNeynarCast(cast)) {
-    return (cast as NeynarCast)?.viewer_context;
-  }
-  return (cast as FarCast)?.viewerContext;
+export function getCastViewerContext(cast: NeynarCast) {
+  return (cast as NeynarCast)?.viewer_context;
 }

@@ -1,8 +1,11 @@
 import { useRef, useState } from "react";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getChannelProposalFeeds } from "~/services/feeds/api/channel";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { useAppDispatch } from "~/store/hooks";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const PAGE_SIZE = 10;
 export type ProposalFeedsItem = {
@@ -12,6 +15,7 @@ export type ProposalFeedsItem = {
 export default function useLoadChannelProposalFeeds(props: {
   channelId: string;
 }) {
+  const dispatch = useAppDispatch();
   const [items, setItems] = useState<ProposalFeedsItem[]>([]);
   const [status, setStatus] = useState(AsyncRequestStatus.IDLE);
   const channelIdRef = useRef(props?.channelId || "");
@@ -43,6 +47,10 @@ export default function useLoadChannelProposalFeeds(props: {
       const { data } = resp.data;
 
       setItems([...items, ...data]);
+      const reactions = getReactionsCountAndViewerContexts(
+        data.map((i) => i.cast),
+      );
+      dispatch(upsertManyToReactions(reactions));
 
       pageInfoRef.current = {
         hasNextPage: data.length >= PAGE_SIZE,

@@ -8,6 +8,8 @@ import {
 } from "~/features/cast/castPageSlice";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
 import { getCastDetails } from "~/services/farcaster/api";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 
 export default function useCastDetails() {
   const dispatch = useAppDispatch();
@@ -31,6 +33,9 @@ export default function useCastDetails() {
 
       dispatch(updateCastDetailData({ ...data }));
       setStatus(AsyncRequestStatus.FULFILLED);
+
+      const reactions = getReactionsCountAndViewerContexts([data.cast]);
+      dispatch(upsertManyToReactions(reactions));
     } catch (err) {
       console.error(err);
       setStatus(AsyncRequestStatus.REJECTED);

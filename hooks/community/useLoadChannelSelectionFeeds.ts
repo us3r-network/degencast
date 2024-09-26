@@ -1,8 +1,11 @@
 import { useRef, useState } from "react";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getChannelSelectionFeeds } from "~/services/feeds/api/channel";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { ApiRespCode, AsyncRequestStatus } from "~/services/shared/types";
+import { useAppDispatch } from "~/store/hooks";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const PAGE_SIZE = 10;
 export type SelectionFeedsItem = {
@@ -12,6 +15,8 @@ export type SelectionFeedsItem = {
 export default function useLoadChannelSelectionFeeds(props: {
   channelId: string;
 }) {
+  const dispatch = useAppDispatch();
+
   const [items, setItems] = useState<SelectionFeedsItem[]>([]);
   const [status, setStatus] = useState(AsyncRequestStatus.IDLE);
   const channelIdRef = useRef(props?.channelId || "");
@@ -49,6 +54,11 @@ export default function useLoadChannelSelectionFeeds(props: {
         nextPageNumber: nextPageNumber + 1,
       };
       setStatus(AsyncRequestStatus.FULFILLED);
+
+      const reactions = getReactionsCountAndViewerContexts(
+        data.map((i) => i.cast),
+      );
+      dispatch(upsertManyToReactions(reactions));
     } catch (err) {
       console.error(err);
       setStatus(AsyncRequestStatus.REJECTED);
