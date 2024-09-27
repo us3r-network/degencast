@@ -30,6 +30,7 @@ import { SECONDARY_COLOR } from "~/constants";
 import { DialogCastActivitiesList } from "~/components/activity/Activities";
 import ProposalErrorModal from "./ProposalErrorModal";
 import { getProposalErrorInfo } from "../utils";
+import { PaymentType } from "../ProposalPaymentSelect";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -119,7 +120,7 @@ function CastActivitiesListScene() {
 }
 
 function ProposedProposalModalContentBodyScene() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { connectWallet } = useWalletAccount();
   const { cast, channel, proposal, tokenInfo, setOpen } =
     useProposedProposalCtx();
@@ -155,6 +156,10 @@ function ProposedProposalModalContentBodyScene() {
     contractAddress: tokenInfo?.danContract!,
     castHash: cast.hash,
   });
+
+  const [selectedPaymentType, setSelectedPaymentType] = useState(
+    PaymentType.Erc20,
+  );
 
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
@@ -198,18 +203,27 @@ function ProposedProposalModalContentBodyScene() {
     }
   }, [price, priceLoading, proposal, minAmount]);
 
-  const preAddress = useRef(address);
   useEffect(() => {
     if (minAmount) {
       setSelectedPayAmount(minAmount);
     }
   }, [minAmount]);
+
+  const preAddress = useRef(address);
   useEffect(() => {
     if (preAddress.current !== address) {
       refetch();
       preAddress.current = address;
     }
   }, [address]);
+
+  const preChainId = useRef(chainId);
+  useEffect(() => {
+    if (preChainId.current !== chainId) {
+      refetch();
+      preChainId.current = chainId;
+    }
+  }, [chainId]);
 
   const [errorModal, setErrorModal] = useState({
     open: false,
@@ -240,6 +254,8 @@ function ProposedProposalModalContentBodyScene() {
             setSelectedPaymentToken={setSelectedPaymentToken}
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
+            selectedPaymentType={selectedPaymentType}
+            setSelectedPaymentType={setSelectedPaymentType}
           />
         )}
 
