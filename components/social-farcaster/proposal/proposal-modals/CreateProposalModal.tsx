@@ -274,19 +274,29 @@ function CreateProposalModalContentBody({
     paymentTokenInfo?.decimals!,
   );
 
-  const { address } = useAccount();
-  const preAddress = useRef(address);
   useEffect(() => {
     if (minAmount) {
       setSelectedPayAmount(minAmount);
     }
   }, [minAmount]);
+
+  const { address, chainId } = useAccount();
+
+  const preAddress = useRef(address);
   useEffect(() => {
     if (preAddress.current !== address) {
       refetch();
       preAddress.current = address;
     }
   }, [address]);
+
+  const preChainId = useRef(chainId);
+  useEffect(() => {
+    if (preChainId.current !== chainId) {
+      refetch();
+      preChainId.current = chainId;
+    }
+  }, [chainId]);
 
   const allowanceInfo = {
     paymentAmount: minPayAmountNumber,
