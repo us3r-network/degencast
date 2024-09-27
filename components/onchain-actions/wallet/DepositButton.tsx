@@ -89,10 +89,10 @@ export function DepositDialog({
 
   useEffect(() => {
     if (open) {
-      console.log("freeze");
+      // console.log("freeze");
       setFreezeAutoSwitchActiveWallet(true);
     } else {
-      console.log("unfreeze");
+      // console.log("unfreeze");
       setFreezeAutoSwitchActiveWallet(false);
     }
   }, [open]);
