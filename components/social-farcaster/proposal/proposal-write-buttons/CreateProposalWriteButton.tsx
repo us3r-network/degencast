@@ -11,6 +11,7 @@ import { Loading } from "~/components/common/Loading";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import useProxyUserToCreateProposal from "~/hooks/social-farcaster/proposal/useProxyUserToCreateProposal";
+import useTipAllowanceToDegencast from "~/hooks/social-farcaster/proposal/useTipAllowanceToDegencast";
 
 export default function CreateProposalWriteButton({
   cast,
@@ -149,11 +150,17 @@ export function ProxyUserToCreateProposalButton({
   tokenInfo,
   onCreateProposalSuccess,
   onCreateProposalError,
+  allowanceInfo,
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
     onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
     onCreateProposalError?: (error: any) => void;
+    allowanceInfo: {
+      paymentAmount: number;
+      totalAllowance: number;
+      remainingAllowance: number;
+    };
   }) {
   const contractAddress = tokenInfo?.danContract!;
   const { proposals, isLoading: proposalsLoading } = useProposals({
@@ -165,12 +172,21 @@ export function ProxyUserToCreateProposalButton({
     onCreateProposalSuccess,
     onCreateProposalError,
   });
+  const { isLoading: tipToDegencastIsLoading, tipToDegencast } =
+    useTipAllowanceToDegencast();
   const { address, isConnected } = useAccount();
   const { connectWallet } = useWalletAccount();
   const isCreated = Number(proposals?.roundIndex) > 0;
   const isLoading = createLoading || proposalsLoading;
 
-  const disabled = isCreated || !contractAddress || isLoading;
+  const { remainingAllowance, paymentAmount } = allowanceInfo;
+  const allowanceNotEnough = remainingAllowance < paymentAmount;
+  const disabled =
+    isCreated ||
+    !contractAddress ||
+    isLoading ||
+    tipToDegencastIsLoading ||
+    allowanceNotEnough;
 
   return (
     <Button
@@ -182,9 +198,16 @@ export function ProxyUserToCreateProposalButton({
           connectWallet();
           return;
         }
-        create({
-          castHash: cast.hash,
-          curatorAddr: address,
+        tipToDegencast(paymentAmount!, {
+          onSuccess: () => {
+            create({
+              castHash: cast.hash,
+              curatorAddr: address,
+            });
+          },
+          onError: (error) => {
+            onCreateProposalError?.(error);
+          },
         });
       }}
       {...props}

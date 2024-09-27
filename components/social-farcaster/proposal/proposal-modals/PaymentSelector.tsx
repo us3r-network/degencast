@@ -41,6 +41,7 @@ export function ProposalPaymentSelector({
   paymentInfoType,
   selectedPaymentType,
   setSelectedPaymentType,
+  allowanceInfo,
 }: {
   defaultPaymentInfo: {
     tokenInfo?: TokenWithTradeInfo;
@@ -56,6 +57,11 @@ export function ProposalPaymentSelector({
   paymentInfoType: PaymentInfoType;
   selectedPaymentType: PaymentType;
   setSelectedPaymentType: (paymentType: PaymentType) => void;
+  allowanceInfo?: {
+    paymentAmount: number;
+    totalAllowance: number;
+    remainingAllowance: number;
+  };
 }) {
   const { supportAtomicBatch } = useWalletAccount();
   const account = useAccount();
@@ -117,7 +123,11 @@ export function ProposalPaymentSelector({
 
       {paymentInfoType === PaymentInfoType.Create ? (
         selectedPaymentType === PaymentType.Allowance ? (
-          <View className="h-8" />
+          <AllowancePaymentInfo
+            paymentAmount={allowanceInfo?.paymentAmount || 0}
+            totalAllowance={allowanceInfo?.totalAllowance || 0}
+            remainingAllowance={allowanceInfo?.remainingAllowance || 0}
+          />
         ) : (
           <PaymentInfo
             paymentTokenInfo={selectedPaymentToken}
@@ -280,9 +290,9 @@ function ProposalPaymentSelectWrapper({
   );
 }
 
-const displayValue = (value: number, maximumFractionDigits: number) => {
+const displayValue = (value: number, maximumFractionDigits?: number) => {
   return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits,
+    maximumFractionDigits: maximumFractionDigits || 0,
   }).format(Number(value));
 };
 
@@ -395,5 +405,34 @@ export function PaymentInfo({
         </AccordionContent>
       </AccordionItem>
     </Accordion>
+  );
+}
+
+export function AllowancePaymentInfo({
+  paymentAmount,
+  totalAllowance,
+  remainingAllowance,
+}: {
+  paymentAmount: number;
+  totalAllowance: number;
+  remainingAllowance: number;
+}) {
+  return (
+    <View className="flex w-full flex-col gap-4">
+      <View className="flex flex-row items-center justify-between">
+        <Text className="text-xs text-secondary">
+          Stake DEGEN to superlike for reward.
+        </Text>
+        <Text className="text-xs font-normal text-primary-foreground">
+          {displayValue(paymentAmount)} DEGEN
+        </Text>
+      </View>
+      <View className="flex flex-row items-center justify-between">
+        <Text className="text-xs text-secondary">Degen allowance</Text>
+        <Text className="text-xs font-normal text-primary-foreground">
+          {displayValue(remainingAllowance)}/{displayValue(totalAllowance)}
+        </Text>
+      </View>
+    </View>
   );
 }
