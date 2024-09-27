@@ -63,7 +63,7 @@ export default function CreateProposalModal({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "vote", title: "Vote" },
+    { key: "vote", title: "Superlike" },
     { key: "about", title: "About" },
   ]);
 

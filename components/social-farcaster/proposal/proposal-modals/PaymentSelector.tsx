@@ -95,8 +95,10 @@ export function ProposalPaymentSelector({
     : defaultMinAmount;
 
   const isSupportAtomicBatch = supportAtomicBatch(defaultTokenInfo?.chainId);
-  const isSupportAllowance =
-    isSuperLikeUser && paymentInfoType === PaymentInfoType.Create;
+
+  const isCreateProposal = paymentInfoType === PaymentInfoType.Create;
+  const isSupportAllowance = isSuperLikeUser && isCreateProposal;
+
   const showPaymentSelect =
     !!ethTokenInfo &&
     defaultTokenInfo &&
@@ -118,6 +120,7 @@ export function ProposalPaymentSelector({
           selectedPaymentType={selectedPaymentType}
           setSelectedPaymentType={setSelectedPaymentType}
           hideNativeToken={!isSupportAtomicBatch}
+          hideAllowance={!isSupportAllowance}
         />
       ) : null}
 
@@ -185,6 +188,7 @@ function ProposalPaymentSelectWrapper({
   selectedPaymentType,
   setSelectedPaymentType,
   hideNativeToken,
+  hideAllowance,
 }: {
   ethTokenInfo: TokenWithTradeInfo;
   defaultTokenInfo: TokenWithTradeInfo;
@@ -199,6 +203,7 @@ function ProposalPaymentSelectWrapper({
   selectedPaymentType: PaymentType;
   setSelectedPaymentType: (paymentType: PaymentType) => void;
   hideNativeToken?: boolean;
+  hideAllowance?: boolean;
 }) {
   const {
     fetchSellAmountAsync: fetchEthAmountAsync,
@@ -207,6 +212,7 @@ function ProposalPaymentSelectWrapper({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
 
   const {
@@ -262,9 +268,11 @@ function ProposalPaymentSelectWrapper({
       setSelectedPayAmount(0n);
       return;
     }
+
     if (!swapReady) {
       return;
     }
+
     try {
       if (token?.address === ethTokenInfo?.address) {
         const amount = await fetchEthAmountAsync(selectedPayAmount);
@@ -286,6 +294,7 @@ function ProposalPaymentSelectWrapper({
       chain={ATT_CONTRACT_CHAIN}
       value={selectedPaymentType}
       hideNativeToken={hideNativeToken}
+      hideAllowance={hideAllowance}
     />
   );
 }
@@ -317,6 +326,8 @@ export function PaymentInfo({
   description?: string;
   hideChallengeAmount?: boolean;
 }) {
+  console.log("paymentTokenInfo", paymentTokenInfo);
+
   const maxAmountNumber = paymentTokenInfo?.rawBalance
     ? Number(
         formatUnits(

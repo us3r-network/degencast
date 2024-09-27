@@ -32,6 +32,7 @@ import { useAccount } from "wagmi";
 import { SECONDARY_COLOR } from "~/constants";
 import { getProposalErrorInfo } from "../utils";
 import ProposalErrorModal from "./ProposalErrorModal";
+import { PaymentType } from "../ProposalPaymentSelect";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -289,6 +290,10 @@ export function DisputeProposalWrite({
 
   const isLoading = priceLoading || paymentTokenInfoLoading;
 
+  const [selectedPaymentType, setSelectedPaymentType] = useState(
+    PaymentType.Erc20,
+  );
+
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -312,7 +317,7 @@ export function DisputeProposalWrite({
     paymentTokenInfo?.decimals!,
   );
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const preAddress = useRef(address);
   useEffect(() => {
     if (preAddress.current !== address) {
@@ -320,6 +325,14 @@ export function DisputeProposalWrite({
       preAddress.current = address;
     }
   }, [address]);
+
+  const preChainId = useRef(chainId);
+  useEffect(() => {
+    if (preChainId.current !== chainId) {
+      refetch();
+      preChainId.current = chainId;
+    }
+  }, [chainId]);
   return (
     <>
       {isLoading ? (
@@ -337,6 +350,8 @@ export function DisputeProposalWrite({
             setSelectedPaymentToken={setSelectedPaymentToken}
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
+            selectedPaymentType={selectedPaymentType}
+            setSelectedPaymentType={setSelectedPaymentType}
           />
           {/* <Text className="text-center text-xs text-secondary">
             Share with more people to accelerate the challenge.
@@ -394,6 +409,9 @@ export function ProposeProposalWrite({
   });
 
   const isLoading = priceLoading || paymentTokenInfoLoading;
+  const [selectedPaymentType, setSelectedPaymentType] = useState(
+    PaymentType.Erc20,
+  );
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
@@ -417,7 +435,7 @@ export function ProposeProposalWrite({
     paymentTokenInfo?.decimals!,
   );
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const preAddress = useRef(address);
   useEffect(() => {
     if (preAddress.current !== address) {
@@ -425,6 +443,14 @@ export function ProposeProposalWrite({
       preAddress.current = address;
     }
   }, [address]);
+
+  const preChainId = useRef(chainId);
+  useEffect(() => {
+    if (preChainId.current !== chainId) {
+      refetch();
+      preChainId.current = chainId;
+    }
+  }, [chainId]);
   return (
     <>
       {isLoading ? (
@@ -442,6 +468,8 @@ export function ProposeProposalWrite({
             setSelectedPaymentToken={setSelectedPaymentToken}
             selectedPayAmount={selectedPayAmount!}
             setSelectedPayAmount={setSelectedPayAmount}
+            selectedPaymentType={selectedPaymentType}
+            setSelectedPaymentType={setSelectedPaymentType}
           />
           {/* <Text className="text-center text-xs text-secondary">
             Share with more people to accelerate the challenge.
