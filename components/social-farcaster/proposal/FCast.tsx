@@ -1,4 +1,5 @@
 import { Image, Pressable, View, ViewProps } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import { cn } from "~/lib/utils";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { getCastHex } from "~/utils/farcaster/cast-utils";
@@ -14,6 +15,7 @@ import { getCastImageUrl } from "~/services/farcaster/api";
 import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import { AttentionTokenEntity } from "~/services/community/types/attention-token";
+import { Loading } from "~/components/common/Loading";
 const FCastUserHeight = 20;
 const FCastTextMaxHeight = 72;
 const FCastLineHeight = 24;
@@ -128,6 +130,7 @@ export function FCastWithNftImage({
       setImgInfo({ ratio: width / height });
     });
   }, [imageUrl]);
+  const [loading, setLoading] = useState(true);
 
   return (
     <View
@@ -157,15 +160,21 @@ export function FCastWithNftImage({
           }}
         >
           <AspectRatio ratio={imgInfo.ratio}>
-            <Image
-              source={{ uri: imageUrl }}
+            <ExpoImage
+              source={imageUrl}
               style={{
                 width: "100%",
                 height: FCastNftImageHeight,
                 resizeMode: "contain",
               }}
+              onLoadEnd={() => setLoading(false)}
             />
           </AspectRatio>
+          {loading ? (
+            <View className="absolute h-full w-full items-center justify-center">
+              <Loading />
+            </View>
+          ) : null}
         </View>
 
         {/* user info */}
