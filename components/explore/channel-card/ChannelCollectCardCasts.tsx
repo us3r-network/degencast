@@ -17,6 +17,7 @@ import ProposalStatusActions, {
   ProposalStatusActionsHeight,
 } from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
 import FCastMenuButton from "~/components/social-farcaster/FCastMenuButton";
+import { Loading } from "~/components/common/Loading";
 
 const itemHeight = FCastHeightWithNftImage + ProposalStatusActionsHeight + 15;
 
@@ -39,6 +40,7 @@ const ChannelCollectCardCasts = forwardRef(function (
 
   const [itemWidth, setItemWidth] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [showIdxs, setShowIdxs] = useState<number[]>([0]);
   const flatListRef =
     useRef<FlatList<{ cast: NeynarCast; proposal: ProposalEntity }>>(null);
   const onPressPagination = (index: number) => {
@@ -59,6 +61,22 @@ const ChannelCollectCardCasts = forwardRef(function (
           if (viewableItems.length > 0) {
             const index = Number(viewableItems[0].index);
             setCurrentIndex(index);
+            if (index > 0) {
+              setShowIdxs((pre) => {
+                let newShowIdxs = [
+                  index - 2,
+                  index - 1,
+                  index,
+                  index + 1,
+                  index + 2,
+                ];
+                newShowIdxs = newShowIdxs.filter(
+                  (i) => i >= 0 && i < showCasts.length,
+                );
+
+                return Array.from(new Set([...pre, ...newShowIdxs]));
+              });
+            }
           }
         },
       },
@@ -105,13 +123,23 @@ const ChannelCollectCardCasts = forwardRef(function (
                   }}
                   className="flex flex-col gap-4 px-4"
                 >
-                  <FCastWithNftImage
-                    className="overflow-hidden"
-                    cast={cast}
-                    channel={channel!}
-                    tokenInfo={tokenInfo}
-                    proposal={proposal}
-                  />
+                  {showIdxs.includes(index) ? (
+                    <FCastWithNftImage
+                      className="overflow-hidden"
+                      cast={cast}
+                      channel={channel!}
+                      tokenInfo={tokenInfo}
+                      proposal={proposal}
+                    />
+                  ) : (
+                    <View
+                      style={{ height: FCastHeightWithNftImage }}
+                      className="flex w-full flex-row items-center justify-center"
+                    >
+                      <Loading />
+                    </View>
+                  )}
+
                   <View className="flex flex-row items-center justify-between">
                     <FCastMenuButton
                       cast={cast}
