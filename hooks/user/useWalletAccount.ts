@@ -11,14 +11,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useCapabilities } from "wagmi/experimental";
-import { PAYMASTER_AND_BUNDLER_ENDPOINT } from "~/constants";
+import { PAYMASTER_AND_BUNDLER_ENDPOINT, ZERO_ADDRESS } from "~/constants";
 import {
   isReportedUserAccount,
   linkUserWallet,
   storeReportedUserAccount,
 } from "~/services/user/api";
 import { UserAccountType } from "~/services/user/types";
-import { SmartWalletType } from '@privy-io/public-api';
+import { SmartWalletType } from "@privy-io/public-api";
 
 export default function useWalletAccount() {
   const { user, ready, authenticated } = usePrivy();
@@ -35,8 +35,7 @@ export default function useWalletAccount() {
   // linked wallets
   const linkedWallets: PrivyWalletWithMetadata[] =
     (user?.linkedAccounts?.filter(
-      (account) =>
-        account.type === "wallet",
+      (account) => account.type === "wallet",
     ) as PrivyWalletWithMetadata[]) || [];
   // link connected wallets to degencast user
   useEffect(() => {
@@ -175,6 +174,20 @@ export default function useWalletAccount() {
     },
     [availableCapabilities],
   );
+  const getActualUseWalletAddress = useCallback(
+    (wallet?: ConnectedWallet | WalletWithMetadata) => {
+      if (wallet)
+        return wallet.connectorType === "embedded" && privySmartWallet
+          ? privySmartWallet.address
+          : wallet.address;
+      else if (activeWallet)
+        return activeWallet.connectorType === "embedded" && privySmartWallet
+          ? privySmartWallet.address
+          : activeWallet.address;
+      else return ZERO_ADDRESS;
+    },
+    [activeWallet, privySmartWallet],
+  );
   return {
     linkAccountNum,
     connectedWallets,
@@ -194,6 +207,7 @@ export default function useWalletAccount() {
     supportAtomicBatch,
     supportAuxiliaryFunds,
     getPaymasterService,
+    getActualUseWalletAddress,
   };
 }
 

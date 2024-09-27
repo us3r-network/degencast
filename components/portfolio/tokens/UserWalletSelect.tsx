@@ -24,27 +24,24 @@ export default function UserWalletSelect({
   disabled?: boolean;
 }) {
   const { ready, authenticated } = useAuth();
-  const { connectedWallets, activeWallet, setActiveWallet, privySmartWallet } =
-    useWalletAccount();
+  const {
+    connectedWallets,
+    activeWallet,
+    setActiveWallet,
+    getActualUseWalletAddress,
+  } = useWalletAccount();
 
   if (!ready || !authenticated) {
     return null;
   }
-  const activeWalletAddress = activeWallet
-    ? activeWallet.connectorType === "embedded" && privySmartWallet
-      ? privySmartWallet.address
-      : activeWallet.address
-    : ZERO_ADDRESS;
-
-  console.log("activeWallet", activeWallet, activeWalletAddress);
+  const walletAddress = getActualUseWalletAddress();
+  console.log("activeWallet", walletAddress);
   if (disabled) {
     if (activeWallet && connectedWallets.includes(activeWallet))
       return (
         <View className="mr-2 flex-row items-center gap-1">
           <WalletIcon type={activeWallet.walletClientType || ""} />
-          <Text className="text-white/80">
-            {shortPubKey(activeWalletAddress)}
-          </Text>
+          <Text className="text-white/80">{shortPubKey(walletAddress)}</Text>
         </View>
       );
     else
@@ -61,7 +58,7 @@ export default function UserWalletSelect({
         value={
           activeWallet && connectedWallets.includes(activeWallet)
             ? {
-                label: activeWalletAddress,
+                label: walletAddress,
                 value: activeWallet.address,
               }
             : {
@@ -85,9 +82,7 @@ export default function UserWalletSelect({
           {activeWallet && connectedWallets.includes(activeWallet) ? (
             <View className="mr-2 flex-row items-center gap-1">
               <WalletIcon type={activeWallet.walletClientType || ""} />
-              <Text className="text-primery">
-                {shortPubKey(activeWalletAddress)}
-              </Text>
+              <Text className="text-primery">{shortPubKey(walletAddress)}</Text>
             </View>
           ) : (
             <View className="mr-2 flex-row items-center gap-1">

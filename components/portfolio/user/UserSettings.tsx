@@ -215,12 +215,9 @@ export const WalletItem = React.forwardRef<
 >(({ wallet, action }, ref) => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { connectedWallets, connectWallet, privySmartWallet } =
+  const { connectedWallets, connectWallet, getActualUseWalletAddress } =
     useWalletAccount();
-  const walletAddress =
-    wallet.connectorType === "embedded" && privySmartWallet
-      ? privySmartWallet.address
-      : wallet.address;
+  const walletAddress = getActualUseWalletAddress(wallet);
   return (
     <View className="m-1 w-full flex-row items-center justify-between gap-6 pr-2">
       <Pressable
