@@ -27,6 +27,8 @@ import { useAccount } from "wagmi";
 import { SECONDARY_COLOR } from "~/constants";
 import ProposalErrorModal from "./ProposalErrorModal";
 import { PaymentType } from "../ProposalPaymentSelect";
+import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
+import useDegencastUserInfo from "~/hooks/user/useDegencastUserInfo";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -237,6 +239,20 @@ function CreateProposalModalContentBody({
   } = usePaymentTokenInfo({
     contractAddress: tokenInfo?.danContract!,
   });
+  const {
+    totalDegenAllowance,
+    remainingDegenAllowance,
+    loadDegenAllowance,
+    loading: allowanceLoading,
+  } = useUserDegenAllowance();
+
+  const { degencastUserInfo } = useDegencastUserInfo();
+  const isSuperLikeUser = degencastUserInfo?.isSuperlikeUser;
+  useEffect(() => {
+    if (isSuperLikeUser) {
+      loadDegenAllowance();
+    }
+  }, [isSuperLikeUser]);
 
   const [selectedPaymentType, setSelectedPaymentType] = useState(
     PaymentType.Erc20,
@@ -272,6 +288,12 @@ function CreateProposalModalContentBody({
     }
   }, [address]);
 
+  const allowanceInfo = {
+    paymentAmount: minPayAmountNumber,
+    totalAllowance: totalDegenAllowance,
+    remainingAllowance: remainingDegenAllowance,
+  };
+
   return (
     <>
       <View className="flex-row items-center justify-between gap-2">
@@ -300,17 +322,23 @@ function CreateProposalModalContentBody({
             setSelectedPayAmount={setSelectedPayAmount}
             selectedPaymentType={selectedPaymentType}
             setSelectedPaymentType={setSelectedPaymentType}
+            allowanceInfo={allowanceInfo}
           />
 
           {selectedPaymentType === PaymentType.Allowance ? (
-            <ProxyUserToCreateProposalButton
-              cast={cast}
-              channel={channel}
-              // proposal={proposal}
-              tokenInfo={tokenInfo}
-              onCreateProposalSuccess={onCreateProposalSuccess}
-              onCreateProposalError={onCreateProposalError}
-            />
+            allowanceLoading ? (
+              <ActivityIndicator color={SECONDARY_COLOR} />
+            ) : (
+              <ProxyUserToCreateProposalButton
+                cast={cast}
+                channel={channel}
+                // proposal={proposal}
+                tokenInfo={tokenInfo}
+                onCreateProposalSuccess={onCreateProposalSuccess}
+                onCreateProposalError={onCreateProposalError}
+                allowanceInfo={allowanceInfo}
+              />
+            )
           ) : (
             <ProposeWriteButton
               cast={cast}
