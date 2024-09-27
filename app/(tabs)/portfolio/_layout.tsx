@@ -15,6 +15,7 @@ import MyWalletScreen from "./wallet";
 import { PointLink } from "~/components/layout/header/HeaderLinks";
 import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
 import useUserCurationCasts from "~/hooks/user/useUserCurationCasts";
+import { UserPill } from "@privy-io/react-auth/ui";
 
 export type UserPortfolioProps = {
   fid: number;
@@ -88,6 +89,7 @@ export default function PortfolioScreen() {
                                 hasNfts={items.length > 0}
                               />
                             ) : null}
+                            <UserPill size={24} />
                           </View>
                         );
                       }}
