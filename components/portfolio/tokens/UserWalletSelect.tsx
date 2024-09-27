@@ -35,7 +35,6 @@ export default function UserWalletSelect({
     return null;
   }
   const walletAddress = getActualUseWalletAddress();
-  console.log("activeWallet", walletAddress);
   if (disabled) {
     if (activeWallet && connectedWallets.includes(activeWallet))
       return (

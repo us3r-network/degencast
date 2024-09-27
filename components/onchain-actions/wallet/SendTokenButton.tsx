@@ -3,8 +3,11 @@ import { View } from "react-native";
 import {
   Address,
   Chain,
+  encodeFunctionData,
+  erc20Abi,
   isAddress,
   parseEther,
+  parseUnits,
   TransactionReceipt,
 } from "viem";
 import {
@@ -40,6 +43,7 @@ import {
   TransationData,
 } from "../common/TranasactionResult";
 import UserTokenSelect from "../common/UserTokenSelect";
+import { useSmartWallets } from "@privy-io/react-auth/smart-wallets";
 
 export default function SendTokenButton({
   defaultChain = DEFAULT_CHAIN,
@@ -48,8 +52,7 @@ export default function SendTokenButton({
 }) {
   // console.log("SendButton tokens", availableTokens);
   const [sending, setSending] = useState(false);
-  const { connectWallet, activeWallet, injectedWallet } =
-    useWalletAccount();
+  const { connectWallet, activeWallet, injectedWallet } = useWalletAccount();
 
   if (!activeWallet?.address)
     return (
@@ -111,24 +114,23 @@ const SendToken = forwardRef<
   }
 >(({ className, defaultAddress, chain, setSending, ...props }, ref) => {
   const account = useAccount();
-
-  const [address, setAddress] = useState<`0x${string}`>(defaultAddress||"0x");
+  const { usePrivySmartWallet } = useWalletAccount();
+  const [address, setAddress] = useState<`0x${string}`>(defaultAddress || "0x");
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
-
   useEffect(() => {
     if (token) {
       setAmount(String(token.balance) || "0");
     }
   }, [token]);
 
-  const [transationData, setTransationData] = useState<TransationData>();
-  const [transationError, setTransationError] = useState<string>();
+  const [transactionData, setTransationData] = useState<TransationData>();
+  const [transactionError, setTransationError] = useState<string>();
 
   const updateTransationData = useCallback(
     (transactionReceipt: TransactionReceipt | undefined) => {
       if (token && address && isAddress(address) && Number(amount) > 0) {
-        const transationData = {
+        const transactionData = {
           chain,
           transactionReceipt,
           description: (
@@ -152,7 +154,7 @@ const SendToken = forwardRef<
             </View>
           ),
         };
-        setTransationData(transationData);
+        setTransationData(transactionData);
         setSending?.(true);
       }
     },
@@ -173,19 +175,19 @@ const SendToken = forwardRef<
     setAmount("0");
   };
 
-  if (transationData)
+  if (transactionData)
     return (
       <TransactionInfo
         type={ONCHAIN_ACTION_TYPE.SEND_TOKEN}
-        data={transationData}
+        data={transactionData}
         buttonText="Trade more"
         buttonAction={tryAgain}
       />
     );
-  else if (transationError)
+  else if (transactionError)
     return (
       <ErrorInfo
-        error={transationError}
+        error={transactionError}
         buttonText="Try Again"
         buttonAction={tryAgain}
       />
@@ -218,14 +220,14 @@ const SendToken = forwardRef<
             placeholder="Enter amount"
             value={String(amount)}
             onChangeText={(newText) => setAmount(newText)}
-            editable={!transationData}
+            editable={!transactionData}
           />
           <Slider
             value={Number(amount)}
             max={Number(token?.balance || 0)}
             step={Number(token?.balance || 0) / 100}
             onValueChange={(v) => setAmount(String(v))}
-            disabled={!!transationData}
+            disabled={!!transactionData}
           />
         </View>
         {token && (
@@ -235,7 +237,31 @@ const SendToken = forwardRef<
             targetChainId={token.chainId}
             warpedButton={
               address && isAddress(address) && Number(amount) > 0 ? (
-                token.address === NATIVE_TOKEN_ADDRESS ? (
+                usePrivySmartWallet ? (
+                  token.address === NATIVE_TOKEN_ADDRESS ? (
+                    <SendNativeTokenFromPrivySmartWalletButton
+                      disabled={
+                        !address || Number(amount) > Number(token?.balance || 0)
+                      }
+                      address={address}
+                      amount={amount}
+                      token={token}
+                      transactionReceiptChange={updateTransationData}
+                      transactionErrorChange={updateTransationError}
+                    />
+                  ) : (
+                    <SendERC20TokenFromPrivySmartWalletButton
+                      disabled={
+                        !address || Number(amount) > Number(token?.balance || 0)
+                      }
+                      address={address}
+                      amount={amount}
+                      token={token}
+                      transactionReceiptChange={updateTransationData}
+                      transactionErrorChange={updateTransationError}
+                    />
+                  )
+                ) : token.address === NATIVE_TOKEN_ADDRESS ? (
                   <SendNativeTokenButton
                     disabled={
                       !address || Number(amount) > Number(token?.balance || 0)
@@ -243,8 +269,8 @@ const SendToken = forwardRef<
                     address={address}
                     amount={amount}
                     token={token}
-                    transationReceiptChange={updateTransationData}
-                    transationErrorChange={updateTransationError}
+                    transactionReceiptChange={updateTransationData}
+                    transactionErrorChange={updateTransationError}
                   />
                 ) : (
                   <SendERC20TokenButton
@@ -254,8 +280,8 @@ const SendToken = forwardRef<
                     address={address}
                     amount={amount}
                     token={token}
-                    transationReceiptChange={updateTransationData}
-                    transationErrorChange={updateTransationError}
+                    transactionReceiptChange={updateTransationData}
+                    transactionErrorChange={updateTransationError}
                   />
                 )
               ) : (
@@ -274,10 +300,10 @@ type SendTokenProps = {
   address: Address;
   amount: string;
   token: TokenWithTradeInfo;
-  transationReceiptChange: (
+  transactionReceiptChange: (
     transactionReceipt: TransactionReceipt | undefined,
   ) => void;
-  transationErrorChange: (transactionError: string) => void;
+  transactionErrorChange: (transactionError: string) => void;
 };
 
 const SendNativeTokenButton = forwardRef<
@@ -289,8 +315,8 @@ const SendNativeTokenButton = forwardRef<
       address,
       amount,
       token,
-      transationReceiptChange,
-      transationErrorChange,
+      transactionReceiptChange,
+      transactionErrorChange,
       ...props
     },
     ref,
@@ -300,14 +326,14 @@ const SendNativeTokenButton = forwardRef<
       isPending,
       sendTransaction,
       error,
-      reset,
+      // reset,
     } = useSendTransaction();
     const {
       data: transactionReceipt,
       error: transactionError,
-      isLoading: transationLoading,
+      isLoading: transactionLoading,
       isSuccess,
-      status: transationStatus,
+      // status: transactionStatus,
     } = useWaitForTransactionReceipt({
       hash,
     });
@@ -324,22 +350,22 @@ const SendNativeTokenButton = forwardRef<
         eventBus.next({
           type: EventTypes.NATIVE_TOKEN_BALANCE_CHANGE,
         });
-        transationReceiptChange(transactionReceipt);
+        transactionReceiptChange(transactionReceipt);
       }
     }, [isSuccess, transactionReceipt]);
 
     useEffect(() => {
       if (error) {
-        transationErrorChange((error as any)?.details);
+        transactionErrorChange((error as any)?.details);
       } else if (transactionError) {
-        transationErrorChange((transactionError as any)?.details);
+        transactionErrorChange((transactionError as any)?.details);
       }
     }, [error, transactionError]);
 
     return (
       <Button
         variant={"secondary"}
-        disabled={props.disabled || isPending || transationLoading}
+        disabled={props.disabled || isPending || transactionLoading}
         onPress={send}
       >
         <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
@@ -357,8 +383,8 @@ const SendERC20TokenButton = forwardRef<
       address,
       amount,
       token,
-      transationReceiptChange,
-      transationErrorChange,
+      transactionReceiptChange,
+      transactionErrorChange,
       ...props
     },
     ref,
@@ -369,15 +395,15 @@ const SendERC20TokenButton = forwardRef<
       isPending,
       isSuccess,
       transactionReceipt,
-      transationError,
-      transationLoading,
-      transationStatus,
+      transactionError,
+      transactionLoading,
+      transactionStatus,
     } = useERC20Transfer({ contractAddress: token.address });
 
     const send = async () => {
       console.log("Send", { address, amount, token });
       if (address && amount && token) {
-        transfer(address, parseEther(amount));
+        transfer(address, parseUnits(amount, token?.decimals || 18));
       }
     };
 
@@ -386,25 +412,190 @@ const SendERC20TokenButton = forwardRef<
         eventBus.next({
           type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE,
         });
-        transationReceiptChange(transactionReceipt);
+        transactionReceiptChange(transactionReceipt);
       }
     }, [isSuccess, transactionReceipt]);
 
     useEffect(() => {
       if (error) {
-        transationErrorChange((error as any)?.details);
-      } else if (transationError) {
-        transationErrorChange((transationError as any)?.details);
+        transactionErrorChange((error as any)?.details);
+      } else if (transactionError) {
+        transactionErrorChange((transactionError as any)?.details);
       }
-    }, [error, transationError]);
+    }, [error, transactionError]);
 
     return (
       <Button
         variant={"secondary"}
-        disabled={props.disabled || isPending || transationLoading}
+        disabled={props.disabled || isPending || transactionLoading}
         onPress={send}
       >
         <Text>{isPending ? "Confirming..." : `Withdraw ${token.name}`}</Text>
+      </Button>
+    );
+  },
+);
+
+const SendNativeTokenFromPrivySmartWalletButton = forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentPropsWithoutRef<typeof Button> & SendTokenProps
+>(
+  (
+    {
+      address,
+      amount,
+      token,
+      transactionReceiptChange,
+      transactionErrorChange,
+      ...props
+    },
+    ref,
+  ) => {
+    const { client } = useSmartWallets();
+    const [isPending, setIsPending] = useState(false);
+    const [hash, setHash] = useState<`0x${string}` | undefined>();
+    const [error, setError] = useState<Error>();
+    const {
+      data: transactionReceipt,
+      error: transactionError,
+      isLoading: transactionLoading,
+      isSuccess,
+      status: transactionStatus,
+    } = useWaitForTransactionReceipt({
+      hash,
+    });
+    const send = async () => {
+      // console.log("Send", { address, amount, token });
+      if (address && amount && token && client) {
+        setIsPending(true);
+        try {
+          const txHash = await client.sendTransaction({
+            account: client.account,
+            chain: DEFAULT_CHAIN,
+            to: address,
+            value: parseEther(amount),
+          });
+          if (!txHash) {
+            throw new Error("Error while sending transaction");
+          }
+          setHash(txHash);
+        } catch (e) {
+          setError(e as Error);
+        } finally {
+          setIsPending(false);
+        }
+      }
+    };
+
+    useEffect(() => {
+      if (isSuccess && transactionReceipt) {
+        eventBus.next({
+          type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE,
+        });
+        transactionReceiptChange(transactionReceipt);
+      }
+    }, [isSuccess, transactionReceipt]);
+
+    useEffect(() => {
+      if (error) {
+        transactionErrorChange((error as any)?.details);
+      } else if (transactionError) {
+        transactionErrorChange((transactionError as any)?.details);
+      }
+    }, [error, transactionError]);
+
+    return (
+      <Button
+        variant={"secondary"}
+        disabled={props.disabled || isPending || transactionLoading}
+        onPress={send}
+      >
+        <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
+      </Button>
+    );
+  },
+);
+
+const SendERC20TokenFromPrivySmartWalletButton = forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentPropsWithoutRef<typeof Button> & SendTokenProps
+>(
+  (
+    {
+      address,
+      amount,
+      token,
+      transactionReceiptChange,
+      transactionErrorChange,
+      ...props
+    },
+    ref,
+  ) => {
+    const { client } = useSmartWallets();
+    const [isPending, setIsPending] = useState(false);
+    const [hash, setHash] = useState<`0x${string}` | undefined>();
+    const [error, setError] = useState<Error>();
+    const {
+      data: transactionReceipt,
+      error: transactionError,
+      isLoading: transactionLoading,
+      isSuccess,
+      status: transactionStatus,
+    } = useWaitForTransactionReceipt({
+      hash,
+    });
+    const { activeWallet } = useWalletAccount();
+    const send = async () => {
+      // console.log("Send", { address, amount, token });
+      if (address && amount && token && client) {
+        setIsPending(true);
+        try {
+          const txHash = await client.sendTransaction({
+            account: client.account,
+            chain: DEFAULT_CHAIN,
+            to: token.address,
+            data: encodeFunctionData({
+              abi: erc20Abi,
+              functionName: "transfer",
+              args: [address, parseUnits(amount, token?.decimals || 18)],
+            }),
+          });
+          if (!txHash) {
+            throw new Error("Error while sending transaction");
+          }
+          setHash(txHash);
+        } catch (e) {
+          setError(e as Error);
+        } finally {
+          setIsPending(false);
+        }
+      }
+    };
+
+    useEffect(() => {
+      if (isSuccess && transactionReceipt) {
+        eventBus.next({
+          type: EventTypes.ERC20_TOKEN_BALANCE_CHANGE,
+        });
+        transactionReceiptChange(transactionReceipt);
+      }
+    }, [isSuccess, transactionReceipt]);
+
+    useEffect(() => {
+      if (error) {
+        transactionErrorChange((error as any)?.details);
+      } else if (transactionError) {
+        transactionErrorChange((transactionError as any)?.details);
+      }
+    }, [error, transactionError]);
+
+    return (
+      <Button
+        variant={"secondary"}
+        disabled={props.disabled || isPending || transactionLoading}
+        onPress={send}
+      >
+        <Text>{isPending ? "Confirming..." : "Withdraw"}</Text>
       </Button>
     );
   },

@@ -1,13 +1,18 @@
 import { ScrollView, View } from "react-native";
+import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { CardWarper, PageContent } from "~/components/layout/content/Content";
 import CommunityNFTs from "~/components/portfolio/tokens/UserCommunityNFTs";
 import CommunityTokens from "~/components/portfolio/tokens/UserCommunityTokens";
 import UserTokens from "~/components/portfolio/tokens/UserTokens";
 import UserWallet from "~/components/portfolio/tokens/UserWallet";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function MyWalletScreen() {
-  const account = useAccount();
+  const {
+    getActualUseWalletAddress,
+  } = useWalletAccount();
+  const walletAddress: Address = getActualUseWalletAddress();
   return (
     <PageContent>
       <CardWarper>
@@ -16,12 +21,12 @@ export default function MyWalletScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="flex w-full gap-6">
-            {account && <UserWallet />}
-            {account?.address && <UserTokens address={account?.address} />}
-            {account?.address && (
-              <CommunityNFTs address={account?.address} isSelf={true} />
+            {walletAddress && <UserWallet />}
+            {walletAddress && <UserTokens address={walletAddress} />}
+            {walletAddress && (
+              <CommunityNFTs address={walletAddress} isSelf={true} />
             )}
-            {account?.address && <CommunityTokens address={account?.address} />}
+            {walletAddress && <CommunityTokens address={walletAddress} />}
           </View>
         </ScrollView>
       </CardWarper>

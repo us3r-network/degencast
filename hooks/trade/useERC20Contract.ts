@@ -39,7 +39,7 @@ export function useERC20Approve({
 
   const {
     data: transactionReceipt,
-    error: transationError,
+    error: transactionError,
     isLoading: waiting,
     isSuccess,
     status,
@@ -64,10 +64,10 @@ export function useERC20Approve({
   }, [isSuccess]);
 
   useEffect(() => {
-    if (writeError || transationError) {
+    if (writeError || transactionError) {
       reset();
     }
-  }, [writeError, transationError]);
+  }, [writeError, transactionError]);
 
   return {
     allowance,
@@ -93,10 +93,10 @@ export function useERC20Transfer({
 
   const {
     data: transactionReceipt,
-    error: transationError,
-    isLoading: transationLoading,
+    error: transactionError,
+    isLoading: transactionLoading,
     isSuccess,
-    status: transationStatus,
+    status: transactionStatus,
   } = useWaitForTransactionReceipt({
     hash,
   });
@@ -118,10 +118,10 @@ export function useERC20Transfer({
   }, [isSuccess]);
 
   useEffect(() => {
-    if (error || transationError) {
+    if (error || transactionError) {
       reset();
     }
-  }, [error, transationError]);
+  }, [error, transactionError]);
 
   return {
     transfer,
@@ -129,9 +129,9 @@ export function useERC20Transfer({
     isPending,
     isSuccess,
     transactionReceipt,
-    transationError,
-    transationLoading,
-    transationStatus,
+    transactionError,
+    transactionLoading,
+    transactionStatus,
   };
 }
 

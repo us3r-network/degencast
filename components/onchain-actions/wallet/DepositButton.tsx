@@ -82,11 +82,11 @@ export function DepositDialog({
 }) {
   const {
     connectWallet,
-    activeWallet,
     connectedInjectedWallet,
     setFreezeAutoSwitchActiveWallet,
+    getActualUseWalletAddress,
   } = useWalletAccount();
-
+  const walletAddress: Address = getActualUseWalletAddress();
   useEffect(() => {
     if (open) {
       // console.log("freeze");
@@ -97,7 +97,7 @@ export function DepositDialog({
     }
   }, [open]);
 
-  if (activeWallet) {
+  if (walletAddress) {
     return (
       <Dialog
         open={open}
@@ -119,18 +119,16 @@ export function DepositDialog({
             showsHorizontalScrollIndicator={false}
           >
             <View className="flex gap-6">
-              <UserTokens address={activeWallet.address as Address} />
+              <UserTokens address={walletAddress} />
               <View className=" w-full flex-row items-center justify-between gap-2 rounded-lg border-2 border-secondary/50">
                 <Text className="ml-2 line-clamp-1 flex-1 text-secondary/50">
-                  {activeWallet.address as Address}
+                  {walletAddress}
                 </Text>
                 <Button
                   size="icon"
                   variant="ghost"
                   onPress={async (event) => {
-                    await Clipboard.setStringAsync(
-                      activeWallet.address as Address,
-                    );
+                    await Clipboard.setStringAsync(walletAddress);
                     Toast.show({
                       type: "info",
                       text1: "Wallet Address Copied!",
@@ -148,15 +146,10 @@ export function DepositDialog({
               {!!connectedInjectedWallet ? (
                 <TransferFromExternalWallet
                   fromWallet={connectedInjectedWallet}
-                  toWallet={activeWallet}
+                  toWalletAddress={walletAddress}
                 />
               ) : (
-                <Button
-                  variant="secondary"
-                  onPress={() =>
-                    connectWallet()
-                  }
-                >
+                <Button variant="secondary" onPress={() => connectWallet()}>
                   <Text>Connect your wallet & transfer</Text>
                 </Button>
               )}
@@ -167,12 +160,13 @@ export function DepositDialog({
     );
   }
 }
+
 function TransferFromExternalWallet({
   fromWallet,
-  toWallet,
+  toWalletAddress,
 }: {
   fromWallet: ConnectedWallet;
-  toWallet: ConnectedWallet;
+  toWalletAddress: Address;
 }) {
   const [token, setToken] = useState<TokenWithTradeInfo | undefined>();
   const [amount, setAmount] = useState("0");
@@ -213,7 +207,7 @@ function TransferFromExternalWallet({
   }, [fromWallet, transfering, token]);
 
   const transfer = async () => {
-    if (!fromWallet || !toWallet || !token || transfering) return;
+    if (!fromWallet || !toWalletAddress || !token || transfering) return;
     const value = parseEther(amount);
     try {
       setTransfering(true);
@@ -229,7 +223,7 @@ function TransferFromExternalWallet({
       if (token.address === NATIVE_TOKEN_ADDRESS) {
         hash = await client.sendTransaction({
           account: fromWallet.address as Address,
-          to: toWallet.address as Address,
+          to: toWalletAddress,
           value,
         });
       } else {
@@ -237,7 +231,7 @@ function TransferFromExternalWallet({
           address: token.address,
           abi: erc20Abi,
           functionName: "transfer",
-          args: [toWallet.address as Address, value],
+          args: [toWalletAddress, value],
           account: fromWallet.address as Address,
         });
       }

@@ -1,5 +1,5 @@
 import type { PrivyClientConfig } from "@privy-io/react-auth";
-import { PRIMARY_COLOR } from "~/constants";
+import { DEFAULT_CHAIN, PRIMARY_COLOR } from "~/constants";
 
 export const privyConfig: PrivyClientConfig = {
   // Customize Privy's appearance in your app
@@ -41,4 +41,5 @@ export const privyConfig: PrivyClientConfig = {
   //     "rainbow",
   //   ],
   // },
+  defaultChain: DEFAULT_CHAIN,
 };

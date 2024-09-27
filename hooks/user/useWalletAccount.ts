@@ -11,7 +11,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useCapabilities } from "wagmi/experimental";
-import { PAYMASTER_AND_BUNDLER_ENDPOINT, ZERO_ADDRESS } from "~/constants";
+import {
+  DEFAULT_CHAIN,
+  PAYMASTER_AND_BUNDLER_ENDPOINT,
+  ZERO_ADDRESS,
+} from "~/constants";
 import {
   isReportedUserAccount,
   linkUserWallet,
@@ -65,7 +69,7 @@ export default function useWalletAccount() {
   const privySmartWallet = user?.linkedAccounts?.find(
     (account) => account.type === "smart_wallet",
   );
-  console.log("privySmartWallet", privySmartWallet);
+
   const linkedCoinBaseWallet = linkedWallets.find(
     (wallet) => wallet.connectorType === "coinbase_wallet",
   );
@@ -178,12 +182,12 @@ export default function useWalletAccount() {
     (wallet?: ConnectedWallet | WalletWithMetadata) => {
       if (wallet)
         return wallet.connectorType === "embedded" && privySmartWallet
-          ? privySmartWallet.address
-          : wallet.address;
+          ? (privySmartWallet.address as Address)
+          : (wallet.address as Address);
       else if (activeWallet)
         return activeWallet.connectorType === "embedded" && privySmartWallet
-          ? privySmartWallet.address
-          : activeWallet.address;
+          ? (privySmartWallet.address as Address)
+          : (activeWallet.address as Address);
       else return ZERO_ADDRESS;
     },
     [activeWallet, privySmartWallet],
@@ -207,6 +211,7 @@ export default function useWalletAccount() {
     supportAtomicBatch,
     supportAuxiliaryFunds,
     getPaymasterService,
+    usePrivySmartWallet: activeWallet?.connectorType === "embedded",
     getActualUseWalletAddress,
   };
 }

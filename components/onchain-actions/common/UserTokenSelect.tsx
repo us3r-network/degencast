@@ -2,7 +2,7 @@ import { Option } from "@rn-primitives/select";
 import { useEffect, useMemo, useState } from "react";
 import { isDesktop } from "react-device-detect";
 import { Pressable, View } from "react-native";
-import { Chain } from "viem";
+import { Address, Chain } from "viem";
 import { useAccount } from "wagmi";
 import { TokenInfo } from "~/components/common/TokenInfo";
 import { Text } from "~/components/ui/text";
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
 } from "../../ui/select";
 import { ERC20TokenBalance, NativeTokenBalance } from "./TokenBalance";
+import useWalletAccount from "~/hooks/user/useWalletAccount";
 
 export default function UserTokenSelect({
   defaultToken,
@@ -36,13 +37,16 @@ export default function UserTokenSelect({
   showBalance?: boolean;
   variant?: "default" | "dropdown";
 }) {
-  const account = useAccount();
+  const {
+    getActualUseWalletAddress,
+  } = useWalletAccount();
+  const walletAddress: Address = getActualUseWalletAddress();
   const { token: nativeTokenInfo } = useUserNativeToken(
-    account.address,
+    walletAddress,
     chain.id,
   );
   const { token: erc20TokenInfo } = useUserToken(
-    account.address,
+    walletAddress,
     DEGEN_TOKEN_ADDRESS,
     chain.id,
   );
@@ -127,17 +131,17 @@ export default function UserTokenSelect({
                     logo={token.logoURI}
                     symbol={token.symbol}
                   />
-                  {showBalance && account.address && token && (
+                  {showBalance && walletAddress && token && (
                     <View className="flex-row items-center gap-2">
                       {token.address === NATIVE_TOKEN_METADATA.address ? (
                         <NativeTokenBalance
                           chainId={token.chainId}
-                          address={account.address}
+                          address={walletAddress}
                         />
                       ) : (
                         <ERC20TokenBalance
                           token={token}
-                          address={account.address}
+                          address={walletAddress}
                         />
                       )}
                     </View>
@@ -171,17 +175,17 @@ export default function UserTokenSelect({
                 symbol={token.symbol}
               /> */}
               <Text className="text-white">{token.symbol}</Text>
-              {showBalance && account.address && token && (
+              {showBalance && walletAddress && token && (
                 <View className="flex-row items-center gap-2">
                   {token.address === NATIVE_TOKEN_METADATA.address ? (
                     <NativeTokenBalance
                       chainId={token.chainId}
-                      address={account.address}
+                      address={walletAddress}
                     />
                   ) : (
                     <ERC20TokenBalance
                       token={token}
-                      address={account.address}
+                      address={walletAddress}
                     />
                   )}
                 </View>
