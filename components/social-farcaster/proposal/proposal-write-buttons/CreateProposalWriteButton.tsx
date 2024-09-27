@@ -12,6 +12,7 @@ import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { TokenWithTradeInfo } from "~/services/trade/types";
 import useProxyUserToCreateProposal from "~/hooks/social-farcaster/proposal/useProxyUserToCreateProposal";
 import useTipAllowanceToDegencast from "~/hooks/social-farcaster/proposal/useTipAllowanceToDegencast";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 
 export default function CreateProposalWriteButton({
   cast,
@@ -172,6 +173,13 @@ export function ProxyUserToCreateProposalButton({
     onCreateProposalSuccess,
     onCreateProposalError,
   });
+
+  const {
+    requestSigner,
+    hasSigner,
+    requesting: signerRequesting,
+  } = useFarcasterSigner();
+
   const { isLoading: tipToDegencastIsLoading, tipToDegencast } =
     useTipAllowanceToDegencast();
   const { address, isConnected } = useAccount();
@@ -186,6 +194,7 @@ export function ProxyUserToCreateProposalButton({
     !contractAddress ||
     isLoading ||
     tipToDegencastIsLoading ||
+    signerRequesting ||
     allowanceNotEnough;
 
   return (
@@ -194,6 +203,10 @@ export function ProxyUserToCreateProposalButton({
       className="w-full rounded-md"
       disabled={disabled}
       onPress={() => {
+        if (!hasSigner) {
+          requestSigner();
+          return;
+        }
         if (!isConnected || !address) {
           connectWallet();
           return;
@@ -216,6 +229,8 @@ export function ProxyUserToCreateProposalButton({
         <Loading />
       ) : isCreated ? (
         <Text>👍 Superlike</Text>
+      ) : !hasSigner ? (
+        <Text>Connect Farcaster</Text>
       ) : !isConnected || !address ? (
         <Text>Connect your wallet first</Text>
       ) : (

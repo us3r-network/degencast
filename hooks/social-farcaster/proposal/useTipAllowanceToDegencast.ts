@@ -20,20 +20,28 @@ export default function useTipAllowanceToDegencast() {
       if (isLoading) return;
       try {
         setIsLoading(true);
-        await submitCast({
+        const tipCast = {
           text: `${allowanceValue} $DEGEN`,
           parentCastId: {
             hash: ALLOWANCE_CAST_HASH,
             fid: Number(ALLOWANCE_CAST_FID),
           },
-        });
-        await notifyTipApi({
+        };
+        console.log("tipCast", tipCast);
+
+        const res = await submitCast(tipCast);
+        if (!res?.hash) {
+          throw new Error("Failed to tip");
+        }
+        console.log("submitCast res", res);
+        const notifyRes = await notifyTipApi({
           fromFid: currFid as number,
           amount: Number(allowanceValue),
           txHash: "",
           type: "Allowance",
           castHash: ALLOWANCE_CAST_HASH,
         });
+        console.log("notifyRes res", notifyRes);
         opts.onSuccess?.();
       } catch (error) {
         console.error(error);
