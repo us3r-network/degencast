@@ -18,6 +18,7 @@ import {
   storeReportedUserAccount,
 } from "~/services/user/api";
 import { UserAccountType } from "~/services/user/types";
+import { SmartWalletType } from '@privy-io/public-api';
 
 export default function useWalletAccount() {
   const { user, ready, authenticated } = usePrivy();
@@ -35,9 +36,8 @@ export default function useWalletAccount() {
   const linkedWallets: PrivyWalletWithMetadata[] =
     (user?.linkedAccounts?.filter(
       (account) =>
-        account.type === "wallet" && account.connectorType !== "embedded",
+        account.type === "wallet",
     ) as PrivyWalletWithMetadata[]) || [];
-
   // link connected wallets to degencast user
   useEffect(() => {
     if (!connectedWallets?.length) return undefined;
@@ -63,6 +63,10 @@ export default function useWalletAccount() {
   );
 
   // specific wallet
+  const privySmartWallet = user?.linkedAccounts?.find(
+    (account) => account.type === "smart_wallet",
+  );
+  console.log("privySmartWallet", privySmartWallet);
   const linkedCoinBaseWallet = linkedWallets.find(
     (wallet) => wallet.connectorType === "coinbase_wallet",
   );
@@ -177,11 +181,12 @@ export default function useWalletAccount() {
     connectedExternalWallet,
     linkedWallets,
     unconnectedLinkedWallets,
+    privySmartWallet,
     coinBaseWallet: linkedCoinBaseWallet || connectedCoinBaseWallet,
     injectedWallet: linkedInjectedWallet,
     connectedInjectedWallet,
     activeWallet,
-    isConnected: !!activeWallet && activeWallet.connectorType !== "embedded",
+    isConnected: !!activeWallet,
     connectWallet,
     setActiveWallet,
     activeOneWallet,
@@ -194,4 +199,9 @@ export default function useWalletAccount() {
 
 export type ConnectedWallet = PrivyConnectedWalletType;
 export type WalletWithMetadata = PrivyWalletWithMetadata;
+export type SmartWalletWithMetadata = {
+  address: string;
+  smartWalletType: SmartWalletType;
+  type: "smart_wallet";
+};
 export type MoonpayConfig = PrivyMoonpayConfig;

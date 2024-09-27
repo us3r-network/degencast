@@ -24,20 +24,26 @@ export default function UserWalletSelect({
   disabled?: boolean;
 }) {
   const { ready, authenticated } = useAuth();
-  const { connectedExternalWallet, activeWallet, setActiveWallet } =
+  const { connectedWallets, activeWallet, setActiveWallet, privySmartWallet } =
     useWalletAccount();
 
   if (!ready || !authenticated) {
     return null;
   }
+  const activeWalletAddress = activeWallet
+    ? activeWallet.connectorType === "embedded" && privySmartWallet
+      ? privySmartWallet.address
+      : activeWallet.address
+    : ZERO_ADDRESS;
 
+  console.log("activeWallet", activeWallet, activeWalletAddress);
   if (disabled) {
-    if (activeWallet && connectedExternalWallet.includes(activeWallet))
+    if (activeWallet && connectedWallets.includes(activeWallet))
       return (
         <View className="mr-2 flex-row items-center gap-1">
           <WalletIcon type={activeWallet.walletClientType || ""} />
           <Text className="text-white/80">
-            {shortPubKey(activeWallet.address || "")}
+            {shortPubKey(activeWalletAddress)}
           </Text>
         </View>
       );
@@ -53,9 +59,9 @@ export default function UserWalletSelect({
     <TextClassContext.Provider value="text-sm font-medium">
       <Select
         value={
-          activeWallet && connectedExternalWallet.includes(activeWallet)
+          activeWallet && connectedWallets.includes(activeWallet)
             ? {
-                label: activeWallet.address,
+                label: activeWalletAddress,
                 value: activeWallet.address,
               }
             : {
@@ -64,7 +70,7 @@ export default function UserWalletSelect({
               }
         }
         onValueChange={async (item) => {
-          const newActiveWallet = connectedExternalWallet.find(
+          const newActiveWallet = connectedWallets.find(
             (wallet) => wallet.address === item?.value,
           );
           if (newActiveWallet) await setActiveWallet(newActiveWallet);
@@ -76,11 +82,11 @@ export default function UserWalletSelect({
             "h-6 flex-row items-center rounded-full border-none bg-white/40 px-2",
           )}
         >
-          {activeWallet && connectedExternalWallet.includes(activeWallet) ? (
+          {activeWallet && connectedWallets.includes(activeWallet) ? (
             <View className="mr-2 flex-row items-center gap-1">
               <WalletIcon type={activeWallet.walletClientType || ""} />
               <Text className="text-primery">
-                {shortPubKey(activeWallet.address || "")}
+                {shortPubKey(activeWalletAddress)}
               </Text>
             </View>
           ) : (
@@ -97,7 +103,7 @@ export default function UserWalletSelect({
               isDesktop ? "p-0" : "p-2",
             )}
           >
-            {connectedExternalWallet.map((wallet) => (
+            {connectedWallets.map((wallet) => (
               <SelectItem
                 asChild
                 className="p-0"

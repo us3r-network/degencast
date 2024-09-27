@@ -43,6 +43,7 @@ import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useAuth from "~/hooks/user/useAuth";
 import useWalletAccount, {
   ConnectedWallet,
+  SmartWalletWithMetadata,
   WalletWithMetadata,
 } from "~/hooks/user/useWalletAccount";
 import { cn } from "~/lib/utils";
@@ -54,7 +55,8 @@ export default function UserSettings({
   showFarcasterAccount?: boolean;
 }) {
   const { ready, authenticated } = useAuth();
-  const { connectedExternalWallet, setActiveWallet } = useWalletAccount();
+  const { connectedWallets, setActiveWallet, privySmartWallet } =
+    useWalletAccount();
   const [open, setOpen] = React.useState(false);
 
   if (!ready || !authenticated) {
@@ -80,7 +82,7 @@ export default function UserSettings({
               icon={<Wallet className="size-4" />}
             >
               <DropdownMenuGroup className={cn("flex gap-2")}>
-                {connectedExternalWallet.map((wallet) => (
+                {connectedWallets.map((wallet) => (
                   <DropdownMenuItem
                     asChild
                     className={cn("p-0")}
@@ -144,7 +146,7 @@ export function LinkWallets() {
 
   if (!ready || !authenticated) return null;
   return (
-    <View className="flex w-full gap-2 m-1">
+    <View className="m-1 flex w-full gap-2">
       {unconnectedLinkedWallets.map((wallet) => (
         <WalletItem
           key={wallet.address}
@@ -153,7 +155,7 @@ export function LinkWallets() {
             connectWallet({
               suggestedAddress: wallet.address,
               walletList: privyConfig.appearance?.walletList?.filter(
-                (w) =>  w ===wallet.walletClientType,
+                (w) => w === wallet.walletClientType,
               ),
             })
           }
@@ -185,7 +187,7 @@ function CreateWallet() {
   const { connectCoinbaseSmartWallet } = useConnectCoinbaseSmartWallet();
   if (!ready || !authenticated || coinBaseWallet) return null;
   return (
-    <View className="flex w-full gap-2 m-1">
+    <View className="m-1 flex w-full gap-2">
       <Pressable
         className="w-full flex-row items-center justify-between gap-2"
         onPointerUp={() => {
@@ -213,22 +215,27 @@ export const WalletItem = React.forwardRef<
 >(({ wallet, action }, ref) => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const { connectedWallets, connectWallet } = useWalletAccount();
+  const { connectedWallets, connectWallet, privySmartWallet } =
+    useWalletAccount();
+  const walletAddress =
+    wallet.connectorType === "embedded" && privySmartWallet
+      ? privySmartWallet.address
+      : wallet.address;
   return (
-    <View className="w-full flex-row items-center justify-between gap-6 m-1 pr-2">
+    <View className="m-1 w-full flex-row items-center justify-between gap-6 pr-2">
       <Pressable
         className="flex-row items-center gap-2"
         onPointerUp={() => action?.()}
       >
         <WalletIcon type={wallet.walletClientType} />
-        <Text>{shortPubKey(wallet.address)}</Text>
+        <Text>{shortPubKey(walletAddress)}</Text>
       </Pressable>
       {wallet.connectorType === "embedded" ? (
         <View className="flex-row gap-2">
           <Pressable
             className="flex-row items-center gap-2"
             onPointerUp={async (event) => {
-              await Clipboard.setStringAsync(wallet.address);
+              await Clipboard.setStringAsync(walletAddress);
               Toast.show({
                 type: "info",
                 text1: "Wallet Address Copied!",
@@ -237,13 +244,13 @@ export const WalletItem = React.forwardRef<
           >
             <Copy className="size-4" />
           </Pressable>
-          <Pressable disabled>
+          {/* <Pressable disabled>
             <MinusCircle className="size-4" />
-          </Pressable>
+          </Pressable> */}
         </View>
       ) : (
         <View className="flex-row gap-2">
-          {connectedWallets.find((w) => w.address === wallet.address) ? (
+          {connectedWallets.find((w) => w.address === walletAddress) ? (
             <Pressable
               className="flex-row items-center gap-2"
               onPointerUp={() => disconnect()}
@@ -254,7 +261,7 @@ export const WalletItem = React.forwardRef<
             <Pressable
               className="flex-row items-center gap-2"
               onPointerUp={() =>
-                connectWallet({ suggestedAddress: wallet.address })
+                connectWallet({ suggestedAddress: walletAddress })
               }
             >
               <Plug className="size-4" />
@@ -285,7 +292,7 @@ function FarcasterAccount() {
   if (!ready || !authenticated) return null;
   if (farcasterAccount?.fid) {
     return (
-      <View className="flex-row items-center justify-between m-1">
+      <View className="m-1 flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Avatar alt={farcasterAccount.username || ""} className="size-4">
             <AvatarImage source={{ uri: farcasterAccount.pfp || "" }} />
