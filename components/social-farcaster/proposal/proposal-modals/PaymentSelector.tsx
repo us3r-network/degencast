@@ -212,8 +212,8 @@ function ProposalPaymentSelectWrapper({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
-  console.log("swapReady", swapReady);
 
   const {
     fetchSellAmount: fetchEthRecommendedAmount,
@@ -268,6 +268,7 @@ function ProposalPaymentSelectWrapper({
       setSelectedPayAmount(0n);
       return;
     }
+
     if (!swapReady) {
       return;
     }
