@@ -23,6 +23,7 @@ import "../global.css";
 import { Buffer } from "buffer";
 import GlobalModals from "~/components/GlobalModals";
 import Toast from "~/components/Toast";
+import { SmartWalletsProvider } from "@privy-io/react-auth/smart-wallets";
 // TODO 运行app模式可能会报错，注意处理兼容性问题
 global.Buffer = Buffer;
 
@@ -72,17 +73,19 @@ export default function RootLayout() {
           ...privyConfig,
         }}
       >
-        <QueryClientProvider client={queryClient}>
-          <WagmiProvider config={wagmiConfig}>
-            <StateUpdateWrapper />
-            <GlobalModals />
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-            <PortalHost />
-            <Toast />
-          </WagmiProvider>
-        </QueryClientProvider>
+        <SmartWalletsProvider>
+          <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={wagmiConfig}>
+              <StateUpdateWrapper />
+              <GlobalModals />
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </Stack>
+              <PortalHost />
+              <Toast />
+            </WagmiProvider>
+          </QueryClientProvider>
+        </SmartWalletsProvider>
       </PrivyProvider>
     </ReduxProvider>
   );
