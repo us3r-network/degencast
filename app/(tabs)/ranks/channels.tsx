@@ -129,11 +129,10 @@ function Item({
       case RankOrderBy.NFT_PRICE:
         return (
           <Link
-            className="flex-1"
             href={`/communities/${item.id}/casts`}
             asChild
           >
-            <Button variant={"secondary"} size="sm" className="min-w-14 px-0">
+            <Button variant={"secondary"} size="sm" className="min-w-16 px-0">
               <Text>Curate</Text>
             </Button>
           </Link>
