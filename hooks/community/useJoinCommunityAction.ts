@@ -17,6 +17,7 @@ import useAuth from "../user/useAuth";
 import useFarcasterAccount from "../social-farcaster/useFarcasterAccount";
 import useFarcasterSigner from "../social-farcaster/useFarcasterSigner";
 import Toast from "react-native-toast-message";
+import useWarpcastSign from "../social-farcaster/useWarpcastSign";
 
 export default function useJoinCommunityAction(
   channelId: string,
@@ -26,6 +27,7 @@ export default function useJoinCommunityAction(
   const dispatch = useAppDispatch();
   const { login, ready, authenticated } = useAuth();
   const { currFid } = useFarcasterAccount();
+  const { genWarpcastSign } = useWarpcastSign();
   const { requestSigner, hasSigner } = useFarcasterSigner();
   const { joinActionPendingIds, joinedCommunities, joinedCommunitiesPending } =
     useAppSelector(selectJoinCommunity);
@@ -59,7 +61,9 @@ export default function useJoinCommunityAction(
     try {
       dispatch(addOneToJoinActionPendingIds(channelId));
       // const response = await fetchJoiningCommunity(channelId);
-      const response = await fetchJoiningChannel(channelId);
+      const warpcastSign = await genWarpcastSign(currFid);
+      console.log({ warpcastSign, currFid })
+      const response = await fetchJoiningChannel(channelId, warpcastSign);
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
         const communityRes = await fetchCommunity(channelId);
@@ -104,11 +108,17 @@ export default function useJoinCommunityAction(
       login();
       return;
     }
+    if (!currFid || !hasSigner) {
+      requestSigner();
+      return;
+    }
     if (isPending) return;
     try {
       dispatch(addOneToJoinActionPendingIds(channelId));
       // const response = await fetchUnjoiningCommunity(channelId);
-      const response = await fetchUnjoiningChannel(channelId);
+      const warpcastSign = await genWarpcastSign(currFid);
+      console.log({ warpcastSign, currFid })
+      const response = await fetchUnjoiningChannel(channelId, warpcastSign);
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
         dispatch(removeOneFromJoinedCommunitiesByChannelId(channelId));
@@ -132,7 +142,7 @@ export default function useJoinCommunityAction(
     } finally {
       dispatch(removeOneFromJoinActionPendingIds(channelId));
     }
-  }, [dispatch, isPending, channelId, authenticated, login, showToast]);
+  }, [dispatch, isPending, channelId, authenticated, login, showToast, currFid]);
 
   const joinChangeAction = useCallback(() => {
     if (joined) {
