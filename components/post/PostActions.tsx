@@ -303,6 +303,7 @@ type PostMenuButtonProps = {
   liking?: boolean;
   reposted?: boolean;
   reposting?: boolean;
+  onOpenWarpcast: () => void;
   onLike: () => void;
   onGift: () => void;
   onShare: () => void;
@@ -339,6 +340,7 @@ export const PostMenuButton = forwardRef(function (
     liking,
     reposted,
     reposting,
+    onOpenWarpcast,
     onLike,
     onGift,
     onShare,
@@ -402,6 +404,20 @@ export const PostMenuButton = forwardRef(function (
           translateXAnimatedValue,
         }}
       >
+        <ActionMenuItem index={7}>
+          <Pressable
+            className="h-full w-full"
+            onPress={() => {
+              onOpenWarpcast();
+            }}
+          >
+            <Image
+              source={require("~/assets/images/warpcast-icon.png")}
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Pressable>
+        </ActionMenuItem>
         <ActionMenuItem index={6}>
           <ShareButton onPress={onShare} />
         </ActionMenuItem>

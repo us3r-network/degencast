@@ -15,6 +15,7 @@ import useAuth from "~/hooks/user/useAuth";
 import useCastReply from "~/hooks/social-farcaster/useCastReply";
 import useAppModals from "~/hooks/useAppModals";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { openWarpcastCast } from "~/utils/platform-sharing/warpcast";
 
 export default function FCastMenuButton({
   direction,
@@ -41,6 +42,7 @@ export default function FCastMenuButton({
   const [openMintNftModal, setOpenMintNftModal] = useState(false);
   const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
     useUserDegenAllowance();
+  const castHash = cast.hash;
 
   const onLike = () => {
     if (liked) {
@@ -67,8 +69,8 @@ export default function FCastMenuButton({
       requestSigner();
       return;
     }
-    const castHex = getCastHex(cast);
-    navigateToCastReply(castHex, {
+
+    navigateToCastReply(castHash, {
       cast,
       community: communityInfo,
     });
@@ -113,6 +115,9 @@ export default function FCastMenuButton({
             return;
           }
           setOpenMintNftModal(true);
+        }}
+        onOpenWarpcast={() => {
+          openWarpcastCast(castHash);
         }}
       />
 
