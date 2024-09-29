@@ -23,6 +23,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
+import ProposalPaymentSelect, { PaymentType } from "../ProposalPaymentSelect";
+import useDegencastUserInfo from "~/hooks/user/useDegencastUserInfo";
 
 export enum PaymentInfoType {
   Create,
@@ -37,6 +39,9 @@ export function ProposalPaymentSelector({
   selectedPayAmount,
   setSelectedPayAmount,
   paymentInfoType,
+  selectedPaymentType,
+  setSelectedPaymentType,
+  allowanceInfo,
 }: {
   defaultPaymentInfo: {
     tokenInfo?: TokenWithTradeInfo;
@@ -50,9 +55,18 @@ export function ProposalPaymentSelector({
   selectedPayAmount: bigint;
   setSelectedPayAmount: (amount: bigint) => void;
   paymentInfoType: PaymentInfoType;
+  selectedPaymentType: PaymentType;
+  setSelectedPaymentType: (paymentType: PaymentType) => void;
+  allowanceInfo?: {
+    paymentAmount: number;
+    totalAllowance: number;
+    remainingAllowance: number;
+  };
 }) {
   const { supportAtomicBatch } = useWalletAccount();
   const account = useAccount();
+  const { degencastUserInfo } = useDegencastUserInfo();
+  const isSuperLikeUser = degencastUserInfo?.isSuperlikeUser;
 
   const {
     tokenInfo: defaultTokenInfo,
@@ -80,35 +94,54 @@ export function ProposalPaymentSelector({
     ? fetchedEthMinAmount
     : defaultMinAmount;
 
+  const isSupportAtomicBatch = supportAtomicBatch(defaultTokenInfo?.chainId);
+
+  const isCreateProposal = paymentInfoType === PaymentInfoType.Create;
+  const isSupportAllowance = isSuperLikeUser && isCreateProposal;
+
+  const showPaymentSelect =
+    !!ethTokenInfo &&
+    defaultTokenInfo &&
+    (isSupportAtomicBatch || isSupportAllowance);
   return (
     <View className="flex flex-col gap-4">
-      {!!ethTokenInfo &&
-        defaultTokenInfo &&
-        supportAtomicBatch(defaultTokenInfo.chainId) && (
-          <UserTokenSelectWrapper
-            ethTokenInfo={ethTokenInfo}
-            defaultTokenInfo={defaultTokenInfo}
-            selectedPaymentToken={selectedPaymentToken}
-            setSelectedPaymentToken={setSelectedPaymentToken}
-            defaultRecommendedAmount={defaultRecommendedAmount}
-            defaultMinAmount={defaultMinAmount}
-            selectedPayAmount={selectedPayAmount}
-            setSelectedPayAmount={setSelectedPayAmount}
-            setFetchedEthRecommendedAmount={setFetchedEthRecommendedAmount}
-            setFetchedEthMinAmount={setFetchedEthMinAmount}
-          />
-        )}
-
-      {paymentInfoType === PaymentInfoType.Create ? (
-        <PaymentInfo
-          paymentTokenInfo={selectedPaymentToken}
-          recommendedPayAmount={recommendedPayAmount || 0n}
-          minPayAmount={minPayAmount || 0n}
+      {showPaymentSelect ? (
+        <ProposalPaymentSelectWrapper
+          ethTokenInfo={ethTokenInfo}
+          defaultTokenInfo={defaultTokenInfo}
+          selectedPaymentToken={selectedPaymentToken}
+          setSelectedPaymentToken={setSelectedPaymentToken}
+          defaultRecommendedAmount={defaultRecommendedAmount}
+          defaultMinAmount={defaultMinAmount}
           selectedPayAmount={selectedPayAmount}
           setSelectedPayAmount={setSelectedPayAmount}
-          hideChallengeAmount={true}
-          description="Stake DEGEN to superlike for reward."
+          setFetchedEthRecommendedAmount={setFetchedEthRecommendedAmount}
+          setFetchedEthMinAmount={setFetchedEthMinAmount}
+          selectedPaymentType={selectedPaymentType}
+          setSelectedPaymentType={setSelectedPaymentType}
+          hideNativeToken={!isSupportAtomicBatch}
+          hideAllowance={!isSupportAllowance}
         />
+      ) : null}
+
+      {paymentInfoType === PaymentInfoType.Create ? (
+        selectedPaymentType === PaymentType.Allowance ? (
+          <AllowancePaymentInfo
+            paymentAmount={allowanceInfo?.paymentAmount || 0}
+            totalAllowance={allowanceInfo?.totalAllowance || 0}
+            remainingAllowance={allowanceInfo?.remainingAllowance || 0}
+          />
+        ) : (
+          <PaymentInfo
+            paymentTokenInfo={selectedPaymentToken}
+            recommendedPayAmount={recommendedPayAmount || 0n}
+            minPayAmount={minPayAmount || 0n}
+            selectedPayAmount={selectedPayAmount}
+            setSelectedPayAmount={setSelectedPayAmount}
+            hideChallengeAmount={true}
+            description="Stake DEGEN to superlike for reward."
+          />
+        )
       ) : paymentInfoType === PaymentInfoType.Proposed ? (
         <PaymentInfo
           paymentTokenInfo={selectedPaymentToken}
@@ -141,7 +174,7 @@ export function ProposalPaymentSelector({
   );
 }
 
-function UserTokenSelectWrapper({
+function ProposalPaymentSelectWrapper({
   ethTokenInfo,
   defaultTokenInfo,
   selectedPaymentToken,
@@ -152,6 +185,10 @@ function UserTokenSelectWrapper({
   setSelectedPayAmount,
   setFetchedEthRecommendedAmount,
   setFetchedEthMinAmount,
+  selectedPaymentType,
+  setSelectedPaymentType,
+  hideNativeToken,
+  hideAllowance,
 }: {
   ethTokenInfo: TokenWithTradeInfo;
   defaultTokenInfo: TokenWithTradeInfo;
@@ -163,6 +200,10 @@ function UserTokenSelectWrapper({
   setSelectedPayAmount: (amount: bigint) => void;
   setFetchedEthRecommendedAmount: (amount: bigint) => void;
   setFetchedEthMinAmount: (amount: bigint) => void;
+  selectedPaymentType: PaymentType;
+  setSelectedPaymentType: (paymentType: PaymentType) => void;
+  hideNativeToken?: boolean;
+  hideAllowance?: boolean;
 }) {
   const {
     fetchSellAmountAsync: fetchEthAmountAsync,
@@ -171,6 +212,7 @@ function UserTokenSelectWrapper({
   } = useSwap({
     sellToken: ethTokenInfo!,
     buyToken: defaultTokenInfo,
+    poolFee: UNISWAP_V3_DEGEN_ETH_POOL_FEES,
   });
 
   const {
@@ -199,6 +241,10 @@ function UserTokenSelectWrapper({
     setFetchedEthMinAmount(fetchedEthMinAmount || 0n);
   }, [fetchedEthMinAmount]);
   const handleTokenChange = async (token: TokenWithTradeInfo) => {
+    if (!token?.address) {
+      return;
+    }
+
     if (token?.address === selectedPaymentToken?.address) {
       return;
     }
@@ -222,9 +268,11 @@ function UserTokenSelectWrapper({
       setSelectedPayAmount(0n);
       return;
     }
+
     if (!swapReady) {
       return;
     }
+
     try {
       if (token?.address === ethTokenInfo?.address) {
         const amount = await fetchEthAmountAsync(selectedPayAmount);
@@ -238,17 +286,22 @@ function UserTokenSelectWrapper({
     }
   };
   return (
-    <UserTokenSelect
-      selectToken={handleTokenChange}
+    <ProposalPaymentSelect
+      onOptionChange={(opt) => {
+        setSelectedPaymentType(opt.value);
+        handleTokenChange(opt?.token!);
+      }}
       chain={ATT_CONTRACT_CHAIN}
-      defaultToken={defaultTokenInfo}
+      value={selectedPaymentType}
+      hideNativeToken={hideNativeToken}
+      hideAllowance={hideAllowance}
     />
   );
 }
 
-const displayValue = (value: number, maximumFractionDigits: number) => {
+const displayValue = (value: number, maximumFractionDigits?: number) => {
   return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits,
+    maximumFractionDigits: maximumFractionDigits || 0,
   }).format(Number(value));
 };
 
@@ -273,6 +326,8 @@ export function PaymentInfo({
   description?: string;
   hideChallengeAmount?: boolean;
 }) {
+  console.log("paymentTokenInfo", paymentTokenInfo);
+
   const maxAmountNumber = paymentTokenInfo?.rawBalance
     ? Number(
         formatUnits(
@@ -364,92 +419,31 @@ export function PaymentInfo({
   );
 }
 
-export function PaymentInfoWithProposed({
-  paymentTokenInfo,
-  recommendedPayAmount,
-  minPayAmount,
-  selectedPayAmount,
-  setSelectedPayAmount,
-  amountLoading,
-  sliderStep,
+export function AllowancePaymentInfo({
+  paymentAmount,
+  totalAllowance,
+  remainingAllowance,
 }: {
-  paymentTokenInfo: TokenWithTradeInfo;
-  recommendedPayAmount?: bigint;
-  minPayAmount: bigint;
-  selectedPayAmount: bigint;
-  setSelectedPayAmount: (amount: bigint) => void;
-  amountLoading?: boolean;
-  sliderStep?: number;
+  paymentAmount: number;
+  totalAllowance: number;
+  remainingAllowance: number;
 }) {
-  const recommendedPayAmountNumber =
-    recommendedPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(recommendedPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
-  const minPayAmountNumber =
-    minPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(minPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
-  const selectedPayAmountNumber =
-    selectedPayAmount && paymentTokenInfo?.decimals
-      ? Number(formatUnits(selectedPayAmount, paymentTokenInfo?.decimals!))
-      : 0;
-
-  const priceSliderConfig = {
-    value: paymentTokenInfo?.balance ? selectedPayAmountNumber : 0,
-    max: Number(paymentTokenInfo?.balance || 0),
-    min: paymentTokenInfo?.balance ? minPayAmountNumber || 0 : 0,
-    step: sliderStep || recommendedPayAmountNumber / 100,
-    maximumFractionDigits:
-      paymentTokenInfo?.address === NATIVE_TOKEN_ADDRESS ? 6 : 2,
-  };
-
   return (
-    <View className="flex flex-col gap-4">
-      <PriceRow
-        title="Minimum Cost"
-        paymentTokenInfo={paymentTokenInfo}
-        price={minPayAmount}
-        isLoading={amountLoading}
-        onClickPriceValue={() => {
-          if (minPayAmount) {
-            setSelectedPayAmount(minPayAmount);
-          }
-        }}
-      />
-      <PriceRow
-        title="Successfully Challenge"
-        paymentTokenInfo={paymentTokenInfo}
-        price={recommendedPayAmount}
-        isLoading={amountLoading}
-        onClickPriceValue={() => {
-          if (recommendedPayAmount) {
-            setSelectedPayAmount(recommendedPayAmount);
-          }
-        }}
-      />
-      <View className="flex flex-col items-center gap-2">
-        <Text className="text-center text-xs text-secondary">
-          👍 Superlike and earn minting fee rewards upon success!
+    <View className="flex w-full flex-col gap-4">
+      <View className="flex flex-row items-center justify-between">
+        <Text className="text-xs text-secondary">
+          Stake DEGEN to superlike for reward.
         </Text>
-        <Text className="text-center text-xs text-secondary">or</Text>
-        <Text className="text-center text-xs text-secondary">
-          👎 Dislike spam casts, if you win, you can share the staked funds from
-          upvoters.
+        <Text className="text-xs font-normal text-primary-foreground">
+          {displayValue(paymentAmount)} DEGEN
         </Text>
       </View>
-      <Slider
-        {...priceSliderConfig}
-        disabled={!paymentTokenInfo?.balance}
-        onValueChange={(v) => {
-          if (!isNaN(Number(v))) {
-            const vInt = Number(v);
-            setSelectedPayAmount(
-              parseUnits(vInt.toString(), paymentTokenInfo?.decimals!),
-            );
-          }
-        }}
-      />
-      <PriceRangeRow {...priceSliderConfig} />
+      <View className="flex flex-row items-center justify-between">
+        <Text className="text-xs text-secondary">Degen allowance</Text>
+        <Text className="text-xs font-normal text-primary-foreground">
+          {displayValue(remainingAllowance)}/{displayValue(totalAllowance)}
+        </Text>
+      </View>
     </View>
   );
 }

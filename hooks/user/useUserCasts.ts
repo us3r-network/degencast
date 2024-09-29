@@ -1,10 +1,14 @@
 import { uniqBy } from "lodash";
 import { useEffect, useState } from "react";
+import { upsertManyToReactions } from "~/features/cast/castReactionsSlice";
 import { CastData, getUserCasts } from "~/services/feeds/api/user";
 import { ApiRespCode } from "~/services/shared/types";
+import { useAppDispatch } from "~/store/hooks";
+import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const MAX_PAGE_SIZE = 20;
 export default function useUserCasts(fid?: number, viewer_fid?: number) {
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [items, setItems] = useState<CastData[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
@@ -23,6 +27,10 @@ export default function useUserCasts(fid?: number, viewer_fid?: number) {
           uniqBy([...prev, ...(data.data.data?.casts || [])], "cast.hash"),
         );
         setCursor(data.data.data?.next?.cursor || undefined);
+        const reactions = getReactionsCountAndViewerContexts(
+          (data.data.data?.casts || []).map((i) => i.cast),
+        );
+        dispatch(upsertManyToReactions(reactions));
       } else throw new Error(data.data.msg);
     } catch (e) {
       console.error(e);

@@ -11,6 +11,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useCurrUserInfo from "~/hooks/user/useCurrUserInfo";
 import useUserInvitationCodes from "~/hooks/user/useUserInvitationCodes";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
+import useDegencastUserInfo from "~/hooks/user/useDegencastUserInfo";
 
 export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { currFid } = useFarcasterAccount();
@@ -27,6 +28,9 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   const { loadCurrUserInfo } = useCurrUserInfo();
   const { loadUserHostChannels } = useUserHostChannels();
   const { clearMyInvitationCodes } = useUserInvitationCodes();
+  const { loadDegencastUserInfo, clearDegencastUserInfo } =
+    useDegencastUserInfo();
+
   useEffect(() => {
     if (currFid) {
       loadCurrUserInfo(Number(currFid));
@@ -92,6 +96,16 @@ export default function StateUpdateWrapper({ children }: PropsWithChildren) {
   useEffect(() => {
     fetchCastCollections();
   }, [fetchCastCollections]);
+
+  useEffect(() => {
+    (async () => {
+      if (authenticated) {
+        loadDegencastUserInfo();
+      } else {
+        clearDegencastUserInfo();
+      }
+    })();
+  }, [authenticated]);
 
   return <>{children}</>;
 }

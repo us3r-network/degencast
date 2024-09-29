@@ -141,7 +141,7 @@ export default function OnboardingSteps({
                 Your linked farcaster account is
               </Text>
               <Text className="text-xl font-bold">
-                {user?.farcaster?.displayName} @{user?.farcaster?.username}
+                {user?.farcaster?.displayName}
               </Text>
             </View>
             <View className="absolute bottom-0 w-full flex-row items-center justify-between p-6">

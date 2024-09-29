@@ -5,13 +5,14 @@ import OnChainActionButtonWarper from "~/components/onchain-actions/common/OnCha
 import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useCreateProposal from "~/hooks/social-farcaster/proposal/useCreateProposal";
 import { useAccount, useChainId } from "wagmi";
-import usePaymentTokenInfo from "~/hooks/social-farcaster/proposal/usePaymentTokenInfo";
 import { formatUnits, TransactionReceipt } from "viem";
-import { getProposalMinPrice } from "../utils";
 import useProposals from "~/hooks/social-farcaster/proposal/useProposals";
 import { Loading } from "~/components/common/Loading";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { TokenWithTradeInfo } from "~/services/trade/types";
+import useProxyUserToCreateProposal from "~/hooks/social-farcaster/proposal/useProxyUserToCreateProposal";
+import useTipAllowanceToDegencast from "~/hooks/social-farcaster/proposal/useTipAllowanceToDegencast";
+import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 
 export default function CreateProposalWriteButton({
   cast,
@@ -141,5 +142,100 @@ export default function CreateProposalWriteButton({
         </Button>
       }
     />
+  );
+}
+
+export function ProxyUserToCreateProposalButton({
+  cast,
+  channel,
+  tokenInfo,
+  onCreateProposalSuccess,
+  onCreateProposalError,
+  allowanceInfo,
+  ...props
+}: ButtonProps &
+  CastProposeStatusProps & {
+    onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
+    onCreateProposalError?: (error: any) => void;
+    allowanceInfo: {
+      paymentAmount: number;
+      totalAllowance: number;
+      remainingAllowance: number;
+    };
+  }) {
+  const contractAddress = tokenInfo?.danContract!;
+  const { proposals, isLoading: proposalsLoading } = useProposals({
+    contractAddress,
+    castHash: cast.hash,
+  });
+  const { isLoading: createLoading, create } = useProxyUserToCreateProposal({
+    contractAddress,
+    onCreateProposalSuccess,
+    onCreateProposalError,
+  });
+
+  const {
+    requestSigner,
+    hasSigner,
+    requesting: signerRequesting,
+  } = useFarcasterSigner();
+
+  const { isLoading: tipToDegencastIsLoading, tipToDegencast } =
+    useTipAllowanceToDegencast();
+  const { address, isConnected } = useAccount();
+  const { connectWallet } = useWalletAccount();
+  const isCreated = Number(proposals?.roundIndex) > 0;
+  const isLoading = createLoading || proposalsLoading;
+
+  const { remainingAllowance, paymentAmount } = allowanceInfo;
+  const allowanceNotEnough = remainingAllowance < paymentAmount;
+  const disabled =
+    isCreated ||
+    !contractAddress ||
+    isLoading ||
+    tipToDegencastIsLoading ||
+    signerRequesting ||
+    allowanceNotEnough;
+
+  return (
+    <Button
+      variant={"secondary"}
+      className="w-full rounded-md"
+      disabled={disabled}
+      onPress={() => {
+        if (!hasSigner) {
+          requestSigner();
+          return;
+        }
+        if (!isConnected || !address) {
+          connectWallet();
+          return;
+        }
+        tipToDegencast(paymentAmount!, {
+          onSuccess: () => {
+            create({
+              castHash: cast.hash,
+              curatorAddr: address,
+            });
+          },
+          onError: (error) => {
+            onCreateProposalError?.(error);
+          },
+        });
+      }}
+      {...props}
+    >
+      {isLoading ? (
+        <Loading />
+      ) : isCreated ? (
+        <Text>👍 Superlike</Text>
+      ) : !hasSigner ? (
+        <Text>Connect Farcaster</Text>
+      ) : !isConnected || !address ? (
+        <Text>Connect your wallet first</Text>
+      ) : (
+        <Text>👍 Superlike</Text>
+      )}
+    </Button>
   );
 }
