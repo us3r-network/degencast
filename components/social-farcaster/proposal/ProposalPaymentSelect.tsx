@@ -57,6 +57,9 @@ export default function ProposalPaymentSelect({
     : undefined;
 
   const opts: Array<PaymentOption> = [
+    ...(hideAllowance
+      ? []
+      : [{ value: PaymentType.Allowance, label: "Allowance" }]),
     ...(nativeTokenInfo
       ? [
           {
@@ -75,9 +78,6 @@ export default function ProposalPaymentSelect({
           },
         ]
       : []),
-    ...(hideAllowance
-      ? []
-      : [{ value: PaymentType.Allowance, label: "Allowance" }]),
   ];
   if (opts.length < 2) {
     return null;

@@ -246,17 +246,19 @@ function CreateProposalModalContentBody({
     loading: allowanceLoading,
   } = useUserDegenAllowance();
 
+  const [selectedPaymentType, setSelectedPaymentType] = useState(
+    PaymentType.Erc20,
+  );
+
   const { degencastUserInfo } = useDegencastUserInfo();
   const isSuperLikeUser = degencastUserInfo?.isSuperlikeUser;
   useEffect(() => {
     if (isSuperLikeUser) {
       loadDegenAllowance();
+      setSelectedPaymentType(PaymentType.Allowance);
     }
   }, [isSuperLikeUser]);
 
-  const [selectedPaymentType, setSelectedPaymentType] = useState(
-    PaymentType.Erc20,
-  );
   const [selectedPaymentToken, setSelectedPaymentToken] =
     useState(paymentTokenInfo);
 
