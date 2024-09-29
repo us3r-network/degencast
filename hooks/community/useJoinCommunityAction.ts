@@ -62,7 +62,6 @@ export default function useJoinCommunityAction(
       dispatch(addOneToJoinActionPendingIds(channelId));
       // const response = await fetchJoiningCommunity(channelId);
       const warpcastSign = await genWarpcastSign(currFid);
-      console.log({ warpcastSign, currFid })
       const response = await fetchJoiningChannel(channelId, warpcastSign);
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
@@ -117,7 +116,6 @@ export default function useJoinCommunityAction(
       dispatch(addOneToJoinActionPendingIds(channelId));
       // const response = await fetchUnjoiningCommunity(channelId);
       const warpcastSign = await genWarpcastSign(currFid);
-      console.log({ warpcastSign, currFid })
       const response = await fetchUnjoiningChannel(channelId, warpcastSign);
       const { code, msg } = response.data;
       if (code === ApiRespCode.SUCCESS) {
