@@ -123,6 +123,7 @@ export function fetchUnjoiningCommunity(
 export type JoiningChannelData = null;
 export function fetchJoiningChannel(
   channelId: string | number,
+  warpcastAuthToken?: string,
 ): RequestPromise<ApiResp<JoiningChannelData>> {
   return request({
     url: `/topics/channels/${channelId}/joining`,
@@ -130,12 +131,16 @@ export function fetchJoiningChannel(
     headers: {
       needToken: true,
     },
+    data: {
+      warpcastAuthToken,
+    }
   });
 }
 
 export type UnjoiningChannelData = null;
 export function fetchUnjoiningChannel(
   channelId: string | number,
+  warpcastAuthToken?: string,
 ): RequestPromise<ApiResp<UnjoiningChannelData>> {
   return request({
     url: `/topics/channels/${channelId}/unjoining`,
@@ -143,6 +148,9 @@ export function fetchUnjoiningChannel(
     headers: {
       needToken: true,
     },
+    data: {
+      warpcastAuthToken,
+    }
   });
 }
 
@@ -233,10 +241,10 @@ export type ExploreTrendingChannels = {
 };
 export type ExploreTrendingChannelsData = Array<
   CommunityEntity &
-    CommunityStatistics & {
-      hosts: Array<Author>;
-      cast?: NeynarCast | null;
-    }
+  CommunityStatistics & {
+    hosts: Array<Author>;
+    cast?: NeynarCast | null;
+  }
 >;
 export function getExploreTrendingChannels(
   params: ExploreTrendingChannels,
@@ -257,10 +265,10 @@ export type ExploreFollowingChannels = {
 };
 export type ExploreFollowingChannelsData = Array<
   CommunityEntity &
-    CommunityStatistics & {
-      hosts: Array<Author>;
-      cast?: NeynarCast | null;
-    }
+  CommunityStatistics & {
+    hosts: Array<Author>;
+    cast?: NeynarCast | null;
+  }
 >;
 export function getExploreFollowingChannels(
   params: ExploreFollowingChannels,
@@ -281,10 +289,10 @@ export type ExploreHostingChannels = {
 };
 export type ExploreHostingChannelsData = Array<
   CommunityEntity &
-    CommunityStatistics & {
-      hosts: Array<Author>;
-      cast?: NeynarCast | null;
-    }
+  CommunityStatistics & {
+    hosts: Array<Author>;
+    cast?: NeynarCast | null;
+  }
 >;
 export function getExploreHostingChannels(
   params: ExploreHostingChannels,
