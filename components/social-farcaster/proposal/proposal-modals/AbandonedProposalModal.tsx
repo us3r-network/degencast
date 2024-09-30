@@ -80,6 +80,7 @@ export default function AbandonedProposalModal({
           }}
         >
           <TabView
+            lazy
             swipeEnabled={false}
             navigationState={{ index, routes }}
             renderScene={renderScene}

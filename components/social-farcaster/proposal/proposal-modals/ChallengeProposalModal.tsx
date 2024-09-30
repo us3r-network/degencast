@@ -101,6 +101,7 @@ export default function ChallengeProposalModal({
           }}
         >
           <TabView
+            lazy
             swipeEnabled={false}
             navigationState={{ index, routes }}
             renderScene={renderScene}

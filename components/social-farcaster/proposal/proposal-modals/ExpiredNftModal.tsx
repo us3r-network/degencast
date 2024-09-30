@@ -83,6 +83,7 @@ export default function ExpiredNftModalModal({
           }}
         >
           <TabView
+            lazy
             swipeEnabled={false}
             navigationState={{ index, routes }}
             renderScene={renderScene}
