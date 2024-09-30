@@ -96,6 +96,7 @@ export default function CreateProposalModal({
         >
           <TabView
             swipeEnabled={false}
+            lazy
             navigationState={{ index, routes }}
             renderScene={renderScene}
             onIndexChange={setIndex}
