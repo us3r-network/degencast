@@ -12,13 +12,16 @@ import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
 import { UnorderedList } from "../common/UnorderedList";
 import { Separator } from "../ui/separator";
+import { SECONDARY_COLOR } from "~/constants";
 
 export default function HelpButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="m-0 p-0">
-          <CircleHelp className="stroke-secondary" />
+        <Button className="p-0 native:p-0">
+          <CircleHelp
+            color={SECONDARY_COLOR}
+          />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen">
