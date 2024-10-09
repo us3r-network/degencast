@@ -1,14 +1,12 @@
-import {
-  useLinkWithSiwe,
-  usePrivy
-} from "@privy-io/expo";
+import { useLinkWithSiwe, usePrivy } from "@privy-io/expo";
+import { useState } from "react";
 import { useAccount, useConnect } from "wagmi";
 
 export default function useWalletAccount() {
   const { user } = usePrivy();
-  const walletFlow = useLinkWithSiwe()
+  const walletFlow = useLinkWithSiwe();
   const { address: activeWalletAddress } = useAccount();
-  const { connect:connectWallet } = useConnect()
+  const { connect: connectWallet } = useConnect();
   const linkedWallets =
     user?.linked_accounts?.filter((account) => account.type === "wallet") || [];
 
@@ -22,16 +20,19 @@ export default function useWalletAccount() {
         !(account.type === "wallet" && account.connector_type === "embedded"),
     ).length || 0;
 
+  const [freezeAutoSwitchActiveWallet, setFreezeAutoSwitchActiveWallet] =
+    useState(false);
   return {
     connectWallet,
-    setActiveWallet:unsurpported,
+    setActiveWallet: unsurpported,
     linkAccountNum,
-    connectedWallets:[],
+    connectedWallets: [],
     linkedWallets,
-    activeWallet:undefined,
+    activeWallet: undefined,
     embededWallet,
-    connectedExternalWallet:[],
-    unconnectedLinkedWallets:[],
+    connectedExternalWallet: [],
+    unconnectedLinkedWallets: [],
+    setFreezeAutoSwitchActiveWallet,
   };
 }
 

@@ -8,6 +8,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import { ATT_CONTRACT_CHAIN } from "~/constants";
 import { cn } from "~/lib/utils";
 import { WarpcastChannel } from "~/services/community/api/community";
 import {
@@ -16,16 +17,13 @@ import {
 } from "~/services/community/types/activity";
 import { Author, NeynarCast } from "~/services/farcaster/types/neynar";
 import { shortAddress } from "~/utils/shortAddress";
-import { CommunityInfo } from "../common/CommunityInfo";
-import { ChevronDown, ChevronUp, SquareArrowOutUpRight } from "../common/Icons";
+import { ExternalLink } from "../common/ExternalLink";
+import { ChevronDown, ChevronUp } from "../common/Icons";
 import { FCastWithNftImage } from "../social-farcaster/proposal/FCast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent } from "../ui/card";
 import { Text } from "../ui/text";
-import { ATT_CONTRACT_CHAIN } from "~/constants";
-import { ExternalLink } from "../common/ExternalLink";
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function ActivityItem({ data }: { data: ActivityEntity }) {
   if (!data) return;
   // mint and burn payment token amount is token price
@@ -51,15 +49,15 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
   return (
     <Card className="rounded-2xl bg-white p-2 sm:p-6">
       <CardContent className="flex gap-2 p-0">
+        {/* line 1 */}
         <View className="m-1 w-full flex-row justify-between">
-          {/* line 1 */}
           <ActivityItemUser
             userAddr={data.userAddr}
             userData={data.user}
             hideHandle
           />
-          {data.timestamp &&
-            (transcationUrl ? (
+          {data.timestamp ? (
+            transcationUrl ? (
               <ExternalLink href={transcationUrl}>
                 <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
                   {dayjs(data.timestamp).fromNow(true)}
@@ -69,7 +67,8 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               <Text className="whitespace-nowrap text-xs text-[#9BA1AD]">
                 {dayjs(data.timestamp).fromNow(true)}
               </Text>
-            ))}
+            )
+          ) : null}
         </View>
         {/* line 2 */}
         <View className="m-1">
@@ -78,7 +77,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             payment={
               eventLogUrl ? (
                 <ExternalLink href={eventLogUrl}>
-                  <Text className="text-secondary font-bold underline">{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
+                  <Text className="font-bold text-secondary underline">{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
                 </ExternalLink>
               ) : (
                 <Text>{`${paymentText} ${data.paymentTokenInfo.symbol}`}</Text>
@@ -93,7 +92,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
           <ActivityItemChannel channel={data.channel} />
         </View>
         {/* line 4 */}
-        {data?.cast && <ActivityCast cast={data?.cast} />}
+        {data?.cast ? <ActivityCast cast={data?.cast} /> : null}
       </CardContent>
     </Card>
   );
@@ -138,17 +137,17 @@ function ActivityItemUser({
             <Text className="line-clamp-1 text-sm hover:underline">
               {userData?.display_name}
             </Text>
-            {/* {userData.power_badge && (
+            {/* {userData.power_badge ? (
               <Image
                 source={require("~/assets/images/active-badge.webp")}
                 style={{ width: 12, height: 12 }}
               />
-            )} */}
-            {!hideHandle && (
+            ):null} */}
+            {!hideHandle ? (
               <Text className="text-xs text-[#9BA1AD] hover:underline">
                 @{userData?.username}
               </Text>
-            )}
+            ) : null}
           </>
         ) : (
           <Text className="line-clamp-1 text-xs text-[#9BA1AD] hover:underline">
@@ -175,27 +174,27 @@ export function ActivityItemOperation({
     case ActivityOperation.PROPOSE:
       return (
         <Text>
-          stake {payment} to <span className="text-[#00D1A7]">👍superlike</span>
+          stake {payment} to <Text className="text-[#00D1A7]">👍superlike</Text>
           .
         </Text>
       );
     case ActivityOperation.DISPUTE:
       return (
         <Text>
-          stake {payment} to <span className="text-[#F41F4C]">👎dislike</span>.
+          stake {payment} to <Text className="text-[#F41F4C]">👎dislike</Text>.
         </Text>
       );
     case ActivityOperation.MINT:
       return (
         <Text>
-          spent {payment} to <span className="text-[#00D1A7]">mint</span>{" "}
+          spent {payment} to <Text className="text-[#00D1A7]">mint</Text>{" "}
           {amount} NFT.
         </Text>
       );
     case ActivityOperation.BURN:
       return (
         <Text>
-          <span className="text-[#F41F4C]">burned</span> {amount} and received{" "}
+          <Text className="text-[#F41F4C]">burned</Text> {amount} and received{" "}
           {payment}.
         </Text>
       );
@@ -204,7 +203,7 @@ export function ActivityItemOperation({
         case "payout":
           return (
             <Text>
-              received a <span className="text-[#00D1A7]">payout</span> of{" "}
+              received a <Text className="text-[#00D1A7]">payout</Text> of{" "}
               {payment}.
             </Text>
           );
@@ -212,7 +211,7 @@ export function ActivityItemOperation({
           return (
             <Text>
               received {payment} as{" "}
-              <span className="text-[#00D1A7]">{rewardDescription}</span>.
+              <Text className="text-[#00D1A7]">{rewardDescription}</Text>.
             </Text>
           );
       }

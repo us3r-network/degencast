@@ -2,56 +2,40 @@ import React, { useEffect } from "react";
 import { Image, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { ExternalLink } from "~/components/common/ExternalLink";
-import { Minus, Plus, User } from "~/components/common/Icons";
+import { Minus, Plus } from "~/components/common/Icons";
 import { Loading } from "~/components/common/Loading";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { WARRPCAST } from "~/constants/farcaster";
-import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterWrite from "~/hooks/social-farcaster/useFarcasterWrite";
 import useUserBulk from "~/hooks/user/useUserBulk";
-import useWalletAccount from "~/hooks/user/useWalletAccount";
 import { Author } from "~/services/farcaster/types/neynar";
-import { shortPubKey } from "~/utils/shortPubKey";
 import DegenTipsStats from "./DegenTipsStats";
 import UserSettings from "./UserSettings";
 
-export default function UserInfo({ fid }: { fid?: number }) {
-  const { currFid } = useFarcasterAccount();
-  const { linkedWallets } = useWalletAccount();
-  const walletAccount =
-    linkedWallets?.length > 0 ? linkedWallets[0] : undefined;
-  fid = fid || currFid || undefined;
-  const { userInfo, load } = useUserBulk(currFid || undefined);
+export default function UserInfo({
+  fid,
+  viewerFid,
+}: {
+  fid: number;
+  viewerFid?: number;
+}) {
+  const { userInfo, load } = useUserBulk(viewerFid);
   useEffect(() => {
     if (fid) load(fid);
   }, [fid]);
 
-  const userAvatar = userInfo ? userInfo.pfp_url : "";
-  const userDisplayName = userInfo
-    ? userInfo.display_name
-    : walletAccount
-      ? shortPubKey(walletAccount.address)
-      : "";
-  const username = userInfo
-    ? userInfo.username
-    : walletAccount
-      ? shortPubKey(walletAccount.address)
-      : "";
-  // console.log(
-  //   "UserInfo",
-  //   userInfo,
-  //   userAvatar,
-  //   userDisplayName,
-  //   username,
-  // );
+  console.log("UserInfo", userInfo);
   if (userInfo)
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
-          <Avatar alt={username} className="size-24 border-2 border-[#e0e0e0] ">
-            <AvatarImage source={{ uri: userAvatar }} />
+          <Avatar
+            alt={userInfo.username}
+            className="size-24 border-2 border-[#e0e0e0] "
+          >
+            <AvatarImage source={{ uri: userInfo.pfp_url }} />
             <AvatarFallback className="bg-white">
               <Image
                 source={require("~/assets/images/user-avatar.png")}
@@ -59,20 +43,18 @@ export default function UserInfo({ fid }: { fid?: number }) {
               />
             </AvatarFallback>
           </Avatar>
-          <View className="absolute bottom-0 right-0 size-6">
-            {currFid !== userInfo.fid ? (
-              <FollowUserButton farcasterUserInfo={userInfo} />
-            ) : (
-              <UserSettings />
-            )}
-          </View>
+          {viewerFid ? (
+            <View className="absolute bottom-0 right-0 size-6">
+              {fid === viewerFid ? <UserSettings /> : null}
+            </View>
+          ) : null}
         </View>
         <View className="flex w-full gap-1">
           <View className="w-full space-y-0">
             <View className="flex-row items-center gap-1">
-              {userDisplayName && (
+              {userInfo.display_name && (
                 <Text className="line-clamp-1 font-bold text-white">
-                  {userDisplayName}
+                  {userInfo.display_name}
                 </Text>
               )}
               {userInfo.power_badge && (
@@ -82,16 +64,16 @@ export default function UserInfo({ fid }: { fid?: number }) {
                 />
               )}
             </View>
-            {username && (
+            {userInfo.username && (
               <Text className="line-clamp-1 text-xs text-[#9BA1AD]">
-                @{username}
+                @{userInfo.username}
               </Text>
             )}
           </View>
           <View className="w-full flex-row gap-4">
             {userInfo.following_count && (
               <ExternalLink
-                href={`${WARRPCAST}/${username}/following`}
+                href={`${WARRPCAST}/${userInfo.username}/following`}
                 target="_blank"
               >
                 <Button
@@ -109,7 +91,7 @@ export default function UserInfo({ fid }: { fid?: number }) {
             )}
             {userInfo.follower_count && (
               <ExternalLink
-                href={`${WARRPCAST}/${username}/followers`}
+                href={`${WARRPCAST}/${userInfo.username}/followers`}
                 target="_blank"
                 asChild
               >
@@ -140,35 +122,8 @@ export default function UserInfo({ fid }: { fid?: number }) {
         </View>
       </View>
     );
-  else
-    return (
-      <View className="flex-1 flex-row items-center gap-6 px-2">
-        <View className="reletive">
-          <Avatar alt={username} className="size-24 border-2">
-            <AvatarFallback className="bg-white">
-              <User className="size-16 fill-primary/80 font-medium text-primary" />
-            </AvatarFallback>
-          </Avatar>
-          <View className="absolute bottom-0 right-0 size-6">
-            <UserSettings />
-          </View>
-        </View>
-        <View className="flex w-full gap-1">
-          <View className="w-full space-y-0">
-            {userDisplayName && (
-              <Text className="line-clamp-1 font-bold text-white">
-                {userDisplayName}
-              </Text>
-            )}
-            {username && (
-              <Text className="line-clamp-1 text-secondary">@{username}</Text>
-            )}
-          </View>
-        </View>
-      </View>
-    );
 }
-
+/*
 function FollowUserButton({
   farcasterUserInfo,
 }: {
@@ -236,3 +191,4 @@ function FollowUserButton({
       </Button>
     );
 }
+*/

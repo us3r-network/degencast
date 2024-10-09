@@ -40,7 +40,7 @@ export default function UserSignin({
           className="w-1/2 min-w-fit rounded-full"
           onPress={() => {
             // login({ onSuccess });
-            console.log("login frome UserSignin");
+            console.log("login from UserSignin");
             login({ loginMethods: ["farcaster"] }, onSuccess, onFail);
           }}
         >

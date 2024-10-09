@@ -15,7 +15,7 @@ import Toast from "react-native-toast-message";
 
 export default function useAuth() {
   const { isReady: privyReady, user: privyUser } = usePrivy();
-  const [privyAuthenticated, setPrivyAuthenticated] = useState(false);
+  const [privyAuthenticated, setPrivyAuthenticated] = useState(true);
 
   const dispatch = useAppDispatch();
 
@@ -100,13 +100,8 @@ export default function useAuth() {
 
   const [status, setStatus] = useState<SigninStatus>(SigninStatus.IDLE);
   const privyLoginHanler = {
-    onSuccess: (
-      user: User,
-    ) => {
-      console.log(
-        "privy login completed: ",
-        user,
-      );
+    onSuccess: (user: User) => {
+      console.log("privy login completed: ", user);
       setStatus(SigninStatus.LOGGINGIN_DEGENCAST);
       syncDegencastId(user.id).then((degencastId) => {
         // console.log("degencastId", degencastId);
@@ -154,24 +149,26 @@ export default function useAuth() {
     }
   };
 
-  const { loginWithFarcaster, state: loginState } = useLoginWithFarcaster(privyLoginHanler);
+  const { loginWithFarcaster, state: loginState } =
+    useLoginWithFarcaster(privyLoginHanler);
   const [loginHandler, setLoginHandler] = useState<LoginHander>();
 
-  const login = async (opts?: {
-    onSuccess?: () => void;
-    onFail?: (error: unknown) => void;
-    redirectUrl?: string;
-  }) => {
-    const { onSuccess, onFail } = opts || {};
+  const login = async (
+    opts?: any,
+    onSuccess?: () => void,
+    onFail?: (error: unknown) => void,
+    redirectUrl?: string,
+  ) => {
+    console.log("privy login", redirectUrl, privyAuthenticated);
+    if (privyAuthenticated) await logout();
     setLoginHandler({
       onSuccess,
       onFail,
     });
     setStatus(SigninStatus.LOGGINGIN_PRIVY);
-    console.log("privy login");
     loginWithFarcaster({
       relyingParty: DEGENCAST_WEB_HOST,
-      redirectUrl: opts?.redirectUrl ? opts.redirectUrl : "/",
+      redirectUrl: redirectUrl || "/",
     });
   };
 
