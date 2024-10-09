@@ -17,7 +17,7 @@ import { Channel } from "~/services/farcaster/types";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
 
 const RankOrderByList = [
-  { label: "Toekn Launch", value: RankOrderBy.LAUNCH_PROGRESS },
+  { label: "Token Launch", value: RankOrderBy.LAUNCH_PROGRESS },
   { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
   // { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
   // { label: "New Casts", value: RankOrderBy.NEW_CASTS },
