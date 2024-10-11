@@ -19,13 +19,18 @@ type ChannelCastCardProps = ViewProps & {
   proposal: ProposalEntity;
   isVisible?: boolean;
 };
-const ChannelCastCard = React.forwardRef<
-  ViewRef,
-  React.ComponentPropsWithoutRef<typeof View> & ChannelCastCardProps
->(({ channel, proposal, cast, tokenInfo, isVisible, className }, ref) => {
+
+const ChannelCastCard = ({
+  channel,
+  proposal,
+  cast,
+  tokenInfo,
+  isVisible,
+  className,
+}: ChannelCastCardProps) => {
   const { channelId } = channel || {};
   return (
-    <CardWrapper className={cn("flex flex-col gap-4 p-4", className)} ref={ref}>
+    <CardWrapper className={cn("flex flex-col gap-4 p-4", className)}>
       {!channelId ? (
         <HomeChannelMetaInfo />
       ) : (
@@ -45,17 +50,15 @@ const ChannelCastCard = React.forwardRef<
           communityInfo={channel as any}
           proposal={proposal}
         />
-        <View className="ml-auto">
-          <ProposalStatusActions
-            cast={cast}
-            channel={channel}
-            tokenInfo={tokenInfo}
-            proposal={proposal}
-          />
-        </View>
+        <ProposalStatusActions
+          cast={cast}
+          channel={channel}
+          tokenInfo={tokenInfo}
+          proposal={proposal}
+        />
       </View>
     </CardWrapper>
   );
-});
+};
 
 export default ChannelCastCard;

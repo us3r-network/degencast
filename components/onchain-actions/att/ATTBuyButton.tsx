@@ -1,6 +1,4 @@
-import React, {
-  useState
-} from "react";
+import React, { useState } from "react";
 import { Pressable } from "react-native";
 import { useAccount } from "wagmi";
 // import About from "~/components/common/About";
@@ -16,10 +14,13 @@ export function BuyButton({
   cast,
   renderButton,
   onSuccess,
+  className,
 }: NFTProps & {
+  className?: string;
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
   onSuccess?: (mintNum: number) => void;
 }) {
+  token.symbol = cast?.channel?.id.toUpperCase() || "";
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
   const [open, setOpen] = useState(false);
@@ -31,12 +32,12 @@ export function BuyButton({
     setOpen(true);
   };
   return (
-    <Pressable>
+    <Pressable className={cn("w-14", className)}>
       {renderButton ? (
         renderButton({ onPress: handlePress })
       ) : (
         <Button
-          className={cn("w-14")}
+          className={cn("w-full")}
           size="sm"
           variant={"secondary"}
           onPress={handlePress}

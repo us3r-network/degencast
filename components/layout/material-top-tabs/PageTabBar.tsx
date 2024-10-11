@@ -24,7 +24,7 @@ export default function PageTabBar(
   const { state, position, level, renderRightContent } = props;
   const { routes } = state;
   const navigation = useNavigation();
-
+  const { label: firstLabel } = getRouteItemRenderConfig(props, routes[0], 0);
   return (
     <Header>
       <HeaderLeft>
@@ -39,44 +39,56 @@ export default function PageTabBar(
         )}
       </HeaderLeft>
       <HeaderCenter className="relative flex w-full flex-1 flex-row items-center">
-        {routes.map((route, index) => {
-          const { options, label, isFocused, onPress, onLongPress } =
-            getRouteItemRenderConfig(props, route, index);
+        {routes.length > 1 ? (
+          routes.map((route, index) => {
+            const { options, label, isFocused, onPress, onLongPress } =
+              getRouteItemRenderConfig(props, route, index);
 
-          const inputRange = routes.map((_, i) => i);
-          const textColor = position.interpolate({
-            inputRange,
-            outputRange: inputRange.map((i) =>
-              i === index ? "white" : SECONDARY_COLOR,
-            ),
-          });
+            const inputRange = routes.map((_, i) => i);
+            const textColor = position.interpolate({
+              inputRange,
+              outputRange: inputRange.map((i) =>
+                i === index ? "white" : SECONDARY_COLOR,
+              ),
+            });
 
-          return (
-            <View className="flex flex-row items-center" key={route.key}>
-              {index > 0 && (
-                <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
-              )}
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={isFocused ? { selected: true } : {}}
-                accessibilityLabel={options.tabBarAccessibilityLabel}
-                testID={options.tabBarTestID}
-                onPress={onPress}
-                onLongPress={onLongPress}
-              >
-                <Animated.Text
-                  style={{
-                    color: textColor,
-                    fontSize: 14,
-                    fontWeight: 500,
-                  }}
+            return (
+              <View className="flex flex-row items-center" key={route.key}>
+                {index > 0 && (
+                  <Separator className="mx-4 h-[12px] w-[1px] bg-white" />
+                )}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={isFocused ? { selected: true } : {}}
+                  accessibilityLabel={options.tabBarAccessibilityLabel}
+                  testID={options.tabBarTestID}
+                  onPress={onPress}
+                  onLongPress={onLongPress}
                 >
-                  {label as any}
-                </Animated.Text>
-              </Pressable>
-            </View>
-          );
-        })}
+                  <Animated.Text
+                    style={{
+                      color: textColor,
+                      fontSize: 14,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {label as any}
+                  </Animated.Text>
+                </Pressable>
+              </View>
+            );
+          })
+        ) : (
+          <Animated.Text
+            style={{
+              color: "white",
+              fontSize: 14,
+              fontWeight: 500,
+            }}
+          >
+            {firstLabel as any}
+          </Animated.Text>
+        )}
       </HeaderCenter>
       <HeaderRight>
         {renderRightContent ? (

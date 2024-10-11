@@ -40,6 +40,7 @@ export function ReadyToMintButton({
     tokenInfo?.tokenContract &&
     proposal.tokenId && (
       <BuyButton
+        className="w-full"
         token={{
           contractAddress: tokenInfo.tokenContract,
           tokenId: Number(proposal.tokenId),
@@ -48,8 +49,10 @@ export function ReadyToMintButton({
         renderButton={(props: any) => {
           return (
             <ProposalButton variant={"ready-to-mint"} {...props}>
-              <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" />
-              <ProposalText>Mint</ProposalText>
+              {/* <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" /> */}
+              <ProposalText>
+                Mint for ${channel.channelId?.toLocaleUpperCase()}
+              </ProposalText>
             </ProposalButton>
           );
         }}
@@ -71,17 +74,17 @@ export function ReadyToMintActionLayout({
   proposal,
   tokenInfo,
 }: ProposalStatusActionsProps) {
-  const { likeCount } = useFarcasterLikeAction({ cast });
-  const mintedCount = isNaN(Number(proposal?.mintedCount))
-    ? 0
-    : Number(proposal?.mintedCount);
+  // const { likeCount } = useFarcasterLikeAction({ cast });
+  // const mintedCount = isNaN(Number(proposal?.mintedCount))
+  //   ? 0
+  //   : Number(proposal?.mintedCount);
   return (
-    <View className="flex flex-row items-center gap-4">
-      <MintCount count={mintedCount} />
+    <View className="flex w-full flex-row items-center gap-4">
+      {/* <MintCount count={mintedCount} />
       {proposal?.nftDeadline && (
         <Deadline timestamp={Number(proposal.nftDeadline)} />
       )}
-      <LikeCount count={likeCount || 0} />
+      <LikeCount count={likeCount || 0} /> */}
       <ReadyToMintButton
         cast={cast}
         channel={channel}

@@ -17,9 +17,7 @@ import {
 import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { ERC42069Token } from "~/services/trade/types";
 import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
-import {
-  TransationData
-} from "../common/TranasactionResult";
+import { TransationData } from "../common/TranasactionResult";
 
 const BurnNFT = forwardRef<
   React.ElementRef<typeof View>,
@@ -81,6 +79,7 @@ const BurnNFT = forwardRef<
   const { token, graduated, tokenUnit, nftTokenInfo } = useATTNftInfo({
     tokenContract: nft.contractAddress,
   });
+  nft.tokenUnit = tokenUnit ? Number(formatUnits(tokenUnit, 18)) : 0;
   const { getBurnNFTPriceAfterFee } = useATTFactoryContractInfo({
     contractAddress: nft.contractAddress,
     tokenId: 0,
@@ -93,7 +92,7 @@ const BurnNFT = forwardRef<
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
-          {graduated ? (
+          {/* {graduated ? (
             tokenUnit && !!nftTokenInfo ? (
               <Text className="text-xs">
                 {formatUnits(tokenUnit, nftTokenInfo.decimals || 18)}{" "}
@@ -109,7 +108,7 @@ const BurnNFT = forwardRef<
             </Text>
           ) : (
             <Text className="text-xs">calculating price...</Text>
-          )}
+          )} */}
         </View>
         <NumberField
           defaultValue={1}
@@ -147,11 +146,17 @@ const BurnNFT = forwardRef<
         warpedButton={
           <Button
             variant="secondary"
-            className="w-full"
+            className="w-full bg-[#F41F4C]"
             disabled={!account || waiting || writing || !balance}
             onPress={() => burn(amount)}
           >
-            <Text>{waiting || writing ? "Confirming..." : "Sell"}</Text>
+            <Text className="text-base font-medium">
+              {waiting || writing
+                ? "Confirming..."
+                : `Burn & Sell ${new Intl.NumberFormat("en-US", {
+                    notation: "compact",
+                  }).format((nft.tokenUnit || 0) * amount)} $${nft.symbol}`}
+            </Text>
           </Button>
         }
       />

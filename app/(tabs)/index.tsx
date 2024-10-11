@@ -54,6 +54,7 @@ export default function ExploreLayout() {
 
   return (
     <TabView
+      lazy
       swipeEnabled={false}
       navigationState={{ index, routes }}
       renderScene={renderScene}

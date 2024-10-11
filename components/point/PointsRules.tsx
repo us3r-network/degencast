@@ -68,14 +68,14 @@ export function PointsRules() {
         unitText="cast"
       />
       <RuleItem
-        title="Superlike/dislike cast"
+        title="Like cast"
         points={voteCastUnit}
         unitText="cast"
       />
       <RuleItem
-        title="Mint Contribution NFT"
+        title="Mint cast"
         points={mintCastUnit}
-        unitText="NFT"
+        unitText="cast"
       />
     </View>
   );

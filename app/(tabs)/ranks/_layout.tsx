@@ -9,8 +9,8 @@ import CuratorsScreen from "./curators";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Channels", value: "channels", component: ChannelsScreen },
-  { label: "DegenCaster", value: "curators", component: CuratorsScreen },
+  { label: "Channel Rank", value: "channels", component: ChannelsScreen },
+  // { label: "DegenCaster", value: "curators", component: CuratorsScreen },
   // { label: "Tokens", value: "tokens", component: TokensScreen },
 ];
 
@@ -19,6 +19,9 @@ export default function RankScreen() {
   return (
     <View className="flex-1 pb-4">
       <Tab.Navigator
+        screenOptions={{
+          lazy: true,
+        }}
         initialRouteName={segments?.[0]}
         tabBar={PageTabBar}
         style={{ width: "100%" }}

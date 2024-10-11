@@ -42,11 +42,11 @@ const ChannelCastCollectCard = React.forwardRef<
         </View>
       ) : (
         <View className="flex w-full flex-row items-center justify-between px-4">
-          <Text>No Contribution Cast now</Text>
+          <Text>No casts available for minting</Text>
           {channelId ? (
             <Link href={`/communities/${channelId}/casts`} asChild>
               <ActionButton className="w-auto px-3">
-                <Text>Curate</Text>
+                <Text>Like Now</Text>
               </ActionButton>
             </Link>
           ) : null}

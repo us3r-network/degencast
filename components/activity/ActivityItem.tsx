@@ -84,7 +84,7 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
               )
             }
             amount={data.tokenAmount}
-            rewardDescription={data.rewardDescription}
+            rewardDescription={data.rewardDescription || `$${data.channel.id.toUpperCase()}`}
           />
         </View>
         {/* line 3 */}
@@ -188,7 +188,7 @@ export function ActivityItemOperation({
       return (
         <Text>
           spent {payment} to <Text className="text-[#00D1A7]">mint</Text>{" "}
-          {amount} NFT.
+          {(amount || 0) * 100000} {rewardDescription}.
         </Text>
       );
     case ActivityOperation.BURN:

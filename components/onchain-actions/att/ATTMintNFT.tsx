@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -33,14 +28,9 @@ import useATTNftInfo from "~/hooks/trade/useATTNftInfo";
 import { useSwap } from "~/hooks/trade/useUniSwapV3";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import useWalletAccount from "~/hooks/user/useWalletAccount";
-import {
-  ERC42069Token,
-  TokenWithTradeInfo
-} from "~/services/trade/types";
+import { ERC42069Token, TokenWithTradeInfo } from "~/services/trade/types";
 import OnChainActionButtonWarper from "../common/OnChainActionButtonWarper";
-import {
-  TransationData
-} from "../common/TranasactionResult";
+import { TransationData } from "../common/TranasactionResult";
 import UserTokenSelect from "../common/UserTokenSelect";
 
 const GRADUATION_NFT_NUM = 10; // todo:  get from contract or backend
@@ -56,10 +46,11 @@ const MintNFT = forwardRef<
   const account = useAccount();
   const { supportAtomicBatch } = useWalletAccount();
   const [amount, setAmount] = useState(1);
-  const { graduated, token, maxTokensPerIdPerUser, totalNFTSupply } =
+  const { graduated, token, maxTokensPerIdPerUser, totalNFTSupply, tokenUnit } =
     useATTNftInfo({
       tokenContract: nft.contractAddress,
     });
+  nft.tokenUnit = tokenUnit ? Number(formatUnits(tokenUnit, 18)) : 0;
   const { nftBalanceOf } = useATTContractInfo(nft);
   const { data: nftBalance } = nftBalanceOf(account?.address);
   const { tokenInfo } = useCurationTokenInfo(nft.contractAddress, nft.tokenId);
@@ -129,7 +120,7 @@ const MintNFT = forwardRef<
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-lg font-medium">Quantity</Text>
-          {perNFTPrice ? (
+          {/* {perNFTPrice ? (
             <Text className="text-xs">
               {new Intl.NumberFormat("en-US", {
                 maximumFractionDigits:
@@ -139,7 +130,7 @@ const MintNFT = forwardRef<
             </Text>
           ) : (
             <Text className="text-xs text-secondary">calculating price...</Text>
-          )}
+          )} */}
         </View>
         <NumberField
           defaultValue={1}
@@ -443,7 +434,7 @@ function MintButton({
   return (
     <Button
       variant="secondary"
-      className="w-full"
+      className="w-full bg-[#00D1A7]"
       disabled={
         !nftPrice ||
         isPending ||
@@ -453,7 +444,13 @@ function MintButton({
         if (nftPrice && paymentToken) mint(amount, nftPrice);
       }}
     >
-      <Text>{isPending ? "Confirming..." : "Mint"}</Text>
+      <Text className="text-base font-medium">
+        {isPending
+          ? "Confirming..."
+          : `Mint & Get ${new Intl.NumberFormat("en-US", {
+              notation: "compact",
+            }).format((nft.tokenUnit || 0) * amount)} $${nft.symbol}`}
+      </Text>
     </Button>
   );
 }
@@ -524,7 +521,7 @@ function MintButtonAA({
   return (
     <Button
       variant="secondary"
-      className="w-full"
+      className="w-full bg-[#00D1A7]"
       disabled={
         !nftPrice ||
         isPending ||
@@ -535,7 +532,13 @@ function MintButtonAA({
           mint(amount, nftPrice, paymentToken, userSelectedToken);
       }}
     >
-      <Text>{isPending ? "Confirming..." : "Mint"}</Text>
+      <Text className="text-base font-medium">
+        {isPending
+          ? "Confirming..."
+          : `Mint & Get ${new Intl.NumberFormat("en-US", {
+              notation: "compact",
+            }).format((nft.tokenUnit || 0) * amount)} $${nft.symbol}`}
+      </Text>
     </Button>
   );
 }
