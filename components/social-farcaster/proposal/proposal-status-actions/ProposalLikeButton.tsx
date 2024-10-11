@@ -56,7 +56,7 @@ export function ProposalLikeButton({
           castHash: castHash,
         });
         upsertOneToProposals(castHash as any, {
-          status: ProposalState.Accepted,
+          status: ProposalState.Disputed,
         });
       }}
       {...props}

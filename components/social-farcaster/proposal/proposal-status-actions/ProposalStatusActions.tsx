@@ -79,6 +79,15 @@ function ProposalStatusActions({
     //       tokenInfo={updatedTokenInfo}
     //     />
     //   );
+    case ProposalState.Accepted:
+      return (
+        <ProposalLikeButton
+          cast={cast}
+          channel={channel}
+          proposal={updatedProposal}
+          tokenInfo={updatedTokenInfo}
+        />
+      );
     // case ProposalState.Accepted:
     //   if (Number(roundIndex) <= 1) {
     //     return (
