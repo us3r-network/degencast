@@ -86,7 +86,7 @@ export default function useProxyUserToCreateProposal({
         // });
 
         upsertOneToProposals(castHash as any, {
-          status: ProposalState.Accepted,
+          status: ProposalState.Disputed,
         });
         // } else {
         //   throw new Error(msg);
