@@ -125,18 +125,18 @@ function Item({
   }, [item, orderBy]);
   const button = useMemo(() => {
     switch (orderBy) {
-      case RankOrderBy.LAUNCH_PROGRESS:
-      case RankOrderBy.NFT_PRICE:
-        return (
-          <Link
-            href={`/communities/${item.id}/casts` as Href}
-            asChild
-          >
-            <Button variant={"secondary"} size="sm" className="min-w-16 px-0">
-              <Text>Curate</Text>
-            </Button>
-          </Link>
-        );
+      // case RankOrderBy.LAUNCH_PROGRESS:
+      // case RankOrderBy.NFT_PRICE:
+      //   return (
+      //     <Link
+      //       href={`/communities/${item.id}/casts` as Href}
+      //       asChild
+      //     >
+      //       <Button variant={"secondary"} size="sm" className="min-w-16 px-0">
+      //         <Text>Curate</Text>
+      //       </Button>
+      //     </Link>
+      //   );
       // case RankOrderBy.CREATED_DATE: // remove this later
       //   if (item.attentionTokenAddress) {
       //     return (
