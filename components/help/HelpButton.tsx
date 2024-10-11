@@ -43,10 +43,10 @@ export const CurationInfo = [
 ];
 
 export const CurationNFTInfo = [
-  "Token value: Each NFT equals 100,000 Contribution Tokens.",
-  "Fees Distribution: 1% to DegenCast, 2% to host, 3% to creators, 4% to Contributors.",
-  "Bonding Curve: Shared curve; liquidity moves to Uniswap at $42,069 cap.",
-  "After Launch: NFT still equals 100,000 Tokens.",
+  "Token Value: Each cast equals 100,000 Channel Tokens",
+  "Fees Distribution: 1% to Degencast, 4% to host, 5% to creator.",
+  "Bonding Curve: Shared curve, liquidity moves to Uniswap at 42069 DEGEN cap.",
+  "After Launch: NFT still equals 100,000 Channel Tokens.",
 ];
 
 export function AboutContents() {
@@ -56,9 +56,9 @@ export function AboutContents() {
       showsHorizontalScrollIndicator={false}
     >
       <View className="flex gap-4">
-        <Text className="text-base font-bold">Superlike</Text>
-        <UnorderedList texts={CurationInfo} />
-        <Text className="text-base">Contribution NFT</Text>
+        {/* <Text className="text-base font-bold">Superlike</Text>
+        <UnorderedList texts={CurationInfo} /> */}
+        {/* <Text className="text-base">Contribution NFT</Text> */}
         <UnorderedList texts={CurationNFTInfo} />
       </View>
     </ScrollView>

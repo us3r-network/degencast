@@ -35,6 +35,8 @@ export function SellButton({ token }: { token: ERC42069Token }) {
     token.contractAddress,
     token.tokenId,
   );
+  token.symbol = tokenInfo?.channel?.id.toUpperCase() || "";
+
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "nft", title: "NFT" },

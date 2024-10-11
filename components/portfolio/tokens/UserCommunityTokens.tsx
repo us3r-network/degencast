@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Href, Link } from "expo-router";
 import { round } from "lodash";
 import React, { useMemo } from "react";
 import { Pressable, View } from "react-native";
@@ -38,7 +38,7 @@ export default function CommunityTokens({ address }: { address: Address }) {
       <CollapsibleTrigger className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-sm font-medium text-secondary">
-            Contribution Tokens {loading ? "" : `(${otherTokens.length})`}
+            Channel Tokens {loading ? "" : `(${otherTokens.length})`}
           </Text>
         </View>
         {otherTokens?.length > DEFAULT_ITEMS_NUM &&
@@ -72,7 +72,7 @@ export function CommunityToken({
   return (
     <View className="flex-row items-center justify-between">
       {channelID ? (
-        <Link href={`/communities/${channelID}/attention-token`} asChild>
+        <Link href={`/communities/${channelID}/attention-token` as Href} asChild>
           <Pressable>
             <TokenInfo
               name={token.name}
