@@ -51,7 +51,10 @@ export function ReadyToMintButton({
             <ProposalButton variant={"ready-to-mint"} {...props}>
               {/* <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" /> */}
               <ProposalText>
-                Mint for ${channel.channelId?.toLocaleUpperCase()}
+                Mint for $
+                {channel.channelId === "home"
+                  ? "CAST"
+                  : channel.channelId?.toLocaleUpperCase()}
               </ProposalText>
             </ProposalButton>
           );
