@@ -64,6 +64,9 @@ function UserScreen() {
     <View className="h-full w-full pb-4">
       <UserPortfolioCtx.Provider value={{ fid: currFid || 0 }}>
         <Tab.Navigator
+          screenOptions={{
+            lazy: true,
+          }}
           initialRouteName={segments?.[0]}
           tabBar={(props) => (
             <View className="mb-4 flex gap-4">
@@ -84,7 +87,9 @@ function UserScreen() {
                 }}
               />
               <PageContent className="h-24 flex-none">
-                {currFid ? <UserInfo fid={currFid} viewerFid={currFid} /> : null}
+                {currFid ? (
+                  <UserInfo fid={currFid} viewerFid={currFid} />
+                ) : null}
               </PageContent>
             </View>
           )}

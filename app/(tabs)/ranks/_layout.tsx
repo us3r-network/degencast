@@ -19,6 +19,9 @@ export default function RankScreen() {
   return (
     <View className="flex-1 pb-4">
       <Tab.Navigator
+        screenOptions={{
+          lazy: true,
+        }}
         initialRouteName={segments?.[0]}
         tabBar={PageTabBar}
         style={{ width: "100%" }}

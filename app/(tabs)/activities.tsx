@@ -15,7 +15,7 @@ function ActivitiesPageContent({ children }: PropsWithChildren) {
 function AllActivitiesPage() {
   return (
     <ActivitiesPageContent>
-      <Activities  type={ActivityFilterType.ALL} />
+      <Activities type={ActivityFilterType.ALL} />
     </ActivitiesPageContent>
   );
 }
@@ -75,6 +75,7 @@ export default function ActivitiesLayout() {
   });
   return (
     <TabView
+      lazy
       navigationState={{ index, routes }}
       renderScene={renderScene}
       onIndexChange={setIndex}
