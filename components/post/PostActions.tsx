@@ -1,14 +1,6 @@
 import { cn } from "~/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
-import {
-  DollarSign,
-  Heart,
-  Plus,
-  Repeat,
-  Share2,
-  SquarePen,
-  X,
-} from "../common/Icons";
+import { DollarSign, Heart, Repeat, Share2 } from "../common/Icons";
 import { Text } from "../ui/text";
 import {
   ActivityIndicator,
@@ -19,24 +11,15 @@ import {
   ViewProps,
   Pressable,
 } from "react-native";
-import { Image } from "react-native";
-import {
-  CommentIcon2,
-  DegenIcon,
-  EditIcon,
-  MintIcon,
-} from "../common/SvgIcons";
+import { CommentIcon2, DegenIcon, MintIcon } from "../common/SvgIcons";
 import {
   forwardRef,
-  LegacyRef,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Link } from "expo-router";
-import useAppSettings from "~/hooks/useAppSettings";
 import React from "react";
 
 export const ActionButton = forwardRef<
@@ -64,7 +47,7 @@ export function ActionText({ className, ...props }: TextProps) {
   );
 }
 
-function ActionMenuItem({
+export function PostActionMenuItem({
   index,
   children,
   size = 32,
@@ -79,7 +62,7 @@ function ActionMenuItem({
     scaleAnimatedValue,
     translateYAnimatedValue,
     translateXAnimatedValue,
-  } = useActionMenuCtx();
+  } = usePostActionMenuCtx();
 
   useEffect(() => {
     Animated.timing(scaleAnimatedValue, {
@@ -93,6 +76,17 @@ function ActionMenuItem({
       useNativeDriver: true,
     }).start();
   }, [showMenu]);
+
+  const [hideChildren, setHideChildren] = useState(false);
+  useEffect(() => {
+    if (!showMenu) {
+      setTimeout(() => {
+        setHideChildren(true);
+      }, 200 * index);
+    } else {
+      setHideChildren(false);
+    }
+  }, [showMenu, index]);
 
   const gap = 10;
   const offset = size + gap;
@@ -134,7 +128,6 @@ function ActionMenuItem({
     height: 32,
     position: "absolute" as "absolute",
     zIndex: index,
-
     opacity: scaleAnimatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 1],
@@ -149,10 +142,14 @@ function ActionMenuItem({
       translateStyle,
     ],
   };
-  return <Animated.View style={[actionStyle]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[actionStyle]}>
+      {!showMenu && hideChildren ? null : children}
+    </Animated.View>
+  );
 }
 
-const ActionMenuItemButton = forwardRef<
+const PostActionMenuItemButton = forwardRef<
   React.ElementRef<typeof Pressable>,
   ButtonProps
 >(({ className, ...props }, ref) => {
@@ -179,7 +176,7 @@ export const LikeButton = ({
   iconSize?: number;
 }) => {
   return (
-    <ActionMenuItemButton
+    <PostActionMenuItemButton
       className={cn(
         "gap-0 active:opacity-100",
         liked
@@ -199,7 +196,7 @@ export const LikeButton = ({
       )}
 
       {likeCount !== undefined && <ActionText>{likeCount || 0}</ActionText>}
-    </ActionMenuItemButton>
+    </PostActionMenuItemButton>
   );
 };
 
@@ -214,7 +211,7 @@ export const RepostButton = ({
   reposting?: boolean;
 }) => {
   return (
-    <ActionMenuItemButton {...props}>
+    <PostActionMenuItemButton {...props}>
       {reposting ? (
         <ActivityIndicator
           size={iconSize}
@@ -229,7 +226,7 @@ export const RepostButton = ({
           )}
         />
       )}
-    </ActionMenuItemButton>
+    </PostActionMenuItemButton>
   );
 };
 
@@ -240,10 +237,10 @@ export const GiftButton = ({
   iconSize?: number;
 }) => {
   return (
-    <ActionMenuItemButton {...props}>
+    <PostActionMenuItemButton {...props}>
       <DollarSign size={iconSize} className={cn("stroke-primary-foreground")} />
       {/* <ActionText>{giftCount || 0}</ActionText> */}
-    </ActionMenuItemButton>
+    </PostActionMenuItemButton>
   );
 };
 
@@ -254,7 +251,7 @@ export const CommentButton = ({
   iconSize?: number;
 }) => {
   return (
-    <ActionMenuItemButton {...props}>
+    <PostActionMenuItemButton {...props}>
       <CommentIcon2
         width={iconSize}
         height={iconSize}
@@ -262,7 +259,7 @@ export const CommentButton = ({
           " flex fill-primary-foreground stroke-primary-foreground",
         )}
       />
-    </ActionMenuItemButton>
+    </PostActionMenuItemButton>
   );
 };
 
@@ -273,12 +270,12 @@ export const ShareButton = ({
   iconSize?: number;
 }) => {
   return (
-    <ActionMenuItemButton {...props}>
+    <PostActionMenuItemButton {...props}>
       <Share2
         size={iconSize}
         className={cn(" fill-primary-foreground stroke-primary-foreground")}
       />
-    </ActionMenuItemButton>
+    </PostActionMenuItemButton>
   );
 };
 
@@ -289,29 +286,16 @@ export const MintButton = ({
   iconSize?: number;
 }) => {
   return (
-    <ActionMenuItemButton {...props}>
+    <PostActionMenuItemButton {...props}>
       <MintIcon className={cn("stroke-primary-foreground")} />
-    </ActionMenuItemButton>
+    </PostActionMenuItemButton>
   );
 };
 
-type PostMenuButtonProps = {
+type PostActionMenuButtonProps = {
   direction?: "top" | "left" | "right";
-  channelId?: string;
-  liked: boolean;
-  likeCount?: number;
-  liking?: boolean;
-  reposted?: boolean;
-  reposting?: boolean;
-  onOpenWarpcast: () => void;
-  onLike: () => void;
-  onGift: () => void;
-  onShare: () => void;
-  onComment?: () => void;
-  onMint?: () => void;
-  onRepost?: () => void;
 };
-const ActionMenuCtx = React.createContext<{
+const PostActionMenuCtx = React.createContext<{
   showMenu?: boolean;
   direction?: "top" | "left" | "right";
   scaleAnimatedValue: Animated.Value;
@@ -324,39 +308,20 @@ const ActionMenuCtx = React.createContext<{
   translateYAnimatedValue: new Animated.Value(0),
   translateXAnimatedValue: new Animated.Value(0),
 });
-function useActionMenuCtx() {
-  const context = useContext(ActionMenuCtx);
+function usePostActionMenuCtx() {
+  const context = useContext(PostActionMenuCtx);
   if (!context) {
-    throw new Error("useActionMenuCtx must be used within ActionMenuCtx");
+    throw new Error(
+      "usePostActionMenuCtx must be used within PostActionMenuCtx",
+    );
   }
   return context;
 }
-export const PostMenuButton = forwardRef(function (
-  {
-    direction = "right",
-    channelId,
-    liked,
-    likeCount,
-    liking,
-    reposted,
-    reposting,
-    onOpenWarpcast,
-    onLike,
-    onGift,
-    onShare,
-    onComment,
-    onMint,
-    onRepost,
-
-    className,
-    ...props
-  }: ViewProps & PostMenuButtonProps,
-  ref: LegacyRef<View>,
-) {
-  // const {
-  //   openExploreCastMenu: showActions,
-  //   setOpenExploreCastMenu: showActionsChange,
-  // } = useAppSettings();
+export function PostActionMenu({
+  direction = "right",
+  className,
+  children,
+}: ViewProps & PostActionMenuButtonProps) {
   const [showActions, showActionsChange] = useState(false);
   const toggleBtnAnimation = useState(new Animated.Value(0))[0];
   const toggleActions = useCallback(() => {
@@ -387,15 +352,13 @@ export const PostMenuButton = forwardRef(function (
   }, [direction]);
   return (
     <View
-      ref={ref}
       className={cn(
         " relative flex w-fit flex-col items-center",
         direction === "left" ? " h-fit flex-row" : "",
         className,
       )}
-      {...props}
     >
-      <ActionMenuCtx.Provider
+      <PostActionMenuCtx.Provider
         value={{
           showMenu: showActions,
           direction,
@@ -404,66 +367,8 @@ export const PostMenuButton = forwardRef(function (
           translateXAnimatedValue,
         }}
       >
-        <ActionMenuItem index={7}>
-          <Pressable
-            className="h-full w-full"
-            onPress={() => {
-              onOpenWarpcast();
-            }}
-          >
-            <Image
-              source={require("~/assets/images/warpcast-icon.png")}
-              resizeMode="cover"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Pressable>
-        </ActionMenuItem>
-        <ActionMenuItem index={6}>
-          <ShareButton onPress={onShare} />
-        </ActionMenuItem>
-        <ActionMenuItem index={5}>
-          <GiftButton onPress={onGift} />
-        </ActionMenuItem>
-        {/* <ActionMenuItem index={4}>
-          <Link
-            href={`/create${channelId ? "?channelId=" + channelId : ""}`}
-            asChild
-          >
-            <ActionMenuItemButton>
-              <SquarePen
-                size={16}
-                strokeWidth={2}
-                className="stroke-primary-foreground"
-              />
-            </ActionMenuItemButton>
-          </Link>
-        </ActionMenuItem> */}
-
-        <ActionMenuItem index={4}>
-          <CommentButton onPress={onComment} />
-        </ActionMenuItem>
-        <ActionMenuItem index={3}>
-          <MintButton onPress={onMint} />
-        </ActionMenuItem>
-        <ActionMenuItem index={2}>
-          {/* <ShareButton  onPress={onShare} /> */}
-          <RepostButton
-            disabled={reposting}
-            reposted={reposted}
-            reposting={reposting}
-            onPress={onRepost}
-          />
-        </ActionMenuItem>
-        <ActionMenuItem index={1}>
-          <LikeButton
-            disabled={liking}
-            liked={liked}
-            liking={liking}
-            likeCount={likeCount}
-            onPress={onLike}
-          />
-        </ActionMenuItem>
-      </ActionMenuCtx.Provider>
+        {children}
+      </PostActionMenuCtx.Provider>
       <ActionButton className=" z-10" onPress={toggleActions}>
         <Animated.View
           style={[
@@ -479,127 +384,9 @@ export const PostMenuButton = forwardRef(function (
             },
           ]}
         >
-          {/* <Image
-            source={require("~/assets/images/degen-icon.png")}
-            resizeMode="contain"
-            style={{ width: 20, height: 20 }}
-          /> */}
           <DegenIcon />
         </Animated.View>
       </ActionButton>
-      {/* <Link
-        href={`/create${channelId ? "?channelId=" + channelId : ""}`}
-        asChild
-      >
-        <ActionButton className="z-10 mt-3 shadow-md shadow-primary">
-          <SquarePen size={20} strokeWidth={2} className="stroke-primary" />
-        </ActionButton>
-      </Link> */}
     </View>
   );
-});
-
-type PostDetailActionsProps = {
-  liked?: boolean;
-  likeCount?: number;
-  liking?: boolean;
-  reposted?: boolean;
-  reposting?: boolean;
-  onLike?: () => void;
-  onGift?: () => void;
-  onShare?: () => void;
-  onComment?: () => void;
-  onMint?: () => void;
-  onRepost?: () => void;
-  hideLike?: boolean;
-  hideGift?: boolean;
-  hideShare?: boolean;
-  hideComment?: boolean;
-};
-export const PostDetailActions = forwardRef(function (
-  {
-    liked = false,
-    likeCount,
-    liking,
-    reposted,
-    reposting,
-    onLike,
-    onGift,
-    onShare,
-    onComment,
-    onMint,
-    onRepost,
-    hideLike,
-    hideGift,
-    hideShare,
-    hideComment,
-    className,
-    ...props
-  }: ViewProps & PostDetailActionsProps,
-  ref: LegacyRef<View>,
-) {
-  return (
-    <View
-      className={cn(" flex w-fit flex-row gap-3", className)}
-      ref={ref}
-      {...props}
-    >
-      {!hideGift && (
-        <GiftButton
-          variant={"outline"}
-          iconSize={15}
-          className=" h-10 w-10"
-          onPress={onGift}
-        />
-      )}
-
-      {!hideComment && (
-        <CommentButton
-          variant={"outline"}
-          iconSize={15}
-          className=" h-10 w-10"
-          onPress={onComment}
-        />
-      )}
-
-      <MintButton
-        variant={"outline"}
-        iconSize={15}
-        className=" h-10 w-10"
-        onPress={onMint}
-      />
-
-      {/* {!hideShare && (
-        <ShareButton
-          variant={"outline"}
-          iconSize={15}
-          className=" h-10 w-10"
-          onPress={onShare}
-        />
-      )} */}
-
-      <RepostButton
-        variant={"outline"}
-        iconSize={15}
-        className=" h-10 w-10"
-        reposted={reposted}
-        reposting={reposting}
-        onPress={onRepost}
-        disabled={reposting}
-      />
-
-      {!hideLike && (
-        <LikeButton
-          className={cn(" h-10 w-10 ", liked && " border-none")}
-          variant={liked ? "default" : "outline"}
-          disabled={liking}
-          iconSize={15}
-          liked={liked}
-          liking={liking}
-          likeCount={likeCount}
-          onPress={onLike}
-        />
-      )}
-    </View>
-  );
-});
+}
