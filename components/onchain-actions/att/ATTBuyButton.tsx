@@ -20,6 +20,7 @@ export function BuyButton({
   renderButton?: (props: { onPress: () => void }) => React.ReactNode;
   onSuccess?: (mintNum: number) => void;
 }) {
+  token.symbol = cast?.channel?.id.toUpperCase() || "";
   const account = useAccount();
   const { connectWallet } = useWalletAccount();
   const [open, setOpen] = useState(false);

@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Href, Link } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { formatUnits } from "viem";
@@ -17,11 +17,11 @@ import { Channel } from "~/services/farcaster/types";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
 
 const RankOrderByList = [
-  { label: "Token Launch", value: RankOrderBy.LAUNCH_PROGRESS },
-  { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
+  { label: "Token Price", value: RankOrderBy.NFT_PRICE },
+  { label: "Launch Progress", value: RankOrderBy.LAUNCH_PROGRESS },
   // { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
   // { label: "New Casts", value: RankOrderBy.NEW_CASTS },
-  { label: "Members", value: RankOrderBy.MEMBERS },
+  { label: "Followers", value: RankOrderBy.MEMBERS },
   { label: "Created Date", value: RankOrderBy.CREATED_DATE },
 ];
 
@@ -129,7 +129,7 @@ function Item({
       case RankOrderBy.NFT_PRICE:
         return (
           <Link
-            href={`/communities/${item.id}/casts`}
+            href={`/communities/${item.id}/casts` as Href}
             asChild
           >
             <Button variant={"secondary"} size="sm" className="min-w-16 px-0">
@@ -174,7 +174,7 @@ function Item({
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
         <Text className="w-6 text-center text-xs font-medium">{index}</Text>
-        <Link className="flex-1" href={`/communities/${item.id}/casts`} asChild>
+        <Link className="flex-1" href={`/communities/${item.id}/casts` as Href} asChild>
           <Pressable>
             <CommunityInfo name={item.name} logo={item.image_url} />
           </Pressable>

@@ -9,8 +9,8 @@ import CuratorsScreen from "./curators";
 
 const Tab = createMaterialTopTabNavigator();
 const TABS = [
-  { label: "Channels", value: "channels", component: ChannelsScreen },
-  { label: "DegenCaster", value: "curators", component: CuratorsScreen },
+  { label: "Channel Rank", value: "channels", component: ChannelsScreen },
+  // { label: "DegenCaster", value: "curators", component: CuratorsScreen },
   // { label: "Tokens", value: "tokens", component: TokensScreen },
 ];
 

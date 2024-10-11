@@ -112,7 +112,7 @@ export const NftDetails = ({
               <NeynarCastUserInfo userData={tokenInfo.cast.author} />
             </View>
           )}
-          {tokenInfo?.curators && tokenInfo.curators.length > 0 && (
+          {/* {tokenInfo?.curators && tokenInfo.curators.length > 0 && (
             <View className="flex-row items-start justify-between gap-2">
               <Text>Curators</Text>
               <View className="flex items-end gap-4">
@@ -121,7 +121,7 @@ export const NftDetails = ({
                 ))}
               </View>
             </View>
-          )}
+          )} */}
         </View>
       </ScrollView>
       <ATTExternalLink
