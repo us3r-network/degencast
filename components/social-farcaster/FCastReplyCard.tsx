@@ -53,14 +53,12 @@ const FCastReplyCard = React.forwardRef<
         )}
 
         {!!cast && !!channel && !!channelId && !!tokenInfo && !!proposal && (
-          <View className="ml-auto">
-            <ProposalStatusActions
-              cast={cast}
-              channel={channel}
-              tokenInfo={tokenInfo}
-              proposal={proposal}
-            />
-          </View>
+          <ProposalStatusActions
+            cast={cast}
+            channel={channel}
+            tokenInfo={tokenInfo}
+            proposal={proposal}
+          />
         )}
       </View>
     </CardWrapper>

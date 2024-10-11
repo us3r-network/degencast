@@ -9,6 +9,7 @@ import { View } from "react-native";
 import { ProposalText } from "../ui/proposal-text";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import { LikeCount } from "../ProposalStyled";
+import { ProxyUserToCreateProposalButtonV2 } from "../proposal-write-buttons/CreateProposalWriteButton";
 
 export function CreateProposalButton({
   cast,
@@ -22,9 +23,8 @@ export function CreateProposalButton({
   const { ready, authenticated, login } = useAuth();
   if (!proposal) return null;
   const buttonBody = (
-    <View className="flex flex-row items-center gap-1">
-      <ProposalText>👍</ProposalText>
-      <ProposalText>Superlike</ProposalText>
+    <View className="flex flex-row items-center justify-center gap-1">
+      <ProposalText>Like for $CAST</ProposalText>
     </View>
   );
 
@@ -52,18 +52,26 @@ export function CreateProposalButton({
   }
 
   return (
-    <CreateProposalModal
+    <ProxyUserToCreateProposalButtonV2
       cast={cast}
       channel={channel}
-      proposal={proposal}
       tokenInfo={tokenInfo}
-      triggerButton={
-        <ProposalButton variant={"not-proposed"} {...props}>
-          {buttonBody}
-        </ProposalButton>
-      }
     />
   );
+
+  // return (
+  //   <CreateProposalModal
+  //     cast={cast}
+  //     channel={channel}
+  //     proposal={proposal}
+  //     tokenInfo={tokenInfo}
+  //     triggerButton={
+  //       <ProposalButton variant={"not-proposed"} {...props}>
+  //         {buttonBody}
+  //       </ProposalButton>
+  //     }
+  //   />
+  // );
 }
 
 export function CreateProposalActionLayout({
@@ -72,10 +80,10 @@ export function CreateProposalActionLayout({
   proposal,
   tokenInfo,
 }: CastProposeStatusProps) {
-  const { likeCount } = useFarcasterLikeAction({ cast });
+  // const { likeCount } = useFarcasterLikeAction({ cast });
   return (
-    <View className="flex flex-row items-center gap-4">
-      <LikeCount count={likeCount || 0} />
+    <View className="w-full flex-1 flex-row items-center gap-4">
+      {/* <LikeCount count={likeCount || 0} /> */}
 
       <CreateProposalButton
         cast={cast}

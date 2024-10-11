@@ -1,7 +1,12 @@
 import { useCallback, useState } from "react";
 import { Address, TransactionReceipt } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { createProposal, getProposals, PaymentConfig } from "./proposal-helper";
+import {
+  createProposal,
+  getProposals,
+  PaymentConfig,
+  ProposalState,
+} from "./proposal-helper";
 import { arCheckCastProposalMetadata } from "~/services/upload";
 import { ApiRespCode } from "~/services/shared/types";
 import useCacheCastProposal from "./useCacheCastProposal";
@@ -52,36 +57,40 @@ export default function useProxyUserToCreateProposal({
         if (!curatorAddr) {
           throw new Error("curator address is required");
         }
-        const res = await proxyUserToCreateProposal({ castHash, curatorAddr });
-        const { code, data, msg } = res.data;
-        if (code === ApiRespCode.SUCCESS) {
-          console.log("createProposal success", data);
+        // const res = await proxyUserToCreateProposal({ castHash, curatorAddr });
+        proxyUserToCreateProposal({ castHash, curatorAddr });
 
-          // setTransactionReceipt('');
-          setStatus("success");
-          onCreateProposalSuccess?.(data);
-          // submitUserAction({
-          //   action: UserActionName.VoteCast,
-          //   castHash: castHash,
-          //   data: {
-          //     hash: receipt.transactionHash,
-          //   },
-          // });
-          const proposals = await getProposals({
-            publicClient,
-            contractAddress,
-            castHash,
-          });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // const { code, data, msg } = res.data;
+        // if (code === ApiRespCode.SUCCESS) {
+        // console.log("createProposal success", data);
 
-          upsertOneToProposals(castHash as any, {
-            status: proposals.state,
-            finalizeTime: Number(proposals.deadline),
-            upvoteCount: 1,
-            roundIndex: Number(proposals.roundIndex),
-          });
-        } else {
-          throw new Error(msg);
-        }
+        // setTransactionReceipt('');
+        setStatus("success");
+        // onCreateProposalSuccess?.(data);
+        submitUserAction({
+          action: UserActionName.VoteCast,
+          castHash: castHash,
+        });
+        // const proposals = await getProposals({
+        //   publicClient,
+        //   contractAddress,
+        //   castHash,
+        // });
+
+        // upsertOneToProposals(castHash as any, {
+        //   status: proposals.state,
+        //   finalizeTime: Number(proposals.deadline),
+        //   upvoteCount: 1,
+        //   roundIndex: Number(proposals.roundIndex),
+        // });
+
+        upsertOneToProposals(castHash as any, {
+          status: ProposalState.Accepted,
+        });
+        // } else {
+        //   throw new Error(msg);
+        // }
       } catch (e) {
         let err = e as any;
         setError(err);

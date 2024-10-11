@@ -75,12 +75,12 @@ export default function CommunityDetail() {
     { key: "vote", title: "Like", component: ProposalFeeds },
     { key: "collect", title: "Mint", component: SelectionFeeds },
     { key: "activities", title: "Activity", component: ActivitiesScreen },
-    {
-      key: "attention-token",
-      title: "Contribution Token",
-      component: AttentionTokenScreen,
-    },
-    { key: "curators", title: "DegenCaster", component: CuratorsScreen },
+    // {
+    //   key: "attention-token",
+    //   title: "Contribution Token",
+    //   component: AttentionTokenScreen,
+    // },
+    // { key: "curators", title: "DegenCaster", component: CuratorsScreen },
   ]);
 
   const community = communityDetail || communityBasic;

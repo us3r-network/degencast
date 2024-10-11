@@ -90,7 +90,7 @@ export default function CommunityDetailMetaInfo({
             </Text>
           </Link>
         )}
-        {!!tokenInitiatorUserData && (
+        {/* {!!tokenInitiatorUserData && (
           <Link
             href={`/u/${tokenInitiatorUserData.fid}`}
             className="flex flex-row gap-1"
@@ -102,7 +102,7 @@ export default function CommunityDetailMetaInfo({
               @{tokenInitiatorUserData?.username}
             </Text>
           </Link>
-        )}
+        )} */}
         <Text className="line-clamp-1 text-sm font-medium leading-6 text-secondary">
           {description}
         </Text>
@@ -215,7 +215,7 @@ export function CommunityDetailMetaInfoMobile({
           </Text>
         </Link>
       )}
-      {!!tokenInitiatorUserData && (
+      {/* {!!tokenInitiatorUserData && (
         <Link
           href={`/u/${tokenInitiatorUserData.fid}`}
           className="flex flex-row gap-1"
@@ -233,7 +233,7 @@ export function CommunityDetailMetaInfoMobile({
             @{tokenInitiatorUserData?.username}
           </Text>
         </Link>
-      )}
+      )} */}
       {(communityInfo?.attentionTokenInfo || !!tokenInfo) && (
         <Separator className="bg-secondary/20" />
       )}
@@ -268,28 +268,28 @@ export function CommunityDetailMetaInfoMobile({
       ) : communityInfo?.attentionTokenInfo?.progress ? (
         <View className="flex flex-row items-center justify-between">
           <Text className={cn("text-sm text-primary-foreground")}>
-            Bounding Curve Progress
+            Token Launch Progress
           </Text>
           <Text className={cn("text-sm text-primary-foreground")}>
             {communityInfo?.attentionTokenInfo?.progress}
           </Text>
         </View>
       ) : null}
-      {/* {communityInfo?.attentionTokenInfo && (
+      {communityInfo?.attentionTokenInfo?.readyToMintCount && (
         <View className="flex flex-row items-center justify-between">
           <Text className={cn("text-sm text-primary-foreground")}>
-            Contribution NFT
+            Available casts for minting
           </Text>
           <Text className={cn("text-sm text-primary-foreground")}>
             {communityInfo?.attentionTokenInfo?.readyToMintCount || 0}
           </Text>
         </View>
-      )} */}
+      )}
 
       {communityInfo?.attentionTokenInfo && (
         <View className="flex flex-row items-center justify-between">
           <Text className={cn("text-sm text-primary-foreground")}>
-            Channel NFT Prices
+            Token Price
           </Text>
           <Text className={cn("text-sm text-primary-foreground")}>
             {!!nftPrice && !!token
