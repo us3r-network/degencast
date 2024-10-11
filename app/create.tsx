@@ -4,7 +4,7 @@ import { ActivityIndicator, SafeAreaView, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import GoBackButton from "~/components/common/GoBackButton";
 import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPreviewEmbeds";
-import Editor from "~/components/social-farcaster/Editor";
+import Editor, { SIGNATURE_TEXT } from "~/components/social-farcaster/Editor";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
@@ -141,6 +141,14 @@ export default function CreateScreen() {
                           setImages([]);
                           setChannel(HomeChanel);
                           setPosting(false);
+
+                          // 包含degencast签名, 加积分
+                          if (data.text.includes(SIGNATURE_TEXT)) {
+                            submitUserAction({
+                              action: UserActionName.PostingSignature,
+                              castHash: result?.hash,
+                            });
+                          }
 
                           const { castHex, url, mintInfo } =
                             sharingCastMint || {};

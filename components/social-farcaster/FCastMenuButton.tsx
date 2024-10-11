@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { View, ViewProps } from "react-native";
+import { Pressable, View, ViewProps } from "react-native";
 import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 import useFarcasterRecastAction from "~/hooks/social-farcaster/useFarcasterRecastAction";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import useUserDegenAllowance from "~/hooks/user/useUserDegenAllowance";
 import { CommunityInfo } from "~/services/community/types/community";
-import { PostMenuButton } from "../post/PostActions";
+import {
+  CommentButton,
+  GiftButton,
+  LikeButton,
+  MintButton,
+  PostActionMenu,
+  PostActionMenuItem,
+  RepostButton,
+  ShareButton,
+} from "../post/PostActions";
 import FCastGiftModal from "./FCastGiftModal";
 import FCastMintNftModal from "./FCastMintNftModal";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
@@ -15,8 +24,11 @@ import useAuth from "~/hooks/user/useAuth";
 import useCastReply from "~/hooks/social-farcaster/useCastReply";
 import useAppModals from "~/hooks/useAppModals";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
+import { openWarpcastCast } from "~/utils/platform-sharing/warpcast";
+import { Image } from "react-native";
+import React from "react";
 
-export default function FCastMenuButton({
+function FCastMenuButton({
   direction,
   cast,
   communityInfo,
@@ -29,19 +41,72 @@ export default function FCastMenuButton({
   proposal?: ProposalEntity;
 }) {
   const channelId = communityInfo?.channelId || "";
-  const { navigateToCastReply } = useCastReply();
-  const { login, ready, authenticated } = useAuth();
-  const { currFid } = useFarcasterAccount();
-  const { requestSigner, hasSigner } = useFarcasterSigner();
+
+  const castHash = cast.hash;
+
+  return (
+    <View className="z-20">
+      <PostActionMenu>
+        <PostActionMenuItem index={7}>
+          <Pressable
+            className="h-full w-full"
+            onPress={() => {
+              openWarpcastCast(castHash);
+            }}
+          >
+            <Image
+              source={require("~/assets/images/warpcast-icon.png")}
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Pressable>
+        </PostActionMenuItem>
+        <PostActionMenuItem index={6}>
+          <ShareAction
+            cast={cast}
+            community={communityInfo}
+            proposal={proposal}
+          />
+        </PostActionMenuItem>
+        <PostActionMenuItem index={5}>
+          <TipAction cast={cast} />
+        </PostActionMenuItem>
+        {/* <PostActionMenuItem index={4}>
+          <Link
+            href={`/create${channelId ? "?channelId=" + channelId : ""}`}
+            asChild
+          >
+            <PostActionMenuItemButton>
+              <SquarePen
+                size={16}
+                strokeWidth={2}
+                className="stroke-primary-foreground"
+              />
+            </PostActionMenuItemButton>
+          </Link>
+        </PostActionMenuItem> */}
+
+        <PostActionMenuItem index={4}>
+          <ReplyAction cast={cast} community={communityInfo} />
+        </PostActionMenuItem>
+        <PostActionMenuItem index={3}>
+          <MintAction cast={cast} channelId={channelId} />
+        </PostActionMenuItem>
+        <PostActionMenuItem index={2}>
+          <RecastAction cast={cast} />
+        </PostActionMenuItem>
+        <PostActionMenuItem index={1}>
+          <LikeAction cast={cast} />
+        </PostActionMenuItem>
+      </PostActionMenu>
+    </View>
+  );
+}
+export default React.memo(FCastMenuButton);
+
+function LikeAction({ cast }: { cast: NeynarCast }) {
   const { likeCast, removeLikeCast, liked, likeCount, likePending } =
     useFarcasterLikeAction({ cast });
-  const { recast, removeRecast, recasted, recastCount, recastPending } =
-    useFarcasterRecastAction({ cast });
-  const [openGiftModal, setOpenGiftModal] = useState(false);
-  const [openMintNftModal, setOpenMintNftModal] = useState(false);
-  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
-    useUserDegenAllowance();
-
   const onLike = () => {
     if (liked) {
       removeLikeCast();
@@ -49,7 +114,20 @@ export default function FCastMenuButton({
       likeCast();
     }
   };
+  return (
+    <LikeButton
+      disabled={likePending}
+      liked={liked}
+      liking={likePending}
+      likeCount={likeCount}
+      onPress={onLike}
+    />
+  );
+}
 
+function RecastAction({ cast }: { cast: NeynarCast }) {
+  const { recast, removeRecast, recasted, recastCount, recastPending } =
+    useFarcasterRecastAction({ cast });
   const onRepost = () => {
     if (recasted) {
       removeRecast();
@@ -57,7 +135,59 @@ export default function FCastMenuButton({
       recast();
     }
   };
+  return (
+    <RepostButton
+      disabled={recastPending}
+      reposted={recasted}
+      reposting={recastPending}
+      onPress={onRepost}
+    />
+  );
+}
 
+function MintAction({
+  cast,
+  channelId,
+}: {
+  cast: NeynarCast;
+  channelId: string;
+}) {
+  const { login, ready, authenticated } = useAuth();
+  const [openMintNftModal, setOpenMintNftModal] = useState(false);
+  return (
+    <>
+      {" "}
+      <MintButton
+        onPress={() => {
+          if (!authenticated) {
+            login();
+            return;
+          }
+          setOpenMintNftModal(true);
+        }}
+      />{" "}
+      <FCastMintNftModal
+        cast={cast}
+        channelId={channelId}
+        open={openMintNftModal}
+        onOpenChange={setOpenMintNftModal}
+      />
+    </>
+  );
+}
+
+function ReplyAction({
+  cast,
+  community,
+}: {
+  cast: NeynarCast;
+  community: CommunityInfo;
+}) {
+  const { login, authenticated } = useAuth();
+  const { currFid } = useFarcasterAccount();
+  const { requestSigner, hasSigner } = useFarcasterSigner();
+  const { navigateToCastReply } = useCastReply();
+  const castHash = getCastHex(cast);
   const onComment = () => {
     if (!authenticated) {
       login();
@@ -67,13 +197,20 @@ export default function FCastMenuButton({
       requestSigner();
       return;
     }
-    const castHex = getCastHex(cast);
-    navigateToCastReply(castHex, {
+
+    navigateToCastReply(castHash, {
       cast,
-      community: communityInfo,
+      community,
     });
   };
+  return <CommentButton onPress={onComment} />;
+}
 
+function TipAction({ cast }: { cast: NeynarCast }) {
+  const { totalDegenAllowance, remainingDegenAllowance, loadDegenAllowance } =
+    useUserDegenAllowance();
+  const { login, authenticated } = useAuth();
+  const [openGiftModal, setOpenGiftModal] = useState(false);
   const onGift = () => {
     if (!authenticated) {
       login();
@@ -82,40 +219,9 @@ export default function FCastMenuButton({
     loadDegenAllowance();
     setOpenGiftModal(true);
   };
-
-  const { upsertProposalShareModal } = useAppModals();
-  const onShare = () => {
-    upsertProposalShareModal({
-      open: true,
-      cast,
-      channel: communityInfo,
-      proposal,
-    });
-  };
   return (
-    <View className="z-20">
-      <PostMenuButton
-        direction={direction}
-        channelId={channelId}
-        liked={liked}
-        likeCount={likeCount}
-        liking={likePending}
-        reposted={recasted}
-        reposting={recastPending}
-        onLike={onLike}
-        onGift={onGift}
-        onShare={onShare}
-        onComment={onComment}
-        onRepost={onRepost}
-        onMint={() => {
-          if (!authenticated) {
-            login();
-            return;
-          }
-          setOpenMintNftModal(true);
-        }}
-      />
-
+    <>
+      <GiftButton onPress={onGift} />{" "}
       <FCastGiftModal
         totalAllowance={totalDegenAllowance}
         remainingAllowance={remainingDegenAllowance}
@@ -123,17 +229,27 @@ export default function FCastMenuButton({
         open={openGiftModal}
         onOpenChange={setOpenGiftModal}
       />
-      {/* <FCastShareModal
-        cast={cast}
-        open={openShareModal}
-        onOpenChange={setOpenShareModal}
-      /> */}
-      <FCastMintNftModal
-        cast={cast}
-        channelId={channelId}
-        open={openMintNftModal}
-        onOpenChange={setOpenMintNftModal}
-      />
-    </View>
+    </>
   );
+}
+
+function ShareAction({
+  cast,
+  community,
+  proposal,
+}: {
+  cast: NeynarCast;
+  community: CommunityInfo;
+  proposal?: ProposalEntity;
+}) {
+  const { upsertProposalShareModal } = useAppModals();
+  const onShare = () => {
+    upsertProposalShareModal({
+      open: true,
+      cast,
+      channel: community,
+      proposal,
+    });
+  };
+  return <ShareButton onPress={onShare} />;
 }

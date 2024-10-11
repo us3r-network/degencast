@@ -17,7 +17,7 @@ import { Channel } from "~/services/farcaster/types";
 import { OrderParams, RankOrderBy } from "~/services/rank/types";
 
 const RankOrderByList = [
-  { label: "Toekn Launch", value: RankOrderBy.LAUNCH_PROGRESS },
+  { label: "Token Launch", value: RankOrderBy.LAUNCH_PROGRESS },
   { label: "NFT Price", value: RankOrderBy.NFT_PRICE },
   // { label: "New Proposals", value: RankOrderBy.NEW_PROPOSALS },
   // { label: "New Casts", value: RankOrderBy.NEW_CASTS },
@@ -129,11 +129,10 @@ function Item({
       case RankOrderBy.NFT_PRICE:
         return (
           <Link
-            className="flex-1"
             href={`/communities/${item.id}/casts`}
             asChild
           >
-            <Button variant={"secondary"} size="sm" className="min-w-14 px-0">
+            <Button variant={"secondary"} size="sm" className="min-w-16 px-0">
               <Text>Curate</Text>
             </Button>
           </Link>

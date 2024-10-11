@@ -38,3 +38,20 @@ export const openWarpcastCreateCast = async (
     return Linking.openURL(webUrl);
   }
 };
+
+export const openWarpcastCast = async (castHash: string) => {
+  const warpcastAppUrl = encodeURI(
+    `${WARPCAST_APP_HOST}/~/conversations/${castHash}`,
+  );
+  const webUrl = encodeURI(`${WARPCAST_WEB_HOST}/~/conversations/${castHash}`);
+
+  if (Platform.OS === "web") {
+    return Linking.openURL(webUrl);
+  }
+  const supported = await Linking.canOpenURL(warpcastAppUrl);
+  if (supported) {
+    return Linking.openURL(warpcastAppUrl);
+  } else {
+    return Linking.openURL(webUrl);
+  }
+};
