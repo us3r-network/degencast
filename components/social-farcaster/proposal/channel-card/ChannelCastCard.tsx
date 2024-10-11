@@ -50,14 +50,12 @@ const ChannelCastCard = ({
           communityInfo={channel as any}
           proposal={proposal}
         />
-        <View className="ml-auto">
-          <ProposalStatusActions
-            cast={cast}
-            channel={channel}
-            tokenInfo={tokenInfo}
-            proposal={proposal}
-          />
-        </View>
+        <ProposalStatusActions
+          cast={cast}
+          channel={channel}
+          tokenInfo={tokenInfo}
+          proposal={proposal}
+        />
       </View>
     </CardWrapper>
   );

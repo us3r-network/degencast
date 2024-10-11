@@ -11,6 +11,10 @@ import { ReadyToMintActionLayout } from "./MintAction";
 import { CreateProposalActionLayout } from "./CreateProposalAction";
 import useCacheCastAttToken from "~/hooks/social-farcaster/proposal/useCacheCastAttToken";
 import { AbandonedProposalActionLayout } from "./AbandonedProposalAction";
+import { ProposalButton } from "../ui/proposal-button";
+import { ProposalText } from "../ui/proposal-text";
+import { ProposalLikeButton } from "./ProposalLikeButton";
+import { View } from "react-native";
 
 export type ProposalStatusActionsProps = {
   cast: NeynarCast;
@@ -19,7 +23,7 @@ export type ProposalStatusActionsProps = {
   tokenInfo?: AttentionTokenEntity;
 };
 export const ProposalStatusActionsHeight = 32;
-export default function ProposalStatusActions({
+function ProposalStatusActions({
   cast,
   channel,
   tokenInfo,
@@ -39,12 +43,12 @@ export default function ProposalStatusActions({
     ? { ...tokenInfo, ...cachedTokenInfo }
     : tokenInfo;
 
-  const display = displayProposalActions({
-    channel,
-    tokenInfo,
-    proposal,
-    cast,
-  });
+  // const display = displayProposalActions({
+  //   channel,
+  //   tokenInfo,
+  //   proposal,
+  //   cast,
+  // });
   // if (!display) return null;
   if (!channel?.channelId) return null;
   switch (status) {
@@ -59,41 +63,50 @@ export default function ProposalStatusActions({
       );
     case ProposalState.Proposed:
       return (
-        <ProposedProposalActionLayout
+        <ProposalLikeButton
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
           tokenInfo={updatedTokenInfo}
         />
       );
-    case ProposalState.Accepted:
-      if (Number(roundIndex) <= 1) {
-        return (
-          <ProposedProposalActionLayout
-            cast={cast}
-            channel={channel}
-            proposal={updatedProposal}
-            tokenInfo={updatedTokenInfo}
-          />
-        );
-      }
-      return (
-        <ChallengeProposalActionLayout
-          cast={cast}
-          channel={channel}
-          proposal={updatedProposal}
-          tokenInfo={updatedTokenInfo}
-        />
-      );
-    case ProposalState.Disputed:
-      return (
-        <ChallengeProposalActionLayout
-          cast={cast}
-          channel={channel}
-          proposal={updatedProposal}
-          tokenInfo={updatedTokenInfo}
-        />
-      );
+    // case ProposalState.Proposed:
+    //   return (
+    //     <ProposedProposalActionLayout
+    //       cast={cast}
+    //       channel={channel}
+    //       proposal={updatedProposal}
+    //       tokenInfo={updatedTokenInfo}
+    //     />
+    //   );
+    // case ProposalState.Accepted:
+    //   if (Number(roundIndex) <= 1) {
+    //     return (
+    //       <ProposedProposalActionLayout
+    //         cast={cast}
+    //         channel={channel}
+    //         proposal={updatedProposal}
+    //         tokenInfo={updatedTokenInfo}
+    //       />
+    //     );
+    //   }
+    //   return (
+    //     <ChallengeProposalActionLayout
+    //       cast={cast}
+    //       channel={channel}
+    //       proposal={updatedProposal}
+    //       tokenInfo={updatedTokenInfo}
+    //     />
+    //   );
+    // case ProposalState.Disputed:
+    //   return (
+    //     <ChallengeProposalActionLayout
+    //       cast={cast}
+    //       channel={channel}
+    //       proposal={updatedProposal}
+    //       tokenInfo={updatedTokenInfo}
+    //     />
+    //   );
     case ProposalState.ReadyToMint:
       return (
         <ReadyToMintActionLayout
@@ -105,14 +118,44 @@ export default function ProposalStatusActions({
       );
     case ProposalState.Abandoned:
       return (
-        <AbandonedProposalActionLayout
+        <ReadyToMintActionLayout
           cast={cast}
           channel={channel}
           proposal={updatedProposal}
           tokenInfo={updatedTokenInfo}
         />
       );
+    // return (
+    //   <AbandonedProposalActionLayout
+    //     cast={cast}
+    //     channel={channel}
+    //     proposal={updatedProposal}
+    //     tokenInfo={updatedTokenInfo}
+    //   />
+    // );
     default:
-      return null;
+      return (
+        <ProposalButton variant={"proposed-free"} disabled={true}>
+          <ProposalText>Like for $CAST</ProposalText>
+        </ProposalButton>
+      );
   }
+}
+
+export default function ProposalStatusActionsLayout({
+  cast,
+  channel,
+  proposal,
+  tokenInfo,
+}: ProposalStatusActionsProps) {
+  return (
+    <View className="w-[80%] max-w-[278px]">
+      <ProposalStatusActions
+        cast={cast}
+        channel={channel}
+        proposal={proposal}
+        tokenInfo={tokenInfo}
+      />
+    </View>
+  );
 }

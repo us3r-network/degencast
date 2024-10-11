@@ -36,7 +36,7 @@ export default function ChannelMetaInfo({
       >
         <View className={cn("flex w-full flex-row gap-3")}>
           <View className=" relative">
-            <Avatar alt={name || ""} className="size-[24px]">
+            <Avatar alt={name || ""} className="size-[48px]">
               <AvatarImage source={{ uri: logo || "" }} />
               <AvatarFallback>
                 <Text className="text-sm font-bold">{name}</Text>
@@ -44,12 +44,18 @@ export default function ChannelMetaInfo({
             </Avatar>
           </View>
 
-          <View className="flex-1 flex-col justify-center">
+          <View className="flex-1 flex-col justify-between">
             <Text className="line-clamp-1 font-bold leading-6 text-foreground">
-              {name}
+              ${channelId === "home" ? "CAST" : channelId?.toLocaleUpperCase()}
+            </Text>
+            <Text className="line-clamp-1 text-xs text-[#9BA1AD]">
+              /{channelId}
             </Text>
           </View>
-          <LaunchProgress tokenInfo={tokenInfo} />
+          <LaunchProgress
+            tokenInfo={tokenInfo}
+            textClassName="text-[#9BA1AD]"
+          />
         </View>
       </Pressable>
     </View>

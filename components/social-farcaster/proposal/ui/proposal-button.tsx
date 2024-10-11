@@ -5,11 +5,12 @@ import { cn } from "~/lib/utils";
 import { ProposalTextClassContext } from "./proposal-text";
 
 const buttonVariants = cva(
-  "group w-fit flex flex-row gap-1 items-center justify-center rounded-md web:hover:opacity-90 active:opacity-90",
+  "group w-full flex flex-row gap-1 items-center justify-center rounded-md web:hover:opacity-90 active:opacity-90",
   {
     variants: {
       variant: {
-        "not-proposed": "bg-proposalNotProposed ",
+        "not-proposed": "bg-proposalNotProposed",
+        "proposed-free": "border border-proposalNotProposed bg-[#F2B94966]",
         proposed: "bg-proposalProposed",
         accepted: "bg-proposalAccepted",
         disputed: "bg-proposalDisputed",
@@ -36,6 +37,7 @@ const buttonTextVariants = cva(
     variants: {
       variant: {
         "not-proposed": "text-proposalNotProposed-foreground",
+        "proposed-free": "text-proposalNotProposed-foreground",
         proposed: "text-proposalProposed-foreground",
         accepted: "text-proposalAccepted-foreground",
         disputed: "text-proposalDisputed-foreground",

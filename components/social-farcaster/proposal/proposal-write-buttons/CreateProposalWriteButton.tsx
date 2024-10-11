@@ -13,6 +13,8 @@ import { TokenWithTradeInfo } from "~/services/trade/types";
 import useProxyUserToCreateProposal from "~/hooks/social-farcaster/proposal/useProxyUserToCreateProposal";
 import useTipAllowanceToDegencast from "~/hooks/social-farcaster/proposal/useTipAllowanceToDegencast";
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
+import { ProposalButton } from "../ui/proposal-button";
+import { ProposalText } from "../ui/proposal-text";
 
 export default function CreateProposalWriteButton({
   cast,
@@ -237,5 +239,63 @@ export function ProxyUserToCreateProposalButton({
         <Text>👍 Superlike</Text>
       )}
     </Button>
+  );
+}
+
+export function ProxyUserToCreateProposalButtonV2({
+  cast,
+  tokenInfo,
+  onCreateProposalSuccess,
+  onCreateProposalError,
+  ...props
+}: ButtonProps &
+  CastProposeStatusProps & {
+    onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
+    onCreateProposalError?: (error: any) => void;
+  }) {
+  const contractAddress = tokenInfo?.danContract!;
+  const { isLoading: createLoading, create } = useProxyUserToCreateProposal({
+    contractAddress,
+    onCreateProposalSuccess,
+    onCreateProposalError,
+  });
+
+  const {
+    requestSigner,
+    hasSigner,
+    requesting: signerRequesting,
+  } = useFarcasterSigner();
+
+  const { address, isConnected } = useAccount();
+  const { connectWallet } = useWalletAccount();
+
+  const disabled = signerRequesting || createLoading;
+
+  return (
+    <ProposalButton
+      variant={"not-proposed"}
+      disabled={disabled}
+      onPress={() => {
+        if (!hasSigner) {
+          requestSigner();
+          return;
+        }
+        if (!address) {
+          connectWallet();
+          return;
+        }
+        create({
+          castHash: cast.hash,
+          curatorAddr: address,
+        });
+      }}
+      {...props}
+    >
+      {createLoading ? (
+        <Loading />
+      ) : (
+        <ProposalText>Like for $CAST</ProposalText>
+      )}
+    </ProposalButton>
   );
 }
