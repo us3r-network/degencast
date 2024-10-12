@@ -7,7 +7,7 @@ import { Deadline, LikeCount, MintCount } from "../ProposalStyled";
 import { ProposalButton } from "../ui/proposal-button";
 import { ProposalText } from "../ui/proposal-text";
 import type { ProposalStatusActionsProps } from "./ProposalStatusActions";
-import ExpiredNftModal from "../proposal-modals/ExpiredNftModal";
+import { ExpiredNftButton } from "../proposal-modals/ExpiredNftModal";
 import useFarcasterLikeAction from "~/hooks/social-farcaster/useFarcasterLikeAction";
 
 export function ReadyToMintButton({
@@ -23,16 +23,19 @@ export function ReadyToMintButton({
   const { upsertOneToProposals } = useCacheCastProposal();
   if (isExpired) {
     return (
-      <ExpiredNftModal
+      <ExpiredNftButton
+        className="w-full"
         cast={cast}
         channel={channel}
         proposal={proposal}
         tokenInfo={tokenInfo}
-        triggerButton={
-          <ProposalButton variant={"mint-expired"}>
-            <ProposalText>End</ProposalText>
-          </ProposalButton>
-        }
+        renderButton={(props: any) => {
+          return (
+            <ProposalButton variant={"mint-expired"} {...props}>
+              <ProposalText>End</ProposalText>
+            </ProposalButton>
+          );
+        }}
       />
     );
   }
@@ -51,7 +54,10 @@ export function ReadyToMintButton({
             <ProposalButton variant={"ready-to-mint"} {...props}>
               {/* <DiamondPlus className="size-4 stroke-proposalReadyToMint-foreground" /> */}
               <ProposalText>
-                Mint for ${channel.channelId?.toLocaleUpperCase()}
+                Mint for $
+                {channel.channelId === "home"
+                  ? "CAST"
+                  : channel.channelId?.toLocaleUpperCase()}
               </ProposalText>
             </ProposalButton>
           );

@@ -16,9 +16,11 @@ const buttonVariants = cva(
         disputed: "bg-proposalDisputed",
         "ready-to-mint": "bg-proposalReadyToMint",
         // TODO bg-proposalMintExpired/20 失效 用bg-[#9151C333]代替
-        "mint-expired": "border border-proposalMintExpired bg-[#9151C333]",
+        // "mint-expired": "border border-proposalMintExpired bg-[#9151C333]",
+        "mint-expired": "border border-proposalReadyToMint bg-[#00D1A733]",
         // TODO bg-proposalAbandoned/20 失效 用bg-[#F41F4C33]代替
-        abandoned: "border border-proposalAbandoned bg-[#F41F4C33]",
+        // abandoned: "border border-proposalAbandoned bg-[#F41F4C33]",
+        abandoned: "border border-proposalReadyToMint bg-[#00D1A733]",
       },
       size: {
         default: "h-8 px-3 py-3 native:h-12 native:px-5 native:py-3",
@@ -42,8 +44,10 @@ const buttonTextVariants = cva(
         accepted: "text-proposalAccepted-foreground",
         disputed: "text-proposalDisputed-foreground",
         "ready-to-mint": "text-proposalReadyToMint-foreground",
-        "mint-expired": "text-proposalMintExpired-foreground",
-        abandoned: "text-proposalAbandoned-foreground",
+        // "mint-expired": "text-proposalMintExpired-foreground",
+        "mint-expired": "text-proposalReadyToMint",
+        // abandoned: "text-proposalAbandoned-foreground",
+        abandoned: "text-proposalReadyToMint",
       },
       size: {
         default: "",
