@@ -42,13 +42,13 @@ export default function ExploreLayout() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "cast", title: "Explore" },
-    { key: "vote", title: "Like" },
+    // { key: "vote", title: "Like" },
     { key: "collect", title: "Mint" },
   ]);
 
   const renderScene = SceneMap({
     cast: CastPage,
-    vote: VotePage,
+    // vote: VotePage,
     collect: CollectPage,
   });
 

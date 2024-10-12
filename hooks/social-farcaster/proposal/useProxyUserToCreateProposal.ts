@@ -21,7 +21,7 @@ export default function useProxyUserToCreateProposal({
   onCreateProposalError,
 }: {
   contractAddress: Address;
-  onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
+  onCreateProposalSuccess?: () => void;
   onCreateProposalError?: (error: any) => void;
 }) {
   const publicClient = usePublicClient();
@@ -67,6 +67,7 @@ export default function useProxyUserToCreateProposal({
 
         // setTransactionReceipt('');
         setStatus("success");
+        onCreateProposalSuccess?.();
         // onCreateProposalSuccess?.(data);
         submitUserAction({
           action: UserActionName.VoteCast,

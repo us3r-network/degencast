@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 import { ProposalTextClassContext } from "./proposal-text";
 
 const buttonVariants = cva(
-  "group w-full flex flex-row gap-1 items-center justify-center rounded-md web:hover:opacity-90 active:opacity-90",
+  "group w-full box-border flex flex-row gap-1 items-center justify-center rounded-md web:hover:opacity-90 active:opacity-90",
   {
     variants: {
       variant: {
@@ -23,7 +23,7 @@ const buttonVariants = cva(
         abandoned: "border border-proposalReadyToMint bg-[#00D1A733]",
       },
       size: {
-        default: "h-8 px-3 py-3 native:h-12 native:px-5 native:py-3",
+        default: "h-[40px] px-3 py-3 native:h-12 native:px-5 native:py-3",
       },
     },
     defaultVariants: {
