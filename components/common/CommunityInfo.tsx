@@ -11,7 +11,7 @@ type CommunityInfoProps = React.ComponentPropsWithoutRef<typeof View> & {
 export function CommunityInfo({ name, logo }: CommunityInfoProps) {
   return (
     <View className="flex-1 flex-row items-center gap-2">
-      <Avatar alt={name || ""} className={cn("size-8 border-2")}>
+      <Avatar alt={name || ""} className={cn("size-8 border-[#e0e0e0]")}>
         <AvatarImage source={{ uri: logo || "" }} />
         <AvatarFallback>
           <Text className="text-sm font-medium">{name?.substring(0, 2)}</Text>
