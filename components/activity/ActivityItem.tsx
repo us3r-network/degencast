@@ -191,14 +191,18 @@ export function ActivityItemOperation({
       return (
         <Text>
           spent {payment} to <Text className="text-[#00D1A7]">mint</Text>{" "}
-          {(amount || 0) * 100000} {rewardDescription}.
+          {amount} cast & get {(amount || 0) * 100000} {rewardDescription}.
         </Text>
       );
     case ActivityOperation.BURN:
       return (
+        // <Text>
+        //   <Text className="text-[#F41F4C]">burned</Text> {amount} and received{" "}
+        //   {payment}.
+        // </Text>
         <Text>
-          <Text className="text-[#F41F4C]">burned</Text> {amount} and received{" "}
-          {payment}.
+          <Text className="text-[#F41F4C]">burned</Text> {amount} cast & sold
+          {(amount || 0) * 100000} {rewardDescription}.
         </Text>
       );
     case ActivityOperation.REWARD:
