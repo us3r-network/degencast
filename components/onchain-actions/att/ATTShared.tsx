@@ -1,8 +1,5 @@
 import * as Clipboard from "expo-clipboard";
-import React, {
-  createContext,
-  useContext
-} from "react";
+import React, { createContext, useContext } from "react";
 import { ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Address } from "viem";
@@ -12,15 +9,10 @@ import { Copy } from "~/components/common/Icons";
 import NeynarCastUserInfo from "~/components/social-farcaster/proposal/NeynarCastUserInfo";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import {
-  ATT_CONTRACT_CHAIN
-} from "~/constants/att";
+import { ATT_CONTRACT_CHAIN } from "~/constants/att";
 import useCurationTokenInfo from "~/hooks/user/useCurationTokenInfo";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
-import {
-  CurationTokenInfo,
-  ERC42069Token
-} from "~/services/trade/types";
+import { CurationTokenInfo, ERC42069Token } from "~/services/trade/types";
 import { shortPubKey } from "~/utils/shortPubKey";
 import ATTExternalLink from "./ATTExternalLink";
 
@@ -31,7 +23,7 @@ export type NFTProps = {
 
 export const NftCtx = createContext<NFTProps | undefined>(undefined);
 
-const useNftCtx = () => {
+export const useNftCtx = () => {
   const ctx = useContext(NftCtx);
   if (!ctx) {
     throw new Error("useCreateProposalCtx must be used within a provider");

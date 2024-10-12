@@ -36,7 +36,7 @@ const useExpiredNftModalCtx = () => {
   }
   return ctx;
 };
-export function ExpiredNftModalModal({
+export function ExpiredNftModal({
   cast,
   channel,
   proposal,
@@ -47,21 +47,6 @@ export function ExpiredNftModalModal({
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "challenge", title: "Nft" },
-    { key: "details", title: "Details" },
-    { key: "activity", title: "Activity" },
-    { key: "about", title: "About" },
-  ]);
-
-  const renderScene = SceneMap({
-    challenge: ExpiredNftModalContentBodyScene,
-    details: DetailsScene,
-    activity: ActivitiesListScene,
-    about: AboutContents,
-  });
-
   return (
     <Dialog
       onOpenChange={(open) => {
@@ -84,17 +69,37 @@ export function ExpiredNftModalModal({
             setOpen,
           }}
         >
-          <TabView
-            lazy
-            swipeEnabled={false}
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            renderTabBar={DialogTabBar}
-          />
+          <ExpiredNftModalContent />
         </ExpiredNftModalCtx.Provider>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ExpiredNftModalContent() {
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "challenge", title: "Nft" },
+    { key: "details", title: "Details" },
+    { key: "activity", title: "Activity" },
+    { key: "about", title: "About" },
+  ]);
+
+  const renderScene = SceneMap({
+    challenge: ExpiredNftModalContentBodyScene,
+    details: DetailsScene,
+    activity: ActivitiesListScene,
+    about: AboutContents,
+  });
+  return (
+    <TabView
+      lazy
+      swipeEnabled={false}
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      renderTabBar={DialogTabBar}
+    />
   );
 }
 
@@ -197,7 +202,7 @@ export function ExpiredNftButton({
         </Button>
       )}
 
-      <ExpiredNftModalModal open={open} setOpen={setOpen} {...props} />
+      <ExpiredNftModal open={open} setOpen={setOpen} {...props} />
     </Pressable>
   );
 }
