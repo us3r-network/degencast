@@ -191,26 +191,26 @@ const CreateTabBarItem = () => {
           <Button
             variant="secondary"
             size="sm"
-            className="w-16"
+            className="w-32"
             onPress={() => {
               setShowActions(false);
               router.push("/create");
             }}
           >
-            <Text>Cast</Text>
+            <Text>Cast for $CAST</Text>
           </Button>
         </ActionMenuItem>
         <ActionMenuItem index={2}>
           <Button
             variant="secondary"
             size="sm"
-            className="w-16"
+            className="w-32"
             onPress={() => {
               setShowDialog(true);
               setShowActions(false);
             }}
           >
-            <Text>Channel</Text>
+            <Text>Create Token</Text>
           </Button>
         </ActionMenuItem>
       </ActionMenuCtx.Provider>
@@ -226,11 +226,11 @@ const CreateTabBarItem = () => {
         <View
           className={cn(
             "flex size-12 items-center justify-center rounded-full bg-white/80",
-            showActions ? "bg-secondary" : "bg-white",
+            showActions ? "bg-secondary" : "bg-[#DECAED]",
           )}
         >
           {/* <SquarePen stroke={showActions ? "white" : SECONDARY_COLOR} /> */}
-          <Plus size={32} color={showActions ? "white" : SECONDARY_COLOR} />
+          <Plus size={24} color={showActions ? "white" : SECONDARY_COLOR} />
         </View>
         <Text
           className={cn(
@@ -284,14 +284,14 @@ function ActionMenuItem({
         return {
           translateX: translateYAnimatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -80],
+            outputRange: [0, -100],
           }),
         };
       case 2:
         return {
           translateX: translateYAnimatedValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 80],
+            outputRange: [0, 100],
           }),
         };
       default:
@@ -304,7 +304,7 @@ function ActionMenuItem({
     }
   }, [translateYAnimatedValue]);
   const actionStyle = {
-    width: 64,
+    width: 128,
     height: 32,
     position: "absolute" as "absolute",
     zIndex: index,
