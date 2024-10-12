@@ -35,7 +35,10 @@ export function SellButton({ token }: { token: ERC42069Token }) {
     token.contractAddress,
     token.tokenId,
   );
-  token.symbol = tokenInfo?.channel?.id.toUpperCase() || "";
+  token.symbol =
+    tokenInfo?.channel?.id && tokenInfo?.channel?.id !== "home"
+      ? tokenInfo?.channel?.id.toUpperCase()
+      : "CAST";
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([

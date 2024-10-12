@@ -86,7 +86,11 @@ export default function ActivityItem({ data }: { data: ActivityEntity }) {
             amount={data.tokenAmount}
             rewardDescription={
               data.rewardDescription ||
-              `$${data?.channel?.id?.toUpperCase() || ""}`
+              `$${
+                data?.channel?.id && data?.channel?.id !== "home"
+                  ? data?.channel?.id.toUpperCase()
+                  : "CAST"
+              }`
             }
           />
         </View>
