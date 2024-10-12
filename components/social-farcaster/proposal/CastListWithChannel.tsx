@@ -24,15 +24,14 @@ export default function CastListWithChannel({
       }}
       showsHorizontalScrollIndicator={false}
       data={items}
-      keyExtractor={(item, index) => index.toString()}
+      keyExtractor={(item, index) => `${item.cast.hash}-${index}`}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.1}
       ItemSeparatorComponent={() => <View className="h-4" />}
-      renderItem={({ item, index }) => {
+      renderItem={({ item }) => {
         const { channel, cast, proposal, tokenInfo } = item;
         return (
           <ChannelCastCard
-            key={index.toString()}
             channel={channel}
             tokenInfo={tokenInfo}
             cast={cast}

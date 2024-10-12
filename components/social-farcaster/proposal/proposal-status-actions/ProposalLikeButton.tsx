@@ -11,19 +11,14 @@ import useUserAction from "~/hooks/user/useUserAction";
 import { UserActionName } from "~/services/user/types";
 import useCacheCastProposal from "~/hooks/social-farcaster/proposal/useCacheCastProposal";
 import { ProposalState } from "~/hooks/social-farcaster/proposal/proposal-helper";
+import Toast from "react-native-toast-message";
 
 export function ProposalLikeButton({
   cast,
   tokenInfo,
-  onCreateProposalSuccess,
-  onCreateProposalError,
   ...props
-}: ButtonProps &
-  CastProposeStatusProps & {
-    onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
-    onCreateProposalError?: (error: any) => void;
-  }) {
-  const { submitUserAction } = useUserAction();
+}: ButtonProps & CastProposeStatusProps) {
+  const { submitUserAction, actionPointConfig } = useUserAction();
 
   const {
     requestSigner,
@@ -57,6 +52,10 @@ export function ProposalLikeButton({
         });
         upsertOneToProposals(castHash as any, {
           status: ProposalState.Disputed,
+        });
+        Toast.show({
+          type: "success",
+          text1: `Like successfully! $CAST +${actionPointConfig.VoteCast.unit}!`,
         });
       }}
       {...props}

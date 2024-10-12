@@ -1,5 +1,6 @@
 import { forwardRef, LegacyRef, useRef, useState } from "react";
 import {
+  Dimensions,
   FlatList,
   Pressable,
   View,
@@ -18,9 +19,13 @@ import ProposalStatusActions, {
 } from "~/components/social-farcaster/proposal/proposal-status-actions/ProposalStatusActions";
 import FCastMenuButton from "~/components/social-farcaster/FCastMenuButton";
 import { Loading } from "~/components/common/Loading";
+import { isMobile } from "react-device-detect";
 
+const pcItemWidth = 640;
+const mobileWindowWidth = Dimensions.get("window").width;
+const mobileItemWidth = mobileWindowWidth - 15 * 2;
+const itemWidth = isMobile ? mobileItemWidth : pcItemWidth;
 const itemHeight = FCastHeightWithNftImage + ProposalStatusActionsHeight + 15;
-
 const ChannelCollectCardCasts = forwardRef(function (
   {
     channel,
@@ -38,7 +43,6 @@ const ChannelCollectCardCasts = forwardRef(function (
 ) {
   const showCasts = casts.slice(0, 10);
 
-  const [itemWidth, setItemWidth] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [showIdxs, setShowIdxs] = useState<number[]>([0]);
   const flatListRef =
@@ -89,75 +93,67 @@ const ChannelCollectCardCasts = forwardRef(function (
         style={{
           height: itemHeight,
         }}
-        onLayout={(e) => {
-          const layout = e.nativeEvent.layout;
-          if (layout.width === 0 && layout.height === 0) return;
-          setItemWidth(layout.width);
-        }}
       >
-        {itemWidth ? (
-          <FlatList
-            horizontal
-            disableIntervalMomentum={true}
-            pagingEnabled={true}
-            showsHorizontalScrollIndicator={false}
-            ref={flatListRef}
-            data={showCasts}
-            viewabilityConfigCallbackPairs={
-              viewabilityConfigCallbackPairs.current
-            }
-            getItemLayout={(data, index) => ({
-              length: itemWidth,
-              offset: itemWidth * index,
-              index,
-            })}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => {
-              const { cast, proposal } = item;
-              return (
-                <View
-                  key={index.toString()}
-                  style={{
-                    width: itemWidth,
-                    height: itemHeight,
-                  }}
-                  className="flex flex-col gap-4 px-4"
-                >
-                  {showIdxs.includes(index) ? (
-                    <FCastWithNftImage
-                      className="overflow-hidden"
-                      cast={cast}
-                      channel={channel!}
-                      tokenInfo={tokenInfo}
-                      proposal={proposal}
-                    />
-                  ) : (
-                    <View
-                      style={{ height: FCastHeightWithNftImage }}
-                      className="flex w-full flex-row items-center justify-center"
-                    >
-                      <Loading />
-                    </View>
-                  )}
-
-                  <View className="flex flex-row items-center justify-between">
-                    <FCastMenuButton
-                      cast={cast}
-                      communityInfo={channel as any}
-                      proposal={proposal}
-                    />
-                    <ProposalStatusActions
-                      cast={cast}
-                      channel={channel!}
-                      tokenInfo={tokenInfo}
-                      proposal={proposal}
-                    />
+        <FlatList
+          horizontal
+          disableIntervalMomentum={true}
+          pagingEnabled={true}
+          showsHorizontalScrollIndicator={false}
+          ref={flatListRef}
+          data={showCasts}
+          viewabilityConfigCallbackPairs={
+            viewabilityConfigCallbackPairs.current
+          }
+          getItemLayout={(data, index) => ({
+            length: itemWidth,
+            offset: itemWidth * index,
+            index,
+          })}
+          keyExtractor={(item, index) => `${item.cast.hash}-${index}`}
+          renderItem={({ item, index }) => {
+            const { cast, proposal } = item;
+            return (
+              <View
+                style={{
+                  width: itemWidth,
+                  height: itemHeight,
+                }}
+                className="flex flex-col gap-4 px-4"
+              >
+                {showIdxs.includes(index) ? (
+                  <FCastWithNftImage
+                    className="overflow-hidden"
+                    cast={cast}
+                    channel={channel!}
+                    tokenInfo={tokenInfo}
+                    proposal={proposal}
+                  />
+                ) : (
+                  <View
+                    style={{ height: FCastHeightWithNftImage }}
+                    className="flex w-full flex-row items-center justify-center"
+                  >
+                    <Loading />
                   </View>
+                )}
+
+                <View className="flex flex-row items-center justify-between">
+                  <FCastMenuButton
+                    cast={cast}
+                    communityInfo={channel as any}
+                    proposal={proposal}
+                  />
+                  <ProposalStatusActions
+                    cast={cast}
+                    channel={channel!}
+                    tokenInfo={tokenInfo}
+                    proposal={proposal}
+                  />
                 </View>
-              );
-            }}
-          />
-        ) : null}
+              </View>
+            );
+          }}
+        />
       </View>
       {showCasts.length > 1 ? (
         <Pagination

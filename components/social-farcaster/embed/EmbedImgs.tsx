@@ -22,6 +22,7 @@ export default function EmbedImgs({
         return (
           <AspectRatio ratio={ratio} key={url}>
             <Image
+              resizeMethod="resize"
               source={{ uri: url }}
               style={{
                 borderRadius: 10,
@@ -59,6 +60,7 @@ function EmbedImg({
   return (
     <AspectRatio ratio={imgsInfo.ratio} key={img.url}>
       <Image
+        resizeMethod="resize"
         source={{ uri: img.url }}
         style={{
           borderRadius: 10,

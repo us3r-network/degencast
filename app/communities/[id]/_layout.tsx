@@ -70,21 +70,28 @@ export default function CommunityDetail() {
     rejected,
     loadCommunityDetail,
   } = useLoadCommunityDetail(channelId);
-  const [routes, setRoutes] = useState<any[]>([
+  const baseRoutes = [
     { key: "casts", title: "Cast", component: CastFeeds },
-    { key: "vote", title: "Like", component: ProposalFeeds },
+    // { key: "vote", title: "Like", component: ProposalFeeds },
     { key: "collect", title: "Mint", component: SelectionFeeds },
     { key: "activities", title: "Activity", component: ActivitiesScreen },
-    // {
-    //   key: "attention-token",
-    //   title: "Contribution Token",
-    //   component: AttentionTokenScreen,
-    // },
     // { key: "curators", title: "DegenCaster", component: CuratorsScreen },
-  ]);
+  ];
 
   const community = communityDetail || communityBasic;
   const tokenInfo = communityDetail?.attentionTokenInfo;
+
+  const symbol =
+    community?.channelId === "home"
+      ? "CAST"
+      : community?.channelId?.toUpperCase();
+  const attTokenRoute = tokenInfo?.tokenContract
+    ? {
+        key: community.channelId,
+        title: `$${symbol}`,
+        component: AttentionTokenScreen,
+      }
+    : null;
   const tokenContracts = useRef(new Set<string>());
   const tokens = useMemo(() => {
     return (
@@ -97,21 +104,22 @@ export default function CommunityDetail() {
       }) || []
     );
   }, [communityDetail?.tokens]);
-  useEffect(() => {
-    if (tokens.length > 0) {
-      setRoutes((pre) => {
-        const tokenRoutes = tokens.map((token) => {
-          return {
-            key: `${token.contract}`,
-            title: `${token?.tradeInfo?.name} Token`,
-            component: TokensScreen,
-            initParams: { contract: token.contract },
-          };
-        });
-        return [...pre, ...tokenRoutes];
-      });
-    }
+  const tokenRoutes = useMemo(() => {
+    return tokens.map((token) => {
+      return {
+        key: `${token.contract}`,
+        title: `${token?.tradeInfo?.name} Token`,
+        component: TokensScreen,
+        initParams: { contract: token.contract },
+      };
+    });
   }, [tokens]);
+
+  const routes = [
+    ...baseRoutes,
+    ...(attTokenRoute ? [attTokenRoute] : []),
+    ...tokenRoutes,
+  ] as Array<any>;
 
   useEffect(() => {
     if (loading || rejected || communityDetail) return;
@@ -217,34 +225,36 @@ export default function CommunityDetail() {
               <CommunityContext.Provider
                 value={{ community, tokenInfo, loading, tokens }}
               >
-                <Tab.Navigator
-                  screenOptions={{
-                    lazy: true,
-                    lazyPreloadDistance: 1,
-                  }}
-                  initialRouteName={initialRouteName}
-                  tabBar={(props) => <ScrollTabBar {...props} />}
-                  sceneContainerStyle={{
-                    backgroundColor: "transparent",
-                    paddingTop: 15,
-                  }}
-                >
-                  {routes.map((route) => {
-                    return (
-                      <Tab.Screen
-                        key={route.key}
-                        name={route.key}
-                        component={route.component}
-                        {...(route.initParams
-                          ? { initialParams: route.initParams }
-                          : {})}
-                        options={{
-                          title: route.title,
-                        }}
-                      />
-                    );
-                  })}
-                </Tab.Navigator>
+                {communityDetail ? (
+                  <Tab.Navigator
+                    screenOptions={{
+                      lazy: true,
+                      lazyPreloadDistance: 1,
+                    }}
+                    initialRouteName={initialRouteName}
+                    tabBar={(props) => <ScrollTabBar {...props} />}
+                    sceneContainerStyle={{
+                      backgroundColor: "transparent",
+                      paddingTop: 15,
+                    }}
+                  >
+                    {routes.map((route) => {
+                      return (
+                        <Tab.Screen
+                          key={route.key}
+                          name={route.key}
+                          component={route.component}
+                          {...(route?.initParams
+                            ? { initialParams: route.initParams }
+                            : {})}
+                          options={{
+                            title: route.title,
+                          }}
+                        />
+                      );
+                    })}
+                  </Tab.Navigator>
+                ) : null}
               </CommunityContext.Provider>
             </View>
           </>
