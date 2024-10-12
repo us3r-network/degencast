@@ -4,7 +4,7 @@ import { isMobile } from "react-device-detect";
 import React from "react";
 
 const banners = [
-  { img: "images/explore-banner-1.png", tab: "vote" },
+  { img: "images/explore-banner-1.png", tab: "" },
   { img: "images/explore-banner-2.png", tab: "collect" },
 ];
 const ratio = 358 / 190;
@@ -30,7 +30,9 @@ function ExploreHeader({ jumpTo }: { jumpTo?: (key: string) => void }) {
           <View>
             <Pressable
               onPress={(e) => {
-                jumpTo?.(item.tab);
+                if (item.tab) {
+                  jumpTo?.(item.tab);
+                }
               }}
             >
               <Image
