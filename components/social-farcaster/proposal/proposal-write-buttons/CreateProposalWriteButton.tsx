@@ -15,6 +15,8 @@ import useTipAllowanceToDegencast from "~/hooks/social-farcaster/proposal/useTip
 import useFarcasterSigner from "~/hooks/social-farcaster/useFarcasterSigner";
 import { ProposalButton } from "../ui/proposal-button";
 import { ProposalText } from "../ui/proposal-text";
+import useUserAction from "~/hooks/user/useUserAction";
+import Toast from "react-native-toast-message";
 
 export default function CreateProposalWriteButton({
   cast,
@@ -245,19 +247,19 @@ export function ProxyUserToCreateProposalButton({
 export function ProxyUserToCreateProposalButtonV2({
   cast,
   tokenInfo,
-  onCreateProposalSuccess,
-  onCreateProposalError,
   ...props
-}: ButtonProps &
-  CastProposeStatusProps & {
-    onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
-    onCreateProposalError?: (error: any) => void;
-  }) {
+}: ButtonProps & CastProposeStatusProps) {
   const contractAddress = tokenInfo?.danContract!;
+  const { actionPointConfig } = useUserAction();
   const { isLoading: createLoading, create } = useProxyUserToCreateProposal({
     contractAddress,
-    onCreateProposalSuccess,
-    onCreateProposalError,
+    onCreateProposalSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: `Like successfully! $CAST +${actionPointConfig.VoteCast.unit}!`,
+      });
+    },
+    onCreateProposalError: () => {},
   });
 
   const {
