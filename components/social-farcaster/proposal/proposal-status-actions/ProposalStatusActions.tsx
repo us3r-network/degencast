@@ -22,7 +22,7 @@ export type ProposalStatusActionsProps = {
   proposal: ProposalEntity;
   tokenInfo?: AttentionTokenEntity;
 };
-export const ProposalStatusActionsHeight = 32;
+export const ProposalStatusActionsHeight = 40;
 function ProposalStatusActions({
   cast,
   channel,

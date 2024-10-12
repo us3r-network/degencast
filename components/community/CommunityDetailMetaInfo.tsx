@@ -47,9 +47,10 @@ export default function CommunityDetailMetaInfo({
     memberInfo,
     hostUserData,
     tokenInitiatorUserData,
+    channelId,
   } = communityInfo;
   const { totalNumber, newPostNumber } = memberInfo || {};
-
+  const symbol = channelId === "home" ? "CAST" : channelId?.toUpperCase();
   return (
     <View className={cn("w-full flex-row gap-3", className)} {...props}>
       <Avatar alt={name || ""} className="size-20">
@@ -60,7 +61,7 @@ export default function CommunityDetailMetaInfo({
       </Avatar>
       <View className="flex-1 flex-col gap-3">
         <Text className="text-base font-bold leading-none text-primary-foreground">
-          {name}
+          ${symbol}
         </Text>
         <View className="flex-row items-end gap-3">
           <View className="flex-row gap-1">
@@ -152,6 +153,7 @@ export function CommunityDetailMetaInfoMobile({
     tokenContract: tokenInfo?.tokenContract || "0x",
     nftAmount: 1,
   });
+  const symbol = channelId === "home" ? "CAST" : channelId?.toUpperCase();
   return (
     <View className={cn("w-full flex-col gap-4", className)} {...props}>
       <View className="w-full flex-row gap-3">
@@ -163,7 +165,7 @@ export function CommunityDetailMetaInfoMobile({
         </Avatar>
         <View className="flex-1 flex-col justify-center">
           <Text className="text-xl font-bold leading-6 text-primary-foreground">
-            {name}
+            ${symbol}
           </Text>
           <Text className="text-sm font-normal leading-6 text-primary-foreground">
             {channelId && `/${channelId}`}
@@ -334,6 +336,10 @@ export function CommunityDetailMetaInfoDropdown({
 }) {
   const { name, logo } = community;
   const [open, setOpen] = useState(false);
+  const symbol =
+    community?.channelId === "home"
+      ? "CAST"
+      : community?.channelId?.toUpperCase();
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
@@ -345,7 +351,7 @@ export function CommunityDetailMetaInfoDropdown({
             </AvatarFallback>
           </Avatar>
           <Text className=" text-xl font-medium leading-none text-primary-foreground">
-            {name}
+            ${symbol}
           </Text>
           <View
             className={cn(
