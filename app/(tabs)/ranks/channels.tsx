@@ -174,9 +174,17 @@ function Item({
     <View className="flex-row items-center justify-between gap-2">
       <View className="flex-1 flex-row items-center gap-2">
         <Text className="w-6 text-center text-xs font-medium">{index}</Text>
-        <Link className="flex-1" href={`/communities/${item.id}/casts` as Href} asChild>
+        <Link
+          className="flex-1"
+          href={`/communities/${item.id}/casts` as Href}
+          asChild
+        >
           <Pressable>
-            <CommunityInfo name={item.name} logo={item.image_url} />
+            <CommunityInfo
+              name={item.name}
+              logo={item.image_url}
+              id={item.id}
+            />
           </Pressable>
         </Link>
       </View>
