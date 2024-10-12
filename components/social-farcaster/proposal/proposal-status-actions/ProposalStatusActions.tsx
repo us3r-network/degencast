@@ -158,7 +158,7 @@ export default function ProposalStatusActionsLayout({
   tokenInfo,
 }: ProposalStatusActionsProps) {
   return (
-    <View className="w-[80%] max-w-[278px]">
+    <View className="w-[calc(100%-48px)]">
       <ProposalStatusActions
         cast={cast}
         channel={channel}
