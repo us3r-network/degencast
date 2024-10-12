@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import { TokenActivitieList } from "~/components/activity/Activities";
 import { AboutContents } from "~/components/help/HelpButton";
@@ -13,6 +13,8 @@ import { CommunityEntity } from "~/services/community/types/community";
 import { NeynarCast } from "~/services/farcaster/types/neynar";
 import { ProposalEntity } from "~/services/feeds/types/proposal";
 import ProposalCastCard from "../ProposalCastCard";
+import { cn } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
 
 export type CastProposeStatusProps = {
   cast: NeynarCast;
@@ -34,16 +36,17 @@ const useExpiredNftModalCtx = () => {
   }
   return ctx;
 };
-export default function ExpiredNftModalModal({
+export function ExpiredNftModalModal({
   cast,
   channel,
   proposal,
   tokenInfo,
-  triggerButton,
+  open,
+  setOpen,
 }: CastProposeStatusProps & {
-  triggerButton: React.ReactNode;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "challenge", title: "Nft" },
@@ -66,7 +69,6 @@ export default function ExpiredNftModalModal({
       }}
       open={open}
     >
-      <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent
         className="w-screen"
         onInteractOutside={(e) => {
@@ -165,5 +167,37 @@ function ExpiredNftModalContentBody({
       </View>
       {/* <ProposalCastCard channel={channel} cast={cast} tokenInfo={tokenInfo} /> */}
     </View>
+  );
+}
+
+export function ExpiredNftButton({
+  className,
+  renderButton,
+  ...props
+}: CastProposeStatusProps & {
+  className?: string;
+  renderButton?: (props: { onPress: () => void }) => React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const handlePress = () => {
+    setOpen(true);
+  };
+  return (
+    <Pressable className={cn("w-14", className)}>
+      {renderButton ? (
+        renderButton({ onPress: handlePress })
+      ) : (
+        <Button
+          className={cn("w-full")}
+          size="sm"
+          variant={"secondary"}
+          onPress={handlePress}
+        >
+          <Text>End</Text>
+        </Button>
+      )}
+
+      <ExpiredNftModalModal open={open} setOpen={setOpen} {...props} />
+    </Pressable>
   );
 }
