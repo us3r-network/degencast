@@ -2,7 +2,10 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { Stack, useLocalSearchParams, useSegments } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { UserPortfolioCtx, useUserPortfolioCtx } from "~/app/(tabs)/portfolio/_layout";
+import {
+  UserPortfolioCtx,
+  useUserPortfolioCtx,
+} from "~/app/(tabs)/portfolio/_layout";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import UserInfo from "~/components/portfolio/user/UserInfo";
@@ -10,6 +13,7 @@ import { PRIMARY_COLOR } from "~/constants";
 import UserChannelScreen from "./channel";
 import UserFeedScreen from "./feed";
 import UserWalletScreen from "./wallet";
+import { headerHeight } from "~/components/explore/ExploreStyled";
 
 function WalletScreen() {
   const { fid } = useUserPortfolioCtx();
@@ -40,7 +44,12 @@ export default function UserPortfolioScreen() {
   console.log("UserPortfolioScreen", fid);
   if (Number(fid))
     return (
-      <SafeAreaView className="flex-1 bg-background">
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: PRIMARY_COLOR,
+        }}
+      >
         <Stack.Screen options={{ headerShown: false }} />
         <UserPortfolioCtx.Provider value={{ fid: Number(fid) || 0 }}>
           <Tab.Navigator
