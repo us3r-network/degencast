@@ -18,9 +18,8 @@ export default function PageTabBar(
     navigationState: NavigationState<{ key: string; title: string }>;
   },
 ) {
-  const { navigationState, position, layout, jumpTo, showCreatePost } = props;
+  const { navigationState, jumpTo, showCreatePost } = props;
   const routes = navigationState.routes || [];
-
   return (
     <Header>
       <HeaderLeft>
@@ -36,13 +35,6 @@ export default function PageTabBar(
           const onLongPress = () => {
             jumpTo(route.key);
           };
-          const inputRange = routes.map((_, i) => i);
-          const textColor = position.interpolate({
-            inputRange,
-            outputRange: inputRange.map((i) =>
-              i === index ? "white" : SECONDARY_COLOR,
-            ),
-          });
           return (
             <View className="flex flex-row items-center" key={index}>
               {index > 0 && (
@@ -56,7 +48,7 @@ export default function PageTabBar(
               >
                 <Animated.Text
                   style={{
-                    color: textColor,
+                    color: isFocused ? "white" : SECONDARY_COLOR,
                     fontSize: 14,
                     fontWeight: 500,
                   }}

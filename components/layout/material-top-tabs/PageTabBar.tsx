@@ -21,7 +21,7 @@ export default function PageTabBar(
     renderRightContent?: () => React.ReactNode;
   },
 ) {
-  const { state, position, level, renderRightContent } = props;
+  const { state, level, renderRightContent } = props;
   const { routes } = state;
   const navigation = useNavigation();
   const { label: firstLabel } = getRouteItemRenderConfig(props, routes[0], 0);
@@ -43,15 +43,6 @@ export default function PageTabBar(
           routes.map((route, index) => {
             const { options, label, isFocused, onPress, onLongPress } =
               getRouteItemRenderConfig(props, route, index);
-
-            const inputRange = routes.map((_, i) => i);
-            const textColor = position.interpolate({
-              inputRange,
-              outputRange: inputRange.map((i) =>
-                i === index ? "white" : SECONDARY_COLOR,
-              ),
-            });
-
             return (
               <View className="flex flex-row items-center" key={route.key}>
                 {index > 0 && (
@@ -67,7 +58,7 @@ export default function PageTabBar(
                 >
                   <Animated.Text
                     style={{
-                      color: textColor,
+                      color: isFocused ? "white" : SECONDARY_COLOR,
                       fontSize: 14,
                       fontWeight: 500,
                     }}

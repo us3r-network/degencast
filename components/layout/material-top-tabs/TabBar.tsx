@@ -172,19 +172,6 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
             const { options, label, isFocused, onPress, onLongPress } =
               getRouteItemRenderConfig(props, route, index);
 
-            const inputRange = routes.map((_, i) => i);
-            // const translateY = position.interpolate({
-            //   inputRange,
-            //   outputRange: inputRange.map((i) => (i === index ? -4 : 0)),
-            // });
-
-            const textColor = position.interpolate({
-              inputRange,
-              outputRange: inputRange.map((i) =>
-                i === index ? "white" : PRIMARY_COLOR,
-              ),
-            });
-
             return (
               <Pressable
                 key={route.key}
@@ -203,7 +190,7 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
                 <Animated.View>
                   <Animated.Text
                     style={{
-                      color: textColor,
+                      color: isFocused ? "white" : SECONDARY_COLOR,
                       fontSize: 14,
                       fontWeight: 500,
                     }}
@@ -221,7 +208,7 @@ export function OutlineTabBar(props: MaterialTopTabBarProps) {
 }
 
 export function ScrollTabBar(props: MaterialTopTabBarProps) {
-  const { state, position, layout } = props;
+  const { state } = props;
   const { routes } = state;
   const itemGap = 10;
 
@@ -240,26 +227,6 @@ export function ScrollTabBar(props: MaterialTopTabBarProps) {
           const { options, label, isFocused, onPress, onLongPress } =
             getRouteItemRenderConfig(props, route, index);
 
-          const inputRange = routes.map((_, i) => i);
-
-          const textColor = position.interpolate({
-            inputRange,
-            outputRange: inputRange.map((i) =>
-              i === index ? "white" : SECONDARY_COLOR,
-            ),
-          });
-          const bgColor = position.interpolate({
-            inputRange,
-            outputRange: inputRange.map((i) =>
-              i === index ? SECONDARY_COLOR : "rgba(145, 81, 195, 0.20)",
-            ),
-          });
-          const borderColor = position.interpolate({
-            inputRange,
-            outputRange: inputRange.map((i) =>
-              i === index ? "transparent" : SECONDARY_COLOR,
-            ),
-          });
           return (
             <Pressable
               key={route.key}
@@ -273,15 +240,17 @@ export function ScrollTabBar(props: MaterialTopTabBarProps) {
               <Animated.View
                 style={{
                   padding: 8,
-                  backgroundColor: bgColor,
+                  backgroundColor: isFocused
+                    ? SECONDARY_COLOR
+                    : "rgba(145, 81, 195, 0.20)",
                   borderWidth: 1,
-                  borderColor: borderColor,
+                  borderColor: isFocused ? "transparent" : SECONDARY_COLOR,
                   borderRadius: 8,
                 }}
               >
                 <Animated.Text
                   style={{
-                    color: textColor,
+                    color: isFocused ? "white" : SECONDARY_COLOR,
                     fontSize: 14,
                     fontWeight: 500,
                   }}
