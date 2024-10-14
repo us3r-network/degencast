@@ -13,7 +13,6 @@ import { PRIMARY_COLOR } from "~/constants";
 import UserChannelScreen from "./channel";
 import UserFeedScreen from "./feed";
 import UserWalletScreen from "./wallet";
-import { headerHeight } from "~/components/explore/ExploreStyled";
 
 function WalletScreen() {
   const { fid } = useUserPortfolioCtx();

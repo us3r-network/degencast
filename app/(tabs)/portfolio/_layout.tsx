@@ -11,10 +11,11 @@ import useAuth from "~/hooks/user/useAuth";
 import UserChannelScreen from "./channel";
 import UserFeedScreen from "./feed";
 import MyWalletScreen from "./wallet";
-import { PointLink } from "~/components/layout/header/HeaderLinks";
+// import { PointLink } from "~/components/layout/header/HeaderLinks";
 // import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
 // import useUserCurationCasts from "~/hooks/user/useUserCurationCasts";
 import LoginScreen from ".";
+import UserWalletScreen from "~/app/u/[fid]/wallet";
 
 export default function PortfolioScreen() {
   const { ready, authenticated } = useAuth();
@@ -39,6 +40,11 @@ export const useUserPortfolioCtx = () => {
   return ctx;
 };
 
+function UserWalletScreenWaprer() {
+  const { fid } = useUserPortfolioCtx();
+  return <UserWalletScreen fid={fid} />;
+}
+
 function ChannelScreen() {
   const { fid } = useUserPortfolioCtx();
   return <UserChannelScreen fid={fid} />;
@@ -50,17 +56,15 @@ function FeedScreen() {
 }
 
 const Tab = createMaterialTopTabNavigator();
-const TABS =
-  Platform.OS === "web"
-    ? [
-        { label: "Wallet", value: "wallet", component: MyWalletScreen },
-        { label: "Channel", value: "channel", component: ChannelScreen },
-        { label: "Feed", value: "feed", component: FeedScreen },
-      ]
-    : [
-        { label: "Channel", value: "channel", component: ChannelScreen },
-        { label: "Feed", value: "feed", component: FeedScreen },
-      ];
+const TABS = [
+  {
+    label: "Wallet",
+    value: "wallet",
+    component: Platform.OS === "web" ? MyWalletScreen : UserWalletScreenWaprer,
+  },
+  { label: "Channel", value: "channel", component: ChannelScreen },
+  { label: "Feed", value: "feed", component: FeedScreen },
+];
 
 function UserScreen() {
   const { currFid } = useFarcasterAccount();

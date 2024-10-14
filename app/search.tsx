@@ -10,11 +10,10 @@ import GoBackButton, {
 } from "~/components/common/GoBackButton";
 import { Search } from "~/components/common/Icons";
 import NotFoundChannel from "~/components/community/NotFoundChannel";
-import { headerHeight } from "~/components/explore/ExploreStyled";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { PRIMARY_COLOR } from "~/constants";
+import { DEFAULT_HEADER_HEIGHT, PRIMARY_COLOR } from "~/constants";
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
 import { cn } from "~/lib/utils";
@@ -97,7 +96,7 @@ export default function SearchScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        paddingTop: headerHeight,
+        paddingTop: DEFAULT_HEADER_HEIGHT,
         backgroundColor: PRIMARY_COLOR,
       }}
     >
