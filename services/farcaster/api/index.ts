@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import { API_BASE_URL } from "~/constants";
+import { API_BASE_URL, DEGENCAST_FRAME_HOST } from "~/constants";
 import {
   CommunityEntity,
   CommunityInfo,
@@ -325,7 +325,7 @@ export function fetchUserAssetsChannels({
 }
 
 export function getCastImageUrl(castHash: string) {
-  return `${API_BASE_URL}/3r-farcaster/cast-image?castHash=${castHash}`;
+  return `${DEGENCAST_FRAME_HOST}/api/image/cast?hash=${castHash}`;
 }
 
 export function fetchUserHostChannels({
