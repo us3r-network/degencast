@@ -66,7 +66,7 @@ export default function cast() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" font-bold text-primary-foreground">
+                <Text className="font-bold text-primary-foreground">
                   $CAST
                 </Text>
               </View>

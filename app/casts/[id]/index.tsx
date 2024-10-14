@@ -69,7 +69,7 @@ export default function CastDetail() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" text-xl font-bold text-primary-foreground">
+                <Text className="font-bold text-primary-foreground">
                   Cast
                 </Text>
               </View>

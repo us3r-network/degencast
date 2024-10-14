@@ -95,7 +95,11 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: headerHeight, backgroundColor: PRIMARY_COLOR }}
+      style={{
+        flex: 1,
+        paddingTop: headerHeight,
+        backgroundColor: PRIMARY_COLOR,
+      }}
     >
       <Stack.Screen
         options={{
@@ -281,9 +285,7 @@ function SearchHeader({
           navigation.goBack();
         }}
       />
-      <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
-        Search Channel
-      </Text>
+      <Text className="font-bold text-primary-foreground max-sm:hidden">Search Channel</Text>
       <View className="hidden flex-grow md:block" />
 
       <View className="relative flex-grow md:w-96 md:flex-grow-0">

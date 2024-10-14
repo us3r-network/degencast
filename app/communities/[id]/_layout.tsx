@@ -156,7 +156,7 @@ export default function CommunityDetail() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
+                <Text className="font-bold text-primary-foreground max-sm:hidden">
                   Channel
                 </Text>
                 {/* mobile */}
