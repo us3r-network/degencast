@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSegments } from "expo-router";
 import { createContext, useContext } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { PageContent } from "~/components/layout/content/Content";
 import PageTabBar from "~/components/layout/material-top-tabs/PageTabBar";
 import UserInfo from "~/components/portfolio/user/UserInfo";
@@ -50,11 +50,17 @@ function FeedScreen() {
 }
 
 const Tab = createMaterialTopTabNavigator();
-const TABS = [
-  { label: "Wallet", value: "wallet", component: MyWalletScreen },
-  { label: "Channel", value: "channel", component: ChannelScreen },
-  { label: "Feed", value: "feed", component: FeedScreen },
-];
+const TABS =
+  Platform.OS === "web"
+    ? [
+        { label: "Wallet", value: "wallet", component: MyWalletScreen },
+        { label: "Channel", value: "channel", component: ChannelScreen },
+        { label: "Feed", value: "feed", component: FeedScreen },
+      ]
+    : [
+        { label: "Channel", value: "channel", component: ChannelScreen },
+        { label: "Feed", value: "feed", component: FeedScreen },
+      ];
 
 function UserScreen() {
   const { currFid } = useFarcasterAccount();
