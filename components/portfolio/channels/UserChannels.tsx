@@ -12,7 +12,7 @@ import UserChannelAssets from "./UserChannelAssets";
 
 export function UserFollowingChannels({ fid }: { fid: number }) {
   const { loading, items, hasMore, load } = useUserFollowingChannels(fid);
-  console.log("UserFollowingChannels", { items, hasMore });
+  // console.log("UserFollowingChannels", { items, hasMore });
   return (
     <ChannelList
       items={items}
@@ -27,7 +27,7 @@ export function UserFollowingChannels({ fid }: { fid: number }) {
 
 export function UserChannels({ fid }: { fid: number }) {
   const { loading, items } = useUserChannels(fid);
-  console.log("UserChannels", { items });
+  // console.log("UserChannels", { items });
   return <ChannelList items={items} loading={loading} />;
 }
 

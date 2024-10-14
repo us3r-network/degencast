@@ -59,7 +59,7 @@ export default function useCastReplies(props?: {
       }
       const { data } = resp.data;
       const { casts, next } = data;
-      console.log("casts", casts);
+      // console.log("casts", casts);
 
       setItems([...items, ...casts]);
 
