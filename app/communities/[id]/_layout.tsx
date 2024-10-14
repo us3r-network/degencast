@@ -34,6 +34,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import { CreateTokenButton } from "~/components/onchain-actions/att/ATTCreateButton";
 import { CommunitySharingIconBtn } from "~/components/platform-sharing/PlatformSharingButton";
+import Constants from 'expo-constants'
 
 const initialRouteName = "selection";
 
@@ -145,6 +146,7 @@ export default function CommunityDetail() {
                 height: headerHeight,
                 paddingLeft: 15,
                 paddingRight: 15,
+                marginTop: Constants.statusBarHeight, // 确保顶部与状态栏不重叠
               }}
               className="flex-row items-center justify-between bg-primary"
             >

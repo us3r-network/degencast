@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { Stack, useNavigation } from "expo-router";
 import { PropsWithChildren, useState } from "react";
 import { SafeAreaView, View, Image, ScrollView } from "react-native";
@@ -55,6 +56,7 @@ export default function cast() {
                 height: headerHeight,
                 paddingLeft: 15,
                 paddingRight: 15,
+                marginTop: Constants.statusBarHeight, // 确保顶部与状态栏不重叠
               }}
               className="flex-row items-center justify-between bg-primary"
             >
