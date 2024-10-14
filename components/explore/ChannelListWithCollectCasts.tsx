@@ -22,15 +22,14 @@ export default function ChannelListWithCollectCasts({
       }}
       showsHorizontalScrollIndicator={false}
       data={items}
-      keyExtractor={(item, index) => index.toString()}
+      keyExtractor={(item, index) => `${item.channel.id}-${index}`}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.1}
       ItemSeparatorComponent={() => <View className="h-4" />}
-      renderItem={({ item, index }) => {
+      renderItem={({ item }) => {
         const { channel, casts, tokenInfo } = item;
         return (
           <ChannelCollectCard
-            key={index.toString()}
             channel={channel}
             tokenInfo={tokenInfo}
             casts={casts}

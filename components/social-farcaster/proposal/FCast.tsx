@@ -122,14 +122,6 @@ export function FCastWithNftImage({
   const router = useRouter();
   const { setCastDetailCacheData } = useCastDetails();
   const imageUrl = getCastImageUrl(`0x${castHex}`);
-  const [imgInfo, setImgInfo] = useState<{
-    ratio: number;
-  }>({ ratio: 1 });
-  useEffect(() => {
-    Image.getSize(imageUrl, (width, height) => {
-      setImgInfo({ ratio: width / height });
-    });
-  }, [imageUrl]);
   const [loading, setLoading] = useState(true);
 
   return (
@@ -159,7 +151,7 @@ export function FCastWithNftImage({
             height: FCastNftImageHeight,
           }}
         >
-          <AspectRatio ratio={imgInfo.ratio}>
+          <AspectRatio ratio={1}>
             <ExpoImage
               source={imageUrl}
               style={{
