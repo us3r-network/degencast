@@ -2,6 +2,7 @@ import { forwardRef, LegacyRef, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
+  Platform,
   Pressable,
   View,
   ViewabilityConfigCallbackPairs,
@@ -24,8 +25,14 @@ import { isMobile } from "react-device-detect";
 const pcItemWidth = 640;
 const mobileWindowWidth = Dimensions.get("window").width;
 const mobileItemWidth = mobileWindowWidth - 15 * 2;
-const itemWidth = isMobile ? mobileItemWidth : pcItemWidth;
+const itemWidth =
+  Platform.OS === "web"
+    ? isMobile
+      ? mobileItemWidth
+      : pcItemWidth
+    : mobileItemWidth;
 const itemHeight = FCastHeightWithNftImage + ProposalStatusActionsHeight + 15;
+
 const ChannelCollectCardCasts = forwardRef(function (
   {
     channel,
@@ -41,6 +48,12 @@ const ChannelCollectCardCasts = forwardRef(function (
   },
   ref: LegacyRef<View>,
 ) {
+  console.log(
+    "ChannelCollectCardCasts itemWidth",
+    isMobile,
+    mobileItemWidth,
+    itemWidth,
+  );
   const showCasts = casts.slice(0, 10);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
