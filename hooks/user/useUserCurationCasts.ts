@@ -7,7 +7,7 @@ import { useAppDispatch } from "~/store/hooks";
 import { getReactionsCountAndViewerContexts } from "~/utils/farcaster/reactions";
 
 const MAX_PAGE_SIZE = 20;
-export default function useUserCasts(fid?: number, viewer_fid?: number) {
+export default function useUserCurationCasts(fid?: number, viewer_fid?: number) {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [items, setItems] = useState<CastData[]>([]);

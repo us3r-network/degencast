@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useNavigation, Link } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation, Link, Href } from "expo-router";
 import {
   createContext,
   useContext,
@@ -166,7 +166,7 @@ export default function CommunityDetail() {
               </View>
               <View className="flex flex-row items-center gap-[10px] max-sm:hidden">
                 <Link
-                  href={`/create${channelId ? "?channelId=" + channelId : ""}`}
+                  href={`/create${channelId ? "?channelId=" + channelId : ""}` as Href}
                   asChild
                 >
                   <Button variant={"link"} className="m-0 p-0">

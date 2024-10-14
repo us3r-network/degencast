@@ -12,8 +12,8 @@ import UserChannelScreen from "./channel";
 import UserFeedScreen from "./feed";
 import MyWalletScreen from "./wallet";
 import { PointLink } from "~/components/layout/header/HeaderLinks";
-import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
-import useUserCurationCasts from "~/hooks/user/useUserCurationCasts";
+// import { PortfolioSharingButton } from "~/components/platform-sharing/PlatformSharingButton";
+// import useUserCurationCasts from "~/hooks/user/useUserCurationCasts";
 import LoginScreen from ".";
 
 export default function PortfolioScreen() {
@@ -65,7 +65,7 @@ const TABS =
 function UserScreen() {
   const { currFid } = useFarcasterAccount();
   const segments = useSegments();
-  const { items, loading, load, hasMore } = useUserCurationCasts(currFid);
+  // const { items, loading, load, hasMore } = useUserCurationCasts(currFid);
   return (
     <View className="h-full w-full pb-4">
       <UserPortfolioCtx.Provider value={{ fid: currFid || 0 }}>
@@ -78,19 +78,19 @@ function UserScreen() {
             <View className="mb-4 flex gap-4">
               <PageTabBar
                 {...props}
-                renderRightContent={() => {
-                  return (
-                    <View className="flex flex-row items-center gap-[10px]">
-                      <PointLink />
-                      {currFid ? (
-                        <PortfolioSharingButton
-                          fid={currFid}
-                          hasNfts={items.length > 0}
-                        />
-                      ) : null}
-                    </View>
-                  );
-                }}
+                // renderRightContent={() => {
+                //   return (
+                //     <View className="flex flex-row items-center gap-[10px]">
+                //       <PointLink />
+                //       {currFid ? (
+                //         <PortfolioSharingButton
+                //           fid={currFid}
+                //           hasNfts={items.length > 0}
+                //         />
+                //       ) : null}
+                //     </View>
+                //   );
+                // }}
               />
               <PageContent className="h-24 flex-none">
                 {currFid ? (
