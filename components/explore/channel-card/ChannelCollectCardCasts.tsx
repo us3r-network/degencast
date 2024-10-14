@@ -48,12 +48,6 @@ const ChannelCollectCardCasts = forwardRef(function (
   },
   ref: LegacyRef<View>,
 ) {
-  console.log(
-    "ChannelCollectCardCasts itemWidth",
-    isMobile,
-    mobileItemWidth,
-    itemWidth,
-  );
   const showCasts = casts.slice(0, 10);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
