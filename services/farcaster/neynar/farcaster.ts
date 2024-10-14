@@ -19,7 +19,7 @@ export async function fetchCastWithHash({
     method: "get",
   });
 
-  console.log("fetchCastWithHash", resp.data);
+  // console.log("fetchCastWithHash", resp.data);
   return resp.data;
 }
 
@@ -41,7 +41,7 @@ export async function fetchCastConversationWithHash({
     method: "get",
   });
 
-  console.log("fetchCastWithHash", resp.data);
+  // console.log("fetchCastWithHash", resp.data);
   return resp.data;
 }
 

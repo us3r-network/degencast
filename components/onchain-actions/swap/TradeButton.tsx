@@ -28,7 +28,7 @@ export default function SwapButton() {
         onPress={() => connectWallet()}
       >
         <Text>
-          <ArrowUpDown />
+          <ArrowUpDown color="white"/>
         </Text>
       </Button>
     );

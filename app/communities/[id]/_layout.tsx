@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useNavigation, Link } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation, Link, Href } from "expo-router";
 import {
   createContext,
   useContext,
@@ -34,6 +34,7 @@ import useFarcasterAccount from "~/hooks/social-farcaster/useFarcasterAccount";
 import useUserHostChannels from "~/hooks/user/useUserHostChannels";
 import { CreateTokenButton } from "~/components/onchain-actions/att/ATTCreateButton";
 import { CommunitySharingIconBtn } from "~/components/platform-sharing/PlatformSharingButton";
+import Constants from 'expo-constants'
 
 const initialRouteName = "selection";
 
@@ -145,6 +146,7 @@ export default function CommunityDetail() {
                 height: headerHeight,
                 paddingLeft: 15,
                 paddingRight: 15,
+                marginTop: Constants.statusBarHeight, // 确保顶部与状态栏不重叠
               }}
               className="flex-row items-center justify-between bg-primary"
             >
@@ -154,7 +156,7 @@ export default function CommunityDetail() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" text-xl font-bold text-primary-foreground max-sm:hidden">
+                <Text className="font-bold text-primary-foreground max-sm:hidden">
                   Channel
                 </Text>
                 {/* mobile */}
@@ -166,7 +168,7 @@ export default function CommunityDetail() {
               </View>
               <View className="flex flex-row items-center gap-[10px] max-sm:hidden">
                 <Link
-                  href={`/create${channelId ? "?channelId=" + channelId : ""}`}
+                  href={`/create${channelId ? "?channelId=" + channelId : ""}` as Href}
                   asChild
                 >
                   <Button variant={"link"} className="m-0 p-0">

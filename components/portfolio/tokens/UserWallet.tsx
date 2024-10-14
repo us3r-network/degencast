@@ -21,7 +21,7 @@ export default function UserWallet() {
       {/* <Text className="text-3xl font-bold text-white">$1000.00</Text> */}
       <View className="flex-row items-center justify-between">
         <View className="flex items-center gap-1">
-          <FundButton variant="icon" />
+          <FundButton variant="icon"/>
           <Text className="text-xs font-medium">Buy</Text>
         </View>
         <View className="flex items-center gap-1">

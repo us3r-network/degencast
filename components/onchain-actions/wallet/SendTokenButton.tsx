@@ -59,7 +59,7 @@ export default function SendTokenButton({
         onPress={() => connectWallet()}
       >
         <Text>
-          <ArrowUp />
+          <ArrowUp color="white"/>
         </Text>
       </Button>
     );

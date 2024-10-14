@@ -62,7 +62,7 @@ export default function DepositButton({
           }
         >
           <Text>
-            <ArrowDown />
+            <ArrowDown color="white"/>
           </Text>
         </Button>
       )}

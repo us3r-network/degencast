@@ -1,21 +1,23 @@
-import { Text, TextInput, View, ScrollView } from "react-native";
-import { Stack, useNavigation, Link } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Image } from "expo-image";
-
+import Constants from "expo-constants";
+import { Link, Stack, useNavigation } from "expo-router";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ScrollView, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import GoBackButton, {
+  GoBackButtonBgPrimary,
+} from "~/components/common/GoBackButton";
+import { Search } from "~/components/common/Icons";
+import NotFoundChannel from "~/components/community/NotFoundChannel";
+import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { debounce } from "lodash";
-import { Avatar, AvatarImage } from "~/components/ui/avatar";
-import { cn } from "~/lib/utils";
-import { getSearchResult } from "~/services/farcaster/api";
-
+import { DEFAULT_HEADER_HEIGHT, PRIMARY_COLOR } from "~/constants";
 import useAllJoinedCommunities from "~/hooks/community/useAllJoinedCommunities";
 import useLoadTrendingCommunities from "~/hooks/community/useLoadTrendingCommunities";
-import GoBackButton from "~/components/common/GoBackButton";
-import NotFoundChannel from "~/components/community/NotFoundChannel";
-import { PRIMARY_COLOR } from "~/constants";
+import { cn } from "~/lib/utils";
+import { getSearchResult } from "~/services/farcaster/api";
 
 type Community = {
   name: string;
@@ -91,104 +93,124 @@ export default function SearchScreen() {
   }, [trendingCommunities]);
 
   return (
-    <ScrollView className=" bg-primary ">
+    <SafeAreaView
+      style={{
+        flex: 1,
+        paddingTop: DEFAULT_HEADER_HEIGHT,
+        backgroundColor: PRIMARY_COLOR,
+      }}
+    >
       <Stack.Screen
         options={{
+          headerTransparent: true,
           header: () => (
-            <SearchHeader
-              value={value}
-              setValue={(data) => {
-                if (data) setLoading(true);
-                else setLoading(false);
-                setRecommend([]);
-                onChangeText(data);
+            <View
+              style={{
+                paddingLeft: 15,
+                paddingRight: 15,
+                marginTop: Constants.statusBarHeight, // 确保顶部与状态栏不重叠
               }}
-              searchAction={() => fetchSearchResult(value)}
-            />
+            >
+              <SearchHeader
+                value={value}
+                setValue={(data) => {
+                  if (data) setLoading(true);
+                  else setLoading(false);
+                  setRecommend([]);
+                  onChangeText(data);
+                }}
+                searchAction={() => fetchSearchResult(value)}
+              />
+            </View>
           ),
         }}
       />
-      {loading && (
-        <View className="flex items-center justify-center">
-          <Text className=" text-primary-foreground ">Loading...</Text>
-        </View>
-      )}
-
-      {(value && recommend.length > 0 && (
-        <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
-          <SearchTitle title={"Search result"} />
-          <View className="flex flex-wrap gap-2">
-            {recommend.map((item, i) => {
-              return (
-                <Link
-                  key={i}
-                  href={`/communities/${item.channelId}`}
-                  onPress={() => {
-                    saveHistory(item);
-                    setRecommend([]);
-                    onChangeText("");
-
-                    return true;
-                  }}
-                >
-                  <RecommendItem icon={item.logo} name={item.name} />
-                </Link>
-              );
-            })}
+      <ScrollView
+        className="m-auto flex w-full flex-1 gap-4 p-4 py-0 sm:max-w-screen-sm"
+        showsVerticalScrollIndicator={false}
+      >
+        {loading && (
+          <View className="flex items-center justify-center">
+            <Text className=" text-primary-foreground ">Loading...</Text>
           </View>
-        </View>
-      )) ||
-        null}
+        )}
 
-      {(!value && history.length > 0 && (
-        <View className="m-auto mb-3 w-full space-y-2 px-3 md:w-[500px]">
-          <SearchTitle title={"History"} />
-          <View className="flex flex-row flex-wrap gap-2">
-            {history.map((item, i) => {
-              return (
-                <Link key={i} href={`/communities/${item.channelId}`}>
-                  <SearchItem icon={item.logo} name={item.name} />
-                </Link>
-              );
-            })}
+        {(value && recommend.length > 0 && (
+          <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
+            <SearchTitle title={"Search result"} />
+            <View className="flex flex-wrap gap-2">
+              {recommend.map((item, i) => {
+                return (
+                  <Link
+                    key={i}
+                    href={`/communities/${item.channelId}`}
+                    onPress={() => {
+                      saveHistory(item);
+                      setRecommend([]);
+                      onChangeText("");
+
+                      return true;
+                    }}
+                  >
+                    <RecommendItem icon={item.logo} name={item.name} />
+                  </Link>
+                );
+              })}
+            </View>
           </View>
-        </View>
-      )) ||
-        null}
+        )) ||
+          null}
 
-      {(!value && joinedCommunities.length > 0 && (
-        <CommunityGroup
-          title="Joined"
-          communities={joinedCommunities
-            .flatMap((item) => (item.channelId ? [item] : []))
-            .map((item) => ({
-              name: item.name,
-              logo: item.logo,
-              channelId: item.channelId!,
-            }))}
-        />
-      )) ||
-        null}
+        {(!value && history.length > 0 && (
+          <View className="m-auto mb-3 w-full space-y-2 px-3 md:w-[500px]">
+            <SearchTitle title={"History"} />
+            <View className="flex flex-row flex-wrap gap-2">
+              {history.map((item, i) => {
+                return (
+                  <Link key={i} href={`/communities/${item.channelId}`}>
+                    <SearchItem icon={item.logo} name={item.name} />
+                  </Link>
+                );
+              })}
+            </View>
+          </View>
+        )) ||
+          null}
 
-      {(!value && trendingCommunities.length > 0 && (
-        <CommunityGroup
-          title="Trending Communities"
-          communities={trendingCommunities
-            .flatMap((item) => (item.channelId ? [item] : []))
-            .map((item) => ({
-              name: item.name,
-              logo: item.logo,
-              channelId: item.channelId!,
-            }))}
-        />
-      )) ||
-        null}
+        {(!value && joinedCommunities.length > 0 && (
+          <CommunityGroup
+            title="Joined"
+            communities={joinedCommunities
+              .flatMap((item) => (item.channelId ? [item] : []))
+              .map((item) => ({
+                name: item.name,
+                logo: item.logo,
+                channelId: item.channelId!,
+              }))}
+          />
+        )) ||
+          null}
 
-      {(value && loading === false && recommend.length === 0 && (
-        <NotFoundChannel />
-      )) ||
-        null}
-    </ScrollView>
+        {(!value && trendingCommunities.length > 0 && (
+          <CommunityGroup
+            title="Trending Communities"
+            communities={trendingCommunities
+              .flatMap((item) => (item.channelId ? [item] : []))
+              .map((item) => ({
+                name: item.name,
+                logo: item.logo,
+                channelId: item.channelId!,
+              }))}
+          />
+        )) ||
+          null}
+
+        {(value && loading === false && recommend.length === 0 && (
+          <NotFoundChannel />
+        )) ||
+          null}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -200,7 +222,7 @@ function CommunityGroup({
   title: string;
 }) {
   return (
-    <View className="m-auto w-full space-y-2 p-3 md:w-[500px]">
+    <View className="m-auto w-full gap-2">
       <SearchTitle title={title} />
 
       <View className="flex flex-row flex-wrap gap-2">
@@ -256,16 +278,13 @@ function SearchHeader({
   const navigation = useNavigation();
   const searchInputRef = useRef<TextInput>(null);
   return (
-    <View className="flex w-full flex-row items-center bg-primary">
-      <View className="w-fit p-3 ">
-        <GoBackButton
-          className="bg-[#ffffff66]"
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
-      </View>
-
+    <View className="flex w-full flex-row items-center gap-2 py-2">
+      <GoBackButtonBgPrimary
+        onPress={() => {
+          navigation.goBack();
+        }}
+      />
+      <Text className="font-bold text-primary-foreground max-sm:hidden">Search Channel</Text>
       <View className="hidden flex-grow md:block" />
 
       <View className="relative flex-grow md:w-96 md:flex-grow-0">
@@ -283,66 +302,15 @@ function SearchHeader({
           onChangeText={(text) => setValue(text)}
         />
       </View>
-      <View className="w-fit p-3 ">
-        <Button
-          className="rounded-full web:bg-[#4C2896] web:hover:bg-[#4C2896] web:active:bg-[#4C2896]"
-          size={"icon"}
-          variant={"ghost"}
-          onPress={() => {
-            searchAction();
-          }}
-        >
-          <SearchIcon />
-        </Button>
-      </View>
+      <Button
+        size={"icon"}
+        variant={"ghost"}
+        onPress={() => {
+          searchAction();
+        }}
+      >
+        <Search color="white" />
+      </Button>
     </View>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-    >
-      <path
-        d="M8.73676 2.53748C5.24323 2.53748 2.41113 5.36958 2.41113 8.86315C2.41113 12.3567 5.24323 15.1888 8.73676 15.1888C12.2303 15.1888 15.0624 12.3567 15.0624 8.86315C15.0624 5.36958 12.2303 2.53748 8.73676 2.53748ZM8.73676 13.9397C5.93756 13.9397 3.66029 11.6623 3.66029 8.86315C3.66029 6.06394 5.93756 3.78663 8.73676 3.78663C11.536 3.78663 13.8133 6.06394 13.8133 8.86315C13.8133 11.6623 11.5359 13.9397 8.73676 13.9397Z"
-        fill="white"
-      />
-      <path
-        d="M17.4136 16.4075L14.614 13.6074C14.3516 13.9321 14.0599 14.2307 13.748 14.5078L16.5304 17.2906C16.6524 17.4126 16.8122 17.4736 16.972 17.4736C17.1319 17.4736 17.2916 17.4126 17.4136 17.2906C17.6576 17.0467 17.6576 16.6514 17.4136 16.4075Z"
-        fill="white"
-      />
-    </svg>
-  );
-}
-
-function CrossIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-    >
-      <path
-        d="M15 5L5 15"
-        stroke={PRIMARY_COLOR}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 5L15 15"
-        stroke={PRIMARY_COLOR}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

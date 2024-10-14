@@ -16,7 +16,7 @@ export default function MyWalletScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="flex w-full gap-6">
-            {account && <UserWallet />}
+            {account?.address && <UserWallet />}
             {account?.address && <UserTokens address={account?.address} />}
             {account?.address && (
               <CommunityNFTs address={account?.address} isSelf={true} />

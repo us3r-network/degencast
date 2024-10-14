@@ -26,14 +26,14 @@ export default function UserInfo({
     if (fid) load(fid);
   }, [fid]);
 
-  console.log("UserInfo", userInfo);
+  // console.log("UserInfo", userInfo);
   if (userInfo)
     return (
       <View className="flex-1 flex-row items-center gap-6 px-2">
         <View className="reletive">
           <Avatar
             alt={userInfo.username}
-            className="size-24 border-2 border-[#e0e0e0] "
+            className="size-24 border-2 border-[#e0e0e0]"
           >
             <AvatarImage source={{ uri: userInfo.pfp_url }} />
             <AvatarFallback className="bg-white">
@@ -49,7 +49,7 @@ export default function UserInfo({
             </View>
           ) : null}
         </View>
-        <View className="flex w-full gap-1">
+        <View className="flex w-full gap-2">
           <View className="w-full space-y-0">
             <View className="flex-row items-center gap-1">
               {userInfo.display_name && (
@@ -76,17 +76,14 @@ export default function UserInfo({
                 href={`${WARRPCAST}/${userInfo.username}/following`}
                 target="_blank"
               >
-                <Button
-                  variant="link"
-                  className="h-6 flex-row items-center gap-1 p-0"
-                >
+                <View className="flex-row items-center gap-1">
                   <Text className="text-xs font-medium text-white">
                     {new Intl.NumberFormat("en-US", {
                       notation: "compact",
                     }).format(userInfo.following_count)}
                   </Text>
                   <Text className="text-xs text-[#9BA1AD]">Following</Text>
-                </Button>
+                </View>
               </ExternalLink>
             )}
             {userInfo.follower_count && (
@@ -95,17 +92,14 @@ export default function UserInfo({
                 target="_blank"
                 asChild
               >
-                <Button
-                  variant="link"
-                  className="h-6 flex-row items-center gap-1 p-0"
-                >
+                <View className="flex-row items-center gap-1">
                   <Text className="text-xs font-medium text-white">
                     {new Intl.NumberFormat("en-US", {
                       notation: "compact",
                     }).format(userInfo.follower_count)}
                   </Text>
                   <Text className="text-xs text-[#9BA1AD]">Followers</Text>
-                </Button>
+                </View>
               </ExternalLink>
             )}
           </View>

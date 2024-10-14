@@ -146,13 +146,6 @@ export function OutlineTabBar({
             const onLongPress = () => {
               jumpTo(route.key);
             };
-            const inputRange = routes.map((_, i) => i);
-            const textColor = position.interpolate({
-              inputRange,
-              outputRange: inputRange.map((i) =>
-                i === index ? "white" : SECONDARY_COLOR,
-              ),
-            });
             return (
               <Pressable
                 key={route.key}
@@ -168,7 +161,7 @@ export function OutlineTabBar({
               >
                 <Animated.Text
                   style={{
-                    color: textColor,
+                    color: isFocused ? "white" : SECONDARY_COLOR,
                     fontSize: 14,
                     fontWeight: 500,
                   }}

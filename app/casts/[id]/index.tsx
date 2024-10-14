@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { View, Text, SafeAreaView, FlatList } from "react-native";
@@ -58,6 +59,7 @@ export default function CastDetail() {
                 height: headerHeight,
                 paddingLeft: 15,
                 paddingRight: 15,
+                marginTop: Constants.statusBarHeight, // 确保顶部与状态栏不重叠
               }}
               className="flex-row items-center justify-between bg-primary"
             >
@@ -67,7 +69,7 @@ export default function CastDetail() {
                     navigation.goBack();
                   }}
                 />
-                <Text className=" text-xl font-bold text-primary-foreground">
+                <Text className="font-bold text-primary-foreground">
                   Cast
                 </Text>
               </View>

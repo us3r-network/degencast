@@ -76,7 +76,7 @@ export default function FundButton({
           {...props}
         >
           <Text className={fundButtonTextVariants({ variant })}>
-            <Plus />
+            <Plus color="white"/>
           </Text>
         </Button>
       );
