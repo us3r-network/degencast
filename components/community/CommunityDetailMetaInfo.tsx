@@ -341,16 +341,16 @@ export function CommunityDetailMetaInfoDropdown({
       ? "CAST"
       : community?.channelId?.toUpperCase();
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <View className="flex-row items-center gap-1">
+        <View className="flex-row items-center gap-2">
           <Avatar alt={name || ""} className=" size-6">
             <AvatarImage source={{ uri: logo || "" }} />
             <AvatarFallback>
               <Text className="text-sm font-bold">{name}</Text>
             </AvatarFallback>
           </Avatar>
-          <Text className=" text-xl font-medium leading-none text-primary-foreground">
+          <Text className="font-medium text-primary-foreground">
             ${symbol}
           </Text>
           <View

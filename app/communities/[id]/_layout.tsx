@@ -216,7 +216,7 @@ export default function CommunityDetail() {
           ),
         }}
       />
-      <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
+      <View className="native:mt-12 m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
         {community ? (
           <>
             <CommunityDetailMetaInfo
