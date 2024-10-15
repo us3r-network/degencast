@@ -363,6 +363,27 @@ export const userActionSlice = createSlice({
         storeActionDailyLimit(state.dailyLimit);
       }
     },
+    addOneToReportedActions: (
+      state: UserActionState,
+      action: PayloadAction<UserActionData>,
+    ) => {
+      const { dailyLimit, actionPointConfig } = state;
+      const actionData = action.payload;
+      const point = getActionPoint(actionData, actionPointConfig);
+      state.totalPoints += point;
+
+      // 更新dailyLimit
+      const actionCount = dailyLimit?.[dailyLimitKey]?.[actionData.action] || 0;
+      const newDailyLimit = {
+        ...state.dailyLimit,
+        [dailyLimitKey]: {
+          ...(state.dailyLimit?.[dailyLimitKey] || {}),
+          [actionData.action]: actionCount + 1,
+        },
+      };
+      state.dailyLimit = newDailyLimit;
+      storeActionDailyLimit(state.dailyLimit);
+    },
     addOneToUnreportedViewCasts: (
       state: UserActionState,
       action: PayloadAction<string>,
@@ -578,6 +599,7 @@ export const {
   removeOneFromLikeActions,
   addOneToLikeActionsPendingCastHashes,
   removeOneFromLikeActionsPendingCastHashes,
+  addOneToReportedActions,
 } = actions;
 export const selectUserAction = (state: RootState) => state.userAction;
 export default reducer;

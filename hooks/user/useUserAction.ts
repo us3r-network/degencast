@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   addOneToUnreportedActions,
+  addOneToReportedActions,
   fetchUserActionConfig,
   selectUserAction,
   submitAction,
@@ -53,6 +54,12 @@ export default function useUserAction() {
       removeOneLidedActions,
     ],
   );
+  const setOneToReportedActions = useCallback(
+    async (actionData: UserActionData) => {
+      dispatch(addOneToReportedActions(actionData));
+    },
+    [dispatch],
+  );
 
   const submitLocalUnreportedActions = useCallback(async () => {
     if (unreportedActionsSubmitStatus !== AsyncRequestStatus.IDLE) return;
@@ -68,5 +75,6 @@ export default function useUserAction() {
     fetchUserActionConfig: getUserActionConfig,
     submitUserAction,
     submitUnreportedActions: submitLocalUnreportedActions,
+    addOneToReportedActions: setOneToReportedActions,
   };
 }

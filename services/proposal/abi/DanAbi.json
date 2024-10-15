@@ -22,6 +22,7 @@
   { "inputs": [], "name": "FailedCall", "type": "error" },
   { "inputs": [], "name": "HasStaked", "type": "error" },
   { "inputs": [], "name": "InsufficientStake", "type": "error" },
+  { "inputs": [], "name": "InvalidCreator", "type": "error" },
   { "inputs": [], "name": "InvalidInitialization", "type": "error" },
   { "inputs": [], "name": "InvalidState", "type": "error" },
   { "inputs": [], "name": "InvalidTokenId", "type": "error" },
@@ -380,6 +381,43 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "string",
+        "name": "contentHash",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "roundIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "contentURI",
+        "type": "string"
+      }
+    ],
+    "name": "ReadyToMint",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "role",
@@ -535,6 +573,29 @@
     "name": "completeOwnershipHandover",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "uuid", "type": "string" },
+          { "internalType": "string", "name": "contentHash", "type": "string" },
+          {
+            "internalType": "address",
+            "name": "contentCreator",
+            "type": "address"
+          },
+          { "internalType": "string", "name": "contentURI", "type": "string" }
+        ],
+        "internalType": "struct Dan.NftConfig",
+        "name": "_config",
+        "type": "tuple"
+      }
+    ],
+    "name": "createNft",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
