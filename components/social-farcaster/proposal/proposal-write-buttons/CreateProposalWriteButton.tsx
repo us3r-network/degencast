@@ -269,26 +269,26 @@ export function ProxyUserToCreateProposalButtonV2({
     },
   });
 
-  const {
-    requestSigner,
-    hasSigner,
-    requesting: signerRequesting,
-  } = useFarcasterSigner();
+  // const {
+  //   requestSigner,
+  //   hasSigner,
+  //   requesting: signerRequesting,
+  // } = useFarcasterSigner();
 
   // const { address, isConnected } = useAccount();
   // const { connectWallet } = useWalletAccount();
 
-  const disabled = signerRequesting || createLoading;
+  const disabled = createLoading;
 
   return (
     <ProposalButton
       variant={"not-proposed"}
       disabled={disabled}
       onPress={() => {
-        if (!hasSigner) {
-          requestSigner();
-          return;
-        }
+        // if (!hasSigner) {
+        //   requestSigner();
+        //   return;
+        // }
         // if (!address) {
         //   connectWallet();
         //   return;
