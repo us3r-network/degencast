@@ -7,6 +7,7 @@ import CreateCastPreviewEmbeds from "~/components/social-farcaster/CreateCastPre
 import Editor, { SIGNATURE_TEXT } from "~/components/social-farcaster/Editor";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
+import { DEGENCAST_WEB_HOST } from "~/constants";
 import useWarpcastChannels from "~/hooks/community/useWarpcastChannels";
 import useCastCollection from "~/hooks/social-farcaster/cast-nft/useCastCollection";
 import useCreateCastPreview from "~/hooks/social-farcaster/useCreateCastPreview";
@@ -127,7 +128,24 @@ export default function CreateScreen() {
                           navigation.goBack();
                         }, 300);
 
-                        const result = await submitCast(data);
+                        let submitData = data;
+                        // 包含degencast签名, 加embed frame
+                        if (data.text.includes(SIGNATURE_TEXT)) {
+                          const embeds = data?.embeds || [];
+                          const newEmbeds = [
+                            ...embeds,
+                            {
+                              url:
+                                DEGENCAST_WEB_HOST || "https://degencast.wtf",
+                            },
+                          ];
+                          submitData = {
+                            ...data,
+                            embeds: newEmbeds,
+                          };
+                        }
+
+                        const result = await submitCast(submitData);
 
                         if (result?.hash) {
                           // 真实发布完，更新乐观发布数据
