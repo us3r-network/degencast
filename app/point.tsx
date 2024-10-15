@@ -53,9 +53,7 @@ export default function cast() {
           header: () => (
             <View
               style={{
-                height: headerHeight,
-                paddingLeft: 15,
-                paddingRight: 15,
+                padding: 15,
                 marginTop: Constants.statusBarHeight, // 确保顶部与状态栏不重叠
               }}
               className="flex-row items-center justify-between bg-primary"
@@ -74,7 +72,7 @@ export default function cast() {
           ),
         }}
       />
-      <View className=" m-auto  w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
+      <View className=" m-auto native:mt-12 w-full flex-1 flex-col gap-4 p-4 py-0 sm:w-full sm:max-w-screen-sm">
         <View className="flex-row items-center gap-4">
           <WandSparklesIcon width={32} height={32} />
           <Text className="text-[32px] font-bold text-primary-foreground">

@@ -1,4 +1,5 @@
 import { Tabs, useNavigation } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -95,6 +96,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      <StatusBar style="light" />
     </SafeAreaView>
   );
 }

@@ -68,13 +68,13 @@ export default function CommunityNFTs({
 }
 
 function NFTItem({ nft, isSelf }: { nft: ERC42069Token; isSelf: boolean }) {
-  console.log("NFTItem", nft, isSelf);
+  // console.log("NFTItem", nft, isSelf);
   return (
     <View className="relative w-full">
       <NFTImage nft={nft} />
       {Number(nft?.nftBalance) > 1 && (
         <View className="absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-secondary">
-          <Text className="text-white font-medium">{nft.nftBalance}</Text>
+          <Text className="font-medium text-white">{nft.nftBalance}</Text>
         </View>
       )}
       {isSelf && (

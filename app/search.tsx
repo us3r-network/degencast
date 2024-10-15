@@ -278,7 +278,7 @@ function SearchHeader({
   const navigation = useNavigation();
   const searchInputRef = useRef<TextInput>(null);
   return (
-    <View className="flex w-full flex-row items-center gap-2 py-2">
+    <View className="flex w-full flex-row items-center gap-3 py-2">
       <GoBackButtonBgPrimary
         onPress={() => {
           navigation.goBack();

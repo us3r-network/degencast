@@ -1,4 +1,10 @@
-import { View, ViewProps, Pressable, ActivityIndicator } from "react-native";
+import {
+  View,
+  ViewProps,
+  Pressable,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 import { cn } from "~/lib/utils";
 import { Text } from "../ui/text";
 import { Separator } from "../ui/separator";
@@ -60,23 +66,15 @@ export function PointsRules() {
         }
       />
       <RuleItem title="Add Farcaster signer" points={connectFarcasterUnit} />
-      <AddFarcasterSigner />
+      {Platform.OS === "web" ? <AddFarcasterSigner /> : null}
       <Separator className=" color-[#E0E0E0]" />
       <RuleItem
         title="Degencast posting signature"
         points={postingSignatureUnit}
         unitText="cast"
       />
-      <RuleItem
-        title="Like cast"
-        points={voteCastUnit}
-        unitText="cast"
-      />
-      <RuleItem
-        title="Mint cast"
-        points={mintCastUnit}
-        unitText="cast"
-      />
+      <RuleItem title="Like cast" points={voteCastUnit} unitText="cast" />
+      <RuleItem title="Mint cast" points={mintCastUnit} unitText="cast" />
     </View>
   );
 }
