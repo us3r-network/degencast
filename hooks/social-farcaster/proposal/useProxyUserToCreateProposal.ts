@@ -14,12 +14,15 @@ import { walletActionsEip5792 } from "viem/experimental";
 import useUserAction from "~/hooks/user/useUserAction";
 import { UserActionName } from "~/services/user/types";
 import { proxyUserToCreateProposal } from "~/services/proposal/api";
+import useCacheCastAttToken from "./useCacheCastAttToken";
 
 export default function useProxyUserToCreateProposal({
+  channelId,
   contractAddress,
   onCreateProposalSuccess,
   onCreateProposalError,
 }: {
+  channelId?: string;
   contractAddress: Address;
   onCreateProposalSuccess?: () => void;
   onCreateProposalError?: (error: any) => void;
@@ -37,15 +40,10 @@ export default function useProxyUserToCreateProposal({
   >("idle");
   const isLoading = status === "pending";
   const { upsertOneToProposals } = useCacheCastProposal();
-  const { submitUserAction } = useUserAction();
+  const { upsertOneToAttTokens } = useCacheCastAttToken();
+  const { addOneToReportedActions } = useUserAction();
   const create = useCallback(
-    async ({
-      castHash,
-      curatorAddr,
-    }: {
-      castHash: string;
-      curatorAddr: Address;
-    }) => {
+    async ({ castHash }: { castHash: string }) => {
       try {
         setStatus("pending");
         if (!publicClient || !walletClient) {
@@ -54,13 +52,11 @@ export default function useProxyUserToCreateProposal({
         if (!castHash) {
           throw new Error("Cast hash is required");
         }
-        if (!curatorAddr) {
-          throw new Error("curator address is required");
-        }
+        // if (!curatorAddr) {
+        //   throw new Error("curator address is required");
+        // }
         // const res = await proxyUserToCreateProposal({ castHash, curatorAddr });
-        proxyUserToCreateProposal({ castHash, curatorAddr });
-
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const res = await proxyUserToCreateProposal({ castHash });
         // const { code, data, msg } = res.data;
         // if (code === ApiRespCode.SUCCESS) {
         // console.log("createProposal success", data);
@@ -69,7 +65,7 @@ export default function useProxyUserToCreateProposal({
         setStatus("success");
         onCreateProposalSuccess?.();
         // onCreateProposalSuccess?.(data);
-        submitUserAction({
+        addOneToReportedActions({
           action: UserActionName.VoteCast,
           castHash: castHash,
         });
@@ -86,9 +82,18 @@ export default function useProxyUserToCreateProposal({
         //   roundIndex: Number(proposals.roundIndex),
         // });
 
-        upsertOneToProposals(castHash as any, {
-          status: ProposalState.Disputed,
-        });
+        const tokenId = res.data?.data?.tokenId;
+        if (!!tokenId || tokenId === 0) {
+          upsertOneToProposals(castHash as any, {
+            status: ProposalState.ReadyToMint,
+            tokenId,
+          });
+        }
+        const tokenInfo = res.data?.data;
+        if (channelId && tokenInfo.tokenContract) {
+          upsertOneToAttTokens(channelId, tokenInfo);
+        }
+
         // } else {
         //   throw new Error(msg);
         // }
@@ -101,13 +106,15 @@ export default function useProxyUserToCreateProposal({
       }
     },
     [
+      channelId,
       contractAddress,
       publicClient,
       walletClient,
       onCreateProposalSuccess,
       onCreateProposalError,
       upsertOneToProposals,
-      submitUserAction,
+      upsertOneToAttTokens,
+      addOneToReportedActions,
     ],
   );
   return {

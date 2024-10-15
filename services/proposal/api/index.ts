@@ -1,13 +1,18 @@
+import { AttentionTokenEntity } from "~/services/community/types/attention-token";
 import request, { RequestPromise } from "~/services/shared/api/request";
 import { ApiResp } from "~/services/shared/types";
 
 export function proxyUserToCreateProposal({
   castHash,
-  curatorAddr,
 }: {
   castHash: string;
-  curatorAddr: string;
-}): RequestPromise<ApiResp<any>> {
+}): RequestPromise<
+  ApiResp<
+    AttentionTokenEntity & {
+      tokenId: number;
+    }
+  >
+> {
   return request({
     url: `/topics/proposals`,
     method: "post",
@@ -16,7 +21,6 @@ export function proxyUserToCreateProposal({
     },
     data: {
       castHash,
-      curatorAddr,
     },
   });
 }

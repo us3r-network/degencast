@@ -159,7 +159,7 @@ export function ProxyUserToCreateProposalButton({
   ...props
 }: ButtonProps &
   CastProposeStatusProps & {
-    onCreateProposalSuccess?: (proposal: TransactionReceipt) => void;
+    onCreateProposalSuccess?: () => void;
     onCreateProposalError?: (error: any) => void;
     allowanceInfo: {
       paymentAmount: number;
@@ -219,7 +219,7 @@ export function ProxyUserToCreateProposalButton({
           onSuccess: () => {
             create({
               castHash: cast.hash,
-              curatorAddr: address,
+              // curatorAddr: address,
             });
           },
           onError: (error) => {
@@ -246,12 +246,14 @@ export function ProxyUserToCreateProposalButton({
 
 export function ProxyUserToCreateProposalButtonV2({
   cast,
+  channel,
   tokenInfo,
   ...props
 }: ButtonProps & CastProposeStatusProps) {
   const contractAddress = tokenInfo?.danContract!;
   const { actionPointConfig } = useUserAction();
   const { isLoading: createLoading, create } = useProxyUserToCreateProposal({
+    channelId: channel.channelId,
     contractAddress,
     onCreateProposalSuccess: () => {
       Toast.show({
@@ -259,7 +261,12 @@ export function ProxyUserToCreateProposalButtonV2({
         text1: `Like successfully! $CAST +${actionPointConfig.VoteCast.unit}!`,
       });
     },
-    onCreateProposalError: () => {},
+    onCreateProposalError: (err) => {
+      Toast.show({
+        type: "error",
+        text1: `Like failed! ${err.message}`,
+      });
+    },
   });
 
   const {
@@ -268,8 +275,8 @@ export function ProxyUserToCreateProposalButtonV2({
     requesting: signerRequesting,
   } = useFarcasterSigner();
 
-  const { address, isConnected } = useAccount();
-  const { connectWallet } = useWalletAccount();
+  // const { address, isConnected } = useAccount();
+  // const { connectWallet } = useWalletAccount();
 
   const disabled = signerRequesting || createLoading;
 
@@ -282,13 +289,12 @@ export function ProxyUserToCreateProposalButtonV2({
           requestSigner();
           return;
         }
-        if (!address) {
-          connectWallet();
-          return;
-        }
+        // if (!address) {
+        //   connectWallet();
+        //   return;
+        // }
         create({
           castHash: cast.hash,
-          curatorAddr: address,
         });
       }}
       {...props}
