@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 10.1.1"
+    "version": ">= 10.1.1",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -55,6 +56,7 @@
       }
     },
     "production": {
+      "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_BASE_URL": "https://api.u3.xyz",
         "EXPO_PUBLIC_DEGENCAST_WEB_HOST": "https://degencast.xyz",
