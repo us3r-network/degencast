@@ -26,16 +26,16 @@ export default function useWalletAccount() {
   //connencted wallets
   const { wallets: connectedWallets } = useWallets();
   const connectedExternalWallet = useMemo(
-    () =>
-      connectedWallets.filter((wallet) => wallet.connectorType !== "embedded"),
+    () => connectedWallets,
+    // connectedWallets.filter((wallet) => wallet.connectorType !== "embedded"),
     [connectedWallets],
   );
 
   // linked wallets
   const linkedWallets: PrivyWalletWithMetadata[] =
     (user?.linkedAccounts?.filter(
-      (account) =>
-        account.type === "wallet" && account.connectorType !== "embedded",
+      (account) => account.type === "wallet",
+      //  && account.connectorType !== "embedded",
     ) as PrivyWalletWithMetadata[]) || [];
 
   // link connected wallets to degencast user
@@ -79,8 +79,8 @@ export default function useWalletAccount() {
 
   const linkAccountNum =
     user?.linkedAccounts?.filter(
-      (account) =>
-        !(account.type === "wallet" && account.connectorType === "embedded"),
+      (account) => !(account.type === "wallet"),
+      // !(account.type === "wallet" && account.connectorType === "embedded"),
     ).length || 0;
 
   // active wallet
@@ -181,7 +181,8 @@ export default function useWalletAccount() {
     injectedWallet: linkedInjectedWallet,
     connectedInjectedWallet,
     activeWallet,
-    isConnected: !!activeWallet && activeWallet.connectorType !== "embedded",
+    // isConnected: !!activeWallet && activeWallet.connectorType !== "embedded",
+    isConnected: !!activeWallet,
     connectWallet,
     setActiveWallet,
     activeOneWallet,
