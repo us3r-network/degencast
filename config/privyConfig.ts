@@ -29,7 +29,7 @@ export const privyConfig: PrivyClientConfig = {
   fundingMethodConfig: {
     moonpay: { useSandbox: true },
   },
-  loginMethods: ["wallet", "farcaster"],
+  loginMethods: ["wallet", "farcaster","telegram","twitter"],
   // loginMethodsAndOrder: {
   //   primary: [
   //     "farcaster",
